@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  scroll-behavior: smooth;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* width */
+::-webkit-scrollbar {
+  height: 5px; 
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #ebeaea;
+  border-radius: 5px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #EFC586;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb{
+  background: #EFC586;
+  border-radius: 5px;
+}
+
+/* Handle on hover
+::-webkit-scrollbar-thumb:hover {
+  background: #fff;
+} */
+
+
+@layer base {
+  @font-face {
+    font-family: Gilmer Regular;
+    src: url('./../src/assets/fonts/Gilmer Regular.otf') format("opentype");
+  }
+  @font-face {
+    font-family: Gilmer-Bold;
+    src: url('./../src/assets/fonts/Gilmer Bold.otf') format("opentype");
+  }
+  @font-face {
+    font-family: Gilmer-Medium;
+    src: url('./../src/assets/fonts/Gilmer Medium.otf') format("opentype");
+  }
+  @font-face {
+    font-family: Gilmer-Heavy;
+    src: url('./../src/assets/fonts/Gilmer Heavy.otf') format("opentype");
+  }
+  @font-face {
+    font-family: Gilmer-Light;
+    src: url('./../src/assets/fonts/Gilmer Light.otf') format("opentype");
+  }
+}
