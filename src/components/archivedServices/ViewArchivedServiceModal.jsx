@@ -19,7 +19,7 @@ function ViewArchivedServiceModal({ onClose }) {
                   class="font-bold text-white mx-auto md:text-xl"
                   style={{ letterSpacing: "0.3em" }}
                 >
-                  VIEW SERVICE
+                  VIEW ARCHIVED SERVICE
                 </h3>
               </div>
             </div>

@@ -5,30 +5,17 @@ import { AiOutlineSend } from "react-icons/ai";
 function ReplyServiceModal({ onClose }) {
   return (
     <div>
-      <button
-        type="button"
-        className="text-white bg-custom-red-button font-medium rounded-full text-sm m-2 py-2 px-10 text-center inline-flex items-center mr-2"
-        style={{ margin: "10px 0px", padding: "10px 20px" }}
-        data-hs-overlay="#hs-reply-modal"
-      >
-        <AiOutlineSend
-          size={24} // You can adjust the size as needed
-          style={{ color: "#ffffff" }}
-        />
-      </button>
-
       <div
         id="hs-reply-modal"
         class="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
       >
         {/* Modal */}
         <div class="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 md:px-0 opacity-0 transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto">
-          <div class="flex flex-col w-full lg:w-[700px] xl:w-[800px] bg-white shadow-sm overflow-y-auto lg:ml-11 xl:ml-0 ">
+          <div class="flex flex-col w-full lg:w-[700px] xl:w-[800px] bg-white shadow-sm overflow-y-auto lg:ml-11 xl:ml-0 rounded-t-3xl rounded-b-3xl">
             {/* Header */}
-            <div class="bg-[#295141] overflow-hidden">
+            <div class="bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
               <div
                 class="flex justify-between items-center p-5 w-full h-full bg-cover bg-no-repeat transform"
-                style={{ backgroundImage: `url(${bgmodal})` }}
               >
                 <h3
                   class="font-base text-white mx-auto text-xs md:text-lg lg:text-xl"

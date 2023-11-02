@@ -1,31 +1,21 @@
 import React from "react";
 import bgmodal from "../../assets/modals/bg-modal2.png";
 import officialimage from "../../assets/sample/official.jpg";
-import { FiEdit } from "react-icons/fi";
 
 function EditOfficialModal({ onClose }) {
   return (
     <div>
-      <button
-        type="button"
-        className="text-white bg-custom-green-button3 font-medium text-sm sm:text-sm p-1 sm:p-2 lg:px-10 lg:py-30 lg:mr-2 inline-flex items-center mr-2"
-        data-hs-overlay="#hs-edit-official-modal"
-      >
-        <FiEdit size={24} style={{ color: "#ffffff" }} />
-      </button>
-
       <div
         id="hs-edit-official-modal"
         class="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center lg:ml-10 xxl:ml-0"
       >
         {/* Modal */}
         <div class="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 md:px-0 opacity-0 transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto">
-          <div class="flex flex-col w-full lg:w-[700px] bg-white shadow-sm overflow-y-auto ">
+          <div class="flex flex-col w-full lg:w-[700px] bg-white shadow-sm overflow-y-auto rounded-t-3xl rounded-b-3xl">
             {/* Header */}
-            <div class="bg-[#295141] overflow-hidden">
+            <div class="bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
               <div
                 class="flex justify-between items-center px-3 py-5 md:p-5 w-full h-full bg-cover bg-no-repeat transform"
-                style={{ backgroundImage: `url(${bgmodal})` }}
               >
                 <h3
                   class="font-base text-white mx-auto text-sm md:text-xl"

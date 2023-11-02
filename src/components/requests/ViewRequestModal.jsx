@@ -6,33 +6,20 @@ import RequestApprovalModal from "./RequestApprovalModal";
 function ViewRequestModal() {
   return (
     <div>
-      <button
-        type="button"
-        className="text-white w-full justify-center bg-custom-green-button3 font-medium rounded-full text-sm m-2 py-2 px-10 text-center inline-flex items-center mr-2"
-        style={{ margin: "10px 0px", padding: "10px 20px" }}
-        data-hs-overlay="#hs-view-request-modal"
-      >
-        <IoReaderOutline
-          size={24} // You can adjust the size as needed
-          style={{ color: "#ffffff" }}
-        />
-      </button>
-
       <div
         id="hs-view-request-modal"
         class="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center lg:ml-36 xl:ml-44 xxl:ml-40"
       >
         {/* Modal */}
         <div class="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 md:px-0 opacity-0 transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto">
-          <div class="flex flex-col bg-white shadow-sm ">
+          <div class="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl">
             {/* Header */}
-            <div class="bg-[#295141] overflow-hidden">
+            <div class="bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
               <div
-                class="flex justify-between items-center p-5 w-full h-full bg-cover bg-no-repeat transform"
-                style={{ backgroundImage: `url(${bgmodal})` }}
+                class="flex justify-between items-center px-3 py-5 md:p-5 w-full h-full bg-cover bg-no-repeat transform"
               >
                 <h3
-                  class="font-base text-white mx-auto text-md md:text-lg lg:text-xl"
+                  class="font-bold text-white mx-auto md:text-xl"
                   style={{ letterSpacing: "0.3em" }}
                 >
                   REQUESTED SERVICE

@@ -1,18 +1,17 @@
 import React from "react";
 import ReactPaginate from "react-paginate";
-import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { BsPrinter } from "react-icons/bs";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
-import { FiEdit } from "react-icons/fi";
-import { FaArchive, FaPlus } from "react-icons/fa";
+import { MdRestartAlt } from "react-icons/md";
 import officialimage from "../assets/sample/official.jpg";
-import CreateOfficialModal from "../components/officials/CreateOfficialModal";
 import GenerateReportsModal from "../components/officials/GenerateReportsModal";
 import ArchiveOfficialModal from "../components/officials/ArchiveOfficialModal";
-import EditOfficialModal from "../components/officials/EditOfficialModal";
+import Breadcrumbs from "../components/archivedOfficials/Breadcrumbs";
+import RestoreOfficialModal from "../components/archivedOfficials/RestoreOfficialModal";
+import ViewOfficialModal from "../components/archivedOfficials/ViewOfficialModal";
 
-const Officials = () => {
+const ArchivedOfficials = () => {
   const [selectedItems, setSelectedItems] = useState([]);
 
   const checkboxHandler = (e) => {
@@ -94,11 +93,12 @@ const Officials = () => {
   ];
 
   useEffect(() => {
-    document.title = "Barangay Officials | Barangay E-Services Management";
+    document.title = "Archived Barangay Officials | Barangay E-Services Management";
   }, []);
 
   return (
     <div className="mx-4 my-5 md:mx-5 md:my-6 lg:ml-[19rem] lg:mt-8 lg:mr-6">
+      <Breadcrumbs />
       {/* Body */}
       <div>
         {/* Header */}
@@ -108,54 +108,8 @@ const Officials = () => {
               className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[1.2rem] xl:text-[1.5rem] xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
-              BARANGAY OFFICIALS
+              ARCHIVED OFFICIALS
             </h1>
-          </div>
-          <div className="lg:w-3/5 flex flex-row justify-end items-center ">
-            <div className="sm:w-full md:w-full lg:w-2/5 flex sm:flex-col md:flex-row md:justify-center md:items-center sm:space-y-2 md:space-y-0 md:space-x-2 ">
-              <div className="w-full rounded-lg flex justify-center">
-                <div className="hs-tooltip inline-block w-full">
-                  <button
-                    type="button"
-                    data-hs-overlay="#hs-create-official-modal"
-                    className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] w-full text-white font-medium text-sm  text-center inline-flex items-center "
-                  >
-                    <FaPlus size={24} style={{ color: "#ffffff" }} />
-                    <span className="sm:block md:hidden sm:pl-5">
-                      Add Services
-                    </span>
-                    <span
-                      className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                      role="tooltip"
-                    >
-                      Add Services
-                    </span>
-                  </button>
-                </div>
-              </div>
-              <div className="w-full rounded-lg ">
-                <Link to="/archived_officials">
-                  <div className="hs-tooltip inline-block w-full">
-                    <button
-                      type="button"
-                      data-hs-overlay="#hs-modal-add"
-                      className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] w-full text-white font-medium text-sm text-center inline-flex items-center"
-                    >
-                      <FaArchive size={24} style={{ color: "#ffffff" }} />
-                      <span className="sm:block md:hidden sm:pl-5">
-                        Archived Officials
-                      </span>
-                      <span
-                        className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                        role="tooltip"
-                      >
-                        Archived Officials
-                      </span>
-                    </button>
-                  </div>
-                </Link>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -245,10 +199,10 @@ const Officials = () => {
                 <div className="hs-tooltip inline-block w-full">
                   <button
                     type="button"
-                    data-hs-overlay="#hs-archive-official-modal"
-                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md  bg-pink-800 font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
+                    data-hs-overlay="#hs-restore-official-modal"
+                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md   bg-[#295141] font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
                   >
-                    <AiOutlineStop size={24} style={{ color: "#ffffff" }} />
+                    <MdRestartAlt size={24} style={{ color: "#ffffff" }} />
                     <span
                       className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                       role="tooltip"
@@ -338,10 +292,10 @@ const Officials = () => {
                     <div className="flex justify-center space-x-1 sm:space-x-none">
                       <button
                         type="button"
-                        data-hs-overlay="#hs-edit-official-modal"
+                        data-hs-overlay="#hs-view-archived-official-modal"
                         className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                       >
-                        <FiEdit size={24} style={{ color: "#ffffff" }} />
+                        <AiOutlineEye size={24} style={{ color: "#ffffff" }} />
                       </button>
                     </div>
                   </td>
@@ -368,12 +322,12 @@ const Officials = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <CreateOfficialModal />
       <GenerateReportsModal />
       <ArchiveOfficialModal />
-      <EditOfficialModal />
+      <RestoreOfficialModal/>
+      <ViewOfficialModal/>
     </div>
   );
 };
 
-export default Officials;
+export default ArchivedOfficials;

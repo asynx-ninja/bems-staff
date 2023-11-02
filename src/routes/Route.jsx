@@ -18,8 +18,9 @@ import ChangePassword from "../pages/login/ChangePassword";
 import ArchivedAnnouncements from "../pages/ArchivedAnnouncements"
 import ArchivedInquiries from "../pages/ArchivedInquiries"
 import ArchivedResidents from "../pages/ArchiveResidents"
-import ArchivedOfficial from "../pages/ArchivedOfficial";
 import ArchivedService from "../pages/ArchivedServices";
+import ArchivedRequests from "../pages/ArchivedRequests";
+import ArchivedOfficials from "../pages/ArchivedOfficials";
 
 const pages = [
   {
@@ -129,6 +130,15 @@ const pages = [
     ),
   },
   {
+    path: "/archivedrequests",
+    element: (
+      <>
+        <Navbar />
+        <ArchivedRequests />
+      </>
+    ),
+  },
+  {
     path: "/officials",
     element: (
       <>
@@ -142,7 +152,7 @@ const pages = [
     element: (
       <>
         <Navbar />
-        <ArchivedOfficial />
+        <ArchivedOfficials />
       </>
     ),
   },

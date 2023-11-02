@@ -1,13 +1,12 @@
 import React from "react";
 import bgmodal from "../../assets/modals/bg-modal2.png";
 import officialimage from "../../assets/sample/official.jpg";
-import { IoIosAdd } from "react-icons/io";
 
-function CreateOfficialModal({ onClose }) {
+function ViewOfficialModal({ onClose }) {
   return (
     <div>
       <div
-        id="hs-create-official-modal"
+        id="hs-view-archived-official-modal"
         class="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center lg:ml-10 xxl:ml-0"
       >
         {/* Modal */}
@@ -15,14 +14,12 @@ function CreateOfficialModal({ onClose }) {
           <div class="flex flex-col w-full lg:w-[700px] bg-white shadow-sm overflow-y-auto rounded-t-3xl rounded-b-3xl">
             {/* Header */}
             <div class="bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
-              <div
-                class="flex justify-between items-center px-3 py-5 md:p-5 w-full h-full bg-cover bg-no-repeat transform"
-              >
+              <div class="flex justify-between items-center px-3 py-5 md:p-5 w-full h-full bg-cover bg-no-repeat transform">
                 <h3
-                  class="font-base text-white mx-auto md:text-xl"
+                  class="font-base text-white mx-auto text-sm md:text-xl"
                   style={{ letterSpacing: "0.3em" }}
                 >
-                  CREATE NEW OFFICIAL
+                  VIEW BARANGAY OFFICIAL
                 </h3>
               </div>
             </div>
@@ -46,7 +43,7 @@ function CreateOfficialModal({ onClose }) {
                     </div>
 
                     <input
-                      class="block mt-5 w-64 md:w-96 mx-auto lg:w-full text-sm text-black rounded-lg cursor-pointer bg-gray-100 "
+                      class="block mt-5 w-64 mx-auto lg:w-full text-sm text-black rounded-lg cursor-pointer bg-gray-100 "
                       id="file_input"
                       type="file"
                     />
@@ -65,6 +62,7 @@ function CreateOfficialModal({ onClose }) {
                       id="search-dropdown"
                       className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
                       placeholder=""
+                      readOnly
                     />
                     <h1
                       class="font-medium mb-1 mt-3 text-black text-sm"
@@ -77,6 +75,7 @@ function CreateOfficialModal({ onClose }) {
                       rows="4"
                       class="block p-2.5 w-full h-48 text-sm text-gray-900 rounded-lg bg-gray-100 resize-none "
                       placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, cons adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse."
+                      readOnly
                     ></textarea>
                   </div>
                 </div>
@@ -96,7 +95,7 @@ function CreateOfficialModal({ onClose }) {
                       id="search-dropdown"
                       className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg"
                       placeholder=""
-                      required
+                      readOnly
                     />
                   </div>
                   <div className="w-full lg:w-1/2 sm:mt-2 md:mt-0">
@@ -107,7 +106,7 @@ function CreateOfficialModal({ onClose }) {
                       SERVICE RENDERED
                     </h1>
 
-                     {/* Date 1*/}
+                    {/* Date 1*/}
                     <div class="hs-dropdown relative inline-flex mr-2">
                       <button
                         id="hs-dropdown-basic"
@@ -163,7 +162,7 @@ function CreateOfficialModal({ onClose }) {
                       </div>
                     </div>
 
-                     {/* Date 2 */}
+                    {/* Date 2 */}
                     <div class="hs-dropdown relative inline-flex">
                       <button
                         id="hs-dropdown-basic"
@@ -235,7 +234,7 @@ function CreateOfficialModal({ onClose }) {
                       id="search-dropdown"
                       className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg"
                       placeholder=""
-                      required
+                      readOnly
                     />
                   </div>
                   <div className="w-full md:w-1/2 sm:mt-2 md:mt-0">
@@ -250,7 +249,7 @@ function CreateOfficialModal({ onClose }) {
                       id="search-dropdown"
                       className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg  "
                       placeholder=""
-                      required
+                      readOnly
                     />
                   </div>
                 </div>
@@ -261,15 +260,8 @@ function CreateOfficialModal({ onClose }) {
             <div class="flex justify-end items-center gap-x-2 py-3 px-6 dark:border-gray-700">
               <button
                 type="button"
-                class="py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-custom-green-button3 text-white shadow-sm align-middle"
-                data-hs-overlay="#hs-create-official-modal"
-              >
-                SAVE CHANGES
-              </button>
-              <button
-                type="button"
                 class="py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-custom-red-button text-white shadow-sm align-middle"
-                data-hs-overlay="#hs-create-official-modal"
+                data-hs-overlay="#hs-view-archived-official-modal"
               >
                 CLOSE
               </button>
@@ -282,4 +274,4 @@ function CreateOfficialModal({ onClose }) {
   );
 }
 
-export default CreateOfficialModal;
+export default ViewOfficialModal;
