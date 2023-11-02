@@ -1,14 +1,11 @@
 import React from "react";
-import bgmodal from "../../assets/modals/bg-modal2.png";
-import { FiEdit } from "react-icons/fi";
-import { MdOutlineFileUpload } from "react-icons/md";
 
-function EditServiceModal({ onClose }) {
+function ViewServiceModal({ onClose }) {
   return (
     <div>
       <div
-        id="hs-edit-modal"
-        class="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center lg:ml-32 xl:ml-28"
+        id="hs-view-service-modal"
+        class="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center lg:ml-32 xl:ml-28 "
       >
         {/* Modal */}
         <div class="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 md:px-0 opacity-0 transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto">
@@ -22,7 +19,7 @@ function EditServiceModal({ onClose }) {
                   class="font-bold text-white mx-auto md:text-xl"
                   style={{ letterSpacing: "0.3em" }}
                 >
-                  EDIT SERVICE
+                  VIEW SERVICE
                 </h3>
               </div>
             </div>
@@ -43,13 +40,6 @@ function EditServiceModal({ onClose }) {
                   alt=""
                   className="w-full rounded-lg"
                 />
-                <label
-                  htmlFor="file_input"
-                  className="block text-transparent font-medium rounded-full text-sm mr-1 text-center absolute bottom-2 right-2"
-                >
-                  <MdOutlineFileUpload size={24} style={{ color: "#ffffff" }} />
-                </label>
-                <input class="hidden" id="file_input" type="file" />
               </div>
             </div>
 
@@ -69,7 +59,7 @@ function EditServiceModal({ onClose }) {
                     id="search-dropdown"
                     className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg"
                     placeholder=""
-                    required
+                    readOnly
                   />
                 </div>
                 <div className="w-full md:w-1/2 sm:mt-2 md:mt-0">
@@ -84,7 +74,7 @@ function EditServiceModal({ onClose }) {
                     id="search-dropdown"
                     className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg  "
                     placeholder=""
-                    required
+                    readOnly
                   />
                 </div>
               </div>
@@ -102,6 +92,7 @@ function EditServiceModal({ onClose }) {
                   rows="4"
                   class="block p-2.5 w-full text-sm text-gray-900 rounded-lg bg-gray-100 resize-none overflow-y-auto"
                   placeholder="Enter service details..."
+                  readOnly
                 ></textarea>
               </div>
 
@@ -119,7 +110,7 @@ function EditServiceModal({ onClose }) {
                     id="search-dropdown"
                     className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg"
                     placeholder=""
-                    required
+                    readOnly
                   />
                 </div>
                 <div className="w-full md:w-1/2">
@@ -130,11 +121,6 @@ function EditServiceModal({ onClose }) {
                     >
                       SERVICE FEES
                     </h1>
-
-                    <label class="relative inline-flex items-center sm:mt-4 md:mt-0 mx-2 cursor-pointer">
-                      <input type="checkbox" value="" class="sr-only peer" />
-                      <div class="w-10 h-5 bg-gray-200 rounded-full peer peer-focus:ring-blue-300 dark:bg-custom-green-button3 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-none after:left-[0.1px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-custom-red-button"></div>
-                    </label>
                   </div>
 
                   <input
@@ -142,7 +128,7 @@ function EditServiceModal({ onClose }) {
                     id="search-dropdown"
                     className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg  "
                     placeholder=""
-                    required
+                    readOnly
                   />
                 </div>
               </div>
@@ -153,14 +139,14 @@ function EditServiceModal({ onClose }) {
               <button
                 type="button"
                 class="py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-custom-green-button3 text-white shadow-sm align-middle"
-                data-hs-overlay="#hs-edit-modal"
+                data-hs-overlay="#hs-view-service-modal"
               >
                 SAVE CHANGES
               </button>
               <button
                 type="button"
                 class="py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-custom-red-button text-white shadow-sm align-middle"
-                data-hs-overlay="#hs-edit-modal"
+                data-hs-overlay="#hs-view-service-modal"
               >
                 CLOSE
               </button>
@@ -172,4 +158,4 @@ function EditServiceModal({ onClose }) {
   );
 }
 
-export default EditServiceModal;
+export default ViewServiceModal;

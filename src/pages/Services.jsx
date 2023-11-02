@@ -1,282 +1,377 @@
 import React from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { RiServiceFill } from "react-icons/ri";
-import { RiMoneyDollarCircleFill } from "react-icons/ri";
-import { BiArchive } from "react-icons/bi";
+import { FaArchive, FaPlus } from "react-icons/fa";
+import { BsPrinter } from "react-icons/bs";
+import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
+import { FiEdit } from "react-icons/fi";
+import ReactPaginate from "react-paginate";
+import imgSrc from "/imgs/bg-header.png";
+import ViewServiceModal from "../components/services/ViewServiceModal";
+import GenerateReportsModal from "../components/services/GenerateReportsModal";
 import CreateServiceModal from "../components/services/CreateServiceModal";
 import EditServiceModal from "../components/services/EditServiceModal";
-import { AiOutlineStop } from "react-icons/ai";
 import ArchiveServicesModal from "../components/services/ArchiveServicesModal";
 
 const Services = () => {
+  const [selectedItems, setSelectedItems] = useState([]);
+
+  const checkboxHandler = (e) => {
+    let isSelected = e.target.checked;
+    let value = parseInt(e.target.value);
+
+    if (isSelected) {
+      setSelectedItems([...selectedItems, value]);
+    } else {
+      setSelectedItems((prevData) => {
+        return prevData.filter((id) => {
+          return id !== value;
+        });
+      });
+    }
+  };
+
+  const checkAllHandler = () => {
+    if (tableData.length === selectedItems.length) {
+      setSelectedItems([]);
+    } else {
+      const postIds = tableData.map((item) => {
+        return item.id;
+      });
+
+      setSelectedItems(postIds);
+    }
+  };
+
+  const tableData = [
+    {
+      id: 1,
+      imageSrc: imgSrc,
+      title: "PANGKABUHAYAN QC",
+      details:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, ",
+      typeofservice: "MEDICAL",
+      date: "10 Jan 2023",
+    },
+    {
+      id: 2,
+      imageSrc: imgSrc,
+      title: "PANGKABUHAYAN QC",
+      details:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, ",
+      typeofservice: "MEDICAL",
+      date: "10 Jan 2023",
+    },
+    {
+      id: 3,
+      imageSrc: imgSrc,
+      title: "PANGKABUHAYAN QC",
+      details:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, ",
+      typeofservice: "MEDICAL",
+      date: "10 Jan 2023",
+    },
+    {
+      id: 4,
+      imageSrc: imgSrc,
+      title: "PANGKABUHAYAN QC",
+      details:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, ",
+      typeofservice: "MEDICAL",
+      date: "10 Jan 2023",
+    },
+  ];
+
+  const tableHeader = [
+    "SERVICE NAME",
+    "DETAILS",
+    "TYPE OF SERVICE",
+    "DATE",
+    "ACTIONS",
+  ];
+
   useEffect(() => {
     document.title = "Services | Barangay E-Services Management";
   }, []);
 
   return (
     <div className="mx-4 my-5 md:mx-5 md:my-6 lg:ml-[19rem] lg:mt-8 lg:mr-6">
-      {/* Services and Profit Cards */}
-      <div className="flex flex-col lg:flex-row">
-        <a
-          href="#"
-          className="relative block w-full lg:w-1/2 lg:mr-5 mt-2 py-3 px-3 lg:px-8 bg-custom-amber border border-gray-200 rounded-lg shadow overflow-hidden"
-        >
-          <h5
-            className="text-xl mb-2 font-heavy md:text-xl lg:text-2xl text-white"
-            style={{ letterSpacing: "0.2em" }}
-          >
-            TOTAL SERVICES
-          </h5>
-          <p
-            className="lg:text-3xl sm:text-sm font-normal text-white"
-            style={{ letterSpacing: "0.1em" }}
-          >
-            50
-          </p>
-          <RiServiceFill
-            size={160}
-            className="absolute bottom-0 top-1 right-0 mb-0 opacity-25 lg:opacity-40"
-            style={{ color: "#ffffff" }}
-          />
-        </a>
-
-        <a
-          href="#"
-          className="relative block w-full lg:w-1/2 mt-2 py-3 px-3 lg:px-8 bg-custom-amber border border-gray-200 rounded-lg shadow overflow-hidden"
-        >
-          <h5
-            className=" text-xl mb-2 font-heavy text-base md:text-xl lg:text-2xl text-gray-900 dark:text-white"
-            style={{ letterSpacing: "0.2em" }}
-          >
-            TOTAL PROFITS
-          </h5>
-          <p
-            className="lg:text-3xl font-normal text-white"
-            style={{ letterSpacing: "0.1em" }}
-          >
-            PHP 1,252,345
-          </p>
-          <RiMoneyDollarCircleFill
-            size={180}
-            className="absolute bottom-0 top-1 right-0 mb-0 opacity-25 lg:opacity-40"
-            style={{ color: "#ffffff" }}
-          />
-        </a>
-      </div>
-
       {/* Body */}
       <div>
         {/* Header */}
-        <div className="flex flex-col-reverse lg:flex-row mt-5">
-          {/* Table Title */}
-          <div className="bg-[#295141] py-2 lg:py-3.5 px-5 md:px-10 lg:px-10 rounded-tr-lg w-full lg:w-3/5 xxl:h-[4rem] xxxl:h-[5rem]">
+        <div className="flex flex-row mt-5 sm:flex-col-reverse lg:flex-row w-full">
+          <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
-              className="text-center sm:text-[15px] text-xl mx-auto font-heavy md:text-xl lg:text-xl xl:text-2xl xl:pt-1 xxl:text-3xl xxl:pt-0 xxxl:text-4xl xxxl:mt-1 text-white"
+              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[1.2rem] xl:text-[1.5rem] xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
               SERVICE MANAGEMENT
             </h1>
           </div>
-
-          {/* Search - Add - Archived */}
-          <div className="bg-red lg:w-3/5 flex flex-row mb-2 lg:mb-1 lg:ml-5 lg:mr-2 xl:mr-none sm:flex-col md:flex-row">
-            {/* Search */}
-            <div className="relative w-5/6 my-auto">
-              <form className="flex my-auto">
-                <div className="relative w-full">
-                  <div className="flex flex-row sm:w-12/6 sm:h-[2.5rem] ">
-                    <button
-                      type="submit"
-                      className="sm:px-5 py-2 px-8 text-sm font-medium text-white bg-teal-800 rounded-l-lg border"
-                    >
-                      <h1>SEARCH</h1>
-                    </button>
-
-                    <input
-                      type="search"
-                      id="search-dropdown"
-                      className="block p-2.5 flex-grow z-20 text-sm text-gray-900 bg-gray-50 rounded-r-lg border-l-gray-50 border-l-2 border border-gray-300"
-                      placeholder="Enter Service..."
-                      required
-                    />
-                  </div>
-                </div>
-              </form>
-            </div>
-
-            <div className="flex flex-row md:ml-2 lg:ml-2 lg:mx-5 space-x-3 lg:space-x-1 xl:space-x-2 my-auto md:relative md:bottom-[3px]">
-              {/* Add button */}
-              <div className="hs-tooltip inline-block w-full">
-                <CreateServiceModal />
-              </div>
-
-              {/* Archives button */}
-              <div className="hs-tooltip inline-block w-full">
-                <Link to="/archived_services">
+          <div className="lg:w-3/5 flex flex-row justify-end items-center ">
+            <div className="sm:w-full md:w-full lg:w-2/5 flex sm:flex-col md:flex-row md:justify-center md:items-center sm:space-y-2 md:space-y-0 md:space-x-2 ">
+              <div className="w-full rounded-lg flex justify-center">
+                <div className="hs-tooltip inline-block w-full">
                   <button
                     type="button"
-                    className="text-white w-full justify-center bg-custom-red2 font-medium rounded-full text-sm p-2 text-center inline-flex items-center"
-                    style={{ margin: "10px 0", padding: "10px 20px" }}
+                    data-hs-overlay="#hs-create-service-modal "
+                    className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] w-full text-white font-medium text-sm  text-center inline-flex items-center "
                   >
-                    <BiArchive
-                      size={24} // You can adjust the size as needed
-                      style={{ color: "#ffffff" }}
-                    />
+                    <FaPlus size={24} style={{ color: "#ffffff" }} />
+                    <span className="sm:block md:hidden sm:pl-5">
+                      Add Announcement
+                    </span>
+                    <span
+                      className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                      role="tooltip"
+                    >
+                      Add Announcement
+                    </span>
                   </button>
+                </div>
+              </div>
+              <div className="w-full rounded-lg ">
+                <Link to="/archivedservices">
+                  <div className="hs-tooltip inline-block w-full">
+                    <button
+                      type="button"
+                      data-hs-overlay="#hs-modal-add"
+                      className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] w-full text-white font-medium text-sm text-center inline-flex items-center"
+                    >
+                      <FaArchive size={24} style={{ color: "#ffffff" }} />
+                      <span className="sm:block md:hidden sm:pl-5">
+                        Archived Announcement
+                      </span>
+                      <span
+                        className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                        role="tooltip"
+                      >
+                        Archived Announcement
+                      </span>
+                    </button>
+                  </div>
                 </Link>
               </div>
             </div>
           </div>
+        </div>
 
-          <div></div>
+        <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
+          <div className="sm:flex-col-reverse md:flex-row flex justify-between w-full">
+            <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+              <button
+                id="hs-dropdown"
+                type="button"
+                className="bg-[#295141] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+              >
+                SORT BY
+                <svg
+                  className="hs-dropdown-open:rotate-180 w-2.5 h-2.5 text-white"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </button>
+              <ul
+                className="bg-[#295141] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                aria-labelledby="hs-dropdown"
+              >
+                <li className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ">
+                  TITLE
+                </li>
+                <li className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ">
+                  DATE
+                </li>
+              </ul>
+            </div>
+            <div className="sm:flex-col md:flex-row flex sm:w-full md:w-7/12">
+              <div className="flex flex-row w-full md:mr-2">
+                <button className=" bg-[#295141] p-3 rounded-l-md">
+                  <div className="w-full overflow-hidden">
+                    <svg
+                      className="h-3.5 w-3.5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                    </svg>
+                  </div>
+                </button>
+                <label
+                  htmlFor="hs-table-with-pagination-search"
+                  className="sr-only"
+                >
+                  Search
+                </label>
+                <input
+                  type="text"
+                  name="hs-table-with-pagination-search"
+                  id="hs-table-with-pagination-search"
+                  className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500 "
+                  placeholder="Search for items"
+                />
+              </div>
+              <div className="sm:mt-2 md:mt-0 flex w-full items-center justify-center space-x-2">
+                <div className="hs-tooltip inline-block w-full">
+                  <button
+                    type="button"
+                    data-hs-overlay="#hs-generate-reports-modal"
+                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md bg-blue-800 font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
+                  >
+                    <BsPrinter size={24} style={{ color: "#ffffff" }} />
+                    <span
+                      className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                      role="tooltip"
+                    >
+                      Generate Report
+                    </span>
+                  </button>
+                </div>
+                <div className="hs-tooltip inline-block w-full">
+                  <button
+                    type="button"
+                    data-hs-overlay="#hs-archive-services-modal"
+                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md  bg-pink-800 font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
+                  >
+                    <AiOutlineStop size={24} style={{ color: "#ffffff" }} />
+                    <span
+                      className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                      role="tooltip"
+                    >
+                      Archived Selected Announcement
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto lg:h-[550px] xl:h-[570px] xxl:h-[570px] xxxl:h-[515px] border">
-          <table className="w-full divide-y divide-gray-200">
-            {/* Table Headers */}
-            <thead className="bg-gray-50 border">
-              <tr>
-                {/* Service Name */}
-                <th
-                  scope="col"
-                  className="px-2 py-2 sm:px-6 sm:py-3 text-left border"
-                >
-                  <div className="flex items-center">
-                    <span className="text-sm sm:text-md font-semibold uppercase tracking-wide text-black">
-                      Service Name
-                    </span>
+        <div className="overflow-auto sm:overflow-x-auto lg:h-[710px] xl:h-[700px] xxl:h-[700px] xxxl:h-[640px]">
+          <table className="w-full ">
+            <thead className="bg-[#295141] sticky top-0">
+              <tr className="">
+                <th scope="col" className="px-6 py-4">
+                  <div className="flex justify-center items-center">
+                    <input
+                      type="checkbox"
+                      name=""
+                      onClick={checkAllHandler}
+                      id=""
+                    />
                   </div>
                 </th>
-
-                {/* Details */}
-                <th
-                  scope="col"
-                  className="px-2 py-2 sm:px-6 sm:py-3 text-left border"
-                >
-                  <div className="flex items-center">
-                    <span className="text-sm sm:text-md font-semibold uppercase tracking-wide text-black">
-                      Details
-                    </span>
-                  </div>
-                </th>
-
-                {/* Type of Service */}
-                <th
-                  scope="col"
-                  className="px-2 py-2 sm:px-6 sm:py-3 text-left border"
-                >
-                  <div className="flex items-center">
-                    <span className="text-sm sm:text-md font-semibold uppercase tracking-wide text-black mx-auto">
-                      Type of Service
-                    </span>
-                  </div>
-                </th>
-
-                {/* Date */}
-                <th
-                  scope="col"
-                  className="px-2 py-2 sm:px-6 sm:py-3 text-left border"
-                >
-                  <div className="flex items-center">
-                    <span className="text-sm sm:text-md font-semibold uppercase tracking-wide text-black mx-auto">
-                      Date
-                    </span>
-                  </div>
-                </th>
-
-                {/* Actions */}
-                <th
-                  scope="col"
-                  className="px-2 py-2 sm:px-6 sm:py-3 text-left border"
-                >
-                  <div className="flex items-center">
-                    <span className="text-sm sm:text-md font-semibold uppercase tracking-wide text-black mx-auto">
-                      Actions
-                    </span>
-                  </div>
-                </th>
+                {tableHeader.map((item, idx) => (
+                  <th
+                    scope="col"
+                    key={idx}
+                    className="px-6 py-3 text-center text-xs font-bold text-white uppercase"
+                  >
+                    {item}
+                  </th>
+                ))}
               </tr>
             </thead>
+            <tbody className="odd:bg-slate-100">
+              {tableData.map((item, index) => (
+                <tr key={index} className="odd:bg-slate-100 text-center">
+                  <td className="px-6 py-3">
+                    <div className="flex justify-center items-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.includes(item.id)}
+                        value={item.id}
+                        onChange={checkboxHandler}
+                        id=""
+                      />
+                    </div>
+                  </td>
+                  <td className="px-6 py-3">
+                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
+                      {tableData[0].title}
+                    </span>
+                  </td>
+                  <td className="px-6 py-3">
+                    <div className="flex justify-center items-center">
+                      <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
+                        {tableData[0].details}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-3">
+                    <div className="flex justify-center items-center">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {tableData[0].typeofservice}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-3">
+                    <div className="flex justify-center items-center">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {tableData[0].date}
+                      </span>
+                    </div>
+                  </td>
 
-            {/* Table Body */}
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {/* Datas */}
-              {Array(20)
-                .fill("")
-                .map((_, idx) => (
-                  <tr className="bg-white hover-bg-gray-50 border">
-                    {/* Service Name */}
-                    <td className="w-[20%] sm:w-1/5 whitespace-nowrap border">
-                      <div className="px-2 sm:px-6 py-2">
-                        <span className="text-xs sm:text-lg text-black">
-                          PANGKABUHAYAN QC
-                        </span>
-                      </div>
-                    </td>
-
-                    {/* Details */}
-                    <td className="w-[35%] sm:w-3/5 border">
-                      <div className="px-2 sm:px-6 py-2">
-                        <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 lg:h-10 overflow-hidden line-clamp-3">
-                          Lorem ipsum dolor sit amet, consectetur adipiscing
-                          elit, sed do eiusmod tempor incididunt ut labore et
-                          dolore magna aliqua. Felis bibendum ut tristique et
-                          egestas quis ipsum suspendisse. Lorem ipsum dolor sit
-                          amet, consectetur adipiscing elit, sed do eiusmod
-                          tempor incididunt ut labore et dolore magna aliqua.
-                          Felis bibendum ut tristique et egestas quis ipsum
-                          suspendisse.
-                        </span>
-                      </div>
-                    </td>
-
-                    {/* Service Type */}
-                    <td className="px-2 py-2 sm:px-3 sm:py-3 w-[15%] sm:w-1/5 whitespace-nowrap border">
-                      <div className="flex items-center justify-center">
-                        <span className="text-xs sm:text-sm text-black">
-                          MEDICAL
-                        </span>
-                      </div>
-                    </td>
-
-                    {/* Date */}
-                    <td className="px-2 py-2 sm:px-3 sm:py-3 w-[15%] sm:w-1/5 whitespace-nowrap border">
-                      <div className="flex items-center justify-center">
-                        <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mx-5">
-                          10 Jan 2023
-                        </span>
-                      </div>
-                    </td>
-
-                    {/* Action */}
-                    <td className="px-2 py-2 sm:px-3 sm:py-3 w-[15%] sm:w-1/5 whitespace-nowrap border">
-                      {/* Action Buttons */}
-                      <div className="flex justify-center space-x-1 sm:space-x-none">
-                        {/* Edit */}
-                        <EditServiceModal />
-
-                        {/* Disable button */}
-                        <button
-                          type="button"
-                          data-hs-overlay="#hs-archive-services-modal"
-                          className="text-white bg-pink-800 font-medium text-xs sm:text-sm p-1 sm:p-2 lg:px-10 lg:py-30 inline-flex items-center"
-                        >
-                          <AiOutlineStop
-                            size={24}
-                            style={{ color: "#ffffff" }}
-                          />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                  <td className="px-6 py-3">
+                    <div className="flex justify-center space-x-1 sm:space-x-none">
+                      <button
+                        type="button"
+                        data-hs-overlay="#hs-view-service-modal"
+                        className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center"
+                      >
+                        <AiOutlineEye size={24} style={{ color: "#ffffff" }} />
+                      </button>
+                      <button
+                        type="button"
+                        data-hs-overlay="#hs-edit-modal"
+                        className="text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center"
+                      >
+                        <FiEdit size={24} style={{ color: "#ffffff" }} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       </div>
+      <div className="md:py-4 md:px-4 bg-[#295141] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
+        <span className="font-medium text-white sm:text-xs text-sm">
+          Showing 1 out of 15 pages
+        </span>
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel=">>"
+          onPageChange={() => {}}
+          pageRangeDisplayed={3}
+          pageCount={15}
+          previousLabel="<<"
+          className="flex space-x-3 text-white font-bold "
+          activeClassName="text-yellow-500"
+          disabledLinkClassName="text-gray-300"
+          renderOnZeroPageCount={null}
+        />
+      </div>
       <ArchiveServicesModal />
+      <CreateServiceModal />
+      <EditServiceModal />
+      <ViewServiceModal />
+      <GenerateReportsModal />
     </div>
   );
 };

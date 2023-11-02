@@ -18,8 +18,8 @@ import ChangePassword from "../pages/login/ChangePassword";
 import ArchivedAnnouncements from "../pages/ArchivedAnnouncements"
 import ArchivedInquiries from "../pages/ArchivedInquiries"
 import ArchivedResidents from "../pages/ArchiveResidents"
-import ArchivedServices from "../pages/ArchivedServices";
 import ArchivedOfficial from "../pages/ArchivedOfficial";
+import ArchivedService from "../pages/ArchivedServices";
 
 const pages = [
   {
@@ -111,11 +111,11 @@ const pages = [
     ),
   },
   {
-    path: "/archived_services",
+    path: "/archivedservices",
     element: (
       <>
         <Navbar />
-        <ArchivedServices />
+        <ArchivedService />
       </>
     ),
   },
