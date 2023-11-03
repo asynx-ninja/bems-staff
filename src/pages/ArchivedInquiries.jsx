@@ -280,7 +280,7 @@ const Inquiries = () => {
                       <button
                         type="button"
                         data-hs-overlay="#hs-modal-viewArchived"
-                        className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center"
+                        className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                       >
                         <AiOutlineEye size={24} style={{ color: "#ffffff" }} />
                       </button>

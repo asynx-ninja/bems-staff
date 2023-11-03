@@ -274,7 +274,7 @@ const Residents = () => {
                       <button
                         type="button"
                         data-hs-overlay="#hs-modal-viewResident"
-                        className="text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center"
+                        className="text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                       >
                         <AiOutlineEye size={24} style={{ color: "#ffffff" }} />
                       </button>

@@ -12,12 +12,11 @@ function AddResidentModal() {
         >
           {/* Modal */}
           <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 md:px-0 opacity-0 transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto lg:ml-96 xl:ml-[500px] xxl:ml-[600px] xxxl:ml-[800px]">
-            <div className="flex flex-col bg-white shadow-sm ">
+            <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl">
               {/* Header */}
-              <div className="bg-[#295141] overflow-hidden">
+              <div className="bg-gradient-to-r from-[#295141] to-[#408D51] w-overflow-hidden rounded-t-2xl">
                 <div
                   className="flex justify-between items-center p-5 w-full h-full bg-cover bg-no-repeat transform"
-                  style={{ backgroundImage: `url(${bgmodal})` }}
                 >
                   <h3
                     className="font-base text-white mx-auto md:text-xl"

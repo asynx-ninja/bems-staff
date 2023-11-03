@@ -10,6 +10,7 @@ import imgSrc from "/imgs/bg-header.png";
 import EditModal from "../components/announcement/EditAnnouncementModal";
 import { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
+import ViewAnnouncementModal from "../components/announcement/ViewAnnouncement";
 
 const Announcement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -134,7 +135,7 @@ const Announcement = () => {
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"
-                      data-hs-overlay="#hs-modal-add"
+                      
                       className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] w-full text-white font-medium text-sm text-center inline-flex items-center"
                     >
                       <FaArchive size={24} style={{ color: "#ffffff" }} />
@@ -348,7 +349,7 @@ const Announcement = () => {
                     <div className="flex justify-center space-x-1 sm:space-x-none">
                       <button
                         type="button"
-                        data-hs-overlay="#hs-modal-edit"
+                        data-hs-overlay="#hs-modal-viewAnnouncement"
                         className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                       >
                         <AiOutlineEye size={24} style={{ color: "#ffffff" }} />
@@ -387,6 +388,7 @@ const Announcement = () => {
         <ArchiveModal />
         <AddModal />
         <EditModal />
+        <ViewAnnouncementModal />
       </div>
     </div>
   );

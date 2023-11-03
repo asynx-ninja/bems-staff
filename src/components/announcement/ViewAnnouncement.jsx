@@ -1,12 +1,12 @@
 import React from "react";
 import bgmodal from "../../assets/modals/bg-modal2.png";
 
-function AddAnnouncementModal() {
+function ViewAnnouncementModal() {
   return (
     <div>
       <div className="">
         <div
-          id="hs-modal-add"
+          id="hs-modal-viewAnnouncement"
           class="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
         >
           {/* Modal */}
@@ -18,10 +18,10 @@ function AddAnnouncementModal() {
                   class="flex justify-between items-center p-5 w-full h-full bg-cover bg-no-repeat transform"
                 >
                   <h3
-                    class="font-base text-white mx-auto lg:text-xl"
+                    class="font-base text-white mx-auto md:text-xl"
                     style={{ letterSpacing: "0.3em" }}
                   >
-                    ADD ANNOUNCEMENT
+                    VIEW ANNOUNCEMENT
                   </h3>
                 </div>
               </div>
@@ -87,18 +87,11 @@ function AddAnnouncementModal() {
                 </form>
               </div>
               {/* Buttons */}
-              <div class=" flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
-                <button
-                  type="button"
-                  class="h-[2.5rem] w-[9.5rem] py-1 md:px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-xs md:text-sm font-base bg-teal-900 text-white shadow-sm align-middle"
-                  data-hs-overlay="#hs-modal-add"
-                >
-                  SAVE CHANGES
-                </button>
+              <div class="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
                 <button
                   type="button"
                   class="h-[2.5rem] w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
-                  data-hs-overlay="#hs-modal-add"
+                  data-hs-overlay="#hs-modal-viewAnnouncement"
                 >
                   CLOSE
                 </button>
@@ -111,4 +104,4 @@ function AddAnnouncementModal() {
   );
 }
 
-export default AddAnnouncementModal;
+export default ViewAnnouncementModal;

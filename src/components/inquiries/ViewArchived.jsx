@@ -21,7 +21,7 @@ function ViewArchivedModal() {
                                         class="font-heavy text-white mx-auto md:text-xl"
                                         style={{ letterSpacing: "0.3em" }}
                                     >
-                                        ArRCHIVED INQUIRY
+                                        ARCHIVED INQUIRY
                                     </h3>
                                 </div>
                             </div>
