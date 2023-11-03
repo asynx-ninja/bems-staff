@@ -2,12 +2,12 @@ import React from "react";
 import bgmodal from "../../assets/modals/bg-modal2.png";
 import officialimage from "../../assets/sample/official.jpg";
 
-function EditResidentModal() {
+function ViewResidentModal() {
   return (
     <div>
       <div className="">
         <div
-          id="hs-modal-editResident"
+          id="hs-modal-viewResident"
           className="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
         >
           {/* Modal */}
@@ -23,7 +23,7 @@ function EditResidentModal() {
                     className="font-base text-white mx-auto md:text-xl"
                     style={{ letterSpacing: "0.3em" }}
                   >
-                    EDIT RESIDENTS
+                    VIEW ARCHIVED RESIDENT
                   </h3>
                 </div>
               </div>
@@ -61,12 +61,12 @@ function EditResidentModal() {
                         />
 
                         <div className="">
-                          <h1
-                            class="font-medium mt-5 text-black text-sm"
-                            style={{ letterSpacing: "0.1em" }}
-                          >
-                            GENDER
-                          </h1>
+                        <h1
+                          class="font-medium mt-5 text-black text-sm"
+                          style={{ letterSpacing: "0.1em" }}
+                        >
+                          GENDER
+                        </h1>
                           <div className="flex items-center">
                             <input
                               type="radio"
@@ -126,25 +126,7 @@ function EditResidentModal() {
                       className="w-full p-2 border border-gray-300 rounded"
                     />
                   </div>
-                 
-                    <div className="mb-4 px-4">
-                      <label
-                        htmlFor="civilStatus"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        STATUS OF RESIDENT
-                      </label>
-                      <select
-                        id="civilStatus"
-                        name="civilStatus"
-                        className="w-full p-2 border border-gray-300 rounded"
-                      >
-                        <option value="single">REGISTERED</option>
-                        <option value="married">NOT REGISTERED</option>
-                        <option value="divorced">DEAD</option>
-                      </select>
-                    </div>
-                  
+
                   <div className="mb-4 px-4">
                     <label
                       htmlFor="civilStatus"
@@ -170,14 +152,14 @@ function EditResidentModal() {
                 <button
                   type="button"
                   className="h-[2.5rem] w-[8rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm align-middle"
-                  data-hs-overlay="#hs-modal-editResident"
+                  data-hs-overlay="#hs-modal-viewResident"
                 >
-                  SAVE
+                  RESTORE
                 </button>
                 <button
                   type="button"
                   className="h-[2.5rem] w-[8rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
-                  data-hs-overlay="#hs-modal-editResident"
+                  data-hs-overlay="#hs-modal-viewResident"
                 >
                   CLOSE
                 </button>
@@ -190,4 +172,4 @@ function EditResidentModal() {
   );
 }
 
-export default EditResidentModal;
+export default ViewResidentModal;

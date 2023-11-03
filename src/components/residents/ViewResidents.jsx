@@ -2,12 +2,12 @@ import React from "react";
 import bgmodal from "../../assets/modals/bg-modal2.png";
 import officialimage from "../../assets/sample/official.jpg";
 
-function EditResidentModal() {
+function ViewResidentModal() {
   return (
     <div>
       <div className="">
         <div
-          id="hs-modal-editResident"
+          id="hs-modal-viewResident"
           className="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
         >
           {/* Modal */}
@@ -23,7 +23,7 @@ function EditResidentModal() {
                     className="font-base text-white mx-auto md:text-xl"
                     style={{ letterSpacing: "0.3em" }}
                   >
-                    EDIT RESIDENTS
+                    VIEW RESIDENT
                   </h3>
                 </div>
               </div>
@@ -139,9 +139,9 @@ function EditResidentModal() {
                         name="civilStatus"
                         className="w-full p-2 border border-gray-300 rounded"
                       >
-                        <option value="single">REGISTERED</option>
-                        <option value="married">NOT REGISTERED</option>
-                        <option value="divorced">DEAD</option>
+                        <option value="single">COMPLETED</option>
+                        <option value="married">PENDING</option>
+                        <option value="divorced">IN PROGRESS</option>
                       </select>
                     </div>
                   
@@ -169,15 +169,8 @@ function EditResidentModal() {
               <div className="flex justify-center gap-x-2 py-3 px-6 dark:border-gray-700">
                 <button
                   type="button"
-                  className="h-[2.5rem] w-[8rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm align-middle"
-                  data-hs-overlay="#hs-modal-editResident"
-                >
-                  SAVE
-                </button>
-                <button
-                  type="button"
                   className="h-[2.5rem] w-[8rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
-                  data-hs-overlay="#hs-modal-editResident"
+                  data-hs-overlay="#hs-modal-viewResident"
                 >
                   CLOSE
                 </button>
@@ -190,4 +183,4 @@ function EditResidentModal() {
   );
 }
 
-export default EditResidentModal;
+export default ViewResidentModal;
