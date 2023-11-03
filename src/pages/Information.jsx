@@ -1,10 +1,9 @@
 import React from "react";
 import { useEffect } from "react";
-import bgmodal from "../assets/modals/bg-modal.png";
-import officialimage from "../assets/sample/official.jpg";
-import EditStoryModal from "../components/information/EditStoryModal";
-import EditLogoModal from "../components/information/EditLogoModal";
+import { BsCamera } from "react-icons/bs";
+import { MdOutlineFileUpload } from "react-icons/md";
 import EditMissionModal from "../components/information/EditMissionModal";
+import EditStoryModal from "../components/information/EditStoryModal";
 import EditVisionModal from "../components/information/EditVisionModal";
 
 const Information = () => {
@@ -13,197 +12,190 @@ const Information = () => {
   }, []);
 
   return (
-    <div className="mx-4 my-5 md:mx-5 md:my-6 lg:ml-[19rem]  lg:mt-8 lg:mr-6">
-      {/* Body */}
+    <div className="mx-4 my-5 md:mx-5 md:my-6 lg:ml-[19rem] lg:mt-8 lg:mr-6">
       <div>
-        {/* Header */}
-        <div className="flex flex-col-reverse lg:flex-row mt-5">
-          {/* Table Title */}
-          <div className="bg-[#295141] py-2 lg:py-3.5 px-5 md:px-10 lg:px-10 rounded-tr-lg w-full lg:w-3/5 xxl:h-[4rem] xxxl:h-[5rem]">
-            <h1
-              className="text-center sm:text-[15px] text-xl mx-auto font-heavy md:text-xl lg:text-xl xl:text-2xl xl:pt-1 xxl:text-3xl xxl:pt-0 xxxl:text-4xl xxxl:mt-1 text-white"
-              style={{ letterSpacing: "0.2em" }}
+        <div className="bg-cover bg-center h-96 rounded-lg">
+          <div className="relative flex justify-end">
+            <label
+              htmlFor="file_input"
+              className="absolute mt-7 transform -translate-x-1/2 -translate-y-1/2 block text-transparent font-medium rounded-full text-sm"
             >
-              BARANGAY INFORMATION
-            </h1>
+              <MdOutlineFileUpload size={40} style={{ color: "#ffffff" }} />
+            </label>
+            <input className="hidden" id="file_input" type="file" />
           </div>
 
-          <div></div>
+          <div>
+            <img
+              src="./public/imgs/bg-header.png"
+              alt=""
+              className="w-full h-[150px] md:h-[300px] lg:h-[350px] xl:h-[470px] rounded-lg"
+            />
+          </div>
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto xxxl:h-[640px] border h-full">
-          <div className="flex flex-col lg:h-[680px] xxxl:h-full overflow-y-auto">
-            <div className="flex flex-col lg:flex-row px-5 lg:space-x-3">
-              {/* STORY */}
-              <div className="flex flex-col border w-full lg:w-1/2 my-3 lg:my-5 xxxl:h-[19rem]">
-                {/* Header */}
-                <div class="bg-[#295141] overflow-hidden">
-                  <div
-                    class="flex justify-between items-center px-3 py-2 lg:py-3 md:p-5 w-full h-full bg-cover bg-no-repeat transform"
-                    style={{ backgroundImage: `url(${bgmodal})` }}
-                  >
-                    <h3
-                      class="font-base text-white mx-auto lg:text-xl"
-                      style={{ letterSpacing: "0.3em" }}
+        <div className="flex justify-center sm:-mt-[260px] md:-mt-[220px] lg:-mt-[140px] xl:-mt-[60px]  h-auto md:mx-4 lg:mx-5">
+          <div className="w-full md:w-96 h-full lg:my-0 lg:mx-5 relative rounded-[28px] mx-auto bg-white shadow-2xl md:w-full flex flex-col">
+            <div className="h-auto rounded-lg">
+              <div className="bg-gradient-to-r from-[#295141] to-[#408D51] rounded-t-[28px]">
+                <div
+                  className="relative h-32 md:h-60 mx-auto justify-center items-center rounded-t-lg"
+                  style={{
+                    backgroundImage: 'url("./public/imgs/header-bg.png")',
+                  }}
+                >
+                  <img
+                    src="./src/assets/sample/official.jpg"
+                    alt=""
+                    className="sm:w-[120px] md:w-56 rounded-full border-4 border-white mx-auto absolute left-0 right-0 sm:-top-[73px] md:-top-[6rem]"
+                  />
+                  <div className="absolute top-[19px] left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+                    <label
+                      htmlFor="file_input"
+                      className="block text-transparent px-8 py-8 mb-[60px] md:mb-0  md:px-[83px] md:py-[87px] font-medium rounded-full text-sm text-center opacity-0 hover:opacity-100 transition-opacity hover:bg-[#295141] hover:bg-opacity-60"
                     >
-                      STORY
-                    </h3>
+                      <BsCamera size={50} style={{ color: "#ffffff" }} />
+                    </label>
+                    <input className="hidden" id="file_input" type="file" />
                   </div>
-                </div>
 
-                {/* Story Details*/}
-                <div>
-                  <div class="relative mt-5 xl:mt-2 mx-6 bg-grey-100 overflow-y-auto flex flex-col md:flex-row md:space-x-3">
-                    <div className="w-full text-center">
-                      <h1
-                        class="font-base text-black mx-auto text-sm h-36 lg:h-40 overflow-y-auto mb-5"
-                        style={{ letterSpacing: "0.1em" }}
-                      >
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore
-                        magna aliqua. Ut enim ad minim veniam, quis nostrud
-                        exercitation ullamco laboris nisi ut aliquip ex ea
-                        commodo consequat. Lorem ipsum dolor sit amet,
-                        consectetur adipiscing elit, sed do eiusmod tempor
-                        incididunt ut labore et dolore magna aliqua. Ut enim ad
-                        minim veniam, quis nostrud exercitation ullamco laboris
-                        nisi ut aliquip ex ea commodo consequat.Lorem ipsum
-                        dolor sit amet, consectetur adipiscing elit, sed do
-                        eiusmod tempor incididunt ut labore et dolore magna
-                        aliqua. Ut enim ad minim veniam, quis nostrud
-                        exercitation ullamco laboris nisi ut aliquip ex ea
-                        commodo consequat.
-                      </h1>
-
-                      <EditStoryModal />
+                  <div className="flex justify-center items-end h-full">
+                    <div className="text-center">
+                      <h1 className="font-bold text-sm md:text-xl md:text-2xl xl:text-3xl text-white mb-10" style={{ letterSpacing: "0.4em" }}>BARANGAY SAN JOSE</h1>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* LOGO */}
-              <div className="flex flex-col border w-full lg:w-1/2 my-3 lg:my-5 lg:[22rem]">
-                {/* Header */}
-                <div class="bg-[#295141] overflow-hidden">
-                  <div
-                    class="flex justify-between items-center px-3 py-2 lg:py-3 md:p-5 w-full h-full bg-cover bg-no-repeat transform"
-                    style={{ backgroundImage: `url(${bgmodal})` }}
+              <div className="flex flex-col md:flex-row mx-8 my-8 xxxl:mx-36 xxxl:my-10">
+                <div className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center bg-gradient-to-r from-[#295141] to-[#408D51] rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]">
+                  <h1
+                    className="text-center text-white text-2xl font-bold"
+                    style={{ letterSpacing: "0.2em" }}
                   >
-                    <h3
-                      class="font-base text-white mx-auto lg:text-xl"
-                      style={{ letterSpacing: "0.3em" }}
-                    >
-                      LOGO
-                    </h3>
-                  </div>
+                    STORY
+                  </h1>
                 </div>
-
-                {/* Story Details*/}
-                <div>
-                  <div class="relative mt-5 mx-6 bg-grey-100 overflow-y-auto flex flex-col md:flex-row md:space-x-3">
-                    <div className="w-full text-center">
-                      <div className="w-full text-center">
-                        <img
-                          src={officialimage}
-                          alt=""
-                          className="h-32 w-32 md:h-52 md:w-52 lg:h-40 lg:w-40 mb-2 mx-auto rounded-xl"
-                        />
-
-                        <EditLogoModal />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col lg:flex-row px-5 lg:space-x-3">
-              {/* Mission */}
-              <div className="flex flex-col border w-full lg:w-1/2 my-3 my-3 xxxl:h-64">
-                {/* Header */}
-                <div class="bg-[#295141] overflow-hidden">
-                  <div
-                    class="flex justify-between items-center px-3 py-2 lg:py-3 xl:py-5 md:p-5 w-full h-full bg-cover bg-no-repeat transform"
-                    style={{ backgroundImage: `url(${bgmodal})` }}
+                <div className="w-full md:w-2/3 px-6 py-4 border md:rounded-tr-[20px] rounded-b-[20px] md:rounded-br-[20px] flex flex-col">
+                  <h1
+                    className="font-base text-black text-sm h-36 lg:h-40 overflow-y-auto mb-5"
+                    style={{ letterSpacing: "0.1em" }}
                   >
-                    <h3
-                      class="font-base text-white mx-auto lg:text-xl"
-                      style={{ letterSpacing: "0.3em" }}
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                    do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                    do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                    ullamco laboris nisi ut aliquip ex ea commodo
+                    consequat.Lorem ipsum dolor sit amet, consectetur adipiscing
+                    elit, sed do eiusmod tempor incididunt ut labore et dolore
+                    magna aliqua. Ut enim ad minim veniam, quis nostrud
+                    exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                    consequat.
+                  </h1>
+
+                  <div className="self-end">
+                    <button
+                      type="button"
+                      className="text-white w-36 bg-custom-green-button3 font-medium rounded-full text-sm m-2 py-2 px-10 text-center"
+                      data-hs-overlay="#hs-edit-story-modal"
                     >
-                      MISSION
-                    </h3>
-                  </div>
-                </div>
-
-                {/* Story Details*/}
-                <div>
-                <div class="relative mt-5 xl:mt-2 mx-6 bg-grey-100 overflow-y-auto flex flex-col md:flex-row md:space-x-3">
-                    <div className="w-full text-center">
-                      <h1
-                        class="font-base text-black mx-auto text-sm h-36 lg:h-28 overflow-y-auto mb-5"
-                        style={{ letterSpacing: "0.1em" }}
-                      >
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore
-                        magna aliqua. Ut enim ad minim veniam, quis nostrud
-                        exercitation ullamco laboris nisi ut aliquip ex ea
-                        commodo consequat. Lorem ipsum dolor sit amet,
-                        consectetur adipiscing elit, sed do eiusmod tempor
-                        incididunt ut labore et dolore magna aliqua.
-                      </h1>
-
-                      <EditMissionModal />
-                    </div>
+                      EDIT
+                    </button>
                   </div>
                 </div>
               </div>
 
-              {/* Vision */}
-              <div className="flex flex-col border w-full lg:w-1/2 my-3 my-3 xxxl::h-64">
-                {/* Header */}
-                <div class="bg-[#295141] overflow-hidden">
-                  <div
-                    class="flex justify-between items-center px-3 py-2 lg:py-3 xl:py-5 md:p-5 w-full h-full bg-cover bg-no-repeat transform"
-                    style={{ backgroundImage: `url(${bgmodal})` }}
+              <div className="flex flex-col md:flex-row mx-8 my-8 xxxl:mx-36 xxxl:my-10">
+                <div className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center bg-gradient-to-r from-[#295141] to-[#408D51] rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]">
+                  <h1
+                    className="text-center text-white text-2xl font-bold"
+                    style={{ letterSpacing: "0.2em" }}
                   >
-                    <h3
-                      class="font-base text-white mx-auto lg:text-xl"
-                      style={{ letterSpacing: "0.3em" }}
-                    >
-                      VISION
-                    </h3>
-                  </div>
+                    MISSION
+                  </h1>
                 </div>
+                <div className="w-full md:w-2/3 px-6 py-4 border md:rounded-tr-[20px] rounded-b-[20px] md:rounded-br-[20px] flex flex-col">
+                  <h1
+                    className="font-base text-black text-sm h-36 lg:h-40 overflow-y-auto mb-5"
+                    style={{ letterSpacing: "0.1em" }}
+                  >
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                    do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                    do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                    ullamco laboris nisi ut aliquip ex ea commodo
+                    consequat.Lorem ipsum dolor sit amet, consectetur adipiscing
+                    elit, sed do eiusmod tempor incididunt ut labore et dolore
+                    magna aliqua. Ut enim ad minim veniam, quis nostrud
+                    exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                    consequat.
+                  </h1>
 
-                {/* Story Details*/}
-                <div>
-                <div class="relative mt-5 xl:mt-2 mx-6 bg-grey-100 overflow-y-auto flex flex-col md:flex-row md:space-x-3">
-                    <div className="w-full text-center">
-                      <h1
-                        class="font-base text-black mx-auto text-sm h-36 lg:h-28 overflow-y-auto mb-5"
-                        style={{ letterSpacing: "0.1em" }}
-                      >
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore
-                        magna aliqua. Ut enim ad minim veniam, quis nostrud
-                        exercitation ullamco laboris nisi ut aliquip ex ea
-                        commodo consequat. Lorem ipsum dolor sit amet,
-                        consectetur adipiscing elit, sed do eiusmod tempor
-                        incididunt ut labore et dolore magna aliqua.
-                      </h1>
-
-                      <EditVisionModal />
-                    </div>
+                  <div className="self-end">
+                    <button
+                      type="button"
+                      className="text-white w-36 bg-custom-green-button3 font-medium rounded-full text-sm m-2 py-2 px-10 text-center"
+                      data-hs-overlay="#hs-edit-mission-modal"
+                    >
+                      EDIT
+                    </button>
                   </div>
                 </div>
               </div>
 
-              
+              <div className="flex flex-col md:flex-row mx-8 my-8 xxxl:mx-36 xxxl:my-10">
+                <div className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center bg-gradient-to-r from-[#295141] to-[#408D51] rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]">
+                  <h1
+                    className="text-center text-white text-2xl font-bold"
+                    style={{ letterSpacing: "0.2em" }}
+                  >
+                    VISION
+                  </h1>
+                </div>
+                <div className="w-full md:w-2/3 px-6 py-4 border md:rounded-tr-[20px] rounded-b-[20px] md:rounded-br-[20px] flex flex-col">
+                  <h1
+                    className="font-base text-black text-sm h-36 lg:h-40 overflow-y-auto mb-5"
+                    style={{ letterSpacing: "0.1em" }}
+                  >
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                    do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                    do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                    ullamco laboris nisi ut aliquip ex ea commodo
+                    consequat.Lorem ipsum dolor sit amet, consectetur adipiscing
+                    elit, sed do eiusmod tempor incididunt ut labore et dolore
+                    magna aliqua. Ut enim ad minim veniam, quis nostrud
+                    exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                    consequat.
+                  </h1>
+
+                  <div className="self-end">
+                    <button
+                      type="button"
+                      className="text-white w-36 bg-custom-green-button3 font-medium rounded-full text-sm m-2 py-2 px-10 text-center"
+                      data-hs-overlay="#hs-edit-vision-modal"
+                    >
+                      EDIT
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+      <EditMissionModal />
+      <EditStoryModal />
+      <EditVisionModal />
     </div>
   );
 };
