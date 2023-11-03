@@ -1,5 +1,5 @@
 import React from "react";
-import bgmodal from "../../assets/modals/bg-modal2.png";
+
 
 function ReplyInquiryModal() {
   return (
@@ -11,15 +11,14 @@ function ReplyInquiryModal() {
         >
           {/* Modal */}
           <div class="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 md:px-0 opacity-0 transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto lg:ml-96 xl:ml-[500px] xxl:ml-[600px] xxxl:ml-[850px]">
-            <div class="flex flex-col bg-white shadow-sm ">
+            <div class="flex flex-col bg-white rounded-xl shadow-sm ">
               {/* Header */}
-              <div class="bg-[#295141] overflow-hidden ">
+              <div class="rounded-t-xl bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden ">
                 <div
-                  class="flex justify-between items-center p-5 w-full h-full bg-cover bg-no-repeat transform"
-                  style={{ backgroundImage: `url(${bgmodal})` }}
+                  class="flex justify-between items-center p-5 w-full h-full"
                 >
                   <h3
-                    class="font-base text-white mx-auto md:text-xl"
+                    class="font-heavy text-white mx-auto md:text-xl"
                     style={{ letterSpacing: "0.3em" }}
                   >
                     REPLY TO INQUIRY
