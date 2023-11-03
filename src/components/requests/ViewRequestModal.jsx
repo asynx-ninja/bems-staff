@@ -2,6 +2,7 @@ import React from "react";
 import bgmodal from "../../assets/modals/bg-modal2.png";
 import { IoReaderOutline } from "react-icons/io5";
 import RequestApprovalModal from "./RequestApprovalModal";
+import RequestRejectModal from "./RequestRejectModal";
 
 function ViewRequestModal() {
   return (
@@ -145,8 +146,8 @@ function ViewRequestModal() {
 
               <button
                 type="button"
+                data-hs-overlay="#hs-reject-modal"
                 class="py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-custom-red-button text-white shadow-sm align-middle"
-                data-hs-overlay="#hs-view-request-modal"
               >
                 REJECT
               </button>
@@ -155,6 +156,7 @@ function ViewRequestModal() {
         </div>
       </div>
       <RequestApprovalModal />
+      <RequestRejectModal/>
     </div>
   );
 }

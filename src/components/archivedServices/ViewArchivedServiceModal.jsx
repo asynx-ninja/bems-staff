@@ -138,13 +138,6 @@ function ViewArchivedServiceModal({ onClose }) {
             <div class="flex justify-end items-center gap-x-2 py-3 px-6 dark:border-gray-700">
               <button
                 type="button"
-                class="py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-custom-green-button3 text-white shadow-sm align-middle"
-                data-hs-overlay="#hs-view-archived-service-modal"
-              >
-                SAVE CHANGES
-              </button>
-              <button
-                type="button"
                 class="py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-custom-red-button text-white shadow-sm align-middle"
                 data-hs-overlay="#hs-view-archived-service-modal"
               >
