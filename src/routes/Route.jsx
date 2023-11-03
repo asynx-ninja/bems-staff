@@ -21,6 +21,7 @@ import ArchivedResidents from "../pages/ArchiveResidents"
 import ArchivedService from "../pages/ArchivedServices";
 import ArchivedRequests from "../pages/ArchivedRequests";
 import ArchivedOfficials from "../pages/ArchivedOfficials";
+import Informations from "../pages/Informations";
 
 const pages = [
   {
@@ -162,6 +163,15 @@ const pages = [
       <>
         <Navbar />
         <Information />
+      </>
+    ),
+  },
+  {
+    path: "/informations",
+    element: (
+      <>
+        <Navbar />
+        <Informations />
       </>
     ),
   },

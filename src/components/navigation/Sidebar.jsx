@@ -24,7 +24,7 @@ const Sidebar = () => {
     <div className="">
       <div
         id="hs-overlay-basic"
-        className="bg-[#295141] h-screen 2xl:h-full overflow-hidden hs-overlay hs-overlay-open:translate-x-0 -translate-x-full transition-all duration-300 transform hidden absolute top-9 left-0 bottom-0 z-[60] w-64 m-5 rounded-[25px] overflow-y-auto scrollbar-y lg:block lg:translate-x-0 lg:right-auto lg:bottom-0 "
+        className="bg-[#295141] h-screen 2xl:h-full overflow-hidden hs-overlay hs-overlay-open:translate-x-0 -translate-x-full transition-all duration-300 transform hidden absolute top-9 left-0 bottom-0 z-[50] w-64 m-5 rounded-[25px] overflow-y-auto scrollbar-y lg:block lg:translate-x-0 lg:right-auto lg:bottom-0 "
       >
         <div className='bg-[url("/imgs/bg-header.png")] w-full flex flex-col items-center justify-center py-5 px-2 space-y-3'>
           <img src={logo} alt="" className="" width={80} />

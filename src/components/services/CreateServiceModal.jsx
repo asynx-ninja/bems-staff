@@ -1,5 +1,4 @@
 import React from "react";
-import bgmodal from "../../assets/modals/bg-modal2.png";
 import { MdOutlineFileUpload } from "react-icons/md";
 
 function CreateServiceModal({ onClose }) {
@@ -7,7 +6,7 @@ function CreateServiceModal({ onClose }) {
     <div>
       <div
         id="hs-create-service-modal"
-        class="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center lg:ml-32 xl:ml-28 "
+        class="hs-overlay hidden fixed top-0 left-0 z-[80] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center lg:ml-32 xl:ml-28 "
       >
         {/* Modal */}
         <div class="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 md:px-0 opacity-0 transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto">

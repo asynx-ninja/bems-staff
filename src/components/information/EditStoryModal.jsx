@@ -4,30 +4,20 @@ import bgmodal from "../../assets/modals/bg-modal2.png";
 function EditStoryModal({ onClose }) {
   return (
     <div>
-      <button
-        type="button"
-        className="text-white w-full justify-center bg-custom-green-button3 font-medium rounded-full text-sm m-2 py-2 px-10 text-center inline-flex items-center mr-2"
-        style={{ margin: "10px 0px", padding: "10px 20px" }}
-        data-hs-overlay="#hs-edit-story-modal"
-      >
-        EDIT
-      </button>
-
       <div
         id="hs-edit-story-modal"
         class="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center lg:ml-36 xl:ml-28 xxxl:ml-0"
       >
         {/* Modal */}
         <div class="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 opacity-0 px-3 md:px-0 transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto">
-          <div class="flex flex-col bg-white shadow-sm xl:w-[600px] xxxl:w-[700px]">
+          <div class="flex flex-col bg-white shadow-sm xl:w-[600px] xxxl:w-[700px] rounded-t-3xl rounded-b-3xl">
             {/* Header */}
-            <div class="bg-[#295141] w-overflow-hidden">
+            <div class="bg-gradient-to-r from-[#295141] to-[#408D51] w-overflow-hidden  rounded-t-2xl">
               <div
                 class="flex justify-between items-center p-5 w-full h-full bg-cover bg-no-repeat transform"
-                style={{ backgroundImage: `url(${bgmodal})` }}
               >
                 <h3
-                  class="font-base text-white mx-auto text-md md:text-xl"
+                  class="font-bold text-white mx-auto text-md md:text-xl"
                   style={{ letterSpacing: "0.3em" }}
                 >
                   EDIT STORY
