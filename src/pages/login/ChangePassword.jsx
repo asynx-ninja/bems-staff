@@ -5,15 +5,79 @@ import { Link } from "react-router-dom";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import API_LINK from "../../config/API";
+import { useParams } from "react-router-dom";
+
 
 const ChangePassword = () => {
+  const { email } = useParams();
   const navigate = useNavigate();
   const [eye1, isEye1] = useState(true);
   const [eye2, isEye2] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [response, setResponse] = useState("")
+  const [password, setPassword] = useState({
+    enter: "",
+    reenter: ""
+  })
+  const [credential, setCredential] = useState({
+    email: "",
+    password: ""
+  }) 
 
-  const handleSubmit = () => {
-    navigate("/", { replace: true });
-  };
+  const handleOnChange = (e) => {
+    setPassword((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }))
+    setCredential({
+      email: email,
+      password: password.enter
+    })
+  } 
+
+
+  const handleOnSubmit = async () => {
+    try {
+
+      if (password.enter !== password.reenter) {
+        setResponse({
+          success: false,
+          error: true,
+          message: "Password does not Match! Please Try Again"
+        })
+      } else {
+        
+       const result = await fetch(`${API_LINK}/auth/pass/`, {
+          method: "PATCH",
+          body: credential,
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }) 
+        console.log(result)
+
+        setResponse({
+          success: true,
+          error: false,
+          message: "Password Change Successfully!"
+        })
+
+        setTimeout(
+          navigate()
+        , 3000)
+      }
+    } catch (error) {
+      setResponse({
+        success: false,
+        error: true,
+        message: "Error: Please Try Again"
+      })
+      console.log(error)
+    }
+  }
+  
 
   return (
     <div className='bg-[url("/imgs/login-bg.jpg")] bg-cover bg-center bg-no-repeat md:px-[3rem] md:py-[3rem] lg:px-[7rem] lg:py-[4rem] h-screen flex sm:flex-col md:flex-row sm:space-y-5 md:space-y-0'>
@@ -86,6 +150,11 @@ const ChangePassword = () => {
               </p>
             </div>
             <div>
+              {errorMessage && (
+                <div className="w-full bg-red-500 rounded-md p-2 mb-4 text-white text-center">
+                  {errorMessage}
+                </div>
+              )}
               <label
                 htmlFor="input-label-with-helper-text"
                 className="block sm:text-xs md:text-sm font-medium mb-2"
@@ -95,7 +164,10 @@ const ChangePassword = () => {
               <div className="relative">
                 <input
                   type={eye1 ? "password" : "text"}
-                  id="input-label-with-helper-text"
+                  name="enter"
+                  id="new-password"
+                
+                  onChange={handleOnChange}
                   className="sm:py-2 sm:px-3 lg:py-3 lg:px-4 block w-full border-2 border-solid border-[#C7D1DD] rounded-[12px] text-sm shadow-[0px_0px_12px_rgba(142,142,142,0.25)] focus:border-green-500 focus:ring-green-500"
                   aria-describedby="hs-input-helper-text"
                 />
@@ -121,7 +193,10 @@ const ChangePassword = () => {
               <div className="relative">
                 <input
                   type={eye2 ? "password" : "text"}
-                  id="input-label-with-helper-text"
+                  id="confirm-password"
+                  name="reenter"
+                 
+                  onChange={handleOnChange}
                   className="sm:py-2 sm:px-3 lg:py-3 lg:px-4 block w-full border-2 border-solid border-[#C7D1DD] rounded-[12px] text-sm shadow-[0px_0px_12px_rgba(142,142,142,0.25)] focus:border-green-500 focus:ring-green-500"
                   aria-describedby="hs-input-helper-text"
                 />
@@ -139,7 +214,7 @@ const ChangePassword = () => {
             </div>
             <div className="flex flex-col w-full space-y-3">
               <button
-                onClick={handleSubmit}
+                onClick={handleOnSubmit}
                 className="w-full rounded-[12px] bg-gradient-to-r from-[#295141] to-[#408D51] sm:py-1.5 lg:py-2.5 text-white font-medium text-base"
               >
                 Save Password

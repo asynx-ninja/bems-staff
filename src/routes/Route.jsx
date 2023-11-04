@@ -32,15 +32,15 @@ const pages = [
     element: <ForgotPassword />,
   },
   {
-    path: "/pin",
+    path: "/pin/:email",
     element: <SecurityPin />,
   },
   {
-    path: "/change",
+    path: "/change/:email",
     element: <ChangePassword />
   },
   {
-    path: "/dashboard",
+    path: "/dashboard/:id",
     element: (
       <>
         <Navbar />

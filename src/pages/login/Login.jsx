@@ -1,14 +1,49 @@
 import React from "react";
 import login from "../../assets/login/login.png";
 import montalban_logo from "../../assets/login/montalban-logo.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate  } from "react-router-dom";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import API_LINK from "../../config/API";
+import axios from "axios";
 
 const Login = () => {
   const [eye, isEye] = useState(true);
   const navigate = useNavigate();
+  const [data, setData] = useState({
+    username: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
+
+
+
+  const handleLogin = async () => {
+    const obj = {
+
+      username: data.username,
+      password: data.password,
+      type: "Barangay Staff",
+
+    };
+
+    try {
+      const res = await axios.get(`${API_LINK}/auth/${obj.username}/${obj.password}/${obj.type}`);
+
+      console.log(res);
+
+      if (res.status === 200) {
+        const id = res.data[0]._id;
+
+        navigate(`/dashboard/${id}`);
+      } else {
+        setError("Invalid username or password");
+      }
+    } catch (error) {
+      setError("Error logging in. Please try again."); 
+      console.log(error);
+    }
+  };
 
   return (
     <div className='bg-[url("/imgs/login-bg.jpg")] bg-cover bg-center bg-no-repeat md:px-[3rem] md:py-[3rem] lg:px-[7rem] lg:py-[4rem] h-screen flex sm:flex-col md:flex-row sm:space-y-5 md:space-y-0'>
@@ -81,18 +116,37 @@ const Login = () => {
               </p>
             </div>
             <div>
+              {error && (
+                <div class="w-full bg-white border rounded-md border-red-500 flex items-center justify-center">
+                  <div class="flex p-4">
+                    <div class="flex-shrink-0">
+                      <svg class="h-4 w-4 text-red-500 mt-0.5" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+                      </svg>
+                    </div>
+                    <div class="ml-3">
+                      <p class="text-sm text-red-700 dark:text-gray-400">
+                        Incorrect username and password!
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <label
                 htmlFor="input-label-with-helper-text"
-                className="block sm:text-xs lg:text-sm font-medium mb-2"
+                className="block sm:text-xs lg:text-sm font-medium mb-2 mt-2"
               >
-                Email address
+                Username
               </label>
               <input
-                type="email"
+                type="text"
                 id="input-label-with-helper-text"
                 className="sm:py-2 sm:px-3 lg:py-3 lg:px-4 block w-full border-2 border-solid border-[#C7D1DD] rounded-[12px] text-sm shadow-[0px_0px_12px_rgba(142,142,142,0.25)] focus:border-green-500 focus:ring-green-500"
                 placeholder="you@site.com"
                 aria-describedby="hs-input-helper-text"
+                value={data.username}
+                onChange={(e) => setData({ ...data, username: e.target.value })}
               />
             </div>
             <div>
@@ -108,6 +162,8 @@ const Login = () => {
                   id="input-label-with-helper-text"
                   className="sm:py-2 sm:px-3 lg:py-3 lg:px-4 block w-full border-2 border-solid border-[#C7D1DD] rounded-[12px] text-sm shadow-[0px_0px_12px_rgba(142,142,142,0.25)] focus:border-green-500 focus:ring-green-500"
                   aria-describedby="hs-input-helper-text"
+                  value={data.password}
+                  onChange={(e) => setData({ ...data, password: e.target.value })}
                 />
                 <button
                   onClick={() => isEye(!eye)}
@@ -130,7 +186,7 @@ const Login = () => {
                 Forgot password?
               </Link>
               <button
-                onClick={() => navigate("/dashboard", { replace: true })}
+                onClick={handleLogin}
                 className="w-full rounded-[12px] bg-gradient-to-r from-[#295141] to-[#408D51] sm:py-1.5 lg:py-2.5 text-white font-medium text-base"
               >
                 Login

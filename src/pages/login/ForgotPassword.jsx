@@ -3,13 +3,37 @@ import login from "../../assets/login/login.png";
 import montalban_logo from "../../assets/login/montalban-logo.png";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import API_LINK from "../../config/API";
 
 const ForgotPassword = () => {
   const [eye, isEye] = useState(true);
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
 
-  const handleForgot = () => {
-    navigate("/pin", { replace: true });
+  const handleForgot = async () => {
+    if (!email) {
+      setError("Please provide an email address.");
+      return;
+    }
+
+    try {
+      const resetResponse = await axios.get(`${API_LINK}/auth/send_pin/${email}`);
+      const encodedEmail = btoa(email);
+      if (resetResponse.status === 200) {
+        setSuccessMessage("Password reset initiated. Check your email for instructions.");
+        console.log(email)
+        navigate(`/pin/${encodedEmail}`)
+      } else {
+        setError({ error });
+
+      }
+    } catch (error) {
+      setError("Email does not exist");
+      console.error(error);
+    }
   };
 
   return (
@@ -84,9 +108,42 @@ const ForgotPassword = () => {
               </p>
             </div>
             <div>
+
+              {error && (
+                <div class="w-full bg-white border rounded-md border-red-500 flex items-center justify-center">
+                  <div class="flex p-4">
+                    <div class="flex-shrink-0">
+                      <svg class="h-4 w-4 text-red-500 mt-0.5" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+                      </svg>
+                    </div>
+                    <div class="ml-3">
+                      <p class="text-sm text-red-700 dark:text-gray-400">
+                        {error}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {successMessage && (
+                <div class="w-full bg-white border rounded-md border-green-500 flex items-center justify-center">
+                  <div class="flex p-4">
+                    <div class="flex-shrink-0">
+                      <svg class="h-4 w-4 text-green-500 mt-0.5" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                      </svg>
+                    </div>
+                    <div class="ml-3">
+                      <p class="text-sm text-green-700 dark:text-gray-400">
+                        {successMessage}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
               <label
                 htmlFor="input-label-with-helper-text"
-                className="block sm:text-xs lg:text-sm font-medium mb-2"
+                className="mt-2 block sm:text-xs lg:text-sm font-medium mb-2"
               >
                 Email address
               </label>
@@ -96,6 +153,8 @@ const ForgotPassword = () => {
                 className="sm:py-2 sm:px-3 lg:py-3 lg:px-4 block w-full border-2 border-solid border-[#C7D1DD] rounded-[12px] text-sm shadow-[0px_0px_12px_rgba(142,142,142,0.25)] focus:border-green-500 focus:ring-green-500"
                 placeholder="you@site.com"
                 aria-describedby="hs-input-helper-text"
+                onChange={(e) => setEmail(e.target.value)}
+
               />
             </div>
 
