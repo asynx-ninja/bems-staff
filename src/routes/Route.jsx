@@ -40,7 +40,7 @@ const pages = [
     element: <ChangePassword />
   },
   {
-    path: "/dashboard/:id",
+    path: "/dashboard",
     element: (
       <>
         <Navbar />

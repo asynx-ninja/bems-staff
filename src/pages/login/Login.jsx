@@ -16,31 +16,24 @@ const Login = () => {
   });
   const [error, setError] = useState("");
 
-
-
   const handleLogin = async () => {
     const obj = {
-
       username: data.username,
       password: data.password,
       type: "Barangay Staff",
-
     };
 
     try {
       const res = await axios.get(`${API_LINK}/auth/${obj.username}/${obj.password}/${obj.type}`);
 
-      console.log(res);
-
       if (res.status === 200) {
         const id = res.data[0]._id;
-
-        navigate(`/dashboard/${id}`);
+       navigate(`/dashboard/?id=${id}`);
       } else {
         setError("Invalid username or password");
       }
     } catch (error) {
-      setError("Error logging in. Please try again."); 
+      setError("Error logging in. Please try again.");
       console.log(error);
     }
   };

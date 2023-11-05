@@ -42,7 +42,7 @@ const ChangePassword = () => {
         setResponse({
           success: false,
           error: true,
-          message: "Password does not Match! Please Try Again",
+          message: "Password does not match! Please try again.",
         });
       } else {
         const result = await axios.patch(`${API_LINK}/auth/pass/`, credential, {
@@ -50,24 +50,35 @@ const ChangePassword = () => {
             "Content-Type": "application/json",
           },
         });
-
-        setResponse({
-          success: true,
-          error: false,
-          message: "Password Change Successfully!",
-        });
-
-        setTimeout(navigate(), 3000);
+  
+        if (result.status === 200) {
+          setResponse({
+            success: true,
+            error: false,
+            message: "Password changed successfully!",
+          });
+  
+          setTimeout(() => {
+            navigate("/");
+          }, 3000);
+        } else {
+          setResponse({
+            success: false,
+            error: true,
+            message: "Failed to update password. Please try again.",
+          });
+        }
       }
     } catch (error) {
       setResponse({
         success: false,
         error: true,
-        message: "Error: Please Try Again",
+        message: "An error occurred. Please try again later.",
       });
-      console.log(error);
+      console.error(error);
     }
   };
+  
 
   return (
     <div className='bg-[url("/imgs/login-bg.jpg")] bg-cover bg-center bg-no-repeat md:px-[3rem] md:py-[3rem] lg:px-[7rem] lg:py-[4rem] h-screen flex sm:flex-col md:flex-row sm:space-y-5 md:space-y-0'>

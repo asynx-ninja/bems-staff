@@ -1,12 +1,81 @@
-import React from "react";
-import { useEffect } from "react";
+import React, { useEffect, useState, useRef } from 'react';
 import profilePicture from "/imgs/bg-header.png";
 import { FaCamera } from "react-icons/fa";
+import { useSearchParams } from "react-router-dom";
+import axios from 'axios'
+import API_LINK from '../config/API';
 
 const Settings = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const id = searchParams.get("id")
+  const [userData, setUserData] = useState({});
+  const fileInputRef = useRef();
+  const [pfp, setPfp] = useState();
+  const handleAdd = (e) => {
+    e.preventDefault();
+
+    fileInputRef.current.click();
+  };
+  const handleFileChange = (e) => {
+    e.preventDefault();
+
+    setPfp(e.target.files[0]);
+
+    var output = document.getElementById("pfp");
+    output.src = URL.createObjectURL(e.target.files[0]);
+    output.onload = function () {
+      URL.revokeObjectURL(output.src); // free memory
+    };
+  };
+
   useEffect(() => {
     document.title = "Settings | Barangay E-Services Management";
   }, []);
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const res = await axios.get(`${API_LINK}/users/specific/${id}`);
+        if (res.status === 200) {
+          setUserData(res.data[0]);
+          var pfpSrc = document.getElementById("pfp");
+          pfpSrc.src = res.data[0].profile.link
+        } else {
+          setError("Invalid username or password");
+        }
+      } catch (error) {
+        setError("dsafa");
+        console.log(error);
+      }
+    }
+    fetch()
+  }, [id]);
+
+  
+  const handleUserDataChange = (field, value) => {
+    setUserData({ ...userData, [field]: value });
+  };
+
+  const saveChanges = async () => {
+    try {
+      console.log(pfp)
+      var formData = new FormData()
+      formData.append("users", JSON.stringify(userData))
+      formData.append("file", pfp)
+      const response = await axios.patch(`${API_LINK}/users/${id}`, 
+      formData
+      );
+
+      if (response.status === 200) {
+        console.log('Update successful:', response.data);
+        setUserData(response.data);
+      } else {
+        console.error('Update failed. Status:', response.status);
+      }
+    } catch (error) {
+      console.error('Error saving changes:', error);
+    }
+  };
 
   return (
     <div className="mx-4 my-5 md:mx-5 md:my-6 lg:ml-[19rem] lg:mt-8 lg:mr-6">
@@ -29,6 +98,10 @@ const Settings = () => {
                   className="w-full sm:py-2 sm:px-3 lg:py-3 lg:px-4 block border-2 border-solid border-[#C7D1DD] rounded-[12px] text-sm shadow-[0px_0px_12px_rgba(142,142,142,0.25)] focus:border-green-500 focus:ring-green-500"
                   placeholder="First name"
                   aria-describedby="hs-input-helper-text"
+                  value={userData.firstName || ''}
+                  onChange={(e) =>
+                    handleUserDataChange('firstName', e.target.value)
+                  }
                 />
               </div>
               <div>
@@ -43,6 +116,10 @@ const Settings = () => {
                   className="w-full sm:py-2 sm:px-3 lg:py-3 lg:px-4 block border-2 border-solid border-[#C7D1DD] rounded-[12px] text-sm shadow-[0px_0px_12px_rgba(142,142,142,0.25)] focus:border-green-500 focus:ring-green-500"
                   placeholder="Middle name"
                   aria-describedby="hs-input-helper-text"
+                  value={userData.middleName || ''}
+                  onChange={(e) =>
+                    handleUserDataChange('middleName', e.target.value)
+                  }
                 />
               </div>
               <div>
@@ -57,6 +134,10 @@ const Settings = () => {
                   className="sm:py-2 sm:px-3 lg:py-3 lg:px-4 block w-full border-2 border-solid border-[#C7D1DD] rounded-[12px] text-sm shadow-[0px_0px_12px_rgba(142,142,142,0.25)] focus:border-green-500 focus:ring-green-500"
                   placeholder="Last name"
                   aria-describedby="hs-input-helper-text"
+                  value={userData.lastName || ''}
+                  onChange={(e) =>
+                    handleUserDataChange('lastName', e.target.value)
+                  }
                 />
               </div>
 
@@ -72,6 +153,10 @@ const Settings = () => {
                   className="w-full sm:py-2 sm:px-3 lg:py-3 lg:px-4 block border-2 border-solid border-[#C7D1DD] rounded-[12px] text-sm shadow-[0px_0px_12px_rgba(142,142,142,0.25)] focus:border-green-500 focus:ring-green-500"
                   placeholder="Suffix"
                   aria-describedby="hs-input-helper-text"
+                  value={userData.suffix || ''}
+                  onChange={(e) =>
+                    handleUserDataChange('suffix', e.target.value)
+                  }
                 />
               </div>
               <div>
@@ -85,6 +170,10 @@ const Settings = () => {
                   id="gender"
                   name="gender"
                   className="w-full sm:py-2 sm:px-3 lg:py-3 lg:px-4 block border-2 border-solid border-[#C7D1DD] rounded-[12px] text-sm shadow-[0px_0px_12px_rgba(142,142,142,0.25)] focus:border-green-500 focus:ring-green-500"
+                  value={userData.sex|| ''}
+                  onChange={(e) =>
+                    handleUserDataChange('sex', e.target.value)
+                  }
                 >
                   <option value="male">Male</option>
                   <option value="female">Female</option>
@@ -100,8 +189,12 @@ const Settings = () => {
                 <input
                   id="input-label-with-helper-text"
                   className="w-full sm:py-2 sm:px-3 lg:py-3 lg:px-4 block border-2 border-solid border-[#C7D1DD] rounded-[12px] text-sm shadow-[0px_0px_12px_rgba(142,142,142,0.25)] focus:border-green-500 focus:ring-green-500"
-                  placeholder="Suffix"
+                  placeholder="Age"
                   aria-describedby="hs-input-helper-text"
+                  value={userData.age || ''}
+                  onChange={(e) =>
+                    handleUserDataChange('age', e.target.value)
+                  }
                 />
               </div>
               <div>
@@ -116,6 +209,10 @@ const Settings = () => {
                   className="w-full sm:py-2 sm:px-3 lg:py-3 lg:px-4 block border-2 border-solid border-[#C7D1DD] rounded-[12px] text-sm shadow-[0px_0px_12px_rgba(142,142,142,0.25)] focus:border-green-500 focus:ring-green-500"
                   placeholder="Birthday"
                   aria-describedby="hs-input-helper-text"
+                  value={userData.birthday || ''}
+                  onChange={(e) =>
+                    handleUserDataChange('birthday', e.target.value)
+                  }
                 />
               </div>
               <div className="lg:col-span-2">
@@ -130,6 +227,10 @@ const Settings = () => {
                   className="w-full sm:py-2 sm:px-3 lg:py-3 lg:px-4 block border-2 border-solid border-[#C7D1DD] rounded-[12px] text-sm shadow-[0px_0px_12px_rgba(142,142,142,0.25)] focus:border-green-500 focus:ring-green-500"
                   placeholder="Birthplace"
                   aria-describedby="hs-input-helper-text"
+                  value={userData.birthplace || ''}
+                  onChange={(e) =>
+                    handleUserDataChange('birthplace', e.target.value)
+                  }
                 />
               </div>
               <div>
@@ -187,6 +288,10 @@ const Settings = () => {
                   className="w-full sm:py-2 sm:px-3 lg:py-3 lg:px-4 block border-2 border-solid border-[#C7D1DD] rounded-[12px] text-sm shadow-[0px_0px_12px_rgba(142,142,142,0.25)] focus:border-green-500 focus:ring-green-500"
                   placeholder="you@example.com"
                   aria-describedby="hs-input-helper-text"
+                  value={userData.email || ''}
+                  onChange={(e) =>
+                    handleUserDataChange('email', e.target.value)
+                  }
                 />
               </div>
               <div>
@@ -201,6 +306,10 @@ const Settings = () => {
                   className="sm:py-2 sm:px-3 lg:py-3 lg:px-4 block w-full border-2 border-solid border-[#C7D1DD] rounded-[12px] text-sm shadow-[0px_0px_12px_rgba(142,142,142,0.25)] focus:border-green-500 focus:ring-green-500"
                   placeholder="#"
                   aria-describedby="hs-input-helper-text"
+                  value={userData.contact || ''}
+                  onChange={(e) =>
+                    handleUserDataChange('contact', e.target.value)
+                  }
                 />
               </div>
               <div>
@@ -214,6 +323,10 @@ const Settings = () => {
                   id="input-label-with-helper-text"
                   className="w-full sm:py-2 sm:px-3 lg:py-3 lg:px-4 block border-2 border-solid border-[#C7D1DD] rounded-[12px] text-sm shadow-[0px_0px_12px_rgba(142,142,142,0.25)] focus:border-green-500 focus:ring-green-500"
                   aria-describedby="hs-input-helper-text"
+                  value={userData.occupation || ''}
+                  onChange={(e) =>
+                    handleUserDataChange('occupation', e.target.value)
+                  }
                 />
               </div>
               <div>
@@ -242,16 +355,32 @@ const Settings = () => {
                   <label className="ml-2">No</label>
                 </div>
               </div>
+              <div className='bg-green-600 flex items-center justify-center'>
+                <button onClick={saveChanges}>Save Changes</button>
+              </div>
             </div>
           </div>
           <div className="lg:w-3/12">
             <div className="relative sm:w-5/12 lg:w-full m-auto">
               <img
-                src={profilePicture}
+              
                 className="w-full sm:h-[200px] sm:mb-3 lg:mb-0 border-[5px] border-[#295141] object-cover"
                 alt=""
+                id = "pfp"
               />
-              <button className="absolute bottom-0 right-0 bg-[#295141] text-white px-3 py-2">
+               <input
+                  type="file"
+                  name="file"
+                  onChange={handleFileChange}
+                  ref={fileInputRef}
+                  accept="image/*"
+                  multiple="multiple"
+                  className="hidden"
+                />
+              <button 
+              onClick={handleAdd}
+              className="absolute bottom-0 right-0 bg-[#295141] text-white px-3 py-2">
+             
                 <FaCamera size={20} />
               </button>
             </div>

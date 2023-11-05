@@ -13,11 +13,13 @@ import { GoGitPullRequest } from "react-icons/go";
 import { useEffect } from "react";
 import { useLocation, useNavigate, matchRoutes } from "react-router-dom";
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 const Sidebar = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
   const currentPath = location.pathname;
-
+  const id = searchParams.get("id")
   console.log(currentPath);
 
   return (
@@ -39,7 +41,7 @@ const Sidebar = () => {
           <ul className="space-y-1.5 text-white font-bold uppercase">
             <li>
               <Link
-                to="/dashboard"
+                to={`/dashboard/?id=${id}`} 
                 onClick={() => {
                   window.innerWidth >= 320 && window.innerWidth <= 1023
                     ? document
@@ -270,7 +272,7 @@ const Sidebar = () => {
             </li>
             <li>
               <Link
-                to="/settings"
+                to={`/settings/?id=${id}`} 
                 onClick={() => {
                   window.innerWidth >= 320 && window.innerWidth <= 1023
                     ? document
