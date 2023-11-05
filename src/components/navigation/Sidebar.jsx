@@ -19,8 +19,8 @@ const Sidebar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
   const currentPath = location.pathname;
-  const id = searchParams.get("id")
-  console.log(currentPath);
+  const id = searchParams.get("id");
+  const brgy = searchParams.get("brgy");
 
   return (
     <div className="">
@@ -41,7 +41,7 @@ const Sidebar = () => {
           <ul className="space-y-1.5 text-white font-bold uppercase">
             <li>
               <Link
-                to={`/dashboard/?id=${id}`} 
+                to={`/dashboard/?id=${id}&brgy=${brgy}`}
                 onClick={() => {
                   window.innerWidth >= 320 && window.innerWidth <= 1023
                     ? document
@@ -61,7 +61,7 @@ const Sidebar = () => {
             </li>
             <li>
               <Link
-                to="/announcements"
+                to={`/announcements/?id=${id}&brgy=${brgy}`}
                 onClick={() => {
                   window.innerWidth >= 320 && window.innerWidth <= 1023
                     ? document
@@ -81,7 +81,7 @@ const Sidebar = () => {
             </li>
             <li>
               <Link
-                to="/inquiries"
+                to={`/inquiries/?id=${id}&brgy=${brgy}`}
                 onClick={() => {
                   window.innerWidth >= 320 && window.innerWidth <= 1023
                     ? document
@@ -101,7 +101,7 @@ const Sidebar = () => {
             </li>
             <li>
               <Link
-                to="/residents"
+                to={`/residents/?id=${id}&brgy=${brgy}`}
                 onClick={() => {
                   window.innerWidth >= 320 && window.innerWidth <= 1023
                     ? document
@@ -154,7 +154,7 @@ const Sidebar = () => {
                 aria-labelledby="hs-unstyled-collapse"
               >
                 <Link
-                  to="/services"
+                  to={`/services/?id=${id}&brgy=${brgy}`}
                   onClick={() => {
                     window.innerWidth >= 320 && window.innerWidth <= 1023
                       ? document
@@ -174,7 +174,7 @@ const Sidebar = () => {
                   Manage Services
                 </Link>
                 <Link
-                  to="/requests"
+                  to={`/requests/?id=${id}&brgy=${brgy}`}
                   onClick={() => {
                     window.innerWidth >= 320 && window.innerWidth <= 1023
                       ? document
@@ -229,7 +229,7 @@ const Sidebar = () => {
                 aria-labelledby="hs-unstyled-collapse"
               >
                 <Link
-                  to="/officials"
+                  to={`/officials/?id=${id}&brgy=${brgy}`}
                   onClick={() => {
                     window.innerWidth >= 320 && window.innerWidth <= 1023
                       ? document
@@ -249,7 +249,7 @@ const Sidebar = () => {
                   Barangay Officials
                 </Link>
                 <Link
-                  to="/info"
+                  to={`/info/?id=${id}&brgy=${brgy}`}
                   onClick={() => {
                     window.innerWidth >= 320 && window.innerWidth <= 1023
                       ? document
@@ -272,7 +272,7 @@ const Sidebar = () => {
             </li>
             <li>
               <Link
-                to={`/settings/?id=${id}`} 
+                to={`/settings/?id=${id}&brgy=${brgy}`}
                 onClick={() => {
                   window.innerWidth >= 320 && window.innerWidth <= 1023
                     ? document

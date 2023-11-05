@@ -28,7 +28,7 @@ const Login = () => {
 
       if (res.status === 200) {
         const id = res.data[0]._id;
-       navigate(`/dashboard/?id=${id}`);
+        navigate(`/dashboard/?id=${id}&brgy=${res.data[0].address.brgy}`);
       } else {
         setError("Invalid username or password");
       }

@@ -1,8 +1,39 @@
 import React from "react";
 import bgmodal from "../../assets/modals/bg-modal2.png";
 import officialimage from "../../assets/sample/official.jpg";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import API_LINK from "../../config/API";
 
-function EditResidentModal() {
+function EditResidentModal({ user, setUser }) {
+  const handleOnChange = (e) => {
+    setUser((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSave = async (e) => {
+    try {
+      e.preventDefault();
+
+      var formData = new FormData()
+      formData.append("users", JSON.stringify(user))
+
+      const response = await axios.patch(`${API_LINK}/users/${user._id}`, 
+        formData
+      );
+
+      if (response.status === 200) {
+        console.log('Update successful:', response.data);
+      } else {
+        console.error('Update failed. Status:', response.status);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div>
       <div className="">
@@ -15,9 +46,7 @@ function EditResidentModal() {
             <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl">
               {/* Header */}
               <div className="bg-gradient-to-r from-[#295141] to-[#408D51] w-overflow-hidden rounded-t-2xl">
-                <div
-                  className="flex justify-between items-center p-5 w-full h-full bg-cover bg-no-repeat transform"
-                >
+                <div className="flex justify-between items-center p-5 w-full h-full bg-cover bg-no-repeat transform">
                   <h3
                     className="font-base text-white mx-auto md:text-xl"
                     style={{ letterSpacing: "0.3em" }}
@@ -45,6 +74,9 @@ function EditResidentModal() {
                           id="search-dropdown"
                           className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
                           placeholder=""
+                          name="firstName"
+                          value={user.firstName}
+                          onChange={handleOnChange}
                         />
                         <h1
                           class="font-medium mb-1 mt-3 text-black text-sm"
@@ -125,25 +157,25 @@ function EditResidentModal() {
                       className="w-full p-2 border border-gray-300 rounded"
                     />
                   </div>
-                 
-                    <div className="mb-4 px-4">
-                      <label
-                        htmlFor="civilStatus"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        STATUS OF RESIDENT
-                      </label>
-                      <select
-                        id="civilStatus"
-                        name="civilStatus"
-                        className="w-full p-2 border border-gray-300 rounded"
-                      >
-                        <option value="single">REGISTERED</option>
-                        <option value="married">NOT REGISTERED</option>
-                        <option value="divorced">DEAD</option>
-                      </select>
-                    </div>
-                  
+
+                  <div className="mb-4 px-4">
+                    <label
+                      htmlFor="civilStatus"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      STATUS OF RESIDENT
+                    </label>
+                    <select
+                      id="civilStatus"
+                      name="civilStatus"
+                      className="w-full p-2 border border-gray-300 rounded"
+                    >
+                      <option value="single">REGISTERED</option>
+                      <option value="married">NOT REGISTERED</option>
+                      <option value="divorced">DEAD</option>
+                    </select>
+                  </div>
+
                   <div className="mb-4 px-4">
                     <label
                       htmlFor="civilStatus"
@@ -167,6 +199,7 @@ function EditResidentModal() {
               {/* Buttons */}
               <div className="flex justify-center gap-x-2 py-3 px-6 dark:border-gray-700">
                 <button
+                  onClick={handleSave}
                   type="button"
                   className="h-[2.5rem] w-[8rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm align-middle"
                   data-hs-overlay="#hs-modal-editResident"

@@ -1,8 +1,9 @@
 import React from "react";
 import bgmodal from "../../assets/modals/bg-modal2.png";
 import officialimage from "../../assets/sample/official.jpg";
+import EditResidentModal from "./EditResidentsModal";
 
-function ViewResidentModal() {
+function ViewResidentModal({user, setUser}) {
   return (
     <div>
       <div className="">
@@ -15,9 +16,7 @@ function ViewResidentModal() {
             <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl">
               {/* Header */}
               <div className="bg-gradient-to-r from-[#295141] to-[#408D51] w-overflow-hidden rounded-t-2xl">
-                <div
-                  className="flex justify-between items-center p-5 w-full h-full bg-cover bg-no-repeat transform"
-                >
+                <div className="flex justify-between items-center p-5 w-full h-full bg-cover bg-no-repeat transform">
                   <h3
                     className="font-base text-white mx-auto md:text-xl"
                     style={{ letterSpacing: "0.3em" }}
@@ -45,6 +44,8 @@ function ViewResidentModal() {
                           id="search-dropdown"
                           className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
                           placeholder=""
+                          value={user.firstName}
+                          readOnly
                         />
                         <h1
                           class="font-medium mb-1 mt-3 text-black text-sm"
@@ -125,25 +126,25 @@ function ViewResidentModal() {
                       className="w-full p-2 border border-gray-300 rounded"
                     />
                   </div>
-                 
-                    <div className="mb-4 px-4">
-                      <label
-                        htmlFor="civilStatus"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        STATUS OF RESIDENT
-                      </label>
-                      <select
-                        id="civilStatus"
-                        name="civilStatus"
-                        className="w-full p-2 border border-gray-300 rounded"
-                      >
-                        <option value="single">COMPLETED</option>
-                        <option value="married">PENDING</option>
-                        <option value="divorced">IN PROGRESS</option>
-                      </select>
-                    </div>
-                  
+
+                  <div className="mb-4 px-4">
+                    <label
+                      htmlFor="civilStatus"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      STATUS OF RESIDENT
+                    </label>
+                    <select
+                      id="civilStatus"
+                      name="civilStatus"
+                      className="w-full p-2 border border-gray-300 rounded"
+                    >
+                      <option value="single">COMPLETED</option>
+                      <option value="married">PENDING</option>
+                      <option value="divorced">IN PROGRESS</option>
+                    </select>
+                  </div>
+
                   <div className="mb-4 px-4">
                     <label
                       htmlFor="civilStatus"
@@ -169,6 +170,13 @@ function ViewResidentModal() {
                 <button
                   type="button"
                   className="h-[2.5rem] w-[8rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
+                  data-hs-overlay="#hs-modal-editResident"
+                >
+                  EDIT RESIDENT
+                </button>
+                <button
+                  type="button"
+                  className="h-[2.5rem] w-[8rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
                   data-hs-overlay="#hs-modal-viewResident"
                 >
                   CLOSE
@@ -178,6 +186,7 @@ function ViewResidentModal() {
           </div>
         </div>
       </div>
+      <EditResidentModal user={user} setUser={setUser}/>
     </div>
   );
 }

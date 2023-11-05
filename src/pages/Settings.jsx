@@ -63,7 +63,7 @@ const Settings = () => {
       formData.append("users", JSON.stringify(userData))
       formData.append("file", pfp)
       const response = await axios.patch(`${API_LINK}/users/${id}`, 
-      formData
+        formData
       );
 
       if (response.status === 200) {

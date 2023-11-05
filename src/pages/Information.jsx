@@ -5,6 +5,8 @@ import { MdOutlineFileUpload } from "react-icons/md";
 import EditMissionModal from "../components/information/EditMissionModal";
 import EditStoryModal from "../components/information/EditStoryModal";
 import EditVisionModal from "../components/information/EditVisionModal";
+import official from "../assets/sample/official.jpg";
+import header from "/imgs/bg-header.png"
 
 const Information = () => {
   useEffect(() => {
@@ -27,7 +29,7 @@ const Information = () => {
 
           <div>
             <img
-              src="./public/imgs/bg-header.png"
+              src={header}
               alt=""
               className="w-full h-[150px] md:h-[300px] lg:h-[350px] xl:h-[470px] rounded-lg"
             />
@@ -45,7 +47,7 @@ const Information = () => {
                   }}
                 >
                   <img
-                    src="./src/assets/sample/official.jpg"
+                    src={official}
                     alt=""
                     className="sm:w-[120px] md:w-56 rounded-full border-4 border-white mx-auto absolute left-0 right-0 sm:-top-[73px] md:-top-[6rem]"
                   />

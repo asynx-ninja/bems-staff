@@ -7,18 +7,36 @@ import { AiOutlineEye, AiOutlineStop } from "react-icons/ai";
 import { FiEdit } from "react-icons/fi";
 import ReactPaginate from "react-paginate";
 import AddResidentsModal from "../components/residents/AddResidentModal";
-import EditResidentModal from "../components/residents/EditResidentsModal"
 import GenerateReportsModal from "../components/services/GenerateReportsModal";
 import ArchiveResidentModal from "../components/residents/ArchiveResidentModal";
 import ViewResidentModal from "../components/residents/ViewResidents";
-
+import axios from "axios";
+import API_LINK from "../config/API";
+import { useSearchParams } from "react-router-dom";
+import StatusResident from "../components/residents/StatusResident";
 
 const Residents = () => {
   const [selectedItems, setSelectedItems] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const brgy = searchParams.get("brgy");
+  const [user, setUser] = useState({});
+  const [status, setStatus] = useState({});
+
+  useEffect(() => {
+    const fetch = async () => {
+      const response = await axios.get(`${API_LINK}/users/${brgy}`);
+
+      if (response.status === 200) setUsers(response.data);
+      else setUsers([]);
+    };
+
+    fetch();
+  }, []);
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
-    let value = parseInt(e.target.value);
+    let value = e.target.value;
 
     if (isSelected) {
       setSelectedItems([...selectedItems, value]);
@@ -32,31 +50,19 @@ const Residents = () => {
   };
 
   const checkAllHandler = () => {
-    if (tableData.length === selectedItems.length) {
+    if (users.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const postIds = tableData.map((item) => {
-        return item.id;
+      const postIds = users.map((item) => {
+        return item._id;
       });
 
       setSelectedItems(postIds);
     }
   };
 
-  const tableData = [
-    {
-      id: 1,
-      name: "Juanito Madrigal",
-      age:
-        "70",
-      gender: "Male",
-      contact: "09472311383",
-      civilStatus: "Married",
-      status: "Registered"
-    },
-  ];
-
   const tableHeader = [
+    "USER_ID",
     "NAME",
     "AGE",
     "GENDER",
@@ -69,6 +75,15 @@ const Residents = () => {
   useEffect(() => {
     document.title = "Services | Barangay E-Services Management";
   }, []);
+
+  const handleView = (item) => {
+    setUser(item);
+  };
+
+  const handleStatus = (status) => {
+    console.log("handleStatus", status);
+    setStatus(status);
+  };
 
   return (
     <div className="mx-4 my-5 md:mx-5 md:my-6 lg:ml-[19rem] lg:mt-8 lg:mr-6">
@@ -262,14 +277,14 @@ const Residents = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {tableData.map((item, index) => (
+              {users.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <input
                         type="checkbox"
-                        checked={selectedItems.includes(item.id)}
-                        value={item.id}
+                        checked={selectedItems.includes(item._id)}
+                        value={item._id}
                         onChange={checkboxHandler}
                         id=""
                       />
@@ -277,56 +292,67 @@ const Residents = () => {
                   </td>
                   <td className="px-6 py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                      {tableData[0].name}
+                      {item.user_id}
+                    </span>
+                  </td>
+                  <td className="px-6 py-3">
+                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
+                      {item.firstName +
+                        " " +
+                        item.middleName +
+                        " " +
+                        item.lastName}
                     </span>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                        {tableData[0].age}
+                        {item.age}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {tableData[0].gender}
+                        {item.sex}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {tableData[0].contact}
+                        {item.contact}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {tableData[0].civilStatus}
+                        {item.civil_status}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {tableData[0].status}
+                        {item.isApproved}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center space-x-1 sm:space-x-none">
-                    <button
+                      <button
                         type="button"
                         data-hs-overlay="#hs-modal-viewResident"
+                        onClick={() => handleView({ ...item })}
                         className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                       >
                         <AiOutlineEye size={24} style={{ color: "#ffffff" }} />
                       </button>
                       <button
                         type="button"
-                        data-hs-overlay="#hs-modal-editResident"
+                        data-hs-overlay="#hs-modal-statusResident"
+                        onClick={() => handleStatus({id: item._id, status: item.isApproved})}
                         className="text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                       >
                         <FiEdit size={24} style={{ color: "#ffffff" }} />
@@ -346,7 +372,7 @@ const Residents = () => {
         <ReactPaginate
           breakLabel="..."
           nextLabel=">>"
-          onPageChange={() => { }}
+          onPageChange={() => {}}
           pageRangeDisplayed={3}
           pageCount={15}
           previousLabel="<<"
@@ -357,10 +383,10 @@ const Residents = () => {
         />
       </div>
       <AddResidentsModal />
-      <EditResidentModal />
       <ArchiveResidentModal />
       <GenerateReportsModal />
-      <ViewResidentModal />
+      <ViewResidentModal user={user} setUser={setUser} />
+      <StatusResident status={status} setStatus={setStatus}/>
     </div>
   );
 };
