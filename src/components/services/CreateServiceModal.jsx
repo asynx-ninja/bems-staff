@@ -1,21 +1,135 @@
 import React from "react";
-import { MdOutlineFileUpload } from "react-icons/md";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import Dropbox from "./Dropbox";
 
-function CreateServiceModal({ onClose }) {
+function CreateServiceModal({ brgy }) {
+  const [service, setService] = useState({
+    name: "",
+    type: "",
+    details: "",
+    fee: "",
+    brgy: brgy,
+  });
+
+  const [logo, setLogo] = useState();
+  const [banner, setBanner] = useState();
+  const [files, setFiles] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    var logoSrc = document.getElementById("logo");
+    logoSrc.src =
+      "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+
+    var bannerSrc = document.getElementById("banner");
+    bannerSrc.src =
+      "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+  }, []);
+
+  const handleLogoChange = (e) => {
+    setLogo(e.target.files[0]);
+
+    var output = document.getElementById("logo");
+    output.src = URL.createObjectURL(e.target.files[0]);
+    output.onload = function () {
+      URL.revokeObjectURL(output.src); // free memory
+    };
+  };
+
+  const handleBannerChange = (e) => {
+    setBanner(e.target.files[0]);
+
+    var output = document.getElementById("banner");
+    output.src = URL.createObjectURL(e.target.files[0]);
+    output.onload = function () {
+      URL.revokeObjectURL(output.src); // free memory
+    };
+  };
+
+  const handleChange = (e) => {
+    setService((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleFileChange = (e) => {
+    e.preventDefault();
+
+    setFiles([...files, ...e.target.files]);
+  };
+
+  const handleSubmit = async (e) => {
+    try {
+      e.preventDefault();
+
+      var formData = new FormData();
+
+      const arr1 = [banner, logo];
+      const newFiles = arr1.concat(files);
+
+      for (let f = 0; f < newFiles.length; f += 1) {
+        formData.append("files", newFiles[f]);
+      }
+
+      const obj = {
+        name: service.name,
+        type: service.type === "" ? "Healthcare" : service.type,
+        details: service.details,
+        fee: service.fee,
+        brgy: service.brgy
+      }
+
+      formData.append("service", JSON.stringify(obj));
+
+      // console.log("Service", service)
+      // console.log("Logo", logo)
+      // console.log("Banner", banner)
+      // console.log("File", files)
+      const result = await axios.post(
+        `http://localhost:8800/api/services/`,
+        formData
+      );
+
+      if (result.status === 200) {
+        var logoSrc = document.getElementById("logo");
+        logoSrc.src =
+          "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+
+        var bannerSrc = document.getElementById("banner");
+        bannerSrc.src =
+          "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+        setService({
+          name: "",
+          type: "",
+          details: "",
+          fee: "",
+          brgy: "",
+        });
+        setLogo();
+        setBanner();
+        setFiles([]);
+        window.location.reload();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div>
       <div
         id="hs-create-service-modal"
-        class="hs-overlay hidden fixed top-0 left-0 z-[80] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center lg:ml-32 xl:ml-28 "
+        class="hs-overlay hidden fixed top-0 left-0 z-[80] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center "
       >
         {/* Modal */}
-        <div class="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 md:px-0 opacity-0 transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto">
-          <div class="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl">
+        <div class="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 md:px-0 opacity-0 transition-all m-3 smx-auto">
+        <div class="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full lg:w-[900px]">
             {/* Header */}
             <div class="bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
-              <div
-                class="flex justify-between items-center px-3 py-5 md:p-5 w-full h-full bg-cover bg-no-repeat transform"
-              >
+              <div class="flex justify-between items-center px-3 py-5 md:p-5 w-full h-full bg-cover bg-no-repeat transform">
                 <h3
                   class="font-bold text-white mx-auto md:text-xl"
                   style={{ letterSpacing: "0.3em" }}
@@ -25,129 +139,156 @@ function CreateServiceModal({ onClose }) {
               </div>
             </div>
 
-            {/* Modal Images */}
-            <div class="relative mt-6 mx-6 overflow-y-auto">
-              <div className="relative w-full">
-                <h1
-                  className="font-base text-white text-md absolute top-0 left-0 pl-2 pt-1"
-                  style={{ letterSpacing: "0.3em" }}
-                >
-                  BANNER
-                </h1>
-              </div>
-              <div>
-                <img
-                  src="./public/imgs/bg-header.png"
-                  alt=""
-                  className="w-full rounded-lg"
-                />
-                <label
-                  htmlFor="file_input"
-                  className="block text-transparent font-medium rounded-full text-sm mr-1 text-center absolute bottom-2 right-2"
-                >
-                  <MdOutlineFileUpload size={24} style={{ color: "#ffffff" }} />
-                </label>
-                <input class="hidden" id="file_input" type="file" />
-              </div>
-            </div>
-
-            {/* Modal Details */}
-            <div>
-              {/* Name and Type of Service*/}
-              <div class="relative mt-5 mx-6 overflow-y-auto flex flex-col md:flex-row md:space-x-3">
-                <div className="w-full md:w-1/2">
-                  <h1
-                    class="font-base text-black mx-auto text-sm"
-                    style={{ letterSpacing: "0.1em" }}
+            <div className="flex flex-col mx-auto w-full py-5 px-5 h-[800px] md:h-[750px] overflow-y-auto">
+              <div className="flex mb-4 border w-full flex-col md:flex-row md:space-x-2">
+                <div className="w-full">
+                  <label
+                    className="block text-gray-700 text-sm font-bold mb-2 pl-2"
+                    htmlFor="username"
                   >
-                    NAME OF SERVICE
-                  </h1>
-                  <input
-                    type="search"
-                    id="search-dropdown"
-                    className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg"
-                    placeholder=""
-                    required
-                  />
-                </div>
-                <div className="w-full md:w-1/2 sm:mt-2 md:mt-0">
-                  <h1
-                    class="font-base text-black mx-auto text-sm"
-                    style={{ letterSpacing: "0.1em" }}
-                  >
-                    TYPE OF SERVICE
-                  </h1>
-                  <input
-                    type="search"
-                    id="search-dropdown"
-                    className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg  "
-                    placeholder=""
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Service Description */}
-              <div class="relative mt-4 mx-6 overflow-y-auto flex flex-col">
-                <h1
-                  class="font-base mb-1 text-black text-sm"
-                  style={{ letterSpacing: "0.1em" }}
-                >
-                  DETAILS
-                </h1>
-                <textarea
-                  id="message"
-                  rows="4"
-                  class="block p-2.5 w-full text-sm text-gray-900 rounded-lg bg-gray-100 resize-none overflow-y-auto"
-                  placeholder="Enter service details..."
-                ></textarea>
-              </div>
-
-              {/* Date and Service Fee */}
-              <div class="relative my-4 mx-6 overflow-y-auto flex flex-col md:flex-row md:space-x-3">
-                <div className="w-full md:w-1/2">
-                  <h1
-                    class="font-base text-black mx-auto text-sm"
-                    style={{ letterSpacing: "0.1em" }}
-                  >
-                    DATE
-                  </h1>
-                  <input
-                    type="search"
-                    id="search-dropdown"
-                    className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg"
-                    placeholder=""
-                    required
-                  />
-                </div>
-                <div className="w-full md:w-1/2">
-                  <div className="flex flex-row">
-                    <h1
-                      class="font-base text-black text-sm sm:mt-4 md:mt-0"
-                      style={{ letterSpacing: "0.1em" }}
-                    >
-                      SERVICE FEES
-                    </h1>
-
-                    <label class="relative inline-flex items-center sm:mt-4 md:mt-0 mx-2 cursor-pointer">
-                      <input type="checkbox" value="" class="sr-only peer" />
-                      <div class="w-10 h-5 bg-gray-200 rounded-full peer peer-focus:ring-blue-300 dark:bg-custom-green-button3 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-none after:left-[0.1px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-custom-red-button"></div>
+                    Logo
+                  </label>
+                  <div className="flex flex-col items-center space-y-2 relative">
+                    <div className="w-full">
+                      <img
+                       className="w-[200px] md:w-[250px] mx-auto lg:w-full md:h-[140px] lg:h-[250px] object-cover"
+                        id="logo"
+                        alt="Current profile photo"
+                      />
+                    </div>
+                    <label className="w-full bg-white border border-gray-300">
+                      <span className="sr-only">Choose logo photo</span>
+                      <input
+                        type="file"
+                        onChange={handleLogoChange}
+                        name="logo"
+                        accept="image/*"
+                        value={!logo ? "" : logo.originalname}
+                        className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4  file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
+                      />
                     </label>
                   </div>
-
-                  <input
-                    type="search"
-                    id="search-dropdown"
-                    className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg  "
-                    placeholder=""
-                    required
-                  />
+                </div>
+                <div className="w-full border-l">
+                  <label
+                    className="block text-gray-700 text-sm font-bold mb-2 pl-2"
+                    htmlFor="username"
+                  >
+                    Banner
+                  </label>
+                  <div className="flex flex-col items-center space-y-2 relative">
+                    <div className="w-full">
+                      <img
+                        className="w-[200px] md:w-[250px] mx-auto lg:w-full md:h-[140px] lg:h-[250px] object-cover"
+                        id="banner"
+                        alt="Current profile photo"
+                      />
+                    </div>
+                    <label className="w-full bg-white border border-gray-300">
+                      <span className="sr-only">Choose banner photo</span>
+                      <input
+                        type="file"
+                        onChange={handleBannerChange}
+                        name="banner"
+                        accept="image/*"
+                        value={!banner ? "" : banner.originalname}
+                        className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4  file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
+                      />
+                    </label>
+                  </div>
                 </div>
               </div>
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="name"
+                >
+                  Service Name
+                </label>
+                <input
+                  id="name"
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  name="name"
+                  type="text"
+                  value={service.name}
+                  onChange={handleChange}
+                  placeholder="Service Name"
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="type"
+                >
+                  Service Type
+                </label>
+                <select
+                  name="type"
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 rounded-md border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-500"
+                >
+                  <option value="Healthcare">Healthcare Services</option>
+                  <option value="Education">Education Services</option>
+                  <option value="Social Welfare">
+                    Social Welfare Services
+                  </option>
+                  <option value="Security and Safety">
+                    Security and Safety Services
+                  </option>
+                  <option value="Infrastructure">
+                    Infrastructure Services
+                  </option>
+                  <option value="Community Services">Community Services</option>
+                  <option value="Administrative">
+                    Administrative Services
+                  </option>
+                  <option value="Environmental">Environmental Services</option>
+                </select>
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="message"
+                  className="block mb-2 text-sm font-bold text-gray-700 "
+                >
+                  Your message
+                </label>
+                <textarea
+                  id="message"
+                  rows={4}
+                  name="details"
+                  value={service.details}
+                  onChange={handleChange}
+                  className="block p-2.5 w-full text-sm text-gray-700  rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 "
+                  placeholder="Enter service details..."
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="fee"
+                >
+                  Service Fee
+                </label>
+                <input
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="fee"
+                  name="fee"
+                  type="number"
+                  value={service.fee}
+                  onChange={handleChange}
+                  placeholder="Service Fee"
+                />
+              </div>
+              <Dropbox
+                files={files}
+                setFiles={setFiles}
+                handleFileChange={handleFileChange}
+                handleSubmit={handleSubmit}
+              />
             </div>
 
             {/* Buttons */}
-            <div class="flex justify-end items-center gap-x-2 py-3 px-6 dark:border-gray-700">
+            {/* <div class="flex justify-end items-center gap-x-2 py-3 px-6 dark:border-gray-700">
               <button
                 type="button"
                 class="py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-custom-green-button3 text-white shadow-sm align-middle"
@@ -162,7 +303,7 @@ function CreateServiceModal({ onClose }) {
               >
                 CLOSE
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

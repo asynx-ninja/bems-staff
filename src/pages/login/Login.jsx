@@ -14,6 +14,7 @@ const Login = () => {
     username: "",
     password: "",
   });
+  const [errorMessage, setErrorMessage] = useState("");
   const [error, setError] = useState("");
 
   const handleLogin = async () => {
@@ -25,16 +26,19 @@ const Login = () => {
 
     try {
       const res = await axios.get(`${API_LINK}/auth/${obj.username}/${obj.password}/${obj.type}`);
-
+      setErrorMessage("");
       if (res.status === 200) {
         const id = res.data[0]._id;
         navigate(`/dashboard/?id=${id}&brgy=${res.data[0].address.brgy}`);
-      } else {
-        setError("Invalid username or password");
-      }
+      } 
     } catch (error) {
-      setError("Error logging in. Please try again.");
-      console.log(error);
+      if (error.response) {
+        setErrorMessage(error.response.data.error);
+      } else if (error.request) {
+        setErrorMessage("The request was made but no response was received");
+      } else {
+        setErrorMessage("Error: " + error.message);
+      }
     }
   };
 
@@ -109,6 +113,14 @@ const Login = () => {
               </p>
             </div>
             <div>
+            {errorMessage && (
+              <div
+                className="bg-red-50 border text-center border-red-200 text-sm text-red-600 rounded-md py-4 mt-2 mb-4"
+                role="alert"
+              >
+                <span className="font-bold ">Warning:</span> {errorMessage}
+              </div>
+            )}
               {error && (
                 <div class="w-full bg-white border rounded-md border-red-500 flex items-center justify-center">
                   <div class="flex p-4">

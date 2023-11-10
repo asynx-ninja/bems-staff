@@ -19,6 +19,7 @@ const Residents = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [users, setUsers] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
+  const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
   const [user, setUser] = useState({});
   const [status, setStatus] = useState({});
@@ -26,7 +27,7 @@ const Residents = () => {
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(`${API_LINK}/users/${brgy}`);
-
+      console.log(response);
       if (response.status === 200) setUsers(response.data);
       else setUsers([]);
     };
@@ -73,7 +74,7 @@ const Residents = () => {
   ];
 
   useEffect(() => {
-    document.title = "Services | Barangay E-Services Management";
+    document.title = "Residents | Barangay E-Services Management";
   }, []);
 
   const handleView = (item) => {
@@ -122,7 +123,7 @@ const Residents = () => {
                 </div>
               </div>
               <div className="w-full rounded-lg ">
-                <Link to="/archivedresidents">
+                <Link to={`/archivedresidents/?id=${id}&brgy=${brgy}`}>
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"
@@ -177,10 +178,10 @@ const Residents = () => {
                 aria-labelledby="hs-dropdown"
               >
                 <li className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ">
-                  TITLE
+                  USER ID
                 </li>
                 <li className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ">
-                  DATE
+                  NAME
                 </li>
               </ul>
             </div>
@@ -352,7 +353,12 @@ const Residents = () => {
                       <button
                         type="button"
                         data-hs-overlay="#hs-modal-statusResident"
-                        onClick={() => handleStatus({id: item._id, status: item.isApproved})}
+                        onClick={() =>
+                          handleStatus({
+                            id: item._id,
+                            status: item.isApproved,
+                          })
+                        }
                         className="text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                       >
                         <FiEdit size={24} style={{ color: "#ffffff" }} />
@@ -382,11 +388,11 @@ const Residents = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <AddResidentsModal />
-      <ArchiveResidentModal />
+      <AddResidentsModal brgy={brgy}/>
+      <ArchiveResidentModal selectedItems={selectedItems} />
       <GenerateReportsModal />
-      <ViewResidentModal user={user} setUser={setUser} />
-      <StatusResident status={status} setStatus={setStatus}/>
+      <ViewResidentModal user={user} setUser={setUser}/>
+      <StatusResident status={status} setStatus={setStatus} />
     </div>
   );
 };

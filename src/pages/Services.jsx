@@ -12,13 +12,37 @@ import GenerateReportsModal from "../components/services/GenerateReportsModal";
 import CreateServiceModal from "../components/services/CreateServiceModal";
 import EditServiceModal from "../components/services/EditServiceModal";
 import ArchiveServicesModal from "../components/services/ArchiveServicesModal";
+import axios from "axios";
+import API_LINK from "../config/API";
+import { useSearchParams } from "react-router-dom";
+import StatusServices from "../components/services/StatusServices";
 
 const Services = () => {
   const [selectedItems, setSelectedItems] = useState([]);
+  const [services, setServices] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const brgy = searchParams.get("brgy");
+  const [service, setService] = useState([]);
+  const [status, setStatus] = useState({});
 
+
+  useEffect(() => {
+    const fetch = async () => {
+      const response = await axios.get(
+        `${API_LINK}/services/?brgy=${brgy}&archived=false`
+      );
+      console.log(response);
+      if (response.status === 200) setServices(response.data);
+      else setServices([]);
+    };
+
+    fetch();
+  }, []);
+
+  
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
-    let value = parseInt(e.target.value);
+    let value = e.target.value;
 
     if (isSelected) {
       setSelectedItems([...selectedItems, value]);
@@ -32,67 +56,39 @@ const Services = () => {
   };
 
   const checkAllHandler = () => {
-    if (tableData.length === selectedItems.length) {
+    if (services.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const postIds = tableData.map((item) => {
-        return item.id;
+      const postIds = services.map((item) => {
+        return item._id;
       });
 
       setSelectedItems(postIds);
     }
   };
 
-  const tableData = [
-    {
-      id: 1,
-      imageSrc: imgSrc,
-      title: "PANGKABUHAYAN QC",
-      details:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, ",
-      typeofservice: "MEDICAL",
-      date: "10 Jan 2023",
-    },
-    {
-      id: 2,
-      imageSrc: imgSrc,
-      title: "PANGKABUHAYAN QC",
-      details:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, ",
-      typeofservice: "MEDICAL",
-      date: "10 Jan 2023",
-    },
-    {
-      id: 3,
-      imageSrc: imgSrc,
-      title: "PANGKABUHAYAN QC",
-      details:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, ",
-      typeofservice: "MEDICAL",
-      date: "10 Jan 2023",
-    },
-    {
-      id: 4,
-      imageSrc: imgSrc,
-      title: "PANGKABUHAYAN QC",
-      details:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, ",
-      typeofservice: "MEDICAL",
-      date: "10 Jan 2023",
-    },
-  ];
-
   const tableHeader = [
+    "SERVICE_ID",
     "SERVICE NAME",
     "DETAILS",
     "TYPE OF SERVICE",
-    "DATE",
+    "FEES",
+    "STATUS",
     "ACTIONS",
   ];
 
   useEffect(() => {
     document.title = "Services | Barangay E-Services Management";
   }, []);
+
+  const handleView = (item) => {
+    setService(item);
+  };
+
+  const handleStatus = (status) => {
+    console.log("handleStatus", status);
+    setStatus(status);
+  };
 
   return (
     <div className="mx-4 my-5 md:mx-5 md:my-6 lg:ml-[19rem] lg:mt-8 lg:mr-6">
@@ -131,7 +127,7 @@ const Services = () => {
                 </div>
               </div>
               <div className="w-full rounded-lg ">
-                <Link to="/archivedservices">
+                <Link to={`/archivedservices/?brgy=${brgy}&archived=true`}>
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"
@@ -286,14 +282,14 @@ const Services = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {tableData.map((item, index) => (
+              {services.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <input
                         type="checkbox"
-                        checked={selectedItems.includes(item.id)}
-                        value={item.id}
+                        checked={selectedItems.includes(item._id)}
+                        value={item._id}
                         onChange={checkboxHandler}
                         id=""
                       />
@@ -301,27 +297,39 @@ const Services = () => {
                   </td>
                   <td className="px-6 py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                      {tableData[0].title}
+                      {item.service_id}
+                    </span>
+                  </td>
+                  <td className="px-6 py-3">
+                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
+                      {item.name}
                     </span>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                        {tableData[0].details}
+                        {item.details}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {tableData[0].typeofservice}
+                        {item.type}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {tableData[0].date}
+                        {item.fee}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-3">
+                    <div className="flex justify-center items-center">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {item.isApproved}
                       </span>
                     </div>
                   </td>
@@ -331,17 +339,24 @@ const Services = () => {
                       <button
                         type="button"
                         data-hs-overlay="#hs-view-service-modal"
+                        onClick={() => handleView({ ...item })}
                         className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                       >
                         <AiOutlineEye size={24} style={{ color: "#ffffff" }} />
                       </button>
-                      <button
+                      {/* <button
                         type="button"
-                        data-hs-overlay="#hs-edit-modal"
+                        onClick={() =>
+                          handleStatus({
+                            id: item._id,
+                            status: item.isApproved,
+                          })
+                        }
+                        data-hs-overlay="#hs-modal-statusServices"
                         className="text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                       >
                         <FiEdit size={24} style={{ color: "#ffffff" }} />
-                      </button>
+                      </button> */}
                     </div>
                   </td>
                 </tr>
@@ -367,10 +382,10 @@ const Services = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <ArchiveServicesModal />
-      <CreateServiceModal />
-      <EditServiceModal />
-      <ViewServiceModal />
+      <ArchiveServicesModal selectedItems={selectedItems}/>
+      <CreateServiceModal brgy={brgy}/>
+      {/*<StatusServices status={status} setStatus={setStatus}/>*/}
+      <ViewServiceModal service={service} setService={setService}/>
       <GenerateReportsModal />
     </div>
   );
