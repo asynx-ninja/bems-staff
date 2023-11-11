@@ -11,9 +11,30 @@ import EditModal from "../components/announcement/EditAnnouncementModal";
 import { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import ViewAnnouncementModal from "../components/announcement/ViewAnnouncement";
+import axios from "axios";
+import API_LINK from "../config/API";
+import { useSearchParams } from "react-router-dom";
 
 const Announcement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
+  const [announcments, setAnnouncements] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const brgy = searchParams.get("brgy");
+  const [announcement, setAnnouncement] = useState([]);
+  const [status, setStatus] = useState({});
+
+  useEffect(() => {
+    const fetch = async () => {
+      const response = await axios.get(
+        `${API_LINK}/announcements/?brgy=${brgy}&archived=false`
+      );
+      console.log(response);
+      if (response.status === 200) setAnnouncements(response.data);
+      else setAnnouncements([]);
+    };
+
+    fetch();
+  }, []);
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -135,7 +156,6 @@ const Announcement = () => {
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"
-                      
                       className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] w-full text-white font-medium text-sm text-center inline-flex items-center"
                     >
                       <FaArchive size={24} style={{ color: "#ffffff" }} />
@@ -285,7 +305,7 @@ const Announcement = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {tableData.map((item, index) => (
+              {announcments.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
@@ -300,34 +320,34 @@ const Announcement = () => {
                   </td>
                   <td className="px-6 py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                      BRGY-SANJOSE-E-123456789-11
+                      {item.event_id}
                     </span>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                        {tableData[0].title}
+                        {item.title}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                        {tableData[0].details}
+                        {item.details}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {tableData[0].file}
+                        {item.collections.file.name}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {tableData[0].date}
+                        {item.date}
                       </span>
                     </div>
                   </td>
@@ -341,7 +361,7 @@ const Announcement = () => {
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                        Kantutan St.
+                        {item.brgy}
                       </span>
                     </div>
                   </td>
