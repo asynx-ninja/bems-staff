@@ -21,7 +21,7 @@ const Login = () => {
     const obj = {
       username: data.username,
       password: data.password,
-      type: "Barangay Staff",
+      type: "Staff",
     };
 
     try {
