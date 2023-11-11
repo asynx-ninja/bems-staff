@@ -6,7 +6,6 @@ import { FaArchive, FaPlus } from "react-icons/fa";
 import { BsPrinter } from "react-icons/bs";
 import ArchiveModal from "../components/announcement/ArchiveAnnouncementModal";
 import AddModal from "../components/announcement/AddAnnouncementModal";
-import imgSrc from "/imgs/bg-header.png";
 import EditModal from "../components/announcement/EditAnnouncementModal";
 import { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
@@ -26,7 +25,7 @@ const Announcement = () => {
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/announcements/?brgy=${brgy}&archived=false`
+        `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
       );
       console.log(response);
       if (response.status === 200) setAnnouncements(response.data);
@@ -38,7 +37,7 @@ const Announcement = () => {
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
-    let value = parseInt(e.target.value);
+    let value = e.target.value;
 
     if (isSelected) {
       setSelectedItems([...selectedItems, value]);
@@ -52,55 +51,16 @@ const Announcement = () => {
   };
 
   const checkAllHandler = () => {
-    if (tableData.length === selectedItems.length) {
+    if (announcments.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const postIds = tableData.map((item) => {
+      const postIds = announcments.map((item) => {
         return item.id;
       });
 
       setSelectedItems(postIds);
     }
   };
-
-  const tableData = [
-    {
-      id: 1,
-      imageSrc: imgSrc,
-      title: "Feeding Program",
-      details:
-        "Brgy. San Jose is hosting Feeding Program as one of the gestures in yearly giveback to residents.",
-      file: "FeedingProgram.pdf",
-      date: "10 Jan 2023",
-    },
-    {
-      id: 2,
-      imageSrc: imgSrc,
-      title: "Feeding Program",
-      details:
-        "Brgy. San Jose is hosting Feeding Program as one of the gestures in yearly giveback to residents.",
-      file: "FeedingProgram.pdf",
-      date: "10 Jan 2023",
-    },
-    {
-      id: 3,
-      imageSrc: imgSrc,
-      title: "Feeding Program",
-      details:
-        "Brgy. San Jose is hosting Feeding Program as one of the gestures in yearly giveback to residents.",
-      file: "FeedingProgram.pdf",
-      date: "10 Jan 2023",
-    },
-    {
-      id: 4,
-      imageSrc: imgSrc,
-      title: "Feeding Program",
-      details:
-        "Brgy. San Jose is hosting Feeding Program as one of the gestures in yearly giveback to residents.",
-      file: "FeedingProgram.pdf",
-      date: "10 Jan 2023",
-    },
-  ];
 
   const tableHeader = [
     "event id",
@@ -152,7 +112,7 @@ const Announcement = () => {
                 </div>
               </div>
               <div className="w-full rounded-lg ">
-                <Link to="/archivedannoucements">
+                <Link to={`/archivedannoucements/?brgy=${brgy}&archived=true`}>
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"
@@ -311,8 +271,8 @@ const Announcement = () => {
                     <div className="flex justify-center items-center">
                       <input
                         type="checkbox"
-                        checked={selectedItems.includes(item.id)}
-                        value={item.id}
+                        checked={selectedItems.includes(item._id)}
+                        value={item._id}
                         onChange={checkboxHandler}
                         id=""
                       />
@@ -405,7 +365,7 @@ const Announcement = () => {
             renderOnZeroPageCount={null}
           />
         </div>
-        <ArchiveModal />
+        <ArchiveModal selectedItems={selectedItems} />
         <AddModal />
         <EditModal />
         <ViewAnnouncementModal />

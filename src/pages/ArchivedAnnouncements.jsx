@@ -1,25 +1,41 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { FiEdit } from "react-icons/fi";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { FaArchive, FaPlus, FaTrashRestore } from "react-icons/fa";
 import { BsPrinter } from "react-icons/bs";
-import ArchiveModal from "../components/announcement/ArchiveAnnouncementModal";
-import AddModal from "../components/announcement/AddAnnouncementModal";
 import imgSrc from "/imgs/bg-header.png";
-import EditModal from "../components/announcement/EditAnnouncementModal";
 import { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import Breadcrumbs from "../components/archivedAnnouncement/Breadcrums";
 import ViewArchivedAnnouncementModal from "../components/announcement/ViewArchivedAnnouncement";
 import RestoreAnnouncementModal from "../components/announcement/RestoreAnnouncementModal";
+import axios from "axios";
+import API_LINK from "../config/API";
+import { useSearchParams } from "react-router-dom";
 
 const Announcement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
+  const [announcments, setAnnouncements] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const brgy = searchParams.get("brgy");
+  const [announcement, setAnnouncement] = useState([]);
+  const [status, setStatus] = useState({});
+
+  useEffect(() => {
+    const fetch = async () => {
+      const response = await axios.get(
+        `${API_LINK}/announcement/?brgy=${brgy}&archived=true`
+      );
+      console.log(response);
+      if (response.status === 200) setAnnouncements(response.data);
+      else setAnnouncements([]);
+    };
+
+    fetch();
+  }, []);
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
-    let value = parseInt(e.target.value);
+    let value = e.target.value;
 
     if (isSelected) {
       setSelectedItems([...selectedItems, value]);
@@ -33,10 +49,10 @@ const Announcement = () => {
   };
 
   const checkAllHandler = () => {
-    if (tableData.length === selectedItems.length) {
+    if (announcments.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const postIds = tableData.map((item) => {
+      const postIds = announcments.map((item) => {
         return item.id;
       });
 
@@ -111,8 +127,7 @@ const Announcement = () => {
               ARCHIVED ANNOUNCEMENT
             </h1>
           </div>
-          <div className="lg:w-3/5 flex flex-row justify-end items-center ">
-          </div>
+          <div className="lg:w-3/5 flex flex-row justify-end items-center "></div>
         </div>
 
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
@@ -244,7 +259,7 @@ const Announcement = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {tableData.map((item, index) => (
+              {announcments.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
@@ -259,34 +274,34 @@ const Announcement = () => {
                   </td>
                   <td className="px-6 py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                      BRGY-SANJOSE-E-123456789-11
+                      {item.event_id}
                     </span>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                        {tableData[0].title}
+                        {item.title}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                        {tableData[0].details}
+                        {item.details}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {tableData[0].file}
+                        {item.collections.file.name}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {tableData[0].date}
+                        {item.date}
                       </span>
                     </div>
                   </td>
@@ -300,7 +315,7 @@ const Announcement = () => {
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                        Kantutan St.
+                        {item.brgy}
                       </span>
                     </div>
                   </td>
@@ -327,7 +342,7 @@ const Announcement = () => {
           <ReactPaginate
             breakLabel="..."
             nextLabel=">>"
-            onPageChange={() => { }}
+            onPageChange={() => {}}
             pageRangeDisplayed={3}
             pageCount={15}
             previousLabel="<<"
@@ -337,7 +352,7 @@ const Announcement = () => {
             renderOnZeroPageCount={null}
           />
         </div>
-        
+
         <ViewArchivedAnnouncementModal />
         <RestoreAnnouncementModal />
       </div>
