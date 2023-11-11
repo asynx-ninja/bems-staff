@@ -1,7 +1,12 @@
 import React from "react";
-import bgmodal from "../../assets/modals/bg-modal2.png";
+import EditAnnouncementModal from "./EditAnnouncementModal";
 
-function ViewAnnouncementModal() {
+function ViewAnnouncementModal({ announcement, setAnnouncement }) {
+  const dateFormat = (date) => {
+    const eventdate = date === undefined ? "" : date.substr(0, 10);
+    return eventdate;
+  };
+  
   return (
     <div>
       <div className="">
@@ -10,84 +15,125 @@ function ViewAnnouncementModal() {
           class="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
         >
           {/* Modal */}
-          <div class="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 md:px-0 opacity-0 transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto lg:ml-96 xl:ml-[500px] xxl:ml-[600px] xxxl:ml-[800px]">
-            <div class="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl">
+          <div class="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 md:px-0 opacity-0 transition-all m-3 smx-auto">
+            <div class="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full lg:w-[900px]">
               {/* Header */}
-              <div class="bg-gradient-to-r from-[#295141] to-[#408D51] w-overflow-hidden rounded-t-2xl">
-                <div
-                  class="flex justify-between items-center p-5 w-full h-full bg-cover bg-no-repeat transform"
-                >
+              <div class="bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
+                <div class="flex justify-between items-center px-3 py-5 md:p-5 w-full h-full bg-cover bg-no-repeat transform">
                   <h3
-                    class="font-base text-white mx-auto md:text-xl"
+                    class="font-bold text-white mx-auto md:text-xl"
                     style={{ letterSpacing: "0.3em" }}
                   >
                     VIEW ANNOUNCEMENT
                   </h3>
                 </div>
               </div>
-              <div className="mt-5">
-                <form>
-                  <div className="mb-4 px-4">
+
+              <div className="flex flex-col mx-auto w-full py-5 px-5 h-[800px] md:h-[670px] overflow-y-auto">
+                <div className="flex mb-4 border w-full flex-col md:flex-row md:space-x-2">
+                  <div className="w-full">
                     <label
-                      htmlFor="title"
-                      className="block text-sm font-medium text-gray-700"
+                      className="block text-gray-700 text-sm font-bold mb-2 pl-2"
+                      htmlFor="username"
                     >
-                      Title
+                      Logo
                     </label>
-                    <input
-                      type="text"
-                      id="title"
-                      name="title"
-                      className="w-full p-2 border border-gray-300 rounded"
-                    />
+                    <div className="flex flex-col items-center space-y-2 relative">
+                      <div className="w-full">
+                        <img
+                          className="w-[200px] md:w-[250px] mx-auto lg:w-full md:h-[140px] lg:h-[250px] object-cover"
+                          id="logo"
+                          alt="Current profile photo"
+                          src={
+                            announcement.length === 0
+                              ? ""
+                              : announcement.collections.logo.link
+                          }
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div className="mb-4 px-4">
+                  <div className="w-full border-l">
                     <label
-                      htmlFor="image"
-                      className="block text-sm font-medium text-gray-700"
+                      className="block text-gray-700 text-sm font-bold mb-2 pl-2"
+                      htmlFor="username"
                     >
-                      Image
+                      Banner
                     </label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      id="image"
-                      name="image"
-                      className="w-full p-2 border border-gray-300 rounded"
-                    />
+                    <div className="flex flex-col items-center space-y-2 relative">
+                      <div className="w-full">
+                        <img
+                          className="w-[200px] md:w-[250px] mx-auto lg:w-full md:h-[140px] lg:h-[250px] object-cover"
+                          id="banner"
+                          alt="Current profile photo"
+                          src={
+                            announcement.length === 0
+                              ? ""
+                              : announcement.collections.banner.link
+                          }
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div className="mb-4 px-4">
-                    <label
-                      htmlFor="details"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Details
-                    </label>
-                    <textarea
-                      id="details"
-                      name="details"
-                      rows="4"
-                      className="w-full p-2 border border-gray-300 rounded"
-                    />
-                  </div>
-                  <div className="mb-4 px-4">
-                    <label
-                      htmlFor="date"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Date
-                    </label>
-                    <input
-                      type="text"
-                      id="date"
-                      name="date"
-                      className="w-full p-2 border border-gray-300 rounded"
-                    />
-                  </div>
-                </form>
+                </div>
+                <div className="mb-4">
+                  <label
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                    htmlFor="title"
+                  >
+                    Announcement Title
+                  </label>
+                  <input
+                    id="title"
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    type="text"
+                    value={announcement.title}
+                    readOnly
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="message"
+                    className="block mb-2 text-sm font-bold text-gray-700 "
+                  >
+                    Details
+                  </label>
+                  <textarea
+                    id="details"
+                    rows={4}
+                    className="block p-2.5 w-full text-sm text-gray-700  rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 "
+                    placeholder="Enter announcement details..."
+                    value={announcement.details}
+                    readOnly
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                    htmlFor="fee"
+                  >
+                    Date
+                  </label>
+                  <input
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    id="date"
+                    type="text"
+                    value={dateFormat(announcement.date) || ""}
+                    disabled
+                  />
+                </div>
               </div>
+
               {/* Buttons */}
               <div class="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
+                <button
+                  type="button"
+                  className="bg-teal-900 py-2 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base text-white shadow-sm align-middle"
+                  data-hs-overlay="#hs-modal-editAnnouncement"
+                >
+                  EDIT ANNOUNCEMENT
+                </button>
+
                 <button
                   type="button"
                   class="h-[2.5rem] w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
@@ -100,6 +146,7 @@ function ViewAnnouncementModal() {
           </div>
         </div>
       </div>
+      <EditAnnouncementModal announcement={announcement} setAnnouncement={setAnnouncement}/>
     </div>
   );
 }

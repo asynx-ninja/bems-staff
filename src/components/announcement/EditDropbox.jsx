@@ -2,13 +2,7 @@ import React from "react";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-const EditDropbox = ({
-  edit,
-  files,
-  setFiles,
-  handleFileChange,
-  handleSubmit,
-}) => {
+const EditDropbox = ({ edit, files, setFiles, handleFileChange, handleSubmit }) => {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef();
   const navigate = useNavigate();
@@ -56,7 +50,7 @@ const EditDropbox = ({
 
   return (
     <>
-      <div className="">
+      <div className="" >
         <main className="container mx-auto max-w-screen-lg h-full">
           {/* file upload modal */}
           <article
@@ -89,30 +83,34 @@ const EditDropbox = ({
             )}
             {/* scroll area */}
             <section className="h-full overflow-auto p-1 w-full flex flex-col">
-              {edit ? (
-                <header className="border-dashed border-2 border-gray-400 py-12 flex flex-col justify-center items-center">
-                  <p className="mb-3 font-semibold text-gray-900 flex flex-wrap justify-center">
-                    <span>Drag and drop your</span>&nbsp;
-                    <span>files anywhere or</span>
-                  </p>
-                  <input
-                    type="file"
-                    name="file"
-                    onChange={handleFileChange}
-                    ref={fileInputRef}
-                    accept=".xlsx,.xls,.doc,.docx,.ppt,.pptx,.txt,.pdf"
-                    multiple="multiple"
-                    className="hidden"
-                  />
-                  <button
-                    id="button"
-                    onClick={handleAdd}
-                    className="mt-2 rounded-sm px-3 py-1 bg-gray-200 hover:bg-gray-300 focus:shadow-outline focus:outline-none"
-                  >
-                    Upload a file
-                  </button>
-                </header>
-              ) : null}
+              { 
+                  edit ?  
+                  <header className="border-dashed border-2 border-gray-400 py-12 flex flex-col justify-center items-center">
+                <p className="mb-3 font-semibold text-gray-900 flex flex-wrap justify-center">
+                  <span>Drag and drop your</span>&nbsp;
+                  <span>files anywhere or</span>
+                </p>
+                <input
+                  type="file"
+                  name="file"
+                  onChange={handleFileChange}
+                  ref={fileInputRef}
+                  accept=".xlsx,.xls,.doc,.docx,.ppt,.pptx,.txt,.pdf"
+                  multiple="multiple"
+                  className="hidden"
+                />
+                <button
+                  id="button"
+                  onClick={handleAdd}
+                  className="mt-2 rounded-sm px-3 py-1 bg-gray-200 hover:bg-gray-300 focus:shadow-outline focus:outline-none"
+                >
+                  Upload a file
+                </button>
+              </header>
+              
+              : null
+              }
+              
               <h1 className="pt-8 pb-3 font-semibold sm:text-lg text-gray-900">
                 To Upload
               </h1>
@@ -189,18 +187,19 @@ const EditDropbox = ({
                 )}
               </ul>
             </section>
-            {/* sticky footer */}
-            {/* <footer className="flex justify-end px-8 pb-8 pt-4">
+            {/* sticky footer
+            <footer className="flex justify-end px-8 pb-8 pt-4" >
               <button
                 id="submit"
                 onClick={handleSubmit}
-                // data-hs-overlay="#hs-modal-editServices"
+                hidden={!edit}
                 className="px-3 rounded-lg py-1 bg-teal-800 hover:bg-teal-700 text-white focus:shadow-outline focus:outline-none"
               >
                 Submit
               </button>
               <button
-                data-hs-overlay="#hs-modal-editServices"
+                data-hs-overlay="#hs-modal-editAnnouncement"
+                hidden={!edit}
                 className="ml-3 rounded-sm px-3 py-1 hover:bg-gray-300 focus:shadow-outline focus:outline-none"
               >
                 Cancel

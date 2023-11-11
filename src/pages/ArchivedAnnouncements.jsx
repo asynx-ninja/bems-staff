@@ -1,25 +1,41 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { FiEdit } from "react-icons/fi";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { FaArchive, FaPlus, FaTrashRestore } from "react-icons/fa";
 import { BsPrinter } from "react-icons/bs";
-import ArchiveModal from "../components/announcement/ArchiveAnnouncementModal";
-import AddModal from "../components/announcement/AddAnnouncementModal";
 import imgSrc from "/imgs/bg-header.png";
-import EditModal from "../components/announcement/EditAnnouncementModal";
 import { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import Breadcrumbs from "../components/archivedAnnouncement/Breadcrums";
 import ViewArchivedAnnouncementModal from "../components/announcement/ViewArchivedAnnouncement";
 import RestoreAnnouncementModal from "../components/announcement/RestoreAnnouncementModal";
+import axios from "axios";
+import API_LINK from "../config/API";
+import { useSearchParams } from "react-router-dom";
 
 const Announcement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const brgy = searchParams.get("brgy");
+  const [announcement, setAnnouncement] = useState([]);
+  const [status, setStatus] = useState({});
+
+  useEffect(() => {
+    const fetch = async () => {
+      const response = await axios.get(
+        `${API_LINK}/announcement/?brgy=${brgy}&archived=true`
+      );
+      console.log(response);
+      if (response.status === 200) setAnnouncements(response.data);
+      else setAnnouncements([]);
+    };
+
+    fetch();
+  }, []);
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
-    let value = parseInt(e.target.value);
+    let value = e.target.value;
 
     if (isSelected) {
       setSelectedItems([...selectedItems, value]);
@@ -33,70 +49,38 @@ const Announcement = () => {
   };
 
   const checkAllHandler = () => {
-    if (tableData.length === selectedItems.length) {
+    if (announcements.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const postIds = tableData.map((item) => {
-        return item.id;
+      const postIds = announcements.map((item) => {
+        return item._id;
       });
 
       setSelectedItems(postIds);
     }
   };
 
-  const tableData = [
-    {
-      id: 1,
-      imageSrc: imgSrc,
-      title: "Feeding Program",
-      details:
-        "Brgy. San Jose is hosting Feeding Program as one of the gestures in yearly giveback to residents.",
-      file: "FeedingProgram.pdf",
-      date: "10 Jan 2023",
-    },
-    {
-      id: 2,
-      imageSrc: imgSrc,
-      title: "Feeding Program",
-      details:
-        "Brgy. San Jose is hosting Feeding Program as one of the gestures in yearly giveback to residents.",
-      file: "FeedingProgram.pdf",
-      date: "10 Jan 2023",
-    },
-    {
-      id: 3,
-      imageSrc: imgSrc,
-      title: "Feeding Program",
-      details:
-        "Brgy. San Jose is hosting Feeding Program as one of the gestures in yearly giveback to residents.",
-      file: "FeedingProgram.pdf",
-      date: "10 Jan 2023",
-    },
-    {
-      id: 4,
-      imageSrc: imgSrc,
-      title: "Feeding Program",
-      details:
-        "Brgy. San Jose is hosting Feeding Program as one of the gestures in yearly giveback to residents.",
-      file: "FeedingProgram.pdf",
-      date: "10 Jan 2023",
-    },
-  ];
-
   const tableHeader = [
     "event id",
     "title",
     "details",
-    "file",
     "date",
     "# of attendees",
-    "event place",
     "actions",
   ];
 
   useEffect(() => {
     document.title = "Announcement | Barangay E-Services Management";
   }, []);
+
+  const dateFormat = (date) => {
+    const eventdate = date === undefined ? "" : date.substr(0, 10);
+    return eventdate;
+  };
+
+  const handleView = (item) => {
+    setAnnouncement(item);
+  };
 
   return (
     <div className="mx-4 my-5 md:mx-5 md:my-6 lg:ml-[19rem] lg:mt-8 lg:mr-6">
@@ -111,8 +95,7 @@ const Announcement = () => {
               ARCHIVED ANNOUNCEMENT
             </h1>
           </div>
-          <div className="lg:w-3/5 flex flex-row justify-end items-center ">
-          </div>
+          <div className="lg:w-3/5 flex flex-row justify-end items-center "></div>
         </div>
 
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
@@ -244,14 +227,14 @@ const Announcement = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {tableData.map((item, index) => (
+              {announcements.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <input
                         type="checkbox"
-                        checked={selectedItems.includes(item.id)}
-                        value={item.id}
+                        checked={selectedItems.includes(item._id)}
+                        value={item._id}
                         onChange={checkboxHandler}
                         id=""
                       />
@@ -259,48 +242,34 @@ const Announcement = () => {
                   </td>
                   <td className="px-6 py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                      BRGY-SANJOSE-E-123456789-11
+                      {item.event_id}
                     </span>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                        {tableData[0].title}
+                        {item.title}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                        {tableData[0].details}
+                        {item.details}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {tableData[0].file}
+                        {dateFormat(item.date) || ""}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {tableData[0].date}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        24
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                        Kantutan St.
+                        {item.attendees.length}
                       </span>
                     </div>
                   </td>
@@ -309,6 +278,7 @@ const Announcement = () => {
                       <button
                         type="button"
                         data-hs-overlay="#hs-modal-viewArchivedAnnouncement"
+                        onClick={() => handleView({ ...item })}
                         className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center"
                       >
                         <AiOutlineEye size={24} style={{ color: "#ffffff" }} />
@@ -327,7 +297,7 @@ const Announcement = () => {
           <ReactPaginate
             breakLabel="..."
             nextLabel=">>"
-            onPageChange={() => { }}
+            onPageChange={() => {}}
             pageRangeDisplayed={3}
             pageCount={15}
             previousLabel="<<"
@@ -337,9 +307,9 @@ const Announcement = () => {
             renderOnZeroPageCount={null}
           />
         </div>
-        
-        <ViewArchivedAnnouncementModal />
-        <RestoreAnnouncementModal />
+
+        <ViewArchivedAnnouncementModal announcement={announcement} setAnnouncement={setAnnouncement} />
+        <RestoreAnnouncementModal selectedItems={selectedItems} />
       </div>
     </div>
   );

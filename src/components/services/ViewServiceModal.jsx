@@ -53,7 +53,11 @@ function ViewServiceModal({ service, setService }) {
                         className="w-[200px] mx-auto lg:w-full h-[110px] lg:h-[250px] object-cover"
                         id="view_logo"
                         alt="Current profile photo"
-                        src={service.length === 0 ? "": service.collections.logo.link}
+                        src={
+                          service.length === 0
+                            ? ""
+                            : service.collections.logo.link
+                        }
                       />
                     </div>
                   </div>
@@ -72,7 +76,11 @@ function ViewServiceModal({ service, setService }) {
                         className="w-[200px] mx-auto lg:w-full h-[110px] lg:h-[250px] object-cover"
                         id="view_logo"
                         alt="Current profile photo"
-                        src={service.length === 0 ? "": service.collections.banner.link}
+                        src={
+                          service.length === 0
+                            ? ""
+                            : service.collections.banner.link
+                        }
                       />
                     </div>
                   </div>
@@ -162,7 +170,7 @@ function ViewServiceModal({ service, setService }) {
                   htmlFor="message"
                   className="block mb-2 text-sm font-bold text-gray-700 "
                 >
-                  Your message
+                  Details
                 </label>
                 <textarea
                   id="message"
