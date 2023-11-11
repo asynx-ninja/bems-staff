@@ -1,6 +1,6 @@
 import React from "react";
 
-const OccupationList = ({edit, handleChange}) => {
+const CreateOccupationList = ({edit, handleChange}) => {
   return (
     
     <select
@@ -8,7 +8,6 @@ const OccupationList = ({edit, handleChange}) => {
       id="occupation"
       name="occupation"
       onChange={handleChange}
-      disabled={!edit}
     >
       <option value="" selected="selected" disabled="disabled">
         Select Occupation
@@ -222,4 +221,4 @@ const OccupationList = ({edit, handleChange}) => {
   );
 };
 
-export default OccupationList;
+export default CreateOccupationList;

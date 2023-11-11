@@ -2,13 +2,7 @@ import React from "react";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-const EditDropbox = ({
-  edit,
-  files,
-  setFiles,
-  handleFileChange,
-  handleSubmit,
-}) => {
+const Dropbox = ({files, setFiles, handleFileChange, handleSubmit}) => {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef();
   const navigate = useNavigate();
@@ -89,30 +83,28 @@ const EditDropbox = ({
             )}
             {/* scroll area */}
             <section className="h-full overflow-auto p-1 w-full flex flex-col">
-              {edit ? (
-                <header className="border-dashed border-2 border-gray-400 py-12 flex flex-col justify-center items-center">
-                  <p className="mb-3 font-semibold text-gray-900 flex flex-wrap justify-center">
-                    <span>Drag and drop your</span>&nbsp;
-                    <span>files anywhere or</span>
-                  </p>
-                  <input
-                    type="file"
-                    name="file"
-                    onChange={handleFileChange}
-                    ref={fileInputRef}
-                    accept=".xlsx,.xls,.doc,.docx,.ppt,.pptx,.txt,.pdf"
-                    multiple="multiple"
-                    className="hidden"
-                  />
-                  <button
-                    id="button"
-                    onClick={handleAdd}
-                    className="mt-2 rounded-sm px-3 py-1 bg-gray-200 hover:bg-gray-300 focus:shadow-outline focus:outline-none"
-                  >
-                    Upload a file
-                  </button>
-                </header>
-              ) : null}
+              <header className="border-dashed border-2 border-gray-400 py-12 flex flex-col justify-center items-center">
+                <p className="mb-3 font-semibold text-gray-900 flex flex-wrap justify-center">
+                  <span>Drag and drop your</span>&nbsp;
+                  <span>files anywhere or</span>
+                </p>
+                <input
+                  type="file"
+                  name="file"
+                  onChange={handleFileChange}
+                  ref={fileInputRef}
+                  accept=".xlsx,.xls,.doc,.docx,.ppt,.pptx,.txt,.pdf"
+                  multiple="multiple"
+                  className="hidden"
+                />
+                <button
+                  id="button"
+                  onClick={handleAdd}
+                  className="mt-2 rounded-sm px-3 py-1 bg-gray-200 hover:bg-gray-300 focus:shadow-outline focus:outline-none"
+                >
+                  Upload a file
+                </button>
+              </header>
               <h1 className="pt-8 pb-3 font-semibold sm:text-lg text-gray-900">
                 To Upload
               </h1>
@@ -149,10 +141,16 @@ const EditDropbox = ({
                                 </svg>
                               </i>
                             </span>
+                            <p className="p-1 size text-xs text-gray-700">
+                              {file.size > 1024
+                                ? file.size > 1048576
+                                  ? Math.round(file.size / 1048576) + "mb"
+                                  : Math.round(file.size / 1024) + "kb"
+                                : file.size + "b"}
+                            </p>
                             <button
                               className="delete ml-auto focus:outline-none hover:bg-gray-300 p-1 rounded-md text-gray-800"
                               onClick={(e) => handleDelete(idx)}
-                              hidden = {!edit}
                             >
                               <svg
                                 className="pointer-events-none fill-current w-4 h-4 ml-auto"
@@ -190,22 +188,22 @@ const EditDropbox = ({
               </ul>
             </section>
             {/* sticky footer */}
-            {/* <footer className="flex justify-end px-8 pb-8 pt-4">
+            <footer className="flex justify-end px-8 pb-8 pt-4">
               <button
                 id="submit"
                 onClick={handleSubmit}
-                // data-hs-overlay="#hs-modal-editServices"
                 className="px-3 rounded-lg py-1 bg-teal-800 hover:bg-teal-700 text-white focus:shadow-outline focus:outline-none"
               >
                 Submit
               </button>
               <button
-                data-hs-overlay="#hs-modal-editServices"
+                id="cancel"
+                onClick={handleCancel}
                 className="ml-3 rounded-sm px-3 py-1 hover:bg-gray-300 focus:shadow-outline focus:outline-none"
               >
                 Cancel
               </button>
-            </footer> */}
+            </footer>
           </article>
         </main>
       </div>
@@ -216,4 +214,4 @@ const EditDropbox = ({
   );
 };
 
-export default EditDropbox;
+export default Dropbox;

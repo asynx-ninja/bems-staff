@@ -14,7 +14,7 @@ import { useSearchParams } from "react-router-dom";
 
 const Announcement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
-  const [announcments, setAnnouncements] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
   const [announcement, setAnnouncement] = useState([]);
@@ -49,70 +49,38 @@ const Announcement = () => {
   };
 
   const checkAllHandler = () => {
-    if (announcments.length === selectedItems.length) {
+    if (announcements.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const postIds = announcments.map((item) => {
-        return item.id;
+      const postIds = announcements.map((item) => {
+        return item._id;
       });
 
       setSelectedItems(postIds);
     }
   };
 
-  const tableData = [
-    {
-      id: 1,
-      imageSrc: imgSrc,
-      title: "Feeding Program",
-      details:
-        "Brgy. San Jose is hosting Feeding Program as one of the gestures in yearly giveback to residents.",
-      file: "FeedingProgram.pdf",
-      date: "10 Jan 2023",
-    },
-    {
-      id: 2,
-      imageSrc: imgSrc,
-      title: "Feeding Program",
-      details:
-        "Brgy. San Jose is hosting Feeding Program as one of the gestures in yearly giveback to residents.",
-      file: "FeedingProgram.pdf",
-      date: "10 Jan 2023",
-    },
-    {
-      id: 3,
-      imageSrc: imgSrc,
-      title: "Feeding Program",
-      details:
-        "Brgy. San Jose is hosting Feeding Program as one of the gestures in yearly giveback to residents.",
-      file: "FeedingProgram.pdf",
-      date: "10 Jan 2023",
-    },
-    {
-      id: 4,
-      imageSrc: imgSrc,
-      title: "Feeding Program",
-      details:
-        "Brgy. San Jose is hosting Feeding Program as one of the gestures in yearly giveback to residents.",
-      file: "FeedingProgram.pdf",
-      date: "10 Jan 2023",
-    },
-  ];
-
   const tableHeader = [
     "event id",
     "title",
     "details",
-    "file",
     "date",
     "# of attendees",
-    "event place",
     "actions",
   ];
 
   useEffect(() => {
     document.title = "Announcement | Barangay E-Services Management";
   }, []);
+
+  const dateFormat = (date) => {
+    const eventdate = date === undefined ? "" : date.substr(0, 10);
+    return eventdate;
+  };
+
+  const handleView = (item) => {
+    setAnnouncement(item);
+  };
 
   return (
     <div className="mx-4 my-5 md:mx-5 md:my-6 lg:ml-[19rem] lg:mt-8 lg:mr-6">
@@ -259,14 +227,14 @@ const Announcement = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {announcments.map((item, index) => (
+              {announcements.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <input
                         type="checkbox"
-                        checked={selectedItems.includes(item.id)}
-                        value={item.id}
+                        checked={selectedItems.includes(item._id)}
+                        value={item._id}
                         onChange={checkboxHandler}
                         id=""
                       />
@@ -294,28 +262,14 @@ const Announcement = () => {
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.collections.file.name}
+                        {dateFormat(item.date) || ""}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.date}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        24
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                        {item.brgy}
+                        {item.attendees.length}
                       </span>
                     </div>
                   </td>
@@ -324,6 +278,7 @@ const Announcement = () => {
                       <button
                         type="button"
                         data-hs-overlay="#hs-modal-viewArchivedAnnouncement"
+                        onClick={() => handleView({ ...item })}
                         className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center"
                       >
                         <AiOutlineEye size={24} style={{ color: "#ffffff" }} />
@@ -353,8 +308,8 @@ const Announcement = () => {
           />
         </div>
 
-        <ViewArchivedAnnouncementModal />
-        <RestoreAnnouncementModal />
+        <ViewArchivedAnnouncementModal announcement={announcement} setAnnouncement={setAnnouncement} />
+        <RestoreAnnouncementModal selectedItems={selectedItems} />
       </div>
     </div>
   );

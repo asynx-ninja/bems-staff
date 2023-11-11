@@ -6,17 +6,17 @@ import { FaArchive, FaPlus } from "react-icons/fa";
 import { BsPrinter } from "react-icons/bs";
 import ArchiveModal from "../components/announcement/ArchiveAnnouncementModal";
 import AddModal from "../components/announcement/AddAnnouncementModal";
-import EditModal from "../components/announcement/EditAnnouncementModal";
 import { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import ViewAnnouncementModal from "../components/announcement/ViewAnnouncement";
 import axios from "axios";
 import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
+import EditAnnouncementModal from "../components/announcement/EditAnnouncementModal";
 
 const Announcement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
-  const [announcments, setAnnouncements] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
   const [announcement, setAnnouncement] = useState([]);
@@ -51,11 +51,11 @@ const Announcement = () => {
   };
 
   const checkAllHandler = () => {
-    if (announcments.length === selectedItems.length) {
+    if (announcements.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const postIds = announcments.map((item) => {
-        return item.id;
+      const postIds = announcements.map((item) => {
+        return item._id;
       });
 
       setSelectedItems(postIds);
@@ -66,16 +66,23 @@ const Announcement = () => {
     "event id",
     "title",
     "details",
-    "file",
     "date",
     "# of attendees",
-    "event place",
     "actions",
   ];
 
   useEffect(() => {
     document.title = "Announcement | Barangay E-Services Management";
   }, []);
+
+  const handleView = (item) => {
+    setAnnouncement(item);
+  };
+
+  const dateFormat = (date) => {
+    const eventdate = date === undefined ? "" : date.substr(0, 10);
+    return eventdate;
+  };
 
   return (
     <div className="mx-4 my-5 md:mx-5 md:my-6 lg:ml-[19rem] lg:mt-8 lg:mr-6">
@@ -265,7 +272,7 @@ const Announcement = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {announcments.map((item, index) => (
+              {announcements.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
@@ -300,28 +307,14 @@ const Announcement = () => {
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.collections.file.name}
+                      {dateFormat(item.date) || ""}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.date}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        24
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                        {item.brgy}
+                      {item.attendees.length}
                       </span>
                     </div>
                   </td>
@@ -329,17 +322,11 @@ const Announcement = () => {
                     <div className="flex justify-center space-x-1 sm:space-x-none">
                       <button
                         type="button"
-                        data-hs-overlay="#hs-modal-viewAnnouncement"
+                        data-hs-overlay="#hs-modal-editAnnouncement"
+                        onClick={() => handleView({ ...item })}
                         className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                       >
                         <AiOutlineEye size={24} style={{ color: "#ffffff" }} />
-                      </button>
-                      <button
-                        type="button"
-                        data-hs-overlay="#hs-modal-archive"
-                        className="text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                      >
-                        <FiEdit size={24} style={{ color: "#ffffff" }} />
                       </button>
                     </div>
                   </td>
@@ -365,10 +352,10 @@ const Announcement = () => {
             renderOnZeroPageCount={null}
           />
         </div>
+        <AddModal brgy={brgy}/>
         <ArchiveModal selectedItems={selectedItems} />
-        <AddModal />
-        <EditModal />
-        <ViewAnnouncementModal />
+        <ViewAnnouncementModal announcement={announcement} setAnnouncement={setAnnouncement}/>
+        <EditAnnouncementModal announcement={announcement} setAnnouncement={setAnnouncement}/>
       </div>
     </div>
   );

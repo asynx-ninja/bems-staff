@@ -338,7 +338,7 @@ const Services = () => {
                     <div className="flex justify-center space-x-1 sm:space-x-none">
                       <button
                         type="button"
-                        data-hs-overlay="#hs-view-service-modal"
+                        data-hs-overlay="#hs-modal-editServices"
                         onClick={() => handleView({ ...item })}
                         className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                       >
@@ -386,6 +386,7 @@ const Services = () => {
       <CreateServiceModal brgy={brgy}/>
       {/*<StatusServices status={status} setStatus={setStatus}/>*/}
       <ViewServiceModal service={service} setService={setService}/>
+      <EditServiceModal service={service} setService={setService}/>
       <GenerateReportsModal />
     </div>
   );

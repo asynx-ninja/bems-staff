@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import API_LINK from "../../config/API";
 import OccupationList from "./OccupationList";
 import { LiaRandomSolid } from "react-icons/lia";
+import CreateOccupationList from "./CreateOccupationList";
 
 function AddResidentModal({ brgy }) {
   const [user, setUser] = useState({
@@ -111,7 +112,7 @@ function AddResidentModal({ brgy }) {
           city: "Rodriguez, Rizal",
           brgy: brgy,
         });
-        //window.location.reload();
+        window.location.reload();
       }
     } catch (err) {
       console.log(err);
@@ -418,7 +419,7 @@ function AddResidentModal({ brgy }) {
                             >
                               OCCUPATION
                             </label>
-                            <OccupationList handleChange={handleChange} />
+                            <CreateOccupationList handleChange={handleChange} />
                           </div>
 
                           <div className="flex flex-col w-full mt-2 md:mt-0 md:ml-3">

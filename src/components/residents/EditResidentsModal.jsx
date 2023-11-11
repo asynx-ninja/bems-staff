@@ -8,6 +8,11 @@ import OccupationList from "./OccupationList";
 import { LiaRandomSolid } from "react-icons/lia";
 
 function EditResidentModal({ user, setUser }) {
+  const [edit, setEdit] = useState(false);
+
+  const handleOnEdit = () => {
+    setEdit(!edit);
+  };
 
   const religions = [
     "Roman Catholic",
@@ -142,6 +147,7 @@ function EditResidentModal({ user, setUser }) {
                               className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
                               placeholder=""
                               value={user.firstName}
+                              disabled={!edit}
                             />
                           </div>
 
@@ -160,6 +166,7 @@ function EditResidentModal({ user, setUser }) {
                               className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
                               placeholder=""
                               value={user.middleName}
+                              disabled={!edit}
                             />
                           </div>
 
@@ -178,6 +185,7 @@ function EditResidentModal({ user, setUser }) {
                               className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
                               placeholder=""
                               value={user.lastName}
+                              disabled={!edit}
                             />
                           </div>
                         </div>
@@ -198,6 +206,7 @@ function EditResidentModal({ user, setUser }) {
                               className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
                               placeholder=""
                               value={user.suffix}
+                              disabled={!edit}
                             />
                           </div>
 
@@ -215,6 +224,7 @@ function EditResidentModal({ user, setUser }) {
                               onChange={handleChange}
                               className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
                               value={birthdayFormat(user.birthday) || ""}
+                              disabled={!edit}
                             />
                           </div>
 
@@ -253,6 +263,7 @@ function EditResidentModal({ user, setUser }) {
                               className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
                               placeholder=""
                               value={user.email}
+                              disabled={!edit}
                             />
                           </div>
 
@@ -271,6 +282,7 @@ function EditResidentModal({ user, setUser }) {
                               className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
                               placeholder=""
                               value={user.contact}
+                              disabled={!edit}
                             />
                           </div>
 
@@ -289,6 +301,7 @@ function EditResidentModal({ user, setUser }) {
                                 value="Male"
                                 onChange={handleChange}
                                 checked={user.sex === "Male"}
+                                disabled={!edit}
                               />
                               <label htmlFor="Male" className="ml-2">
                                 Male
@@ -301,6 +314,7 @@ function EditResidentModal({ user, setUser }) {
                                 onChange={handleChange}
                                 checked={user.sex === "Female"}
                                 className="ml-4 md:ml-2 lg:ml-4"
+                                disabled={!edit}
                               />
                               <label htmlFor="Female" className="ml-2">
                                 Female
@@ -328,6 +342,7 @@ function EditResidentModal({ user, setUser }) {
                               name="civil_status"
                               onChange={handleChange}
                               className="w-full p-2 border  rounded"
+                              disabled={!edit}
                             >
                               <option selected>-- Select Status --</option>
                               <option
@@ -368,6 +383,7 @@ function EditResidentModal({ user, setUser }) {
                               name="religion"
                               onChange={handleChange}
                               className="w-full p-2 border rounded"
+                              disabled={!edit}
                             >
                               <option value="">-- Select Religion --</option>
                               {religions.map((religion) => (
@@ -391,6 +407,7 @@ function EditResidentModal({ user, setUser }) {
                               OCCUPATION
                             </label>
                             <OccupationList
+                              edit={edit}
                               handleChange={handleChange}
                               user1={user}
                               setUser={setUser}
@@ -412,6 +429,7 @@ function EditResidentModal({ user, setUser }) {
                               className="block w-full p-2.5 text-sm text-black bg-gray-200 rounded-lg"
                               placeholder=""
                               value={user.address?.street}
+                              disabled={!edit}
                             />
                           </div>
 
@@ -427,6 +445,7 @@ function EditResidentModal({ user, setUser }) {
                               name="brgy"
                               onChange={handleChange}
                               className="w-full p-2 border rounded"
+                              disabled={!edit}
                             >
                               <option>Select Barangay</option>
                               <option
@@ -535,6 +554,7 @@ function EditResidentModal({ user, setUser }) {
                                 onChange={handleChange2}
                                 checked={user.isVoter === true}
                                 value="true"
+                                disabled={!edit}
                               />
                               <label htmlFor="Male" className="ml-2">
                                 Yes
@@ -547,6 +567,7 @@ function EditResidentModal({ user, setUser }) {
                                 value="false"
                                 checked={user.isVoter === false}
                                 className="ml-4"
+                                disabled={!edit}
                               />
                               <label htmlFor="No" className="ml-2">
                                 No
@@ -569,6 +590,7 @@ function EditResidentModal({ user, setUser }) {
                                 onChange={handleChange2}
                                 checked={user.isHead === true}
                                 value="true"
+                                disabled={!edit}
                               />
                               <label htmlFor="Yes" className="ml-2">
                                 Yes
@@ -581,6 +603,7 @@ function EditResidentModal({ user, setUser }) {
                                 value="false"
                                 checked={user.isHead === false}
                                 className="ml-4"
+                                disabled={!edit}
                               />
                               <label htmlFor="No" className="ml-2">
                                 No
@@ -602,8 +625,9 @@ function EditResidentModal({ user, setUser }) {
                               name="type"
                               onChange={handleChange}
                               className="w-full p-1 pl-2 border rounded"
+                              disabled
                             >
-                              <option selected>-- Select User Type --</option>
+                              {/* <option selected>-- Select User Type --</option>
                               <option
                                 value="Admin"
                                 selected={user.type === "Admin"}
@@ -615,7 +639,7 @@ function EditResidentModal({ user, setUser }) {
                                 selected={user.type === "Staff"}
                               >
                                 Barangay Staff
-                              </option>
+                              </option> */}
                               <option
                                 value="Resident"
                                 selected={user.type === "Resident"}
@@ -647,6 +671,7 @@ function EditResidentModal({ user, setUser }) {
                             className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
                             value={user.username}
                             placeholder=""
+                            disabled={!edit}
                           />
                         </div>
 
@@ -661,6 +686,7 @@ function EditResidentModal({ user, setUser }) {
                             <button
                               className="bg-[#295141] p-2.5 rounded-l-md"
                               onClick={handleButtonClick}
+                              disabled={!edit}
                             >
                               <div className="w-full overflow-hidden">
                                 <LiaRandomSolid
@@ -679,6 +705,7 @@ function EditResidentModal({ user, setUser }) {
                               onChange={handleChange}
                               className="block w-full p-1 text-sm text-black bg-gray-200 rounded-r-lg"
                               value={user.password}
+                              disabled={!edit}
                             />
                           </div>
                         </div>
@@ -689,21 +716,41 @@ function EditResidentModal({ user, setUser }) {
               </div>
               {/* Buttons */}
               <div className="flex justify-center gap-x-2 py-3 px-6 dark:border-gray-700">
-                <button
-                  onClick={handleSave}
-                  type="button"
-                  className="h-[2.5rem] w-[8rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm align-middle"
-                  data-hs-overlay="#hs-modal-editResident"
-                >
-                  SAVE
-                </button>
-                <button
-                  type="button"
-                  className="h-[2.5rem] w-[8rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
-                  data-hs-overlay="#hs-modal-editResident"
-                >
-                  CLOSE
-                </button>
+               {!edit ? (
+                  <div className="space-x-2">
+                    <button
+                    type="button"
+                    className="h-[2.5rem] w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm align-middle"
+                    onClick={handleOnEdit}
+                  >
+                    EDIT
+                  </button>
+                  <button
+                    type="button"
+                    className="h-[2.5rem] w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
+                    data-hs-overlay="#hs-modal-editResident"
+                  >
+                    CLOSE
+                  </button>
+                  </div>
+                ) : (
+                  <div className="space-x-2">
+                    <button
+                      type="submit"
+                      onClick={handleSave}
+                      className="h-[2.5rem] w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm align-middle"
+                    >
+                      SAVE CHANGES
+                    </button>
+                    <button
+                      type="button"
+                      className="h-[2.5rem] w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
+                      onClick={handleOnEdit}
+                    >
+                      CANCEL
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

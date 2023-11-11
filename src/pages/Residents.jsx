@@ -14,6 +14,7 @@ import axios from "axios";
 import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
 import StatusResident from "../components/residents/StatusResident";
+import EditResidentModal from "../components/residents/EditResidentsModal";
 
 const Residents = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -344,7 +345,7 @@ const Residents = () => {
                     <div className="flex justify-center space-x-1 sm:space-x-none">
                       <button
                         type="button"
-                        data-hs-overlay="#hs-modal-viewResident"
+                        data-hs-overlay="#hs-modal-editResident"
                         onClick={() => handleView({ ...item })}
                         className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                       >
@@ -393,6 +394,7 @@ const Residents = () => {
       <GenerateReportsModal />
       <ViewResidentModal user={user} setUser={setUser}/>
       <StatusResident status={status} setStatus={setStatus} />
+      <EditResidentModal user={user} setUser={setUser}/>
     </div>
   );
 };

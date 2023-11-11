@@ -10,7 +10,13 @@ function EditServiceModal({ service, setService }) {
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
   const [files, setFiles] = useState([]);
+  const [edit, setEdit] = useState(false);
   const navigate = useNavigate();
+
+  const handleOnEdit = () => {
+    setEdit(!edit);
+  };
+
 
   useEffect(() => {
     setFiles(service.length === 0 ? [] : service.collections.file);
@@ -18,7 +24,7 @@ function EditServiceModal({ service, setService }) {
     var logoSrc = document.getElementById("edit_logo");
     logoSrc.src = service.length === 0 ? "" : service.collections.logo.link;
 
-    var bannerSrc = document.getElementById("edit_banner")
+    var bannerSrc = document.getElementById("edit_banner");
     bannerSrc.src = service.length === 0 ? "" : service.collections.banner.link;
   }, [service]);
 
@@ -70,7 +76,7 @@ function EditServiceModal({ service, setService }) {
     try {
       e.preventDefault();
 
-      console.log("PUMASOK SIYA")
+      console.log("PUMASOK SIYA");
 
       var formData = new FormData();
 
@@ -116,14 +122,11 @@ function EditServiceModal({ service, setService }) {
         // setBanner();
         // setFiles([]);
         // navigate("/");
-        
 
-setTimeout(() => {
-  HSOverlay.close(document.getElementById("hs-modal-editServices"));
-  window.location.reload();
-}, 1000);
-
-        
+        setTimeout(() => {
+          HSOverlay.close(document.getElementById("hs-modal-editServices"));
+          window.location.reload();
+        }, 1000);
       }
     } catch (err) {
       console.log(err);
@@ -146,7 +149,7 @@ setTimeout(() => {
                   class="font-bold text-white mx-auto md:text-xl"
                   style={{ letterSpacing: "0.3em" }}
                 >
-                  EDIT SERVICE
+                  MANAGE SERVICE
                 </h3>
               </div>
             </div>
@@ -162,26 +165,11 @@ setTimeout(() => {
                   </label>
                   <div className="flex flex-col items-center space-y-2 relative">
                     <div className="w-full">
-                    <img
-                className="w-full h-[250px] object-cover"
-                id="edit_logo"
-                alt="Current profile photo"
-              />
-                      {/* {logo ? (
-                        <img
-                          className="w-full h-[250px] object-cover"
-                          id="logo"
-                          src={URL.createObjectURL(logo)}
-                          alt="Current profile photo"
-                        />
-                      ) : (
-                        <img
-                          className="w-full h-[250px] object-cover"
-                          id="edit_logo"
-                          src={service.length === 0 ? "": service.collections.logo.link}
-                          alt="Default logo"
-                        />
-                      )} */}
+                      <img
+                        className="w-full h-[250px] object-cover"
+                        id="edit_logo"
+                        alt="Current profile photo"
+                      />
                     </div>
                     <label className="w-full bg-white border border-gray-300">
                       <span className="sr-only">Choose profile photo</span>
@@ -191,6 +179,7 @@ setTimeout(() => {
                         name="logo"
                         accept="image/*"
                         value={!logo ? "" : logo.originalname}
+                        disabled={!edit}
                         className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4  file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
                       />
                     </label>
@@ -205,26 +194,12 @@ setTimeout(() => {
                   </label>
                   <div className="flex flex-col items-center space-y-2 relative">
                     <div className="w-full">
-                    <img
-                className="w-full h-[250px] object-cover"
-                id="edit_banner"
-                alt="Current profile photo"
-              />
-                    {/* {banner ? (
-                        <img
-                          className="w-full h-[250px] object-cover"
-                          id="banner"
-                          src={URL.createObjectURL(banner)}
-                          alt="Current profile photo"
-                        />
-                      ) : (
-                        <img
-                          className="w-full h-[250px] object-cover"
-                          id="logo"
-                          src={service.length === 0 ? "": service.collections.banner.link}
-                          alt="Default banner"
-                        />
-                      )} */}
+                      <img
+                        className="w-full h-[250px] object-cover"
+                        id="edit_banner"
+                        alt="Current profile photo"
+                      />
+
                     </div>
                     <label className="w-full bg-white border border-gray-300">
                       <span className="sr-only">Choose profile photo</span>
@@ -234,6 +209,7 @@ setTimeout(() => {
                         name="edit_banner"
                         accept="image/*"
                         value={!banner ? "" : banner.originalname}
+                        disabled={!edit}
                         className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4  file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
                       />
                     </label>
@@ -271,7 +247,7 @@ setTimeout(() => {
                   type="text"
                   placeholder="Username"
                   disabled
-                  value={service &&  service.service_id}
+                  value={service && service.service_id}
                 />
               </div>
               <div className="mb-4">
@@ -288,6 +264,7 @@ setTimeout(() => {
                   type="text"
                   value={service && service.name}
                   onChange={handleChange}
+                  disabled={!edit}
                   placeholder="Service Name"
                 />
               </div>
@@ -302,6 +279,7 @@ setTimeout(() => {
                   name="type"
                   onChange={handleChange}
                   className="w-full px-4 py-2 rounded-md border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-500"
+                  disabled={!edit}
                 >
                   <option value="Healthcare">Healthcare Services</option>
                   <option value="Education">Education Services</option>
@@ -327,7 +305,7 @@ setTimeout(() => {
                   htmlFor="message"
                   className="block mb-2 text-sm font-bold text-gray-700 "
                 >
-                  Your message
+                  Details
                 </label>
                 <textarea
                   id="message"
@@ -335,6 +313,7 @@ setTimeout(() => {
                   name="details"
                   value={service && service.details}
                   onChange={handleChange}
+                  disabled={!edit}
                   className="block p-2.5 w-full text-sm text-gray-700  rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 "
                   placeholder="Enter service details..."
                 />
@@ -352,18 +331,59 @@ setTimeout(() => {
                   id="fee"
                   name="fee"
                   type="number"
-                  value={service &&  service.fee}
+                  value={service && service.fee}
                   onChange={handleChange}
+                  disabled={!edit}
                   placeholder="Service Fee"
                 />
               </div>
-              
+
               <EditDropbox
                 files={service && files}
                 setFiles={setFiles}
                 handleFileChange={handleFileChange}
                 handleSubmit={handleSubmit}
               />
+
+              {/* Buttons */}
+              <div class="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
+                {!edit ? (
+                 <div className="space-x-2">
+                 <button
+                 type="button"
+                 className="h-[2.5rem] w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm align-middle"
+                 onClick={handleOnEdit}
+               >
+                 EDIT
+               </button>
+               <button
+                 type="button"
+                 className="h-[2.5rem] w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
+                 data-hs-overlay="#hs-modal-editServices"
+               >
+                 CLOSE
+               </button>
+               </div>
+                ) : (
+                  <div className="space-x-2">
+                    <button
+                      type="submit"
+                      onClick={handleSubmit}
+                      className="h-[2.5rem] w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm align-middle"
+                    >
+                      SAVE CHANGES
+                    </button>
+                    <button
+                      type="button"
+                      className="h-[2.5rem] w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
+                      onClick={handleOnEdit}
+                    >
+                     CANCEL
+                    </button>
+                  </div>
+                )}
+                
+              </div>
             </div>
           </div>
         </div>
