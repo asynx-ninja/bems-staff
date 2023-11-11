@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Dropbox from "./Dropbox";
+import API_LINK from "../../config/API";
 
 function CreateServiceModal({ brgy }) {
   const [service, setService] = useState({
@@ -84,12 +85,12 @@ function CreateServiceModal({ brgy }) {
 
       formData.append("service", JSON.stringify(obj));
 
-      // console.log("Service", service)
-      // console.log("Logo", logo)
-      // console.log("Banner", banner)
-      // console.log("File", files)
+      console.log("Service", service)
+      console.log("Logo", logo)
+      console.log("Banner", banner)
+      console.log("File", files)
       const result = await axios.post(
-        `http://localhost:8800/api/services/`,
+        `${API_LINK}/services/`,
         formData
       );
 
@@ -111,7 +112,7 @@ function CreateServiceModal({ brgy }) {
         setLogo();
         setBanner();
         setFiles([]);
-        window.location.reload();
+        // window.location.reload();
       }
     } catch (err) {
       console.log(err);

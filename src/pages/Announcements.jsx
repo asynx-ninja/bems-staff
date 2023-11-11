@@ -17,7 +17,7 @@ import { useSearchParams } from "react-router-dom";
 
 const Announcement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
-  const [announcments, setAnnouncements] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
   const [announcement, setAnnouncement] = useState([]);
@@ -305,7 +305,7 @@ const Announcement = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {announcments.map((item, index) => (
+              {announcements.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
@@ -406,7 +406,7 @@ const Announcement = () => {
           />
         </div>
         <ArchiveModal />
-        <AddModal />
+        <AddModal brgy={brgy}/>
         <EditModal />
         <ViewAnnouncementModal />
       </div>
