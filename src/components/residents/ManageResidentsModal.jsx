@@ -343,26 +343,12 @@ function ManageResidentModal({ user, setUser }) {
                               value={user.civil_status}
                             >
                               <option>-- Select Status --</option>
-                              <option
-                                value="Single"
-                              >
-                                Single
-                              </option>
-                              <option
-                                value="Married"
-                              >
-                                Married
-                              </option>
-                              <option
-                                value="Legally Separated"
-                              >
+                              <option value="Single">Single</option>
+                              <option value="Married">Married</option>
+                              <option value="Legally Separated">
                                 Legally Separated
                               </option>
-                              <option
-                                value="Widowed"
-                              >
-                                Widowed
-                              </option>
+                              <option value="Widowed">Widowed</option>
                             </select>
                           </div>
 
@@ -381,8 +367,9 @@ function ManageResidentModal({ user, setUser }) {
                               value={user.religion}
                             >
                               <option value="">-- Select Religion --</option>
-                              {religions.map((religion) => (
+                              {religions.map((religion, index) => (
                                 <option
+                                  key={index}
                                   value={religion}
                                 >
                                   {religion}
@@ -443,61 +430,17 @@ function ManageResidentModal({ user, setUser }) {
                               value={user.address?.brgy}
                             >
                               <option>Select Barangay</option>
-                              <option
-                                value="BALITE"
-                              >
-                                Balite
-                              </option>
-                              <option
-                                value="BURGOS"
-                              >
-                                Burgos
-                              </option>
-                              <option
-                                value="GERONIMO"
-                              >
-                                Geronimo
-                              </option>
-                              <option
-                                value="MACABUD"
-                              >
-                                Macabud
-                              </option>
-                              <option
-                                value="MANGGAHAN"
-                              >
-                                Manggahan
-                              </option>
-                              <option
-                                value="MASCAP"
-                              >
-                                Mascap
-                              </option>
-                              <option
-                                value="PURAY"
-                              >
-                                Puray
-                              </option>
-                              <option
-                                value="ROSARIO"
-                              >
-                                Rosario
-                              </option>
-                              <option
-                                value="SAN ISIDRO"
-                              >
-                                San Isidro
-                              </option>
-                              <option
-                                value="SAN JOSE"
-                              >
-                                San Jose
-                              </option>
-                              <option
-                                value="SAN RAFAEL"
-                              >
-                                San Rafael
-                              </option>
+                              <option value="BALITE">Balite</option>
+                              <option value="BURGOS">Burgos</option>
+                              <option value="GERONIMO">Geronimo</option>
+                              <option value="MACABUD">Macabud</option>
+                              <option value="MANGGAHAN">Manggahan</option>
+                              <option value="MASCAP">Mascap</option>
+                              <option value="PURAY">Puray</option>
+                              <option value="ROSARIO">Rosario</option>
+                              <option value="SAN ISIDRO">San Isidro</option>
+                              <option value="SAN JOSE">San Jose</option>
+                              <option value="SAN RAFAEL">San Rafael</option>
                             </select>
                           </div>
 
@@ -625,11 +568,7 @@ function ManageResidentModal({ user, setUser }) {
                               >
                                 Barangay Staff
                               </option> */}
-                              <option
-                                value="Resident"
-                              >
-                                Resident
-                              </option>
+                              <option value="Resident">Resident</option>
                             </select>
                           </div>
                         </div>

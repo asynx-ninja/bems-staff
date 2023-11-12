@@ -400,8 +400,10 @@ function AddResidentModal({ brgy }) {
                               className="w-full p-2 border rounded"
                             >
                               <option value="">-- Select Religion --</option>
-                              {religions.map((religion) => (
-                                <option value={religion}>{religion}</option>
+                              {religions.map((religion, index) => (
+                                <option key={index} value={religion}>
+                                  {religion}
+                                </option>
                               ))}
                             </select>
                           </div>
@@ -448,7 +450,7 @@ function AddResidentModal({ brgy }) {
                               onChange={handleChange}
                               className="w-full p-2 border rounded"
                             >
-                              <option >Select Barangay</option>
+                              <option>Select Barangay</option>
                               <option value="Balite">Balite</option>
                               <option value="Burgos">Burgos</option>
                               <option value="Geronimo">Geronimo</option>

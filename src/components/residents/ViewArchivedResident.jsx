@@ -248,11 +248,13 @@ function ViewResidentModal({ user, setUser }) {
                               <option>-- Select Status --</option>
                               <option value="Single">Single</option>
                               <option value="Married">Married</option>
-                              <option value="Legally Separated">Legally Separated</option>
+                              <option value="Legally Separated">
+                                Legally Separated
+                              </option>
                               <option value="Widowed">Widowed</option>
                             </select>
                           </div>
-
+                          // ...
                           <div className="flex flex-col w-full">
                             <label
                               htmlFor="status"
@@ -266,8 +268,9 @@ function ViewResidentModal({ user, setUser }) {
                               value={user.religion}
                             >
                               <option value="">-- Select Religion --</option>
-                              {religions.map((religion) => (
+                              {religions.map((religion, index) => (
                                 <option
+                                  key={index} // Adding a unique key prop
                                   value={religion}
                                 >
                                   {religion}
@@ -275,6 +278,7 @@ function ViewResidentModal({ user, setUser }) {
                               ))}
                             </select>
                           </div>
+                          // ...
                         </div>
 
                         <div className="mt-2 px-1 flex flex-col md:flex-row w-full">
@@ -400,21 +404,9 @@ function ViewResidentModal({ user, setUser }) {
                               value={user.type}
                             >
                               <option>-- Select User Type --</option>
-                              <option
-                                value="Admin"
-                              >
-                                Admin
-                              </option>
-                              <option
-                                value="Staff"
-                              >
-                                Barangay Staff
-                              </option>
-                              <option
-                                value="Resident"
-                              >
-                                Resident
-                              </option>
+                              <option value="Admin">Admin</option>
+                              <option value="Staff">Barangay Staff</option>
+                              <option value="Resident">Resident</option>
                             </select>
                           </div>
                         </div>
