@@ -1,6 +1,6 @@
 import React from "react";
 
-const OccupationList = ({edit, handleChange}) => {
+const OccupationList = ({user, edit, handleChange}) => {
   return (
     
     <select
@@ -8,9 +8,10 @@ const OccupationList = ({edit, handleChange}) => {
       id="occupation"
       name="occupation"
       onChange={handleChange}
+      value={user.occupation}
       disabled={!edit}
     >
-      <option value="" selected="selected" disabled="disabled">
+      <option  disabled="disabled">
         Select Occupation
       </option>
       <optgroup label="Healthcare Practitioners and Technical Occupations:">

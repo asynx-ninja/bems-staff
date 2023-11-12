@@ -85,10 +85,6 @@ function CreateServiceModal({ brgy }) {
 
       formData.append("service", JSON.stringify(obj));
 
-      console.log("Service", service)
-      console.log("Logo", logo)
-      console.log("Banner", banner)
-      console.log("File", files)
       const result = await axios.post(
         `${API_LINK}/services/`,
         formData
@@ -112,7 +108,7 @@ function CreateServiceModal({ brgy }) {
         setLogo();
         setBanner();
         setFiles([]);
-        // window.location.reload();
+        window.location.reload();
       }
     } catch (err) {
       console.log(err);
@@ -134,7 +130,7 @@ function CreateServiceModal({ brgy }) {
                 className="font-bold text-white mx-auto md:text-xl text-center"
                 style={{ letterSpacing: "0.3em" }}
               >
-                CREATE ANNOUNCEMENT
+                CREATE SERVICE
               </h3>
             </div>
 
@@ -292,7 +288,7 @@ function CreateServiceModal({ brgy }) {
               <button
                 type="button"
                 className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                data-hs-overlay="#hs-create-service-modal"
+               onClick={handleSubmit}
               >
                 CREATE
               </button>

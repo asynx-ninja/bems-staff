@@ -1,10 +1,9 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { BsPrinter } from "react-icons/bs";
-import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
+import { AiOutlineEye } from "react-icons/ai";
 import { MdRestartAlt } from "react-icons/md";
 import ReactPaginate from "react-paginate";
-import imgSrc from "/imgs/bg-header.png";
 import ViewArchivedServiceModal from "../components/archivedServices/ViewArchivedServiceModal";
 import ArchivedServicesReportsModal from "../components/archivedServices/ArchivedServicesReportsModal";
 import RestoreServicesModal from "../components/archivedServices/RestoreServicesModal";
@@ -25,7 +24,6 @@ const ArchivedServices = () => {
       const response = await axios.get(
         `${API_LINK}/services/?brgy=${brgy}&archived=true`
       );
-      console.log(response);
       if (response.status === 200) setServices(response.data);
       else setServices([]);
     };

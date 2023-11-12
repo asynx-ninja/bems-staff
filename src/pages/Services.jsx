@@ -27,7 +27,6 @@ const Services = () => {
       const response = await axios.get(
         `${API_LINK}/services/?brgy=${brgy}&archived=false`
       );
-      console.log(response);
       if (response.status === 200) setServices(response.data);
       else setServices([]);
     };
@@ -82,7 +81,6 @@ const Services = () => {
   };
 
   const handleStatus = (status) => {
-    console.log("handleStatus", status);
     setStatus(status);
   };
 

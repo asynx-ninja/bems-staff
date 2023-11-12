@@ -20,9 +20,6 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
     setEdit(!edit);
   };
 
-  console.log("edit ", edit);
-  console.log("announcement ", announcement);
-
   useEffect(() => {
     setFiles(announcement.length === 0 ? [] : announcement.collections.file);
 
@@ -83,8 +80,6 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
     try {
       e.preventDefault();
 
-      console.log("PUMASOK SIYA");
-
       var formData = new FormData();
 
       const arr1 = [banner, logo];
@@ -129,8 +124,6 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
         // setBanner();
         // setFiles([]);
         // navigate("/");
-
-        console.log(result);
 
         setTimeout(() => {
           HSOverlay.close(document.getElementById("hs-modal-editAnnouncement"));

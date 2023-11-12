@@ -17,9 +17,9 @@ function ViewResidentModal({ user, setUser }) {
   ];
 
   const birthdayFormat = (date) => {
-    const birthdate = date === undefined ? "" : date.substr(0, 10)
+    const birthdate = date === undefined ? "" : date.substr(0, 10);
     return birthdate;
-}
+  };
 
   return (
     <div>
@@ -205,6 +205,7 @@ function ViewResidentModal({ user, setUser }) {
                                 id="Male"
                                 value="Male"
                                 checked={user.sex === "Male"}
+                                readOnly
                               />
                               <label htmlFor="Male" className="ml-2">
                                 Male
@@ -215,6 +216,7 @@ function ViewResidentModal({ user, setUser }) {
                                 value="Female"
                                 className="ml-4 md:ml-2 lg:ml-4"
                                 checked={user.sex === "Female"}
+                                readOnly
                               />
                               <label htmlFor="Female" className="ml-2">
                                 Female
@@ -241,32 +243,13 @@ function ViewResidentModal({ user, setUser }) {
                               id="civil_status"
                               className="w-full p-2 border rounded"
                               disabled
+                              value={user.civil_status}
                             >
-                              <option selected>-- Select Status --</option>
-                              <option
-                                value="Single"
-                                selected={user.civil_status === "Single"}
-                              >
-                                Single
-                              </option>
-                              <option
-                                value="Married"
-                                selected={user.civil_status === "Married"}
-                              >
-                                Married
-                              </option>
-                              <option
-                                value="Divorced"
-                                selected={user.civil_status === "Divorced"}
-                              >
-                                Divorced
-                              </option>
-                              <option
-                                value="Widowed"
-                                selected={user.civil_status === "Widowed"}
-                              >
-                                Widowed
-                              </option>
+                              <option>-- Select Status --</option>
+                              <option value="Single">Single</option>
+                              <option value="Married">Married</option>
+                              <option value="Legally Separated">Legally Separated</option>
+                              <option value="Widowed">Widowed</option>
                             </select>
                           </div>
 
@@ -280,12 +263,12 @@ function ViewResidentModal({ user, setUser }) {
                             <select
                               className="w-full p-2 border rounded"
                               disabled
+                              value={user.religion}
                             >
                               <option value="">-- Select Religion --</option>
                               {religions.map((religion) => (
                                 <option
                                   value={religion}
-                                  selected={user.religion === religion}
                                 >
                                   {religion}
                                 </option>
@@ -324,7 +307,13 @@ function ViewResidentModal({ user, setUser }) {
                               id="street"
                               className="block w-full p-2.5 text-sm text-black bg-gray-200 rounded-lg"
                               placeholder=""
-                              value={user.address?.street + ", " + user.address?.brgy + ", " + user.address?.city}
+                              value={
+                                user.address?.street +
+                                ", " +
+                                user.address?.brgy +
+                                ", " +
+                                user.address?.city
+                              }
                               readOnly
                             />
                           </div>
@@ -344,6 +333,7 @@ function ViewResidentModal({ user, setUser }) {
                                 id="true"
                                 value="true"
                                 checked={user.isVoter === true}
+                                readOnly
                               />
                               <label htmlFor="isVoterTrue" className="ml-2">
                                 Yes
@@ -354,6 +344,7 @@ function ViewResidentModal({ user, setUser }) {
                                 value="false"
                                 checked={user.isVoter === false}
                                 className="ml-4"
+                                readOnly
                               />
                               <label htmlFor="isVoterFalse" className="ml-2">
                                 No
@@ -374,6 +365,7 @@ function ViewResidentModal({ user, setUser }) {
                                 id="true"
                                 value="true"
                                 checked={user.isHead === true}
+                                readOnly
                               />
                               <label htmlFor="Yes" className="ml-2">
                                 Yes
@@ -384,6 +376,7 @@ function ViewResidentModal({ user, setUser }) {
                                 value="false"
                                 className="ml-4"
                                 checked={user.isHead === false}
+                                readOnly
                               />
                               <label htmlFor="No" className="ml-2">
                                 No
@@ -404,23 +397,21 @@ function ViewResidentModal({ user, setUser }) {
                               id="type"
                               className="w-full p-1 pl-2 border rounded"
                               disabled
+                              value={user.type}
                             >
-                              <option selected>-- Select User Type --</option>
+                              <option>-- Select User Type --</option>
                               <option
                                 value="Admin"
-                                selected={user.type === "Admin"}
                               >
                                 Admin
                               </option>
                               <option
                                 value="Staff"
-                                selected={user.type === "Staff"}
                               >
                                 Barangay Staff
                               </option>
                               <option
                                 value="Resident"
-                                selected={user.type === "Resident"}
                               >
                                 Resident
                               </option>

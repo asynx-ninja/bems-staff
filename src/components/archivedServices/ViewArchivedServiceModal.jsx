@@ -1,7 +1,5 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import EditDropbox from "../services/EditDropbox";
 
 function ViewArchivedServiceModal({ service, setService }) {
@@ -113,52 +111,53 @@ function ViewArchivedServiceModal({ service, setService }) {
                   name="type"
                   className="w-full px-4 py-2 rounded-md border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-500"
                   disabled
+                  value={service.type}
                 >
                   <option
                     value="Healthcare"
-                    selected={service.type === "Healthcare"}
+                   
                   >
                     Healthcare Services
                   </option>
                   <option
                     value="Education"
-                    selected={service.type === "Education"}
+                   
                   >
                     Education Services
                   </option>
                   <option
                     value="Social Welfare"
-                    selected={service.type === "Social Welfare"}
+                   
                   >
                     Social Welfare Services
                   </option>
                   <option
                     value="Security and Safety"
-                    selected={service.type === "Security and Safety"}
+                 
                   >
                     Security and Safety Services
                   </option>
                   <option
                     value="Infrastructure"
-                    selected={service.type === "Infrastructure"}
+                   
                   >
                     Infrastructure Services
                   </option>
                   <option
                     value="Community Services"
-                    selected={service.type === "Community Services"}
+                  
                   >
                     Community Services
                   </option>
                   <option
                     value="Administrative"
-                    selected={service.type === "Administrative"}
+                    
                   >
                     Administrative Services
                   </option>
                   <option
                     value="Environmental"
-                    selected={service.type === "Environmental"}
+                    
                   >
                     Environmental Services
                   </option>

@@ -8,14 +8,10 @@ function RestoreResidentModal({ selectedItems }) {
     try {
       e.preventDefault();
 
-      console.log(selectedItems);
-
       for (let i = 0; i < selectedItems.length; i++) {
         const response = await axios.patch(
           `${API_LINK}/users/archived/${selectedItems[i]}/false`
         );
-
-        console.log(response);
       }
       window.location.reload();
     } catch (err) {

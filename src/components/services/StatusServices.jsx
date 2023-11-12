@@ -15,12 +15,10 @@ function StatusServices({ status, setStatus }) {
         { headers: { "Content-Type": "application/json" } }
       );
 
-      console.log(response);
       if (response.status === 200){ 
-        console.log("YEY");
         window.location.reload();
     }
-      else console.log("NYARK");
+      else ;
     } catch (err) {
       console.log(err);
     }

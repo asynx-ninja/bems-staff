@@ -83,10 +83,6 @@ function CreateAnnouncementModal({ brgy }) {
 
       formData.append("announcement", JSON.stringify(obj));
 
-      console.log("announcement", announcement);
-      console.log("Logo", logo);
-      console.log("Banner", banner);
-      console.log("File", files);
       const result = await axios.post(`${API_LINK}/announcement/`, formData);
 
       if (result.status === 200) {

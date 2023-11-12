@@ -29,7 +29,6 @@ const Announcement = () => {
       const response = await axios.get(
         `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
       );
-      console.log(response);
       if (response.status === 200) setAnnouncements(response.data);
       else setAnnouncements([]);
     };

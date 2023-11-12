@@ -2,7 +2,6 @@ import React from "react";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import API_LINK from "../../config/API";
-import OccupationList from "./OccupationList";
 import { LiaRandomSolid } from "react-icons/lia";
 import CreateOccupationList from "./CreateOccupationList";
 
@@ -83,8 +82,6 @@ function AddResidentModal({ brgy }) {
         password: user.password,
       };
       const result = await axios.post(`${API_LINK}/users/`, obj);
-
-      console.log(result);
 
       if (result.status === 200) {
         setUser({
@@ -380,7 +377,7 @@ function AddResidentModal({ brgy }) {
                               onChange={handleChange}
                               className="w-full p-2 border  rounded"
                             >
-                              <option selected>-- Select Status --</option>
+                              <option>-- Select Status --</option>
                               <option value="Single">Single</option>
                               <option value="Married">Married</option>
                               <option value="Legally Separated">
@@ -451,7 +448,7 @@ function AddResidentModal({ brgy }) {
                               onChange={handleChange}
                               className="w-full p-2 border rounded"
                             >
-                              <option selected>Select Barangay</option>
+                              <option >Select Barangay</option>
                               <option value="Balite">Balite</option>
                               <option value="Burgos">Burgos</option>
                               <option value="Geronimo">Geronimo</option>

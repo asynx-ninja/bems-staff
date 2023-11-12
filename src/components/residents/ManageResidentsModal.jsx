@@ -1,6 +1,4 @@
 import React from "react";
-import bgmodal from "../../assets/modals/bg-modal2.png";
-import officialimage from "../../assets/sample/official.jpg";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import API_LINK from "../../config/API";
@@ -115,7 +113,7 @@ function ManageResidentModal({ user, setUser }) {
                   className="font-bold text-white mx-auto md:text-xl text-center"
                   style={{ letterSpacing: "0.3em" }}
                 >
-                  ADD RESIDENTS
+                  MANAGE RESIDENT
                 </h3>
               </div>
 
@@ -342,31 +340,26 @@ function ManageResidentModal({ user, setUser }) {
                               onChange={handleChange}
                               className="w-full p-2 border  rounded"
                               disabled={!edit}
+                              value={user.civil_status}
                             >
-                              <option selected>-- Select Status --</option>
+                              <option>-- Select Status --</option>
                               <option
                                 value="Single"
-                                selected={user.civil_status === "Single"}
                               >
                                 Single
                               </option>
                               <option
                                 value="Married"
-                                selected={user.civil_status === "Married"}
                               >
                                 Married
                               </option>
                               <option
                                 value="Legally Separated"
-                                selected={
-                                  user.civil_status === "Legally Separated"
-                                }
                               >
                                 Legally Separated
                               </option>
                               <option
                                 value="Widowed"
-                                selected={user.civil_status === "Widowed"}
                               >
                                 Widowed
                               </option>
@@ -385,12 +378,12 @@ function ManageResidentModal({ user, setUser }) {
                               onChange={handleChange}
                               className="w-full p-2 border rounded"
                               disabled={!edit}
+                              value={user.religion}
                             >
                               <option value="">-- Select Religion --</option>
                               {religions.map((religion) => (
                                 <option
                                   value={religion}
-                                  selected={user.religion === religion}
                                 >
                                   {religion}
                                 </option>
@@ -410,7 +403,7 @@ function ManageResidentModal({ user, setUser }) {
                             <OccupationList
                               edit={edit}
                               handleChange={handleChange}
-                              user1={user}
+                              user={user}
                               setUser={setUser}
                             />
                           </div>
@@ -447,71 +440,61 @@ function ManageResidentModal({ user, setUser }) {
                               onChange={handleChange}
                               className="w-full p-2 border rounded"
                               disabled={!edit}
+                              value={user.address?.brgy}
                             >
                               <option>Select Barangay</option>
                               <option
-                                value="Balite"
-                                selected={user.address?.brgy === "BALITE"}
+                                value="BALITE"
                               >
                                 Balite
                               </option>
                               <option
-                                value="Burgos"
-                                selected={user.address?.brgy === "BURGOS"}
+                                value="BURGOS"
                               >
                                 Burgos
                               </option>
                               <option
-                                value="Geronimo"
-                                selected={user.address?.brgy === "GERONIMO"}
+                                value="GERONIMO"
                               >
                                 Geronimo
                               </option>
                               <option
-                                value="Macabud"
-                                selected={user.address?.brgy === "MACABUD"}
+                                value="MACABUD"
                               >
                                 Macabud
                               </option>
                               <option
-                                value="Manggahan"
-                                selected={user.address?.brgy === "MANGGAHAN"}
+                                value="MANGGAHAN"
                               >
                                 Manggahan
                               </option>
                               <option
-                                value="Mascap"
-                                selected={user.address?.brgy === "MASCAP"}
+                                value="MASCAP"
                               >
                                 Mascap
                               </option>
                               <option
-                                value="Puray"
-                                selected={user.address?.brgy === "PURAY"}
+                                value="PURAY"
                               >
                                 Puray
                               </option>
                               <option
-                                value="Rosario"
-                                selected={user.address?.brgy === "ROSARIO"}
+                                value="ROSARIO"
                               >
                                 Rosario
                               </option>
                               <option
-                                value="San Isidro"
-                                selected={user.address?.brgy === "SAN ISIDRO"}
+                                value="SAN ISIDRO"
                               >
                                 San Isidro
                               </option>
                               <option
-                                value="San Jose"
-                                selected={user.address?.brgy === "SAN JOSE"}
+                                value="SAN JOSE"
                               >
                                 San Jose
                               </option>
                               <option
-                                value="San Rafael"
-                                selected={user.address?.brgy === "SAN RAFAEL"}
+                                value="SAN RAFAEL"
                               >
                                 San Rafael
                               </option>
@@ -626,6 +609,7 @@ function ManageResidentModal({ user, setUser }) {
                               name="type"
                               onChange={handleChange}
                               className="w-full p-1 pl-2 border rounded"
+                              value={user.type}
                               disabled
                             >
                               {/* <option selected>-- Select User Type --</option>
@@ -643,7 +627,6 @@ function ManageResidentModal({ user, setUser }) {
                               </option> */}
                               <option
                                 value="Resident"
-                                selected={user.type === "Resident"}
                               >
                                 Resident
                               </option>

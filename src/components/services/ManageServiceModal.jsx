@@ -73,8 +73,6 @@ function ManageServiceModal({ service, setService }) {
     try {
       e.preventDefault();
 
-      console.log("PUMASOK SIYA");
-
       var formData = new FormData();
 
       const arr1 = [banner, logo];
@@ -274,6 +272,7 @@ function ManageServiceModal({ service, setService }) {
                   onChange={handleChange}
                   className="w-full px-4 py-2 rounded-md border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-500"
                   disabled={!edit}
+                  value={service.type}
                 >
                   <option value="Healthcare">Healthcare Services</option>
                   <option value="Education">Education Services</option>

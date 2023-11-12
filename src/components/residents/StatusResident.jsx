@@ -15,12 +15,10 @@ function StatusResident({ status, setStatus }) {
         { headers: { "Content-Type": "application/json" } }
       );
 
-      console.log(response);
       if (response.status === 200){
-        console.log("YEY");
         window.location.reload();
       }
-      else console.log("NYARK");
+      else ;
     } catch (err) {
       console.log(err);
     }
@@ -69,22 +67,20 @@ function StatusResident({ status, setStatus }) {
                           onChange={handleOnChange}
                           name="status"
                           className="w-full mt-3 p-2 border border-gray-300 rounded"
+                          value={status.status}
                         >
                           <option
                             value="Registered"
-                            selected={status.status === "Registered"}
                           >
                             REGISTERED
                           </option>
                           <option
                             value="Pending"
-                            selected={status.status === "Pending"}
                           >
                             PENDING
                           </option>
                           <option
                             value="Denied"
-                            selected={status.status === "Denied"}
                           >
                             DENIED
                           </option>

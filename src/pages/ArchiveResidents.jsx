@@ -1,10 +1,8 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { FaArchive, FaPlus, FaTrash, FaTrashRestore } from "react-icons/fa";
+import { FaTrashRestore } from "react-icons/fa";
 import { BsPrinter } from "react-icons/bs";
-import { AiOutlineEye, AiOutlineStop } from "react-icons/ai";
-import { FiEdit } from "react-icons/fi";
+import { AiOutlineEye } from "react-icons/ai";
 import ReactPaginate from "react-paginate";
 import GenerateReportsModal from "../components/services/GenerateReportsModal";
 import RestoreResidentModal from "../components/residents/RestoreResidentModal";
@@ -27,7 +25,6 @@ const Residents = () => {
       const response = await axios.get(
         `${API_LINK}/users/showArchived/${brgy}`
       );
-      console.log(response);
 
       if (response.status === 200) setUsers(response.data);
       else setUsers([]);

@@ -1,8 +1,7 @@
 import React from "react";
-import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
-import { FaArchive, FaPlus, FaTrashRestore } from "react-icons/fa";
+import { AiOutlineEye } from "react-icons/ai";
+import { FaTrashRestore } from "react-icons/fa";
 import { BsPrinter } from "react-icons/bs";
-import imgSrc from "/imgs/bg-header.png";
 import { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import Breadcrumbs from "../components/archivedAnnouncement/Breadcrums";
@@ -25,7 +24,6 @@ const Announcement = () => {
       const response = await axios.get(
         `${API_LINK}/announcement/?brgy=${brgy}&archived=true`
       );
-      console.log(response);
       if (response.status === 200) setAnnouncements(response.data);
       else setAnnouncements([]);
     };
