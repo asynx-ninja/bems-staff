@@ -187,23 +187,6 @@ const Dropbox = ({files, setFiles, handleFileChange, handleSubmit}) => {
                 )}
               </ul>
             </section>
-            {/* sticky footer */}
-            <footer className="flex justify-end px-8 pb-8 pt-4">
-              <button
-                id="submit"
-                onClick={handleSubmit}
-                className="px-3 rounded-lg py-1 bg-teal-800 hover:bg-teal-700 text-white focus:shadow-outline focus:outline-none"
-              >
-                Submit
-              </button>
-              <button
-                id="cancel"
-                onClick={handleCancel}
-                className="ml-3 rounded-sm px-3 py-1 hover:bg-gray-300 focus:shadow-outline focus:outline-none"
-              >
-                Cancel
-              </button>
-            </footer>
           </article>
         </main>
       </div>

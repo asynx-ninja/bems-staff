@@ -2,43 +2,43 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import EditDropbox from "../services/EditDropbox";
 
-function ViewArchivedServiceModal({service, setService}) {
-  const [logo, setLogo] = useState();
+function ViewArchivedServiceModal({ service, setService }) {
+  const [files, setFiles] = useState([]);
+  const [edit, setEdit] = useState(false);
 
-  const handleLogoChange = (e) => {
-    setLogo(e.target.files[0]);
+  useEffect(() => {
+    setFiles(service.length === 0 ? [] : service.collections.file);
+  }, [service]);
 
-    var output = document.getElementById("view_logo");
-    output.src = URL.createObjectURL(e.target.files[0]);
-    output.onload = function () {
-      URL.revokeObjectURL(output.src); // free memory
-    };
+  const handleFileChange = (e) => {
+    e.preventDefault();
+
+    setFiles([...files, ...e.target.files]);
   };
 
   return (
     <div>
       <div
         id="hs-view-archived-service-modal"
-        class="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center lg:ml-32 xl:ml-28 "
+        className="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center lg:ml-32 xl:ml-28 "
       >
         {/* Modal */}
-        <div class="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 md:px-0 opacity-0 transition-all m-3 smx-auto">
-          <div class="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full lg:w-[900px]">
+        <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-full">
+          <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto">
             {/* Header */}
-            <div class="bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
-              <div class="flex justify-between items-center px-3 py-5 md:p-5 w-full h-full bg-cover bg-no-repeat transform">
-                <h3
-                  class="font-bold text-white mx-auto md:text-xl"
-                  style={{ letterSpacing: "0.3em" }}
-                >
-                  VIEW ARCHIVED SERVICE
-                </h3>
-              </div>
+            <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
+              <h3
+                className="font-bold text-white mx-auto md:text-xl text-center"
+                style={{ letterSpacing: "0.3em" }}
+              >
+                VIEW ARCHIVED SERVICE
+              </h3>
             </div>
 
-            <div className="flex flex-col mx-auto w-full py-5 px-5 h-[800px] md:h-full overflow-y-auto">
-              <div className="flex mb-4 border w-full flex-col md:flex-row md:space-x-2">
+            <div className="flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-screen">
+              <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                 <div className="w-full">
                   <label
                     className="block text-gray-700 text-sm font-bold mb-2 sm:ml-2 md:ml-0"
@@ -47,12 +47,16 @@ function ViewArchivedServiceModal({service, setService}) {
                     Logo
                   </label>
                   <div className="flex flex-col items-center space-y-2 relative">
-                    <div className="w-full">
+                    <div className="w-full border border-gray-300">
                       <img
                         className="w-[200px] mx-auto lg:w-full h-[110px] lg:h-[250px] object-cover"
                         id="view_logo"
                         alt="Current profile photo"
-                        src={service.length === 0 ? "": service.collections.logo.link}
+                        src={
+                          service.length === 0
+                            ? ""
+                            : service.collections.logo.link
+                        }
                       />
                     </div>
                   </div>
@@ -66,12 +70,16 @@ function ViewArchivedServiceModal({service, setService}) {
                     Banner
                   </label>
                   <div className="flex flex-col items-center space-y-2 relative">
-                    <div className="w-full">
+                    <div className="w-full border border-gray-300">
                       <img
                         className="w-[200px] mx-auto lg:w-full h-[110px] lg:h-[250px] object-cover"
                         id="view_logo"
                         alt="Current profile photo"
-                        src={service.length === 0 ? "": service.collections.banner.link}
+                        src={
+                          service.length === 0
+                            ? ""
+                            : service.collections.banner.link
+                        }
                       />
                     </div>
                   </div>
@@ -190,13 +198,20 @@ function ViewArchivedServiceModal({service, setService}) {
                   readOnly
                 />
               </div>
+
+              <EditDropbox
+                edit={edit}
+                files={service && files}
+                handleFileChange={handleFileChange}
+                setFiles={setFiles}
+              />
             </div>
 
             {/* Buttons */}
-            <div class="flex justify-end items-center gap-x-2 py-3 px-6 dark:border-gray-700">
-            <button
+            <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
+              <button
                 type="button"
-                class="py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-custom-red-button text-white shadow-sm align-middle mx-auto"
+                className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                 data-hs-overlay="#hs-view-archived-service-modal"
               >
                 CLOSE

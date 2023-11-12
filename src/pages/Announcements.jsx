@@ -14,7 +14,8 @@ import API_LINK from "../config/API";
 
 import ArchiveModal from "../components/announcement/ArchiveAnnouncementModal";
 import AddModal from "../components/announcement/AddAnnouncementModal";
-import EditAnnouncementModal from "../components/announcement/EditAnnouncementModal";
+import ManageAnnouncementModal from "../components/announcement/ManageAnnouncementModal";
+
 
 const Announcement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -355,7 +356,7 @@ const Announcement = () => {
         </div>
         <AddModal brgy={brgy}/>
         <ArchiveModal selectedItems={selectedItems} />
-        <EditAnnouncementModal announcement={announcement} setAnnouncement={setAnnouncement}/>
+        <ManageAnnouncementModal announcement={announcement} setAnnouncement={setAnnouncement}/>
       </div>
     </div>
   );

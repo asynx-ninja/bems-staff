@@ -4,18 +4,14 @@ import { Link } from "react-router-dom";
 import { FaArchive, FaPlus } from "react-icons/fa";
 import { BsPrinter } from "react-icons/bs";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
-import { FiEdit } from "react-icons/fi";
 import ReactPaginate from "react-paginate";
-import imgSrc from "/imgs/bg-header.png";
-import ViewServiceModal from "../components/services/ViewServiceModal";
 import GenerateReportsModal from "../components/services/GenerateReportsModal";
 import CreateServiceModal from "../components/services/CreateServiceModal";
-import EditServiceModal from "../components/services/EditServiceModal";
 import ArchiveServicesModal from "../components/services/ArchiveServicesModal";
 import axios from "axios";
 import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
-import StatusServices from "../components/services/StatusServices";
+import ManageServiceModal from "../components/services/ManageServiceModal";
 
 const Services = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -385,8 +381,7 @@ const Services = () => {
       <ArchiveServicesModal selectedItems={selectedItems}/>
       <CreateServiceModal brgy={brgy}/>
       {/*<StatusServices status={status} setStatus={setStatus}/>*/}
-      <ViewServiceModal service={service} setService={setService}/>
-      <EditServiceModal service={service} setService={setService}/>
+      <ManageServiceModal service={service} setService={setService}/>
       <GenerateReportsModal />
     </div>
   );

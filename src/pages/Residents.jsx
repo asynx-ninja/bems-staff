@@ -9,12 +9,11 @@ import ReactPaginate from "react-paginate";
 import AddResidentsModal from "../components/residents/AddResidentModal";
 import GenerateReportsModal from "../components/services/GenerateReportsModal";
 import ArchiveResidentModal from "../components/residents/ArchiveResidentModal";
-import ViewResidentModal from "../components/residents/ViewResidents";
 import axios from "axios";
 import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
 import StatusResident from "../components/residents/StatusResident";
-import EditResidentModal from "../components/residents/EditResidentsModal";
+import ManageResidentModal from "../components/residents/ManageResidentsModal";
 
 const Residents = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -392,9 +391,8 @@ const Residents = () => {
       <AddResidentsModal brgy={brgy}/>
       <ArchiveResidentModal selectedItems={selectedItems} />
       <GenerateReportsModal />
-      <ViewResidentModal user={user} setUser={setUser}/>
       <StatusResident status={status} setStatus={setStatus} />
-      <EditResidentModal user={user} setUser={setUser}/>
+      <ManageResidentModal user={user} setUser={setUser}/>
     </div>
   );
 };

@@ -38,22 +38,22 @@ function StatusServices({ status, setStatus }) {
       <div className="">
         <div
           id="hs-modal-statusServices"
-          class="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
+          className="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
         >
           {/* Modal */}
-          <div class="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 md:px-0 opacity-0 transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto lg:ml-96 xl:ml-[500px] xxl:ml-[600px] xxxl:ml-[850px]">
-            <div class="flex flex-col bg-white rounded-xl shadow-sm ">
+          <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-xl">
+            <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto">
               {/* Header */}
-              <div class="rounded-t-xl bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden ">
-                <div class="flex justify-between items-center p-5 w-full h-full">
-                  <h3
-                    class="font-heavy text-white mx-auto md:text-xl"
-                    style={{ letterSpacing: "0.3em" }}
-                  >
-                    STATUS
-                  </h3>
-                </div>
+              <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
+                <h3
+                  className="font-bold text-white mx-auto md:text-xl text-center"
+                  style={{ letterSpacing: "0.3em" }}
+                >
+                  STATUS
+                </h3>
               </div>
+
+
               <div className="mt-5">
                 <form>
                   <div className="flex flex-col lg:flex-row">
@@ -96,7 +96,7 @@ function StatusServices({ status, setStatus }) {
                 </form>
               </div>
               {/* Buttons */}
-              <div class="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
+              <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
                 <button
                   type="button"
                   onClick={handleSave}
@@ -107,7 +107,7 @@ function StatusServices({ status, setStatus }) {
                 </button>
                 <button
                   type="button"
-                  class="h-[2.5rem] w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
+                  className="h-[2.5rem] w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
                   data-hs-overlay="#hs-modal-statusServices"
                 >
                   CLOSE

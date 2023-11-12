@@ -49,11 +49,6 @@ const EditDropbox = ({
     setFiles((prev) => prev.filter((_, index) => index !== idx));
   };
 
-  const handleCancel = (e) => {
-    setFiles([]);
-    window.location.reload();
-  };
-
   return (
     <>
       <div className="">
@@ -113,7 +108,7 @@ const EditDropbox = ({
                   </button>
                 </header>
               ) : null}
-              <h1 className="pt-8 pb-3 font-semibold sm:text-lg text-gray-900">
+              <h1 className="pb-3 font-semibold sm:text-lg text-gray-900">
                 To Upload
               </h1>
               <ul id="gallery" className="flex flex-1 flex-wrap -m-1">
@@ -152,7 +147,7 @@ const EditDropbox = ({
                             <button
                               className="delete ml-auto focus:outline-none hover:bg-gray-300 p-1 rounded-md text-gray-800"
                               onClick={(e) => handleDelete(idx)}
-                              hidden = {!edit}
+                              hidden={!edit}
                             >
                               <svg
                                 className="pointer-events-none fill-current w-4 h-4 ml-auto"

@@ -162,34 +162,33 @@ function AddResidentModal({ brgy }) {
           className="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
         >
           {/* Modal */}
-          <div class="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 md:px-0 opacity-0 transition-all m-3 smx-auto">
-            <div className="flex flex-col bg-white w-full shadow-sm rounded-t-3xl rounded-b-3xl w-full lg:w-[700px]">
+          <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-full">
+            <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto">
               {/* Header */}
-              <div className="bg-gradient-to-r from-[#295141] to-[#408D51] w-overflow-hidden rounded-t-2xl">
-                <div className="flex justify-between items-center p-5 w-full h-full bg-cover bg-no-repeat transform">
-                  <h3
-                    className="font-base text-white mx-auto md:text-xl"
-                    style={{ letterSpacing: "0.3em" }}
-                  >
-                    ADD RESIDENTS
-                  </h3>
-                </div>
+              <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
+                <h3
+                  className="font-bold text-white mx-auto md:text-xl text-center"
+                  style={{ letterSpacing: "0.3em" }}
+                >
+                  ADD RESIDENTS
+                </h3>
               </div>
-              <div className="mt-5 w-full">
+
+              <div className="flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-screen">
                 <form>
-                  <div className="mb-4 px-4 flex h-[700px] md:h-full overflow-y-auto">
+                  <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                     <div className="flex flex-col mb-1 w-full">
                       {/* Service Description */}
 
                       {/* Section 1 */}
-                      <div class="relative p-1 pb-6 flex flex-col w-full h-full">
+                      <div className="relative p-1 pb-6 flex flex-col w-full h-full">
                         <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg">
                           Personal Data
                         </b>
                         <div className="flex flex-col md:flex-row mt-2">
                           <div className="flex flex-col w-full">
                             <h1
-                              class="font-medium mb-1 text-black text-sm"
+                              className="font-medium mb-1 text-black text-sm"
                               style={{ letterSpacing: "0.1em" }}
                             >
                               FIRST NAME
@@ -206,7 +205,7 @@ function AddResidentModal({ brgy }) {
 
                           <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full">
                             <h1
-                              class="font-medium mb-1 text-black text-sm"
+                              className="font-medium mb-1 text-black text-sm"
                               style={{ letterSpacing: "0.1em" }}
                             >
                               MIDDLE NAME
@@ -223,7 +222,7 @@ function AddResidentModal({ brgy }) {
 
                           <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full">
                             <h1
-                              class="font-medium mb-1 text-black text-sm"
+                              className="font-medium mb-1 text-black text-sm"
                               style={{ letterSpacing: "0.1em" }}
                             >
                               LAST NAME
@@ -242,7 +241,7 @@ function AddResidentModal({ brgy }) {
                         <div className="flex flex-row mt-2">
                           <div className="flex flex-col w-full">
                             <h1
-                              class="font-medium mb-1 text-black text-sm"
+                              className="font-medium mb-1 text-black text-sm"
                               style={{ letterSpacing: "0.1em" }}
                             >
                               SUFFIX
@@ -259,7 +258,7 @@ function AddResidentModal({ brgy }) {
 
                           <div className="flex flex-col ml-2 w-full">
                             <h1
-                              class="font-medium mb-1 text-black text-sm"
+                              className="font-medium mb-1 text-black text-sm"
                               style={{ letterSpacing: "0.1em" }}
                             >
                               BIRTHDAY
@@ -277,7 +276,7 @@ function AddResidentModal({ brgy }) {
 
                           <div className="flex flex-col  ml-2 mt-0 md:ml-2 md:w-[30%]">
                             <h1
-                              class="font-medium mb-1 text-black text-sm"
+                              className="font-medium mb-1 text-black text-sm"
                               style={{ letterSpacing: "0.1em" }}
                             >
                               AGE
@@ -296,7 +295,7 @@ function AddResidentModal({ brgy }) {
                         <div className="flex flex-col md:flex-row mt-2">
                           <div className="flex flex-col w-full md:w-[36%] lg:w-[40%]">
                             <h1
-                              class="font-medium mb-1 text-black text-sm"
+                              className="font-medium mb-1 text-black text-sm"
                               style={{ letterSpacing: "0.1em" }}
                             >
                               E-MAIL
@@ -313,7 +312,7 @@ function AddResidentModal({ brgy }) {
 
                           <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full md:w-[27%] lg:w-[32%]">
                             <h1
-                              class="font-medium mb-1 text-black text-sm"
+                              className="font-medium mb-1 text-black text-sm"
                               style={{ letterSpacing: "0.1em" }}
                             >
                               CONTACT
@@ -330,7 +329,7 @@ function AddResidentModal({ brgy }) {
 
                           <div className="w-full md:ml-4 md:w-[20%]">
                             <h1
-                              class="font-medium mt-2 text-black text-sm"
+                              className="font-medium mt-2 text-black text-sm"
                               style={{ letterSpacing: "0.1em" }}
                             >
                               GENDER
@@ -491,7 +490,7 @@ function AddResidentModal({ brgy }) {
                         <div className="mt-2 flex flex-col md:flex-row px-1">
                           <div className="w-full">
                             <h1
-                              class="font-medium mt-2 text-black text-sm"
+                              className="font-medium mt-2 text-black text-sm"
                               style={{ letterSpacing: "0.1em" }}
                             >
                               REGISTERED VOTER?
@@ -523,7 +522,7 @@ function AddResidentModal({ brgy }) {
 
                           <div className="w-full">
                             <h1
-                              class="font-medium mt-2 text-black text-sm"
+                              className="font-medium mt-2 text-black text-sm"
                               style={{ letterSpacing: "0.1em" }}
                             >
                               HEAD OF FAMILY?
@@ -555,7 +554,7 @@ function AddResidentModal({ brgy }) {
 
                           <div className="w-full">
                             <h1
-                              class="font-medium mt-2 text-black text-sm"
+                              className="font-medium mt-2 text-black text-sm"
                               style={{ letterSpacing: "0.1em" }}
                             >
                               ACTIVE USER
@@ -589,29 +588,6 @@ function AddResidentModal({ brgy }) {
                             </div>
                           </div>
                         </div>
-
-                        {/* <div className="mt-2 flex flex-row px-1">
-                          <div className="w-full">
-                            <label
-                              htmlFor="type"
-                              className="block text-sm font-medium"
-                            >
-                              USER TYPE
-                            </label>
-                            <select
-                              id="type"
-                              name="type"
-                              onChange={handleChange}
-                              className="w-full p-1 pl-2 border rounded"
-                              disabled
-                            >
-                              {/*<option selected>-- Select User Type --</option>
-                              <option value="Admin">Admin</option>
-                              <option value="Staff">Staff</option>
-                              <option value="Resident" selected>Resident</option>
-                            </select>
-                          </div>
-                        </div> */}
                       </div>
 
                       {/* Section 3 */}
@@ -621,7 +597,7 @@ function AddResidentModal({ brgy }) {
                       <div className="flex flex-row mt-2 px-1">
                         <div className="flex flex-col w-full">
                           <h1
-                            class="font-medium mb-1 text-black text-sm"
+                            className="font-medium mb-1 text-black text-sm"
                             style={{ letterSpacing: "0.1em" }}
                           >
                             USERNAME
@@ -638,7 +614,7 @@ function AddResidentModal({ brgy }) {
 
                         <div className="flex flex-col ml-2 w-full">
                           <h1
-                            class="font-medium mb-1 text-black text-sm"
+                            className="font-medium mb-1 text-black text-sm"
                             style={{ letterSpacing: "0.1em" }}
                           >
                             PASSWORD
@@ -674,18 +650,18 @@ function AddResidentModal({ brgy }) {
                 </form>
               </div>
               {/* Buttons */}
-              <div className="flex justify-center gap-x-2 py-3 px-6 dark:border-gray-700">
+              <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
                 <button
                   type="button"
                   onClick={handleSubmit}
-                  className="h-[2.5rem] w-[8rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm align-middle"
+                  className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
                   data-hs-overlay="#hs-modal-addResident"
                 >
                   ADD
                 </button>
                 <button
                   type="button"
-                  className="h-[2.5rem] w-[8rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
+                  className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                   data-hs-overlay="#hs-modal-addResident"
                 >
                   CLOSE

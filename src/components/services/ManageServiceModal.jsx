@@ -1,12 +1,10 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useSearchParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import API_LINK from "../../config/API";
 import EditDropbox from "./EditDropbox";
 
-function EditServiceModal({ service, setService }) {
+function ManageServiceModal({ service, setService }) {
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
   const [files, setFiles] = useState([]);
@@ -136,25 +134,23 @@ function EditServiceModal({ service, setService }) {
     <div>
       <div
         id="hs-modal-editServices"
-        class="hs-overlay hidden fixed top-0 left-0 z-[70] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
+        className="hs-overlay hidden fixed top-0 left-0 z-[70] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
       >
         {/* Modal */}
-        <div class="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 md:px-0 opacity-0 transition-all m-3 smx-auto">
-          <div class="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full lg:w-[900px]">
+        <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-full">
+          <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto">
             {/* Header */}
-            <div class="bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
-              <div class="flex justify-between items-center px-3 py-5 md:p-5 w-full h-full bg-cover bg-no-repeat transform">
-                <h3
-                  class="font-bold text-white mx-auto md:text-xl"
-                  style={{ letterSpacing: "0.3em" }}
-                >
-                  MANAGE SERVICE
-                </h3>
-              </div>
+            <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
+              <h3
+                className="font-bold text-white mx-auto md:text-xl text-center"
+                style={{ letterSpacing: "0.3em" }}
+              >
+                MANAGE SERVICE
+              </h3>
             </div>
 
-            <div className="flex flex-col mx-auto w-full py-5 px-5 h-[800px] md:h-[750px] overflow-y-auto">
-              <div className="flex mb-4 border w-full flex-col md:flex-row md:space-x-2">
+            <div className="flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-screen">
+              <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                 <div className="w-full">
                   <label
                     className="block text-gray-700 text-sm font-bold mb-2"
@@ -163,7 +159,7 @@ function EditServiceModal({ service, setService }) {
                     Logo
                   </label>
                   <div className="flex flex-col items-center space-y-2 relative">
-                    <div className="w-full">
+                    <div className="w-full border border-gray-300">
                       <img
                         className="w-full h-[250px] object-cover"
                         id="edit_logo"
@@ -186,19 +182,18 @@ function EditServiceModal({ service, setService }) {
                 </div>
                 <div className="w-full">
                   <label
-                    className="block text-gray-700 text-sm font-bold mb-2 ml-2"
+                    className="block text-gray-700 text-sm font-bold mb-2"
                     htmlFor="username"
                   >
                     Banner
                   </label>
                   <div className="flex flex-col items-center space-y-2 relative">
-                    <div className="w-full">
+                    <div className="w-full border border-gray-300">
                       <img
                         className="w-full h-[250px] object-cover"
                         id="edit_banner"
                         alt="Current profile photo"
                       />
-
                     </div>
                     <label className="w-full bg-white border border-gray-300">
                       <span className="sr-only">Choose profile photo</span>
@@ -338,51 +333,51 @@ function EditServiceModal({ service, setService }) {
               </div>
 
               <EditDropbox
+                edit={edit}
                 files={service && files}
                 setFiles={setFiles}
                 handleFileChange={handleFileChange}
                 handleSubmit={handleSubmit}
               />
+            </div>
 
-              {/* Buttons */}
-              <div class="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
-                {!edit ? (
-                 <div className="space-x-2">
-                 <button
-                 type="button"
-                 className="h-[2.5rem] w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm align-middle"
-                 onClick={handleOnEdit}
-               >
-                 EDIT
-               </button>
-               <button
-                 type="button"
-                 className="h-[2.5rem] w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
-                 data-hs-overlay="#hs-modal-editServices"
-               >
-                 CLOSE
-               </button>
-               </div>
-                ) : (
-                  <div className="space-x-2">
-                    <button
-                      type="submit"
-                      onClick={handleSubmit}
-                      className="h-[2.5rem] w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm align-middle"
-                    >
-                      SAVE CHANGES
-                    </button>
-                    <button
-                      type="button"
-                      className="h-[2.5rem] w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
-                      onClick={handleOnEdit}
-                    >
-                     CANCEL
-                    </button>
-                  </div>
-                )}
-                
-              </div>
+            {/* Buttons */}
+            <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
+              {!edit ? (
+                <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
+                  <button
+                    type="button"
+                    className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
+                    onClick={handleOnEdit}
+                  >
+                    EDIT
+                  </button>
+                  <button
+                    type="button"
+                    className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
+                    data-hs-overlay="#hs-modal-editServices"
+                  >
+                    CLOSE
+                  </button>
+                </div>
+              ) : (
+                <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
+                  <button
+                    type="submit"
+                    onClick={handleSubmit}
+                    className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
+                  >
+                    SAVE CHANGES
+                  </button>
+                  <button
+                    type="button"
+                    className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
+                    onClick={handleOnEdit}
+                  >
+                    CANCEL
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -391,4 +386,4 @@ function EditServiceModal({ service, setService }) {
   );
 }
 
-export default EditServiceModal;
+export default ManageServiceModal;

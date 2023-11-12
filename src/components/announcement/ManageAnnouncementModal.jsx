@@ -1,12 +1,10 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useSearchParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import API_LINK from "../../config/API";
 import EditDropbox from "./EditDropbox";
 
-function EditAnnouncementModal({ announcement, setAnnouncement }) {
+function ManageAnnouncementModal({ announcement, setAnnouncement }) {
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
   const [files, setFiles] = useState([]);
@@ -136,7 +134,7 @@ function EditAnnouncementModal({ announcement, setAnnouncement }) {
 
         setTimeout(() => {
           HSOverlay.close(document.getElementById("hs-modal-editAnnouncement"));
-          // window.location.reload();
+          window.location.reload();
         }, 1000);
       }
     } catch (err) {
@@ -149,15 +147,15 @@ function EditAnnouncementModal({ announcement, setAnnouncement }) {
       <div className="">
         <div
           id="hs-modal-editAnnouncement"
-          class="hs-overlay hidden fixed top-0 bottom-0 left-0 z-[60] w-full h-full flex items-center justify-center"
+          className="hs-overlay hidden fixed top-0 bottom-0 left-0 z-[60] w-full h-full flex items-center justify-center"
         >
           {/* Modal */}
-          <div class="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-full">
-            <div class="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto">
+          <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-full">
+            <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto">
               {/* Header */}
-              <div class="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
+              <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
                 <h3
-                  class="font-bold text-white mx-auto md:text-xl text-center"
+                  className="font-bold text-white mx-auto md:text-xl text-center"
                   style={{ letterSpacing: "0.3em" }}
                 >
                   MANAGE ANNOUNCEMENT
@@ -168,7 +166,7 @@ function EditAnnouncementModal({ announcement, setAnnouncement }) {
                 <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                   <div className="w-full">
                     <label
-                      className="block text-gray-700 text-sm font-bold mb-2 md:pl-2"
+                      className="block text-gray-700 text-sm font-bold mb-2"
                       htmlFor="username"
                     >
                       Logo
@@ -197,7 +195,7 @@ function EditAnnouncementModal({ announcement, setAnnouncement }) {
                   </div>
                   <div className="w-full">
                     <label
-                      className="block text-gray-700 text-sm font-bold mb-2 md:pl-2"
+                      className="block text-gray-700 text-sm font-bold mb-2"
                       htmlFor="username"
                     >
                       Banner
@@ -287,7 +285,7 @@ function EditAnnouncementModal({ announcement, setAnnouncement }) {
               </div>
 
               {/* Buttons */}
-              <div class="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
+              <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
                 {!edit ? (
                   <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
                     <button
@@ -306,33 +304,17 @@ function EditAnnouncementModal({ announcement, setAnnouncement }) {
                     </button>
                   </div>
                 ) : (
-                  // <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
-                  //   <button
-                  //     type="submit"
-                  //     className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                  //     onClick={handleSubmit}
-                  //   >
-                  //     SAVE CHANGES
-                  //   </button>
-                  //   <button
-                  //     type="button"
-                  //     className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
-                  //     onClick={handleOnEdit}
-                  //   >
-                  //     CANCEL
-                  //   </button>
-                  // </div>
-                  <div className="space-x-2">
+                  <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
                     <button
                       type="submit"
                       onClick={handleSubmit}
-                      className="h-[2.5rem] w-[9.5rem] py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
+                      className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
                     >
                       SAVE CHANGES
                     </button>
                     <button
                       type="button"
-                      className="h-[2.5rem] w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
+                      className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                       onClick={handleOnEdit}
                     >
                       CANCEL
@@ -348,4 +330,4 @@ function EditAnnouncementModal({ announcement, setAnnouncement }) {
   );
 }
 
-export default EditAnnouncementModal;
+export default ManageAnnouncementModal;
