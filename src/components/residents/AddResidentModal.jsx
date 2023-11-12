@@ -78,6 +78,7 @@ function AddResidentModal({ brgy }) {
         isVoter: user.isVoter,
         isHead: user.isHead,
         isArchived: user.isArchived,
+        isApproved: user.isApproved,
         username: user.username,
         password: user.password,
       };
@@ -448,9 +449,10 @@ function AddResidentModal({ brgy }) {
                               id="brgy"
                               name="brgy"
                               onChange={handleChange}
+                              defaultValue={brgy}
+                              disabled
                               className="w-full p-2 border rounded"
                             >
-                              <option>Select Barangay</option>
                               <option value="Balite">Balite</option>
                               <option value="Burgos">Burgos</option>
                               <option value="Geronimo">Geronimo</option>
