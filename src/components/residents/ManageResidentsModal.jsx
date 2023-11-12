@@ -324,7 +324,7 @@ function ManageResidentModal({ user, setUser }) {
                       </div>
 
                       {/* Section 2 */}
-                      <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg">
+                      <b className="border-solid border-0 border-black/50 border-b-2 uppercase font-medium text-lg md:text-lg">
                         Additional Data
                       </b>
                       <div>
@@ -653,7 +653,7 @@ function ManageResidentModal({ user, setUser }) {
                       </div>
 
                       {/* Section 3 */}
-                      <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg mt-4">
+                      <b className="border-solid border-0 border-black/50 border-b-2 mt-5 uppercase font-medium text-lg md:text-lg">
                         Account
                       </b>
                       <div className="flex flex-row mt-2 px-1">

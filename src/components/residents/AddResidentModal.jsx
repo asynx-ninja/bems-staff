@@ -591,7 +591,7 @@ function AddResidentModal({ brgy }) {
                       </div>
 
                       {/* Section 3 */}
-                      <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg mt-4">
+                      <b className="border-solid border-0 border-black/50 border-b-2 uppercase font-medium text-lg md:text-lg mt-5">
                         Account
                       </b>
                       <div className="flex flex-row mt-2 px-1">
