@@ -1,17 +1,19 @@
 import React from "react";
+
 import { Link } from "react-router-dom";
-import { FiEdit } from "react-icons/fi";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { FaArchive, FaPlus } from "react-icons/fa";
 import { BsPrinter } from "react-icons/bs";
-import ArchiveModal from "../components/announcement/ArchiveAnnouncementModal";
-import AddModal from "../components/announcement/AddAnnouncementModal";
-import { useState, useEffect } from "react";
+
 import ReactPaginate from "react-paginate";
-import ViewAnnouncementModal from "../components/announcement/ViewAnnouncement";
 import axios from "axios";
 import API_LINK from "../config/API";
-import { useSearchParams } from "react-router-dom";
+
+import ArchiveModal from "../components/announcement/ArchiveAnnouncementModal";
+import AddModal from "../components/announcement/AddAnnouncementModal";
 import EditAnnouncementModal from "../components/announcement/EditAnnouncementModal";
 
 const Announcement = () => {
@@ -20,7 +22,6 @@ const Announcement = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
   const [announcement, setAnnouncement] = useState([]);
-  const [status, setStatus] = useState({});
 
   useEffect(() => {
     const fetch = async () => {
@@ -354,7 +355,6 @@ const Announcement = () => {
         </div>
         <AddModal brgy={brgy}/>
         <ArchiveModal selectedItems={selectedItems} />
-        <ViewAnnouncementModal announcement={announcement} setAnnouncement={setAnnouncement}/>
         <EditAnnouncementModal announcement={announcement} setAnnouncement={setAnnouncement}/>
       </div>
     </div>

@@ -3,7 +3,10 @@ import EditAnnouncementModal from "./EditAnnouncementModal";
 
 function ViewAnnouncementModal({ announcement, setAnnouncement }) {
   const dateFormat = (date) => {
+    console.log("Date d2 ka: ", date);
     const eventdate = date === undefined ? "" : date.substr(0, 10);
+
+    console.log("Anong binalik: ", eventdate);
     return eventdate;
   };
   

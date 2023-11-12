@@ -17,7 +17,6 @@ function EditServiceModal({ service, setService }) {
     setEdit(!edit);
   };
 
-
   useEffect(() => {
     setFiles(service.length === 0 ? [] : service.collections.file);
 

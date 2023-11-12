@@ -111,7 +111,7 @@ const EditDropbox = ({ edit, files, setFiles, handleFileChange, handleSubmit }) 
               : null
               }
               
-              <h1 className="pt-8 pb-3 font-semibold sm:text-lg text-gray-900">
+              <h1 className="pb-3 font-semibold sm:text-lg text-gray-900">
                 To Upload
               </h1>
               <ul id="gallery" className="flex flex-1 flex-wrap -m-1">
