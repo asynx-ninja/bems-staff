@@ -156,7 +156,7 @@ function AddResidentModal({ brgy }) {
       <div className="">
         <div
           id="hs-modal-addResident"
-          className="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
+          className="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full md:max-h-lg overflow-x-hidden overflow-y-auto flex items-center justify-center"
         >
           {/* Modal */}
           <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-full">
@@ -650,6 +650,7 @@ function AddResidentModal({ brgy }) {
               </div>
               {/* Buttons */}
               <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
+              <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
                 <button
                   type="button"
                   onClick={handleSubmit}
@@ -665,6 +666,7 @@ function AddResidentModal({ brgy }) {
                 >
                   CLOSE
                 </button>
+              </div>
               </div>
             </div>
           </div>
