@@ -14,13 +14,33 @@ import { useEffect } from "react";
 import { useLocation, useNavigate, matchRoutes } from "react-router-dom";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import API_LINK from "../../config/API";
 
 const Sidebar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [userData, setUserData] = useState();
   const location = useLocation();
   const currentPath = location.pathname;
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
+
+  useEffect (() => {
+    const fetch = async () => {
+      try {
+        const res = await axios.get(`${API_LINK}/users/specific/${id}`);
+        if (res.status === 200) {
+          setUserData(res.data[0]);
+          var pfpSrc = document.getElementById("sidebarPFP");
+          pfpSrc.src = res.data[0].profile.link !== "" ? res.data[0].profile.link : defaultPFP
+        } else {
+          
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+     fetch()
+  }, [id])
 
   return (
     <div className="">

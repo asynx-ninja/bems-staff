@@ -147,7 +147,7 @@ const Login = () => {
               <input
                 type="text"
                 id="input-label-with-helper-text"
-                className="sm:py-2 sm:px-3 lg:py-3 lg:px-4 block w-full border-2 border-solid border-[#C7D1DD] rounded-[12px] text-sm shadow-[0px_0px_12px_rgba(142,142,142,0.25)] focus:border-green-500 focus:ring-green-500"
+                className="sm:py-2 sm:px-3 lg:py-3 lg:px-4 block w-full border-2 border-solid border-[#C7D1DD] rounded-[12px] text-sm shadow-[0px_0px_12px_rgba(142,142,142,0.25)] focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                 placeholder="you@site.com"
                 aria-describedby="hs-input-helper-text"
                 value={data.username}
@@ -165,7 +165,7 @@ const Login = () => {
                 <input
                   type={eye ? "password" : "text"}
                   id="input-label-with-helper-text"
-                  className="sm:py-2 sm:px-3 lg:py-3 lg:px-4 block w-full border-2 border-solid border-[#C7D1DD] rounded-[12px] text-sm shadow-[0px_0px_12px_rgba(142,142,142,0.25)] focus:border-green-500 focus:ring-green-500"
+                  className="sm:py-2 sm:px-3 lg:py-3 lg:px-4 block w-full border-2 border-solid border-[#C7D1DD] rounded-[12px] text-sm shadow-[0px_0px_12px_rgba(142,142,142,0.25)] focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                   aria-describedby="hs-input-helper-text"
                   value={data.password}
                   onChange={(e) => setData({ ...data, password: e.target.value })}

@@ -4,6 +4,8 @@ import axios from "axios";
 import API_LINK from "../../config/API";
 import OccupationList from "./OccupationList";
 import { LiaRandomSolid } from "react-icons/lia";
+import { FaFacebookSquare, FaInstagram } from "react-icons/fa";
+import { FaSquareXTwitter } from "react-icons/fa6";
 
 function ManageResidentModal({ user, setUser }) {
   const [edit, setEdit] = useState(false);
@@ -128,7 +130,7 @@ function ManageResidentModal({ user, setUser }) {
                         <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg">
                           Personal Data
                         </b>
-                        <div className="flex flex-col md:flex-row mt-2">
+                        <div className="flex flex-col mt-2">
                           <div className="flex flex-col w-full">
                             <h1
                               className="font-medium mb-1 text-black text-sm"
@@ -148,7 +150,7 @@ function ManageResidentModal({ user, setUser }) {
                             />
                           </div>
 
-                          <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full">
+                          <div className="flex flex-col mt-2 w-full">
                             <h1
                               className="font-medium mb-1 text-black text-sm"
                               style={{ letterSpacing: "0.1em" }}
@@ -167,7 +169,7 @@ function ManageResidentModal({ user, setUser }) {
                             />
                           </div>
 
-                          <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full">
+                          <div className="flex flex-col mt-2 w-full">
                             <h1
                               className="font-medium mb-1 text-black text-sm"
                               style={{ letterSpacing: "0.1em" }}
@@ -368,10 +370,7 @@ function ManageResidentModal({ user, setUser }) {
                             >
                               <option value="">-- Select Religion --</option>
                               {religions.map((religion, index) => (
-                                <option
-                                  key={index}
-                                  value={religion}
-                                >
+                                <option key={index} value={religion}>
                                   {religion}
                                 </option>
                               ))}
@@ -629,6 +628,157 @@ function ManageResidentModal({ user, setUser }) {
                               className="block w-full p-1 text-sm text-black bg-gray-200 rounded-r-lg"
                               value={user.password}
                               disabled={!edit}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Section 4 */}
+                      <b className="border-solid border-0 border-black/50 border-b-2 mt-5 uppercase font-medium text-lg md:text-lg">
+                        Socials
+                      </b>
+                      <div className="flex flex-col md:flex-row md:space-x-2 mt-4">
+                        <div className="flex flex-row gap-1 md:gap-1.5">
+                          <FaFacebookSquare
+                            size={24}
+                            style={{ color: "#1877F2" }}
+                            className="my-auto"
+                          />
+                          <h1
+                            className="font-medium mb-1 mt-1.5 md:my-auto text-black text-sm"
+                            style={{ letterSpacing: "0.1em" }}
+                          >
+                            FACEBOOK
+                          </h1>
+                        </div>
+                        <div>
+                          <h1
+                            className="font-light mb-1 mt-1.5 text-black text-xs md:text-sm"
+                            style={{ letterSpacing: "0.1em" }}
+                          >
+                            (USERNAME & PROFILE LINK)
+                          </h1>
+                        </div>
+                      </div>
+                      <div className="flex flex-col mt-1 md:flex-row">
+                        <div className="flex flex-col w-full">
+                          <input
+                            type="text"
+                            id="facebook_name"
+                            className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
+                            value={user.username}
+                            placeholder=""
+                            disabled
+                          />
+                        </div>
+
+                        <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full">
+                          <div className="flex flex-col w-full md:mr-2">
+                            <input
+                              type="text"
+                              id="facebook_link"
+                              className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
+                              value={user.username}
+                              placeholder=""
+                              disabled
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col md:flex-row md:space-x-2 mt-4">
+                        <div className="flex flex-row gap-1 md:gap-1.5">
+                          <FaSquareXTwitter
+                            size={24}
+                            style={{ color: "#14171A" }}
+                            className="my-auto"
+                          />
+                          <h1
+                            className="font-medium mb-1 mt-1.5 md:my-auto text-black text-sm"
+                            style={{ letterSpacing: "0.1em" }}
+                          >
+                            TWITTER / X
+                          </h1>
+                        </div>
+                        <div>
+                          <h1
+                            className="font-light mb-1 mt-1.5 text-black text-xs md:text-sm"
+                            style={{ letterSpacing: "0.1em" }}
+                          >
+                            (USERNAME & PROFILE LINK)
+                          </h1>
+                        </div>
+                      </div>
+                      <div className="flex flex-col mt-1 md:flex-row">
+                        <div className="flex flex-col w-full">
+                          <input
+                            type="text"
+                            id="facebook_name"
+                            className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
+                            value={user.username}
+                            placeholder=""
+                            disabled
+                          />
+                        </div>
+
+                        <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full">
+                          <div className="flex flex-col w-full md:mr-2">
+                            <input
+                              type="text"
+                              id="facebook_link"
+                              className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
+                              value={user.username}
+                              placeholder=""
+                              disabled
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col md:flex-row md:space-x-2 mt-4">
+                        <div className="flex flex-row gap-1 md:gap-1.5">
+                          <FaInstagram
+                            size={24}
+                            style={{ color: "#E4405F" }}
+                            className="my-auto"
+                          />
+                          <h1
+                            className="font-medium mb-1 mt-1.5 md:my-auto text-black text-sm"
+                            style={{ letterSpacing: "0.1em" }}
+                          >
+                            INSTAGRAM
+                          </h1>
+                        </div>
+                        <div>
+                          <h1
+                            className="font-light mb-1 mt-1.5 text-black text-xs md:text-sm"
+                            style={{ letterSpacing: "0.1em" }}
+                          >
+                            (USERNAME & PROFILE LINK)
+                          </h1>
+                        </div>
+                      </div>
+                      <div className="flex flex-col mt-1 md:flex-row">
+                        <div className="flex flex-col w-full">
+                          <input
+                            type="text"
+                            id="facebook_name"
+                            className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
+                            value={user.username}
+                            placeholder=""
+                            disabled
+                          />
+                        </div>
+
+                        <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full">
+                          <div className="flex flex-col w-full md:mr-2">
+                            <input
+                              type="text"
+                              id="facebook_link"
+                              className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
+                              value={user.username}
+                              placeholder=""
+                              disabled
                             />
                           </div>
                         </div>

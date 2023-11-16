@@ -182,7 +182,7 @@ function AddResidentModal({ brgy }) {
                         <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg">
                           Personal Data
                         </b>
-                        <div className="flex flex-col md:flex-row mt-2">
+                        <div className="flex flex-col mt-2">
                           <div className="flex flex-col w-full">
                             <h1
                               className="font-medium mb-1 text-black text-sm"
@@ -195,12 +195,12 @@ function AddResidentModal({ brgy }) {
                               id="firstName"
                               name="firstName"
                               onChange={handleChange}
-                              className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
+                              className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg "
                               placeholder=""
                             />
                           </div>
 
-                          <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full">
+                          <div className="flex flex-col mt-2 w-full">
                             <h1
                               className="font-medium mb-1 text-black text-sm"
                               style={{ letterSpacing: "0.1em" }}
@@ -217,7 +217,7 @@ function AddResidentModal({ brgy }) {
                             />
                           </div>
 
-                          <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full">
+                          <div className="flex flex-col mt-2 w-full">
                             <h1
                               className="font-medium mb-1 text-black text-sm"
                               style={{ letterSpacing: "0.1em" }}
@@ -363,7 +363,7 @@ function AddResidentModal({ brgy }) {
                         Additional Data
                       </b>
                       <div>
-                        <div className="flex flex-row mt-2 px-1 space-x-2">
+                        <div className="flex flex flex-col md:flex-row mt-2 px-1 md:space-x-2">
                           <div className="flex flex-col w-full">
                             <label
                               htmlFor="status"
@@ -387,7 +387,7 @@ function AddResidentModal({ brgy }) {
                             </select>
                           </div>
 
-                          <div className="flex flex-col w-full">
+                          <div className="flex flex-col w-full mt-2 md:mt-0">
                             <label
                               htmlFor="status"
                               className="block text-sm font-medium"
@@ -409,7 +409,7 @@ function AddResidentModal({ brgy }) {
                           </div>
                         </div>
 
-                        <div className="mt-2 px-1 flex flex-col md:flex-row w-full">
+                        <div className="mt-2 md:mt-4 px-1 flex flex-col md:flex-row w-full">
                           <div className="flex flex-col w-full">
                             <label
                               htmlFor="status"
@@ -486,7 +486,7 @@ function AddResidentModal({ brgy }) {
                           </div>
                         </div>
 
-                        <div className="mt-2 flex flex-col md:flex-row px-1">
+                        <div className="mt-2 md:mt-4 flex flex-col md:flex-row px-1">
                           <div className="w-full">
                             <h1
                               className="font-medium mt-2 text-black text-sm"
@@ -593,7 +593,7 @@ function AddResidentModal({ brgy }) {
                       <b className="border-solid border-0 border-black/50 border-b-2 uppercase font-medium text-lg md:text-lg mt-5">
                         Account
                       </b>
-                      <div className="flex flex-row mt-2 px-1">
+                      <div className="flex flex-row mt-2 md:mt-4 px-1 flex-col md:flex-row">
                         <div className="flex flex-col w-full">
                           <h1
                             className="font-medium mb-1 text-black text-sm"
@@ -611,7 +611,7 @@ function AddResidentModal({ brgy }) {
                           />
                         </div>
 
-                        <div className="flex flex-col ml-2 w-full">
+                        <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full">
                           <h1
                             className="font-medium mb-1 text-black text-sm"
                             style={{ letterSpacing: "0.1em" }}

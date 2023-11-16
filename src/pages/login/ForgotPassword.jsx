@@ -33,7 +33,7 @@ const ForgotPassword = () => {
       }
     } catch (error) {
       setError("Email does not exist");
-      console.error(error);
+      console.log(error.message);
     }
   };
 

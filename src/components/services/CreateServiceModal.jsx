@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Dropbox from "./Dropbox";
 import API_LINK from "../../config/API";
+import { FaFileUpload } from "react-icons/fa";
 
 function CreateServiceModal({ brgy }) {
   const [service, setService] = useState({
@@ -21,12 +22,10 @@ function CreateServiceModal({ brgy }) {
 
   useEffect(() => {
     var logoSrc = document.getElementById("logo");
-    logoSrc.src =
-      "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
-
+    logoSrc.src = <FaFileUpload/>;
+  
     var bannerSrc = document.getElementById("banner");
-    bannerSrc.src =
-      "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+    bannerSrc.src = <FaFileUpload/>;
   }, []);
 
   const handleLogoChange = (e) => {
@@ -93,11 +92,11 @@ function CreateServiceModal({ brgy }) {
       if (result.status === 200) {
         var logoSrc = document.getElementById("logo");
         logoSrc.src =
-          "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+        <FaFileUpload/>;
 
         var bannerSrc = document.getElementById("banner");
         bannerSrc.src =
-          "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+        <FaFileUpload/>;
         setService({
           name: "",
           type: "",

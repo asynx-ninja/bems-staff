@@ -225,7 +225,7 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
                   </label>
                   <input
                     id="title"
-                    className="shadow appearance-none text-sm border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    className="shadow appearance-none text-sm border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                     type="text"
                     name="title"
                     value={announcement && announcement.title}
@@ -244,7 +244,7 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
                     id="details"
                     rows={4}
                     name="details"
-                    className="block p-2.5 w-full text-sm text-gray-700  rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 "
+                    className="block p-2.5 w-full text-sm text-gray-700  rounded-lg border border-gray-300 focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                     placeholder="Enter announcement details..."
                     value={announcement && announcement.details}
                     disabled={!edit}
@@ -259,7 +259,7 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
                     Date
                   </label>
                   <input
-                    className="shadow text-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    className="shadow text-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                     id="date"
                     type="date"
                     name="date"
