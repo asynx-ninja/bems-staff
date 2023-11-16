@@ -10,6 +10,7 @@ const UpcomingEvents = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
+  const id = searchParams.get("id");
   const [announcement, setAnnouncement] = useState([]);
 
   useEffect(() => {
@@ -34,13 +35,12 @@ const UpcomingEvents = () => {
   };
 
   return (
-    <div className="w-full lg:w-6/12 flex flex-col h-full">
+    <div className="relative w-full lg:w-6/12 flex flex-col overflow-y-auto h-full">
       <b className="border-solid border-0 border-black border-b-2 pb-2 uppercase font-heavy text-lg md:text-xl mb-4">
         UPCOMING EVENTS
       </b>
-      <div className="w-full max-h-full overflow-y-auto">
-      <div className="w-full h-full relative border">
-        <div className="w-full gap-3 flex flex-col">
+      <div className="overflow-y-auto h-[300px] lg:h-[400px] xl:h-[400px] xxl:h-[400px] xxxl:h-[500px]">
+        <div className="w-full gap-3 flex flex-col border">
           {announcements.map((item, index) => (
             <div className="flex flex-row bg-gradient-to-r from-[#295141]  to-[#408D51] h-full text-white font-medium overflow-hidden">
               <div className="bg-cover bg-center w-[20%] h-[4rem] md:h-[5rem] lg:h-[6rem] object-cover rounded-r-full border-solid border-0" style={{ backgroundImage: `url('${item.collections.banner.link}')` }}>
@@ -72,8 +72,7 @@ const UpcomingEvents = () => {
           ))}
         </div>
       </div>
-      </div>
-      <ViewEvent announcement={announcement} setAnnouncement={setAnnouncement}/>
+      <ViewEvent announcement={announcement} setAnnouncement={setAnnouncement} brgy={brgy} id={id}/>
     </div>
   );
 };

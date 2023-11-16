@@ -10,15 +10,15 @@ import { HiMiniInformationCircle } from "react-icons/hi2";
 import { FaServicestack, FaChalkboardTeacher } from "react-icons/fa";
 import { FaPeopleGroup } from "react-icons/fa6";
 import { GoGitPullRequest } from "react-icons/go";
-import { useEffect } from "react";
 import { useLocation, useNavigate, matchRoutes } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import API_LINK from "../../config/API";
+import axios from "axios";
 
 const Sidebar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [userData, setUserData] = useState();
+  const [userData, setUserData] = useState({});
   const location = useLocation();
   const currentPath = location.pathname;
   const id = searchParams.get("id");
@@ -52,9 +52,9 @@ const Sidebar = () => {
           <img src={logo} alt="" className="" width={80} />
           <div>
             <h1 className="uppercase font-bold text-white text-sm">
-              Dr. Kenshi Takahashi
+              {userData.firstName} {userData.lastName}
             </h1>
-            <p className="text-white text-xs">kenshi.takahashi@gmail.com</p>
+            <p className="text-white text-xs">{userData.email}</p>
           </div>
         </div>
         <nav className="px-6 pt-6 flex flex-col flex-wrap ">

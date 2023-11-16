@@ -1,8 +1,9 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import EditDropbox from "../announcement/EditDropbox";
 
-function ViewEvent({ announcement, setAnnouncement }) {
+function ViewEvent({ announcement, setAnnouncement, id, brgy }) {
   const [files, setFiles] = useState([]);
   const [edit, setEdit] = useState(false);
 
@@ -20,6 +21,7 @@ function ViewEvent({ announcement, setAnnouncement }) {
     const eventdate = date === undefined ? "" : date.substr(0, 10);
     return eventdate;
   };
+  
 
   return (
     <div>
@@ -144,13 +146,24 @@ function ViewEvent({ announcement, setAnnouncement }) {
 
               {/* Buttons */}
               <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
-                <button
-                  type="button"
-                  className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-md borde text-sm font-base bg-teal-700 text-white shadow-sm"
-                  data-hs-overlay="#hs-modal-viewEvent"
+                <Link
+                  to={`/announcements/?id=${id}&brgy=${brgy}`}
+                  className="w-full"
+                  onClick={() => {
+                    window.innerWidth >= 300 && window.innerWidth <= 1920
+                      ? document
+                          .getQuerySelector("[data-hs-overlay-backdrop-template]")
+                          .remove()
+                      : null;
+                  }}
                 >
-                  CHECK ANNOUNCEMENT PAGE
-                </button>
+                  <button
+                    type="button"
+                    className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-md borde text-sm font-base bg-teal-700 text-white shadow-sm"
+                  >
+                    CHECK ANNOUNCEMENT PAGE
+                  </button>
+                </Link>
                 <button
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"

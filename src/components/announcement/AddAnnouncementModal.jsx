@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Dropbox from "./Dropbox";
 import API_LINK from "../../config/API";
+import { CiImageOn } from "react-icons/ci";
 
 function CreateAnnouncementModal({ brgy }) {
   const [announcement, setAnnouncement] = useState({
@@ -19,15 +20,15 @@ function CreateAnnouncementModal({ brgy }) {
   const [files, setFiles] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    var logoSrc = document.getElementById("logo");
-    logoSrc.src =
-      "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+  // useEffect(() => {
+  //   var logoSrc = document.getElementById("logo");
+  //   logoSrc.src =
+  //     "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
 
-    var bannerSrc = document.getElementById("banner");
-    bannerSrc.src =
-      "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
-  }, []);
+  //   var bannerSrc = document.getElementById("banner");
+  //   bannerSrc.src =
+  //     "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+  // }, []);
 
   const handleLogoChange = (e) => {
     setLogo(e.target.files[0]);
@@ -52,11 +53,12 @@ function CreateAnnouncementModal({ brgy }) {
   const handleChange = (e) => {
     setAnnouncement((prev) => ({
       ...prev,
-      [e.target.name]: e.target.name === "isOpen" ? e.target.checked : e.target.value ,
+      [e.target.name]:
+        e.target.name === "isOpen" ? e.target.checked : e.target.value,
     }));
   };
 
-  console.log(announcement)
+  console.log(announcement);
 
   const handleFileChange = (e) => {
     e.preventDefault();
@@ -120,7 +122,7 @@ function CreateAnnouncementModal({ brgy }) {
         className="hs-overlay hidden fixed top-0 left-0 z-[80] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center "
       >
         {/* Modal */}
-        <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-full">
+        <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto">
             {/* Header */}
             <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
@@ -132,7 +134,7 @@ function CreateAnnouncementModal({ brgy }) {
               </h3>
             </div>
 
-            <div className="flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-screen">
+            <div className="flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
               <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                 <div className="w-full">
                   <label
@@ -144,9 +146,15 @@ function CreateAnnouncementModal({ brgy }) {
                   <div className="flex flex-col items-center space-y-2 relative">
                     <div className="w-full border border-gray-300">
                       <img
-                        className="w-[200px] md:w-[250px] mx-auto lg:w-full md:h-[140px] lg:h-[250px] object-cover"
+                        className={`${
+                          logo ? "" : "hidden"
+                        } w-[200px] md:w-[250px]  lg:w-full md:h-[140px] lg:h-[250px] object-cover`}
                         id="logo"
                         alt="Current profile photo"
+                      />{" "}
+                      <CiImageOn
+                        size={250}
+                        className={`${!logo ? "" : "hidden"} mx-auto`}
                       />
                     </div>
                     <label className="w-full bg-white border border-gray-300">
@@ -171,10 +179,16 @@ function CreateAnnouncementModal({ brgy }) {
                   </label>
                   <div className="flex flex-col items-center space-y-2 relative">
                     <div className="w-full border border-gray-300">
-                      <img
-                        className="w-[200px] md:w-[250px] mx-auto lg:w-full md:h-[140px] lg:h-[250px] object-cover"
-                        id="banner"
+                    <img
+                        className={`${
+                          banner ? "" : "hidden"
+                        } w-[200px] md:w-[250px]  lg:w-full md:h-[140px] lg:h-[250px] object-cover`}
+                        id="logo"
                         alt="Current profile photo"
+                      />{" "}
+                      <CiImageOn
+                        size={250}
+                        className={`${!banner ? "" : "hidden"} mx-auto`}
                       />
                     </div>
                     <label className="w-full bg-white border border-gray-300">

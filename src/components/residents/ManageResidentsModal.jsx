@@ -107,7 +107,7 @@ function ManageResidentModal({ user, setUser }) {
           className="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
         >
           {/* Modal */}
-          <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-full ">
+          <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
             <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full   md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto">
               {/* Header */}
               <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
@@ -119,7 +119,7 @@ function ManageResidentModal({ user, setUser }) {
                 </h3>
               </div>
 
-              <div className="flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-screen">
+              <div className="flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
                 <form>
                   <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                     <div className="flex flex-col mb-1 w-full">
@@ -143,7 +143,7 @@ function ManageResidentModal({ user, setUser }) {
                               id="firstName"
                               name="firstName"
                               onChange={handleChange}
-                              className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
+                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
                               value={user.firstName}
                               disabled={!edit}
@@ -162,7 +162,7 @@ function ManageResidentModal({ user, setUser }) {
                               id="middleName"
                               name="middleName"
                               onChange={handleChange}
-                              className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
+                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
                               value={user.middleName}
                               disabled={!edit}
@@ -181,7 +181,7 @@ function ManageResidentModal({ user, setUser }) {
                               id="lastName"
                               name="lastName"
                               onChange={handleChange}
-                              className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
+                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
                               value={user.lastName}
                               disabled={!edit}
@@ -202,7 +202,7 @@ function ManageResidentModal({ user, setUser }) {
                               id="suffix"
                               name="suffix"
                               onChange={handleChange}
-                              className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
+                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
                               value={user.suffix}
                               disabled={!edit}
@@ -221,7 +221,7 @@ function ManageResidentModal({ user, setUser }) {
                               id="birthday"
                               name="birthday"
                               onChange={handleChange}
-                              className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
+                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               value={birthdayFormat(user.birthday) || ""}
                               disabled={!edit}
                             />
@@ -239,7 +239,7 @@ function ManageResidentModal({ user, setUser }) {
                               id="age"
                               name="age"
                               onChange={handleChange}
-                              className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
+                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
                               value={user.age}
                               readOnly
@@ -259,7 +259,7 @@ function ManageResidentModal({ user, setUser }) {
                               id="email"
                               name="email"
                               onChange={handleChange}
-                              className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
+                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
                               value={user.email}
                               disabled={!edit}
@@ -278,7 +278,7 @@ function ManageResidentModal({ user, setUser }) {
                               id="contact"
                               name="contact"
                               onChange={handleChange}
-                              className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
+                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
                               value={user.contact}
                               disabled={!edit}
@@ -300,6 +300,7 @@ function ManageResidentModal({ user, setUser }) {
                                 value="Male"
                                 onChange={handleChange}
                                 checked={user.sex === "Male"}
+                                className="text-green-500 focus:border-green-500 focus:ring-green-500"
                                 disabled={!edit}
                               />
                               <label htmlFor="Male" className="ml-2">
@@ -312,7 +313,7 @@ function ManageResidentModal({ user, setUser }) {
                                 value="Female"
                                 onChange={handleChange}
                                 checked={user.sex === "Female"}
-                                className="ml-4 md:ml-2 lg:ml-4"
+                                className="ml-4 md:ml-2 lg:ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
                                 disabled={!edit}
                               />
                               <label htmlFor="Female" className="ml-2">
@@ -340,7 +341,7 @@ function ManageResidentModal({ user, setUser }) {
                               id="civil_status"
                               name="civil_status"
                               onChange={handleChange}
-                              className="w-full p-2 border  rounded"
+                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               disabled={!edit}
                               value={user.civil_status}
                             >
@@ -364,7 +365,7 @@ function ManageResidentModal({ user, setUser }) {
                             <select
                               name="religion"
                               onChange={handleChange}
-                              className="w-full p-2 border rounded"
+                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               disabled={!edit}
                               value={user.religion}
                             >
@@ -406,7 +407,7 @@ function ManageResidentModal({ user, setUser }) {
                               id="street"
                               name="street"
                               onChange={handleChange}
-                              className="block w-full p-2.5 text-sm text-black bg-gray-200 rounded-lg"
+                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
                               value={user.address?.street}
                               disabled={!edit}
@@ -424,7 +425,7 @@ function ManageResidentModal({ user, setUser }) {
                               id="brgy"
                               name="brgy"
                               onChange={handleChange}
-                              className="w-full p-2 border rounded"
+                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               disabled={!edit}
                               value={user.address?.brgy}
                             >
@@ -454,7 +455,7 @@ function ManageResidentModal({ user, setUser }) {
                               id="city"
                               name="city"
                               onChange={handleChange2}
-                              className="w-full p-2 border rounded"
+                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               disabled
                             >
                               <option value="Rodriguez, Rizal">
@@ -480,6 +481,7 @@ function ManageResidentModal({ user, setUser }) {
                                 onChange={handleChange2}
                                 checked={user.isVoter === true}
                                 value="true"
+                                className="text-green-500 focus:border-green-500 focus:ring-green-500"
                                 disabled={!edit}
                               />
                               <label htmlFor="Male" className="ml-2">
@@ -492,7 +494,7 @@ function ManageResidentModal({ user, setUser }) {
                                 onChange={handleChange2}
                                 value="false"
                                 checked={user.isVoter === false}
-                                className="ml-4"
+                                className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
                                 disabled={!edit}
                               />
                               <label htmlFor="No" className="ml-2">
@@ -516,6 +518,7 @@ function ManageResidentModal({ user, setUser }) {
                                 onChange={handleChange2}
                                 checked={user.isHead === true}
                                 value="true"
+                                className="text-green-500 focus:border-green-500 focus:ring-green-500"
                                 disabled={!edit}
                               />
                               <label htmlFor="Yes" className="ml-2">
@@ -528,7 +531,7 @@ function ManageResidentModal({ user, setUser }) {
                                 onChange={handleChange2}
                                 value="false"
                                 checked={user.isHead === false}
-                                className="ml-4"
+                                className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
                                 disabled={!edit}
                               />
                               <label htmlFor="No" className="ml-2">
@@ -550,7 +553,7 @@ function ManageResidentModal({ user, setUser }) {
                               id="type"
                               name="type"
                               onChange={handleChange}
-                              className="w-full p-1 pl-2 border rounded"
+                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               value={user.type}
                               disabled
                             >
@@ -590,7 +593,7 @@ function ManageResidentModal({ user, setUser }) {
                             id="username"
                             name="username"
                             onChange={handleChange}
-                            className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
+                            className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                             value={user.username}
                             placeholder=""
                             disabled={!edit}
@@ -625,7 +628,7 @@ function ManageResidentModal({ user, setUser }) {
                               name="password"
                               id="password"
                               onChange={handleChange}
-                              className="block w-full p-1 text-sm text-black bg-gray-200 rounded-r-lg"
+                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-r-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               value={user.password}
                               disabled={!edit}
                             />
@@ -665,7 +668,7 @@ function ManageResidentModal({ user, setUser }) {
                           <input
                             type="text"
                             id="facebook_name"
-                            className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
+                            className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                             value={user.username}
                             placeholder=""
                             disabled
@@ -677,7 +680,7 @@ function ManageResidentModal({ user, setUser }) {
                             <input
                               type="text"
                               id="facebook_link"
-                              className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
+                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               value={user.username}
                               placeholder=""
                               disabled
@@ -714,7 +717,7 @@ function ManageResidentModal({ user, setUser }) {
                           <input
                             type="text"
                             id="facebook_name"
-                            className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
+                            className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                             value={user.username}
                             placeholder=""
                             disabled
@@ -726,7 +729,7 @@ function ManageResidentModal({ user, setUser }) {
                             <input
                               type="text"
                               id="facebook_link"
-                              className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
+                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               value={user.username}
                               placeholder=""
                               disabled
@@ -763,7 +766,7 @@ function ManageResidentModal({ user, setUser }) {
                           <input
                             type="text"
                             id="facebook_name"
-                            className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
+                            className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                             value={user.username}
                             placeholder=""
                             disabled
@@ -775,7 +778,7 @@ function ManageResidentModal({ user, setUser }) {
                             <input
                               type="text"
                               id="facebook_link"
-                              className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
+                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               value={user.username}
                               placeholder=""
                               disabled

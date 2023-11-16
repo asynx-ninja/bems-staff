@@ -3,12 +3,12 @@ import {AiFillEye} from 'react-icons/ai';
 
 const SubPendingRequest = () => {
   return (
-    <div className="w-full lg:w-6/12 flex flex-col ">
+    <div className="relative w-full lg:w-6/12 flex flex-col overflow-y-auto h-full">
       <b className="border-solid border-0 border-black border-b-2 pb-2 uppercase font-heavy text-lg md:text-xl mb-4">
         PENDING REQUESTS
       </b>
-      <div className="overflow-y-auto h-[300px] 2xl:h-[665px] ">
-        <table className="table-auto w-full">
+      <div className="overflow-y-auto h-[300px] lg:h-[400px] xl:h-[400px] xxl:h-[400px] xxxl:h-[500px]">
+        <table className="table-auto w-full h-full">
           <thead className="uppercase text-xs md:text-sm bg-gray-100 sticky top-0 ">
             <tr>
               <th className="px-4 py-1 md:px-5 md:py-2 lg:px-6 lg:py-3">
