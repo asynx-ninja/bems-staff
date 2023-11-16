@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { FaArchive, FaPlus } from "react-icons/fa";
 import { BsPrinter } from "react-icons/bs";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
+import { MdFormatListBulletedAdd } from "react-icons/md";
 import ReactPaginate from "react-paginate";
 import GenerateReportsModal from "../components/services/GenerateReportsModal";
 import CreateServiceModal from "../components/services/CreateServiceModal";
@@ -12,6 +13,7 @@ import axios from "axios";
 import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
 import ManageServiceModal from "../components/services/ManageServiceModal";
+import AddServicesForm from "../components/services/form/AddServicesForm";
 
 const Services = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -338,6 +340,17 @@ const Services = () => {
                       >
                         <AiOutlineEye size={24} style={{ color: "#ffffff" }} />
                       </button>
+                      <button
+                        type="button"
+                        data-hs-overlay="#hs-create-serviceForm-modal"
+                        onClick={() => handleView({ ...item })}
+                        className="text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                      >
+                        <MdFormatListBulletedAdd
+                          size={24}
+                          style={{ color: "#ffffff" }}
+                        />
+                      </button>
                       {/* <button
                         type="button"
                         onClick={() =>
@@ -376,11 +389,12 @@ const Services = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <ArchiveServicesModal selectedItems={selectedItems}/>
-      <CreateServiceModal brgy={brgy}/>
+      <ArchiveServicesModal selectedItems={selectedItems} />
+      <CreateServiceModal brgy={brgy} />
       {/*<StatusServices status={status} setStatus={setStatus}/>*/}
-      <ManageServiceModal service={service} setService={setService}/>
+      <ManageServiceModal service={service} setService={setService} />
       <GenerateReportsModal />
+      <AddServicesForm />
     </div>
   );
 };

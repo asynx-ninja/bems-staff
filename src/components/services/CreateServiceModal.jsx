@@ -1,9 +1,9 @@
 import React from "react";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import axios from "axios";
 import Dropbox from "./Dropbox";
 import API_LINK from "../../config/API";
+import { CiImageOn } from "react-icons/ci";
 
 function CreateServiceModal({ brgy }) {
   const [service, setService] = useState({
@@ -17,17 +17,6 @@ function CreateServiceModal({ brgy }) {
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
   const [files, setFiles] = useState([]);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    var logoSrc = document.getElementById("logo");
-    logoSrc.src =
-      "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
-
-    var bannerSrc = document.getElementById("banner");
-    bannerSrc.src =
-      "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
-  }, []);
 
   const handleLogoChange = (e) => {
     setLogo(e.target.files[0]);
@@ -80,15 +69,14 @@ function CreateServiceModal({ brgy }) {
         type: service.type === "" ? "Healthcare" : service.type,
         details: service.details,
         fee: service.fee,
-        brgy: service.brgy
-      }
+        brgy: service.brgy,
+      };
 
       formData.append("service", JSON.stringify(obj));
+      formData.append("form", JSON.stringify(form));
+      formData.append("inputFields", JSON.stringify(inputFields));
 
-      const result = await axios.post(
-        `${API_LINK}/services/`,
-        formData
-      );
+      const result = await axios.post(`${API_LINK}/services/`, formData);
 
       if (result.status === 200) {
         var logoSrc = document.getElementById("logo");
@@ -133,7 +121,6 @@ function CreateServiceModal({ brgy }) {
                 CREATE SERVICE
               </h3>
             </div>
-
             <div className="flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-screen">
               <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                 <div className="w-full">
@@ -144,11 +131,17 @@ function CreateServiceModal({ brgy }) {
                     Logo
                   </label>
                   <div className="flex flex-col items-center space-y-2 relative">
-                  <div className="w-full border border-gray-300">
+                    <div className="w-full border border-gray-300">
                       <img
-                       className="w-[200px] md:w-[250px] mx-auto lg:w-full md:h-[140px] lg:h-[250px] object-cover"
+                        className={`${
+                          logo ? "" : "hidden"
+                        } w-[200px] md:w-[250px]  lg:w-full md:h-[140px] lg:h-[250px] object-cover`}
                         id="logo"
                         alt="Current profile photo"
+                      />
+                      <CiImageOn
+                        size={250}
+                        className={`${!logo ? "" : "hidden"} mx-auto`}
                       />
                     </div>
                     <label className="w-full bg-white border border-gray-300">
@@ -172,7 +165,7 @@ function CreateServiceModal({ brgy }) {
                     Banner
                   </label>
                   <div className="flex flex-col items-center space-y-2 relative">
-                  <div className="w-full border border-gray-300">
+                    <div className="w-full border border-gray-300">
                       <img
                         className="w-[200px] md:w-[250px] mx-auto lg:w-full md:h-[140px] lg:h-[250px] object-cover"
                         id="banner"
@@ -284,22 +277,22 @@ function CreateServiceModal({ brgy }) {
 
             {/* Buttons */}
             <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
-            <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
-              <button
-                type="button"
-                className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-               onClick={handleSubmit}
-              >
-                CREATE
-              </button>
-              <button
-                type="button"
-                className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
-                data-hs-overlay="#hs-create-service-modal"
-              >
-                CLOSE
-              </button>
-            </div>
+              <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
+                <button
+                  type="button"
+                  className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
+                  onClick={handleSubmit}
+                >
+                  CREATE
+                </button>
+                <button
+                  type="button"
+                  className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
+                  data-hs-overlay="#hs-create-service-modal"
+                >
+                  CLOSE
+                </button>
+              </div>
             </div>
           </div>
         </div>
