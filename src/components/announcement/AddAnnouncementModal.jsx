@@ -11,6 +11,7 @@ function CreateAnnouncementModal({ brgy }) {
     details: "",
     date: "",
     brgy: brgy,
+    isOpen: false,
   });
 
   const [logo, setLogo] = useState();
@@ -51,9 +52,11 @@ function CreateAnnouncementModal({ brgy }) {
   const handleChange = (e) => {
     setAnnouncement((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.name === "isOpen" ? e.target.checked : e.target.value ,
     }));
   };
+
+  console.log(announcement)
 
   const handleFileChange = (e) => {
     e.preventDefault();
@@ -79,6 +82,7 @@ function CreateAnnouncementModal({ brgy }) {
         details: announcement.details,
         date: announcement.date,
         brgy: brgy,
+        isOpen: announcement.isOpen,
       };
 
       formData.append("announcement", JSON.stringify(obj));
@@ -138,7 +142,7 @@ function CreateAnnouncementModal({ brgy }) {
                     Logo
                   </label>
                   <div className="flex flex-col items-center space-y-2 relative">
-                  <div className="w-full border border-gray-300">
+                    <div className="w-full border border-gray-300">
                       <img
                         className="w-[200px] md:w-[250px] mx-auto lg:w-full md:h-[140px] lg:h-[250px] object-cover"
                         id="logo"
@@ -166,7 +170,7 @@ function CreateAnnouncementModal({ brgy }) {
                     Banner
                   </label>
                   <div className="flex flex-col items-center space-y-2 relative">
-                  <div className="w-full border border-gray-300">
+                    <div className="w-full border border-gray-300">
                       <img
                         className="w-[200px] md:w-[250px] mx-auto lg:w-full md:h-[140px] lg:h-[250px] object-cover"
                         id="banner"
@@ -186,6 +190,21 @@ function CreateAnnouncementModal({ brgy }) {
                     </label>
                   </div>
                 </div>
+              </div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block sm:text-xs lg:text-sm text-gray-700 font-bold">
+                  OPEN FOR ALL?
+                </label>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="isOpen"
+                    onChange={handleChange}
+                    defaultChecked={announcement.isOpen}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-400 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
+                </label>
               </div>
               <div className="mb-4">
                 <label
@@ -245,23 +264,23 @@ function CreateAnnouncementModal({ brgy }) {
               />
             </div>
             <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
-                  <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
-                    <button
-                      type="submit"
-                      className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                      onClick={handleSubmit}
-                    >
-                      CREATE
-                    </button>
-                    <button
-                      type="button"
-                      className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
-                      data-hs-overlay="#hs-modal-add"
-                    >
-                      CLOSE
-                    </button>
-                  </div>
+              <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
+                <button
+                  type="submit"
+                  className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
+                  onClick={handleSubmit}
+                >
+                  CREATE
+                </button>
+                <button
+                  type="button"
+                  className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
+                  data-hs-overlay="#hs-modal-add"
+                >
+                  CLOSE
+                </button>
               </div>
+            </div>
           </div>
         </div>
       </div>

@@ -64,9 +64,11 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
   };
 
   const handleChange = (e) => {
+    console.log(e.target.name);
     setAnnouncement((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [e.target.name]:
+        e.target.name === "isOpen" ? e.target.checked : e.target.value,
     }));
   };
 
@@ -103,6 +105,8 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
         for (let f = 0; f < newFiles.length; f += 1) {
           formData.append("files", newFiles[f]);
         }
+
+      console.log("announcement", announcement);
 
       formData.append("announcement", JSON.stringify(announcement));
 
@@ -215,6 +219,22 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
                       </label>
                     </div>
                   </div>
+                </div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block sm:text-xs lg:text-sm text-gray-700 font-bold">
+                    OPEN FOR ALL?
+                  </label>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="isOpen"
+                      onChange={handleChange}
+                      disabled={!edit}
+                      checked={announcement.isOpen}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-400 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
+                  </label>
                 </div>
                 <div className="mb-4">
                   <label
