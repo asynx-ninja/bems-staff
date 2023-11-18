@@ -2,8 +2,11 @@ import React from "react";
 import { useState } from "react";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { TiDelete } from "react-icons/ti";
+import axios from "axios";
 
-const AddServicesForm = () => {
+const AddServicesForm = ({ service_id, brgy }) => {
+  // console.log("service_id", service_id);
+
   const [form, setForm] = useState({
     user_id: { display: "user id", checked: true, type: "text" },
     firstName: { display: "first name", checked: true, type: "text" },
@@ -28,7 +31,7 @@ const AddServicesForm = () => {
     {
       variable: "",
       display: "",
-      type: "",
+      type: "text",
       children: [{ value: "", option: "" }],
     },
   ]);
@@ -39,10 +42,16 @@ const AddServicesForm = () => {
       {
         variable: "",
         display: "",
-        type: "",
+        type: "text",
         children: [{ value: "", option: "" }],
       },
     ]);
+  };
+
+  const formatVariable = (value) => {
+    const newValue = value.toLowerCase();
+
+    return newValue.replace(/ /g, "_");
   };
 
   const handleInputChange = (e, index) => {
@@ -52,11 +61,16 @@ const AddServicesForm = () => {
       [e.target.name]: e.target.value,
     };
 
+    if (e.target.name === "display")
+      updatedInputFields[index] = {
+        ...updatedInputFields[index],
+        variable: formatVariable(e.target.value),
+      };
+
     if (
       updatedInputFields[index].type !== "radio" &&
       updatedInputFields[index].type !== "select"
     ) {
-      console.log("bakit");
       updatedInputFields[index] = {
         ...updatedInputFields[index],
         children: [{ value: "", option: "" }],
@@ -117,7 +131,7 @@ const AddServicesForm = () => {
   const handleSubmit = async (e) => {
     try {
       const response = await axios.post(
-        "http://localhost:8800/api/forms/?brgy=BALITE",
+        `http://localhost:8800/api/forms/?brgy=${brgy}&service_id=${service_id}`,
         {
           form: form,
           inputFields: inputFields,
@@ -219,18 +233,8 @@ const AddServicesForm = () => {
                           </button>
                           <input
                             type="text"
-                            name="variable"
-                            className="border border-1 border-black w-full text-sm"
-                            value={inputField.variable}
-                            placeholder="Variable Name (i.e: firstName, lastName)"
-                            onChange={(event) =>
-                              handleInputChange(event, index)
-                            }
-                          />
-                          <input
-                            type="text"
                             name="display"
-                            className="border border-1 border-black w-full text-sm"
+                            className="border border-1 border-black w-full text-sm px-2"
                             value={inputField.display}
                             placeholder="Display Name (i.e: First Name, Last Name)"
                             onChange={(event) =>
@@ -267,7 +271,10 @@ const AddServicesForm = () => {
                                 className=" text-white font-bold uppercase text-sm"
                                 onClick={() => addOptionField(index)}
                               >
-                                <IoIosAddCircleOutline size={24} />
+                                <IoIosAddCircleOutline
+                                  size={24}
+                                  className="hover:text-yellow-500 rounded-full"
+                                />
                               </button>
                             </div>
 

@@ -6,7 +6,7 @@ import EditMissionModal from "../components/information/EditMissionModal";
 import EditStoryModal from "../components/information/EditStoryModal";
 import EditVisionModal from "../components/information/EditVisionModal";
 import official from "../assets/sample/official.jpg";
-import header from "/imgs/bg-header.png"
+import header from "/imgs/bg-header.png";
 
 const Information = () => {
   useEffect(() => {
@@ -63,7 +63,12 @@ const Information = () => {
 
                   <div className="flex justify-center items-end h-full">
                     <div className="text-center">
-                      <h1 className="font-bold text-sm md:text-xl md:text-2xl xl:text-3xl text-white mb-10" style={{ letterSpacing: "0.4em" }}>BARANGAY SAN JOSE</h1>
+                      <h1
+                        className="font-bold text-sm md:text-xl md:text-2xl xl:text-3xl text-white mb-10"
+                        style={{ letterSpacing: "0.4em" }}
+                      >
+                        BARANGAY SAN JOSE
+                      </h1>
                     </div>
                   </div>
                 </div>
