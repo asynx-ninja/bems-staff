@@ -11,9 +11,15 @@ import ViewMessage from "../components/inquiries/viewMessage"
 import Status from "../components/inquiries/Status"
 import { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
+import axios from "axios";
+import API_LINK from "../config/API";
+import { useSearchParams } from "react-router-dom";
 
 const Inquiries = () => {
   const [selectedItems, setSelectedItems] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const id = searchParams.get("id");
+  const brgy = searchParams.get("brgy");
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -87,7 +93,7 @@ const Inquiries = () => {
           <div className="lg:w-3/5 flex flex-row justify-end items-center ">
             <div className="sm:w-full md:w-full lg:w-2/5 flex sm:flex-col md:flex-row md:justify-center md:items-center sm:space-y-2 md:space-y-0 md:space-x-2 ">
               <div className="w-full rounded-lg ">
-                <Link to="/archivedinquiries">
+                <Link to={`/archivedinquiries/?id=${id}&brgy=${brgy}`}>
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"

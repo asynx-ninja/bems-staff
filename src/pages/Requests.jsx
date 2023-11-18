@@ -11,9 +11,13 @@ import ArchiveRequestsModal from "../components/requests/ArchiveRequestsModal";
 import RequestsReportsModal from "../components/requests/RequestsReportsModal";
 import imgSrc from "/imgs/bg-header.png";
 import ViewRequestModal from "../components/requests/ViewRequestModal";
+import { useSearchParams } from "react-router-dom";
 
 const Requests = () => {
   const [selectedItems, setSelectedItems] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const id = searchParams.get("id");
+  const brgy = searchParams.get("brgy");
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -135,7 +139,7 @@ const Requests = () => {
           <div className="lg:w-3/5 flex flex-row justify-end items-center ">
             <div className="sm:w-full md:w-full lg:w-2/5 flex sm:flex-col md:flex-row md:justify-center md:items-center sm:space-y-2 md:space-y-0 md:space-x-2 ">
               <div className="w-full rounded-lg ">
-                <Link to="/archivedrequests">
+                <Link to={`/archivedrequests/?id=${id}&brgy=${brgy}`}>
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"

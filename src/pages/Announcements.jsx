@@ -21,6 +21,7 @@ const Announcement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
+  const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
   const [announcement, setAnnouncement] = useState([]);
 
@@ -120,7 +121,7 @@ const Announcement = () => {
                 </div>
               </div>
               <div className="w-full rounded-lg ">
-                <Link to={`/archivedannoucements/?brgy=${brgy}&archived=true`}>
+                <Link to={`/archivedannoucements/?id=${id}&brgy=${brgy}&archived=true`}>
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"

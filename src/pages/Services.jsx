@@ -18,6 +18,7 @@ const Services = () => {
   const [services, setServices] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
+  const id = searchParams.get("id");
   const [service, setService] = useState([]);
   const [status, setStatus] = useState({});
 
@@ -121,7 +122,7 @@ const Services = () => {
                 </div>
               </div>
               <div className="w-full rounded-lg ">
-                <Link to={`/archivedservices/?brgy=${brgy}&archived=true`}>
+                <Link to={`/archivedservices/?id=${id}&brgy=${brgy}&archived=true`}>
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"
