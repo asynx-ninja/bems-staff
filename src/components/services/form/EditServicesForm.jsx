@@ -64,7 +64,8 @@ const EditServicesForm = ({ service_id, brgy }) => {
 
     if (
       updatedInputFields[index].type !== "radio" &&
-      updatedInputFields[index].type !== "select"
+      updatedInputFields[index].type !== "select" &&
+      updatedInputFields[index].type !== "checkbox"
     ) {
       updatedInputFields[index] = {
         ...updatedInputFields[index],
@@ -82,7 +83,6 @@ const EditServicesForm = ({ service_id, brgy }) => {
     const newState = detail.form[0];
     newState[key].checked = e.target.checked;
 
-    console.log("New State: ", newState);
     setDetail((prev) => ({
       ...prev,
       form: [newState, detail.form[1]],
@@ -323,7 +323,8 @@ const EditServicesForm = ({ service_id, brgy }) => {
                             </select>
                           </div>
                           {(inputField.type === "radio" ||
-                            inputField.type === "select") && (
+                            inputField.type === "select" ||
+                            inputField.type === "checkbox") && (
                             <div className="ml-9">
                               <div className="flex justify-between items-center bg-green-800 mb-2 px-3 py-2 sticky top-0 ">
                                 <h1 className="text-white font-bold text-sm">
