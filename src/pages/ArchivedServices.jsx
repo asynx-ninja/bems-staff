@@ -68,7 +68,6 @@ const ArchivedServices = () => {
     "ACTIONS",
   ];
 
-
   useEffect(() => {
     document.title = "Archived Services | Barangay E-Services Management";
   }, []);
@@ -239,43 +238,59 @@ const ArchivedServices = () => {
                   </td>
                   <td className="px-6 py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                    {item.service_id}
+                      {item.service_id}
                     </span>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                      {item.name}
+                        {item.name}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {item.details}
+                        {item.details}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {item.type}
+                        {item.type}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {item.fee}
+                        {item.fee}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {item.isApproved}
-                      </span>
-                    </div>
+                    {item.isApproved === "Registered" && (
+                      <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2">
+                        <span className="text-xs sm:text-sm text-white p-3 mx-5">
+                          APPROVED
+                        </span>
+                      </div>
+                    )}
+                    {item.isApproved === "Denied" && (
+                      <div className="flex w-full items-center justify-center bg-custom-red-button m-2">
+                        <span className="text-xs sm:text-sm text-white p-3 mx-5">
+                          DENIED
+                        </span>
+                      </div>
+                    )}
+                    {item.isApproved === "Pending" && (
+                      <div className="flex w-full items-center justify-center bg-custom-amber m-2">
+                        <span className="text-xs sm:text-sm text-white p-3 mx-5">
+                          PENDING
+                        </span>
+                      </div>
+                    )}
                   </td>
 
                   <td className="px-6 py-3">
@@ -313,8 +328,8 @@ const ArchivedServices = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <RestoreServicesModal selectedItems={selectedItems}/>
-      <ViewArchivedServiceModal service={service} setService={setService}/>
+      <RestoreServicesModal selectedItems={selectedItems} />
+      <ViewArchivedServiceModal service={service} setService={setService} />
       <ArchivedServicesReportsModal />
     </div>
   );

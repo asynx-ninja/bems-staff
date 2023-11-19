@@ -204,7 +204,7 @@ const StatisticsDashboard = () => {
                   aria-labelledby="hs-unstyled-collapse"
                 >
                   <Link to={titleItem ? titleItem.activeLink : ""}>
-                    <a className="flex items-center p-3 gap-x-3.5 rounded-lg text-sm text-white">
+                    <a className={`flex items-center p-3 gap-x-3.5 rounded-lg text-sm text-white hover:bg-gradient-to-r ${item.gradient1} hover:border hover:border-grey-200`}>
                       Active:
                       <strong className="ml-auto">
                         {titleItem ? titleItem.active : ""}
@@ -212,7 +212,7 @@ const StatisticsDashboard = () => {
                     </a>
                   </Link>
                   <Link to={titleItem ? titleItem.archivedLink : ""}>
-                    <a className="flex items-center p-3 gap-x-3.5 rounded-lg text-sm text-white">
+                    <a className={`flex items-center p-3 gap-x-3.5 rounded-lg text-sm text-white hover:bg-gradient-to-r ${item.gradient1} hover:border hover:border-grey-200`}>
                       Archived:
                       <strong className="ml-auto">
                         {titleItem ? titleItem.archived : ""}
