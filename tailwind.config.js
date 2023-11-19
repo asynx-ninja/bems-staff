@@ -34,7 +34,7 @@ export default {
         'custom-gold': '#D3B574',
         'custom-gold1': '#FFCF67',
         'custom-red1': '#FF2828',
-        'custom-amber': '#EFB050',
+        'custom-amber': '#d99c3f',
         'custom-green-button2': '#007069',
         'custom-red2': '#99364D',
         'custom-green-button3': '#369987',
