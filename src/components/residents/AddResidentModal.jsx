@@ -157,10 +157,10 @@ function AddResidentModal({ brgy }) {
       <div className="">
         <div
           id="hs-modal-addResident"
-          className="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
+          className="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full md:max-h-lg overflow-x-hidden overflow-y-auto flex items-center justify-center"
         >
           {/* Modal */}
-          <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-full">
+          <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
             <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto">
               {/* Header */}
               <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
@@ -172,7 +172,7 @@ function AddResidentModal({ brgy }) {
                 </h3>
               </div>
 
-              <div className="flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-screen">
+              <div className="flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
                 <form>
                   <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                     <div className="flex flex-col mb-1 w-full">
@@ -183,7 +183,7 @@ function AddResidentModal({ brgy }) {
                         <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg">
                           Personal Data
                         </b>
-                        <div className="flex flex-col md:flex-row mt-2">
+                        <div className="flex flex-col mt-2">
                           <div className="flex flex-col w-full">
                             <h1
                               className="font-medium mb-1 text-black text-sm"
@@ -196,12 +196,12 @@ function AddResidentModal({ brgy }) {
                               id="firstName"
                               name="firstName"
                               onChange={handleChange}
-                              className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
+                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
                             />
                           </div>
 
-                          <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full">
+                          <div className="flex flex-col mt-2 w-full">
                             <h1
                               className="font-medium mb-1 text-black text-sm"
                               style={{ letterSpacing: "0.1em" }}
@@ -213,12 +213,12 @@ function AddResidentModal({ brgy }) {
                               id="middleName"
                               name="middleName"
                               onChange={handleChange}
-                              className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
+                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
                             />
                           </div>
 
-                          <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full">
+                          <div className="flex flex-col mt-2 w-full">
                             <h1
                               className="font-medium mb-1 text-black text-sm"
                               style={{ letterSpacing: "0.1em" }}
@@ -230,7 +230,7 @@ function AddResidentModal({ brgy }) {
                               id="lastName"
                               name="lastName"
                               onChange={handleChange}
-                              className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
+                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
                             />
                           </div>
@@ -249,7 +249,7 @@ function AddResidentModal({ brgy }) {
                               id="suffix"
                               name="suffix"
                               onChange={handleChange}
-                              className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
+                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
                             />
                           </div>
@@ -266,7 +266,7 @@ function AddResidentModal({ brgy }) {
                               id="birthday"
                               name="birthday"
                               onChange={handleChange}
-                              className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
+                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder="mm/dd/yyyy"
                               value={birthdayFormat(user.birthday) || ""}
                             />
@@ -284,7 +284,7 @@ function AddResidentModal({ brgy }) {
                               id="age"
                               name="age"
                               onChange={handleChange}
-                              className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
+                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
                               value={calculateAge(user.birthday) || ""}
                             />
@@ -303,7 +303,7 @@ function AddResidentModal({ brgy }) {
                               id="email"
                               name="email"
                               onChange={handleChange}
-                              className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
+                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
                             />
                           </div>
@@ -320,7 +320,7 @@ function AddResidentModal({ brgy }) {
                               id="contact"
                               name="contact"
                               onChange={handleChange}
-                              className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
+                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
                             />
                           </div>
@@ -338,6 +338,7 @@ function AddResidentModal({ brgy }) {
                                 id="Male"
                                 name="sex"
                                 value="Male"
+                                className="text-green-500 focus:border-green-500 focus:ring-green-500"
                                 onChange={handleChange}
                               />
                               <label htmlFor="Male" className="ml-2">
@@ -349,7 +350,7 @@ function AddResidentModal({ brgy }) {
                                 name="sex"
                                 value="Female"
                                 onChange={handleChange}
-                                className="ml-4 md:ml-2 lg:ml-4"
+                                className="ml-4 md:ml-2 lg:ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
                               />
                               <label htmlFor="Female" className="ml-2">
                                 Female
@@ -364,7 +365,7 @@ function AddResidentModal({ brgy }) {
                         Additional Data
                       </b>
                       <div>
-                        <div className="flex flex-row mt-2 px-1 space-x-2">
+                        <div className="flex flex flex-col md:flex-row mt-2 px-1 md:space-x-2">
                           <div className="flex flex-col w-full">
                             <label
                               htmlFor="status"
@@ -376,7 +377,7 @@ function AddResidentModal({ brgy }) {
                               id="civil_status"
                               name="civil_status"
                               onChange={handleChange}
-                              className="w-full p-2 border  rounded"
+                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                             >
                               <option>-- Select Status --</option>
                               <option value="Single">Single</option>
@@ -388,7 +389,7 @@ function AddResidentModal({ brgy }) {
                             </select>
                           </div>
 
-                          <div className="flex flex-col w-full">
+                          <div className="flex flex-col w-full mt-2 md:mt-0">
                             <label
                               htmlFor="status"
                               className="block text-sm font-medium"
@@ -398,7 +399,7 @@ function AddResidentModal({ brgy }) {
                             <select
                               name="religion"
                               onChange={handleChange}
-                              className="w-full p-2 border rounded"
+                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                             >
                               <option value="">-- Select Religion --</option>
                               {religions.map((religion, index) => (
@@ -410,7 +411,7 @@ function AddResidentModal({ brgy }) {
                           </div>
                         </div>
 
-                        <div className="mt-2 px-1 flex flex-col md:flex-row w-full">
+                        <div className="mt-2 md:mt-4 px-1 flex flex-col md:flex-row w-full">
                           <div className="flex flex-col w-full">
                             <label
                               htmlFor="status"
@@ -433,7 +434,7 @@ function AddResidentModal({ brgy }) {
                               id="street"
                               name="street"
                               onChange={handleChange}
-                              className="block w-full p-2.5 text-sm text-black bg-gray-200 rounded-lg"
+                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
                             />
                           </div>
@@ -451,7 +452,7 @@ function AddResidentModal({ brgy }) {
                               onChange={handleChange}
                               defaultValue={brgy}
                               disabled
-                              className="w-full p-2 border rounded"
+                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                             >
                               <option value="Balite">Balite</option>
                               <option value="Burgos">Burgos</option>
@@ -478,7 +479,7 @@ function AddResidentModal({ brgy }) {
                               id="city"
                               name="city"
                               onChange={handleChange}
-                              className="w-full p-2 border rounded"
+                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               disabled
                             >
                               <option value="Rodriguez, Rizal">
@@ -488,7 +489,7 @@ function AddResidentModal({ brgy }) {
                           </div>
                         </div>
 
-                        <div className="mt-2 flex flex-col md:flex-row px-1">
+                        <div className="mt-2 md:mt-4 flex flex-col md:flex-row px-1">
                           <div className="w-full">
                             <h1
                               className="font-medium mt-2 text-black text-sm"
@@ -503,6 +504,7 @@ function AddResidentModal({ brgy }) {
                                 name="isVoter"
                                 onChange={handleChange}
                                 value="true"
+                                className="text-green-500 focus:border-green-500 focus:ring-green-500"
                               />
                               <label htmlFor="Male" className="ml-2">
                                 Yes
@@ -513,7 +515,7 @@ function AddResidentModal({ brgy }) {
                                 name="isVoter"
                                 onChange={handleChange}
                                 value="false"
-                                className="ml-4"
+                                className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
                               />
                               <label htmlFor="No" className="ml-2">
                                 No
@@ -535,6 +537,7 @@ function AddResidentModal({ brgy }) {
                                 name="isHead"
                                 onChange={handleChange}
                                 value="true"
+                                className="text-green-500 focus:border-green-500 focus:ring-green-500"
                               />
                               <label htmlFor="Yes" className="ml-2">
                                 Yes
@@ -545,7 +548,7 @@ function AddResidentModal({ brgy }) {
                                 name="isHead"
                                 onChange={handleChange}
                                 value="false"
-                                className="ml-4"
+                                className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
                               />
                               <label htmlFor="No" className="ml-2">
                                 No
@@ -569,6 +572,7 @@ function AddResidentModal({ brgy }) {
                                   handleChange2("isArchived", false)
                                 }
                                 value="false"
+                                className="text-green-500 focus:border-green-500 focus:ring-green-500"
                               />
                               <label htmlFor="Yes" className="ml-2">
                                 Yes
@@ -581,7 +585,7 @@ function AddResidentModal({ brgy }) {
                                   handleChange2("isArchived", true)
                                 }
                                 value="true"
-                                className="ml-4"
+                                className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
                               />
                               <label htmlFor="No" className="ml-2">
                                 No
@@ -595,7 +599,7 @@ function AddResidentModal({ brgy }) {
                       <b className="border-solid border-0 border-black/50 border-b-2 uppercase font-medium text-lg md:text-lg mt-5">
                         Account
                       </b>
-                      <div className="flex flex-row mt-2 px-1">
+                      <div className="flex flex-row mt-2 md:mt-4 px-1 flex-col md:flex-row">
                         <div className="flex flex-col w-full">
                           <h1
                             className="font-medium mb-1 text-black text-sm"
@@ -608,12 +612,12 @@ function AddResidentModal({ brgy }) {
                             id="username"
                             name="username"
                             onChange={handleChange}
-                            className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
+                            className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                             placeholder=""
                           />
                         </div>
 
-                        <div className="flex flex-col ml-2 w-full">
+                        <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full">
                           <h1
                             className="font-medium mb-1 text-black text-sm"
                             style={{ letterSpacing: "0.1em" }}
@@ -640,7 +644,7 @@ function AddResidentModal({ brgy }) {
                               name="password"
                               id="password"
                               onChange={handleChange}
-                              className="block w-full p-1 text-sm text-black bg-gray-200 rounded-r-lg"
+                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-r-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               value={user.password}
                             />
                           </div>
@@ -652,21 +656,23 @@ function AddResidentModal({ brgy }) {
               </div>
               {/* Buttons */}
               <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                  data-hs-overlay="#hs-modal-addResident"
-                >
-                  ADD
-                </button>
-                <button
-                  type="button"
-                  className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
-                  data-hs-overlay="#hs-modal-addResident"
-                >
-                  CLOSE
-                </button>
+               <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
+                    data-hs-overlay="#hs-modal-addResident"
+                  >
+                    ADD
+                  </button>
+                  <button
+                    type="button"
+                    className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
+                    data-hs-overlay="#hs-modal-addResident"
+                  >
+                    CLOSE
+                  </button>
+                </div>
               </div>
             </div>
           </div>

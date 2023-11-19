@@ -12,7 +12,7 @@ const Breadcrumbs = () => {
       <ol className="flex items-center space-x-2 text-gray-500 mt-[-1rem]">
         <TfiAnnouncement size={22} />
         <li>
-          <a href={`/announcements/?brgy=${brgy}&archived=false`} className="text-gray-600 font-bold hover:underline">
+          <a href={`/announcements/?id=${id}&brgy=${brgy}&archived=false`} className="text-gray-600 font-bold hover:underline">
             ANNOUNCEMENT
           </a>
         </li>

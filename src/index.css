@@ -13,7 +13,7 @@
 
 /* width */
 ::-webkit-scrollbar {
-  height: 5px; 
+  height: 5px;
   width: 5px;
 }
 
@@ -25,12 +25,12 @@
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #EFC586;
+  background: #efc586;
   border-radius: 5px;
 }
 
-::-webkit-scrollbar-thumb{
-  background: #EFC586;
+::-webkit-scrollbar-thumb {
+  background: #efc586;
   border-radius: 5px;
 }
 
@@ -39,26 +39,49 @@
   background: #fff;
 } */
 
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  /* border: 1px solid #253341; */
+  -webkit-text-fill-color: black;
+  /* -webkit-box-shadow: 0 0 0px 1000px #253341 inset; */
+  /* box-shadow: 0 0 0px 1000px #253341 inset; */
+  transition: background-color 5000s ease-in-out 0s;
+  color: black;
+}
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  /* border: 1px solid #253341; */
+  -webkit-text-fill-color: white;
+  /* -webkit-box-shadow: 0 0 0px 1000px #253341 inset; */
+  /* box-shadow: 0 0 0px 1000px #253341 inset; */
+  transition: background-color 5000s ease-in-out 0s;
+  color: black;
+}
 
 @layer base {
   @font-face {
     font-family: Gilmer Regular;
-    src: url('./../src/assets/fonts/Gilmer Regular.otf') format("opentype");
+    src: url("./../src/assets/fonts/Gilmer Regular.otf") format("opentype");
   }
   @font-face {
     font-family: Gilmer-Bold;
-    src: url('./../src/assets/fonts/Gilmer Bold.otf') format("opentype");
+    src: url("./../src/assets/fonts/Gilmer Bold.otf") format("opentype");
   }
   @font-face {
     font-family: Gilmer-Medium;
-    src: url('./../src/assets/fonts/Gilmer Medium.otf') format("opentype");
+    src: url("./../src/assets/fonts/Gilmer Medium.otf") format("opentype");
   }
   @font-face {
     font-family: Gilmer-Heavy;
-    src: url('./../src/assets/fonts/Gilmer Heavy.otf') format("opentype");
+    src: url("./../src/assets/fonts/Gilmer Heavy.otf") format("opentype");
   }
   @font-face {
     font-family: Gilmer-Light;
-    src: url('./../src/assets/fonts/Gilmer Light.otf') format("opentype");
+    src: url("./../src/assets/fonts/Gilmer Light.otf") format("opentype");
   }
 }

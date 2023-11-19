@@ -12,7 +12,7 @@ const Breadcrumbs = () => {
       <ol className="flex items-center space-x-2 text-gray-500 mt-[-1rem]">
         <MdMiscellaneousServices size={22} />
         <li>
-          <a href={`/services/?brgy=${brgy}&archived=false`} className="text-gray-600 font-bold hover:underline">
+          <a href={`/services/?id=${id}&brgy=${brgy}&archived=false`} className="text-gray-600 font-bold hover:underline">
             SERVICES
           </a>
         </li>

@@ -29,6 +29,8 @@ const Residents = () => {
       const response = await axios.get(`${API_LINK}/users/${brgy}`);
       if (response.status === 200) setUsers(response.data);
       else setUsers([]);
+
+      console.log(response);
     };
 
     fetch();
