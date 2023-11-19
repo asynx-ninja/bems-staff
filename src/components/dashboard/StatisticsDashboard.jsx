@@ -78,8 +78,8 @@ const StatisticsDashboard = () => {
 
   const gradients = [
     { gradient1: "from-[#2E3192]", gradient2: "to-[#2CAFFF]" },
-    { gradient1: "from-[#D4145A]", gradient2: "to-[#FBB03B]" },
-    { gradient1: "from-[#009245]", gradient2: "to-[#FEAB21]" },
+    { gradient1: "from-[#FE9090]", gradient2: "to-[#FF61D2]" },
+    { gradient1: "from-[#56ab2f]", gradient2: "to-[#a8e063]" },
     { gradient1: "from-[#662D8C]", gradient2: "to-[#ED1E79]" },
     { gradient1: "from-[#614385]", gradient2: "to-[#516395]" },
     { gradient1: "from-[#02AABD]", gradient2: "to-[#00CDAC]" },
@@ -204,7 +204,7 @@ const StatisticsDashboard = () => {
                   aria-labelledby="hs-unstyled-collapse"
                 >
                   <Link to={titleItem ? titleItem.activeLink : ""}>
-                    <a className={`flex items-center p-3 gap-x-3.5 rounded-lg text-sm text-white hover:bg-gradient-to-r ${item.gradient1} hover:border hover:border-gray-300`}>
+                    <a className={`flex items-center p-3 gap-x-3.5 rounded-lg font-heavy text-sm text-white hover:bg-gradient-to-r ${item.gradient1} hover:border hover:border-gray-300`}>
                       Active:
                       <strong className="ml-auto">
                         {titleItem ? titleItem.active : ""}
@@ -212,7 +212,7 @@ const StatisticsDashboard = () => {
                     </a>
                   </Link>
                   <Link to={titleItem ? titleItem.archivedLink : ""}>
-                    <a className={`flex items-center p-3 gap-x-3.5 rounded-lg text-sm text-white hover:bg-gradient-to-r ${item.gradient1} hover:border hover:border-gray-300`}>
+                    <a className={`flex items-center p-3 gap-x-3.5 rounded-lg font-heavy text-sm text-white hover:bg-gradient-to-r ${item.gradient1} hover:border hover:border-gray-300`}>
                       Archived:
                       <strong className="ml-auto">
                         {titleItem ? titleItem.archived : ""}

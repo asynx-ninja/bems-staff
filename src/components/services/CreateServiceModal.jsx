@@ -18,15 +18,15 @@ function CreateServiceModal({ brgy }) {
   const [banner, setBanner] = useState();
   const [files, setFiles] = useState([]);
 
-  useEffect(() => {
-    var logoSrc = document.getElementById("logo");
-    logoSrc.src =
-      "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+  // useEffect(() => {
+  //   var logoSrc = document.getElementById("logo");
+  //   logoSrc.src =
+  //     "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
 
-    var bannerSrc = document.getElementById("banner");
-    bannerSrc.src =
-      "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
-  }, []);
+  //   var bannerSrc = document.getElementById("banner");
+  //   bannerSrc.src =
+  //     "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+  // }, []);
 
   const handleLogoChange = (e) => {
     setLogo(e.target.files[0]);
@@ -88,12 +88,10 @@ function CreateServiceModal({ brgy }) {
 
       if (result.status === 200) {
         var logoSrc = document.getElementById("logo");
-        logoSrc.src =
-        <FaFileUpload/>;
+        logoSrc.src = <FaFileUpload />;
 
         var bannerSrc = document.getElementById("banner");
-        bannerSrc.src =
-        <FaFileUpload/>;
+        bannerSrc.src = <FaFileUpload />;
         setService({
           name: "",
           type: "",
@@ -119,7 +117,7 @@ function CreateServiceModal({ brgy }) {
       >
         {/* Modal */}
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
-          <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto">
+          <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
             {/* Header */}
             <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
               <h3
@@ -140,16 +138,14 @@ function CreateServiceModal({ brgy }) {
                     Logo
                   </label>
                   <div className="flex flex-col items-center space-y-2 relative">
-                  <div className="w-full border border-gray-300">
+                    <div className="w-full border border-gray-300">
                       <img
-                       className="w-[200px] md:w-[250px] mx-auto lg:w-full md:h-[140px] lg:h-[250px] object-cover"
+                        className={`${
+                          logo ? "" : "hidden"
+                        } w-[200px] md:w-[250px]  lg:w-full md:h-[140px] lg:h-[250px] object-cover`}
                         id="logo"
                         alt="Current profile photo"
                       />{" "}
-                      <CiImageOn
-                        size={250}
-                        className={`${!logo ? "" : "hidden"} mx-auto`}
-                      />
                       <CiImageOn
                         size={250}
                         className={`${!logo ? "" : "hidden"} mx-auto`}
@@ -176,15 +172,17 @@ function CreateServiceModal({ brgy }) {
                     Banner
                   </label>
                   <div className="flex flex-col items-center space-y-2 relative">
-                  <div className="w-full border border-gray-300">
-                      <img
-                        className="w-[200px] md:w-[250px] mx-auto lg:w-full md:h-[140px] lg:h-[250px] object-cover"
-                        id="banner"
+                    <div className="w-full border border-gray-300">
+                    <img
+                        className={`${
+                          logo ? "" : "hidden"
+                        } w-[200px] md:w-[250px]  lg:w-full md:h-[140px] lg:h-[250px] object-cover`}
+                        id="logo"
                         alt="Current profile photo"
                       />{" "}
                       <CiImageOn
                         size={250}
-                        className={`${!banner ? "" : "hidden"} mx-auto`}
+                        className={`${!logo ? "" : "hidden"} mx-auto`}
                       />
                     </div>
                     <label className="w-full bg-white border border-gray-300">

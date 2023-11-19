@@ -70,7 +70,6 @@ const Inquiries = () => {
     "subject",
     "message",
     "date",
-    "status",
     "actions",
   ];
 
@@ -298,22 +297,6 @@ const Inquiries = () => {
                         {tableData[0].date}
                       </span>
                     </div>
-                  </td>
-                   <td className="px-6 py-3">
-                   {tableData[0].status === "Registered" && (
-                      <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2">
-                        <span className="text-xs sm:text-sm text-white p-3 mx-5">
-                          APPROVED
-                        </span>
-                      </div>
-                    )}
-                    {tableData[0].status === "no reply" && (
-                      <div className="flex w-full items-center justify-center bg-custom-red-button m-2">
-                        <span className="text-xs sm:text-sm text-white p-3 mx-5">
-                          NO REPLY
-                        </span>
-                      </div>
-                    )}
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center space-x-1 sm:space-x-none">
