@@ -341,7 +341,7 @@ function ManageResidentModal({ user, setUser }) {
                               id="civil_status"
                               name="civil_status"
                               onChange={handleChange}
-                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                              className="shadow border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               disabled={!edit}
                               value={user.civil_status}
                             >
@@ -365,7 +365,7 @@ function ManageResidentModal({ user, setUser }) {
                             <select
                               name="religion"
                               onChange={handleChange}
-                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                              className="shadow border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               disabled={!edit}
                               value={user.religion}
                             >
@@ -553,7 +553,7 @@ function ManageResidentModal({ user, setUser }) {
                               id="type"
                               name="type"
                               onChange={handleChange}
-                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                              className="shadow border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               value={user.type}
                               disabled
                             >

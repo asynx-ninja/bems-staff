@@ -270,7 +270,7 @@ function ManageServiceModal({ service, setService }) {
                 <select
                   name="type"
                   onChange={handleChange}
-                  className="shadow appearance-none border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                  className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                   disabled={!edit}
                   value={service.type}
                 >

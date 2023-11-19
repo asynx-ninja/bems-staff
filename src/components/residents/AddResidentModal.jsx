@@ -377,7 +377,7 @@ function AddResidentModal({ brgy }) {
                               id="civil_status"
                               name="civil_status"
                               onChange={handleChange}
-                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                              className="shadow border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                             >
                               <option>-- Select Status --</option>
                               <option value="Single">Single</option>
@@ -399,7 +399,7 @@ function AddResidentModal({ brgy }) {
                             <select
                               name="religion"
                               onChange={handleChange}
-                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                              className="shadow border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                             >
                               <option value="">-- Select Religion --</option>
                               {religions.map((religion, index) => (

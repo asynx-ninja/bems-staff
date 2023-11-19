@@ -157,7 +157,7 @@ const AddServicesForm = ({ service_id, brgy }) => {
       >
         {/* Modal */}
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
-          <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto">
+            <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
             {/* Header */}
             <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
               <h3
@@ -167,10 +167,10 @@ const AddServicesForm = ({ service_id, brgy }) => {
                 CREATE SERVICE FORM
               </h3>
             </div>
-            <div className="my-2">
+            <div className="my-2 py-5 px-2 overflow-y-auto relative h-[470px]">
               <div className="px-4 pb-4">
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block sm:text-xs lg:text-sm text-black font-bold">
+                  <label className="block sm:text-xs lg:text-sm text-black font-medium">
                     SERVE AS ACTIVE FORM?
                   </label>
                   <label className="relative inline-flex items-center cursor-pointer">
@@ -185,7 +185,7 @@ const AddServicesForm = ({ service_id, brgy }) => {
                   </label>
                 </div>
                 <fieldset className="border-2 border-black">
-                  <legend className="ml-2 px-2 text-lg font-bold">
+                  <legend className="ml-2 px-2 text-lg font-medium">
                     BASIC INFORMATION
                   </legend>
                   <div className="px-4 py-2">
@@ -193,7 +193,7 @@ const AddServicesForm = ({ service_id, brgy }) => {
                       Please select which are you going to display the service
                       form details:
                     </h1>
-                    <div className="grid grid-cols-3 mt-3">
+                    <div className="grid md:grid-cols-3 mt-3">
                       {Object.entries(form).map(([key, value], idx) => {
                         return (
                           <label key={idx} className="font-medium text-sm">
@@ -211,12 +211,12 @@ const AddServicesForm = ({ service_id, brgy }) => {
                   </div>
                 </fieldset>
               </div>
-              <div className="px-4 w-full h-[300px] overflow-y-auto">
+              <div className="px-4 w-full h-auto overflow-y-auto">
                 <fieldset className="border-2 border-black">
                   <legend className="ml-2 px-2 text-lg font-bold">
                     CUSTOMIZE FORM
                   </legend>
-                  <div className="flex justify-between items-center bg-green-800 mb-2 px-3 py-2 sticky top-0 mx-3 mt-2">
+                  <div className="flex justify-between items-center bg-green-800 mb-2 px-3 py-2 sticky top-0 mx-3 mt-2 rounded-md">
                     <h1 className="text-white font-bold text-sm">
                       ADD CUSTOMIZABLE INFORMATION
                     </h1>
@@ -249,7 +249,7 @@ const AddServicesForm = ({ service_id, brgy }) => {
                           <input
                             type="text"
                             name="display"
-                            className="border border-1 border-black w-full text-sm px-2"
+                            className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                             value={inputField.display}
                             placeholder="Display Name (i.e: First Name, Last Name)"
                             onChange={(event) =>
@@ -258,7 +258,7 @@ const AddServicesForm = ({ service_id, brgy }) => {
                           />
                           <select
                             name="type"
-                            className="border border-1 border-black w-6/12 text-sm"
+                            className="border border-1 border-gray-300 shadow bg-white w-6/12  border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                             onChange={(event) =>
                               handleInputChange(event, index)
                             }
@@ -279,7 +279,7 @@ const AddServicesForm = ({ service_id, brgy }) => {
                           inputField.type === "select") && (
                           <div className="ml-9">
                             <div className="flex justify-between items-center bg-green-800 mb-2 px-3 py-2 sticky top-0 ">
-                              <h1 className="text-white font-bold text-sm">
+                              <h1 className="text-white font-medium text-sm">
                                 ADD CUSTOMIZABLE OPTION
                               </h1>
                               <button
