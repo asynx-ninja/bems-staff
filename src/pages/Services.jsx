@@ -329,10 +329,10 @@ const Services = () => {
                         </span>
                       </div>
                     )}
-                    {item.isApproved === "Denied" && (
+                    {item.isApproved === "Disapproved" && (
                       <div className="flex w-full items-center justify-center bg-custom-red-button m-2">
                         <span className="text-xs sm:text-sm text-white p-3 mx-5">
-                          DENIED
+                          DISAPPROVED
                         </span>
                       </div>
                     )}
