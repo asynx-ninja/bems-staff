@@ -1,7 +1,16 @@
 import React from "react";
-import bgmodal from "../../assets/modals/bg-modal2.png";
 
-function EditStoryModal({ onClose }) {
+
+function EditStoryModal({ brgyInformation, setBrgyInformation, updateInfo }) {
+
+  const handleChange = (e) => {
+    setBrgyInformation((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+ 
+
   return (
     <div>
       <div
@@ -27,10 +36,13 @@ function EditStoryModal({ onClose }) {
 
             <div className="border m-5 p-5 rounded-lg">
               <textarea
-                id="message"
+                id="story"
                 rows="4"
                 class="block p-2.5 w-full h-40 text-sm text-gray-900 rounded-lg bg-gray-100 resize-none"
                 placeholder="Enter story....."
+                name="story"
+                value={brgyInformation?.story || ""}
+                onChange={handleChange}
               ></textarea>
             </div>
 
@@ -40,6 +52,9 @@ function EditStoryModal({ onClose }) {
                 type="button"
                 class="py-1.5 md:py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-xs md:text-sm font-base bg-custom-green-button3 text-white shadow-sm align-middle"
                 data-hs-overlay="#hs-edit-story-modal"
+                onClick={() => {
+                  updateInfo(brgyInformation); // Pass brgyInformation to updateInfo
+                }}
               >
                 SAVE CHANGES
               </button>
