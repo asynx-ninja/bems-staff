@@ -286,7 +286,7 @@ const Residents = () => {
                   {item.isApproved === "Registered" && (
                       <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2">
                         <span className="text-xs sm:text-sm text-white p-3 mx-5">
-                          APPROVED
+                          REGISTERED
                         </span>
                       </div>
                     )}

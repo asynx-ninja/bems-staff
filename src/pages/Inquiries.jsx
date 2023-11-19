@@ -300,11 +300,20 @@ const Inquiries = () => {
                     </div>
                   </td>
                    <td className="px-6 py-3">
-                    <div className="flex justify-center items-center bg-pink-800 p-2 w-[5rem] rounded-xl">
-                      <span className="text-xs sm:text-sm text-white font-bold line-clamp-2">
-                        {tableData[0].status}
-                      </span>
-                    </div>
+                   {tableData[0].status === "Registered" && (
+                      <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2">
+                        <span className="text-xs sm:text-sm text-white p-3 mx-5">
+                          APPROVED
+                        </span>
+                      </div>
+                    )}
+                    {tableData[0].status === "no reply" && (
+                      <div className="flex w-full items-center justify-center bg-custom-red-button m-2">
+                        <span className="text-xs sm:text-sm text-white p-3 mx-5">
+                          NO REPLY
+                        </span>
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center space-x-1 sm:space-x-none">
