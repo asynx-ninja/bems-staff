@@ -5,8 +5,6 @@ import { TiDelete } from "react-icons/ti";
 import axios from "axios";
 
 const AddServicesForm = ({ service_id, brgy }) => {
-  // console.log("service_id", service_id);
-
   const [form, setForm] = useState({
     user_id: { display: "user id", checked: true, type: "text" },
     firstName: { display: "first name", checked: true, type: "text" },
@@ -35,6 +33,8 @@ const AddServicesForm = ({ service_id, brgy }) => {
       children: [{ value: "", option: "" }],
     },
   ]);
+
+  const [checked, setChecked] = useState(false);
 
   const addInputField = () => {
     setInputFields([
@@ -131,7 +131,7 @@ const AddServicesForm = ({ service_id, brgy }) => {
   const handleSubmit = async (e) => {
     try {
       const response = await axios.post(
-        `http://localhost:8800/api/forms/?brgy=${brgy}&service_id=${service_id}`,
+        `http://localhost:8800/api/forms/?brgy=${brgy}&service_id=${service_id}&checked=${checked}`,
         {
           form: form,
           inputFields: inputFields,
@@ -169,6 +169,21 @@ const AddServicesForm = ({ service_id, brgy }) => {
             </div>
             <div className="my-2">
               <div className="px-4 pb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block sm:text-xs lg:text-sm text-black font-bold">
+                    SERVE AS ACTIVE FORM?
+                  </label>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="isOpen"
+                      onChange={(e) => setChecked(e.target.checked)}
+                      checked={checked}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-400 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
+                  </label>
+                </div>
                 <fieldset className="border-2 border-black">
                   <legend className="ml-2 px-2 text-lg font-bold">
                     BASIC INFORMATION

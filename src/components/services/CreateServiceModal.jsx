@@ -73,8 +73,6 @@ function CreateServiceModal({ brgy }) {
       };
 
       formData.append("service", JSON.stringify(obj));
-      formData.append("form", JSON.stringify(form));
-      formData.append("inputFields", JSON.stringify(inputFields));
 
       const result = await axios.post(`${API_LINK}/services/`, formData);
 

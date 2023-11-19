@@ -205,7 +205,28 @@ const EditServicesForm = ({ service_id, brgy }) => {
                     ))}
                 </select>
               </div>
-              <div className="px-4 pb-4">
+              <div className="px-4 py-2">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block  text-black font-bold">
+                    SERVE AS ACTIVE FORM?
+                  </label>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="isOpen"
+                      onChange={(e) =>
+                        setDetail((prev) => ({
+                          ...prev,
+                          isActive: e.target.checked,
+                        }))
+                      }
+                      checked={detail.isActive}
+                      disabled={detail.isArchived}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-400 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
+                  </label>
+                </div>
                 <fieldset className="border-2 border-black">
                   <legend className="ml-2 px-2 text-lg font-bold">
                     BASIC INFORMATION
