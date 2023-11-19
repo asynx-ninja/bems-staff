@@ -1,14 +1,18 @@
 import React from "react";
 import { GrFormNext } from "react-icons/gr";
 import { BsPeopleFill } from "react-icons/bs";
+import { useSearchParams } from "react-router-dom";
 
 const Breadcrumbs = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const id = searchParams.get("id");
+  const brgy = searchParams.get("brgy");
   return (
     <nav className="flex ">
       <ol className="flex items-center space-x-2 text-gray-500 mt-[-1rem]">
         <BsPeopleFill size={22} />
         <li>
-          <a href="/officials" className="text-gray-600 font-bold hover:underline">
+          <a href={`/officials/?id=${id}&brgy=${brgy}`} className="text-gray-600 font-bold hover:underline">
             BARANGAY OFFICIALS
           </a>
         </li>

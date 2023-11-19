@@ -382,14 +382,14 @@ const Settings = () => {
                       </label>
                       <input
                         disabled={editButton}
-                        type='text'
+                        type="text"
                         id="fistName"
                         className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                         placeholder="First name"
                         value={userData.firstName || ''}
-                        onChange={(e) =>
-                          handleUserDataChange('firstName', e.target.value)
-                        }
+                        // onChange={(e) =>
+                        //   handleUserDataChange('firstName', e.target.value)
+                        // }
                       />
                     </div>
                     <div>
@@ -739,13 +739,13 @@ const Settings = () => {
                     <div className='flex flex-col gap-3 p-2'>
                       <div>
                         <label
-                          htmlFor="facebook-name"
+                          htmlFor="facebookName"
                           className="block sm:text-xs lg:text-sm font-medium mb-2"
                         >
                           Facebook Name
                         </label>
                         <input
-                          id="facebook-name"
+                          id="facebookName"
                           type='text'
                           value={userSocials.facebook.name || ''}
                           disabled={editButton}
@@ -757,14 +757,14 @@ const Settings = () => {
                       </div>
                       <div>
                         <label
-                          htmlFor="facebook-link"
+                          htmlFor="facebookLink"
                           className="block sm:text-xs lg:text-sm font-medium mb-2"
                         >
                           Facebook Link
                         </label>
                         <input
                           type='text'
-                          id="facebook-name"
+                          id="facebookLink"
                           value={userSocials.facebook.link || ''}
                           disabled={editButton}
                           onChange={(e) => { handleUserSocials("facebook", "link", e.target.value) }}
@@ -777,13 +777,13 @@ const Settings = () => {
                     <div className='flex flex-col gap-3 p-2 sm:border-[0px] sm:border-t-[1px] sm:border-b-[1px] md:border-t-[0px] md:border-b-[0px] md:border-l-[1px] md:border-r-[1px] border-green-300'>
                       <div>
                         <label
-                          htmlFor="instagram-name"
+                          htmlFor="instagramName"
                           className="block sm:text-xs lg:text-sm font-medium mb-2"
                         >
                           Instagram Name
                         </label>
                         <input
-                          id='instagram-name'
+                          id='instagramName'
                           type='text'
                           value={userSocials.instagram.name || ''}
                           disabled={editButton}
@@ -795,13 +795,13 @@ const Settings = () => {
                       </div>
                       <div>
                         <label
-                          htmlFor="instagram-link"
+                          htmlFor="instagramLink"
                           className="block sm:text-xs lg:text-sm font-medium mb-2"
                         >
                           Instagram Link
                         </label>
                         <input
-                          id="instagram-link"
+                          id="instagramLink"
                           type='text'
                           value={userSocials.instagram.link || ""}
                           disabled={editButton}
@@ -815,13 +815,13 @@ const Settings = () => {
                     <div className='flex flex-col gap-3 p-2'>
                       <div>
                         <label
-                          htmlFor="twitter-name"
+                          htmlFor="twitterName"
                           className="block sm:text-xs lg:text-sm font-medium mb-2"
                         >
                           Twitter Name
                         </label>
                         <input
-                          id="twitter-name"
+                          id="twitterName"
                           type='text'
                           value={userSocials.twitter.name || ""}
                           disabled={editButton}
@@ -833,12 +833,13 @@ const Settings = () => {
                       </div>
                       <div>
                         <label
-                          htmlFor="facebook"
+                          htmlFor="twitterLink"
                           className="block sm:text-xs lg:text-sm font-medium mb-2"
                         >
                           Twitter Link
                         </label>
                         <input
+                          id='twitterLink'
                           type='text'
                           value={userSocials.twitter.link || ""}
                           disabled={editButton}

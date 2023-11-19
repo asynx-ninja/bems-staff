@@ -21,6 +21,7 @@ import ArchivedResidents from "../pages/ArchiveResidents"
 import ArchivedService from "../pages/ArchivedServices";
 import ArchivedRequests from "../pages/ArchivedRequests";
 import ArchivedOfficials from "../pages/ArchivedOfficials";
+import SampleForm from "../components/services/form/SampleForm";
 
 const pages = [
   {
@@ -37,7 +38,7 @@ const pages = [
   },
   {
     path: "/change/:email",
-    element: <ChangePassword />
+    element: <ChangePassword />,
   },
   {
     path: "/dashboard",
@@ -171,6 +172,15 @@ const pages = [
       <>
         <Navbar />
         <Settings />
+      </>
+    ),
+  },
+  {
+    path: "/form",
+    element: (
+      <>
+        <Navbar />
+        <SampleForm />
       </>
     ),
   },

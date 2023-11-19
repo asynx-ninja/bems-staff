@@ -4,7 +4,7 @@ const OccupationList = ({user, edit, handleChange}) => {
   return (
     
     <select
-      className="w-full p-2 border  rounded"
+    className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
       id="occupation"
       name="occupation"
       onChange={handleChange}

@@ -1,8 +1,9 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import EditDropbox from "./EditDropbox";
+import { Link } from "react-router-dom";
+import EditDropbox from "../announcement/EditDropbox";
 
-function ViewArchivedAnnouncementModal({ announcement, setAnnouncement }) {
+function ViewEvent({ announcement, setAnnouncement, id, brgy }) {
   const [files, setFiles] = useState([]);
   const [edit, setEdit] = useState(false);
 
@@ -20,16 +21,17 @@ function ViewArchivedAnnouncementModal({ announcement, setAnnouncement }) {
     const eventdate = date === undefined ? "" : date.substr(0, 10);
     return eventdate;
   };
+  
 
   return (
     <div>
       <div className="">
         <div
-          id="hs-modal-viewArchivedAnnouncement"
+          id="hs-modal-viewEvent"
           className="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
         >
           {/* Modal */}
-          <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
+          <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-full">
             <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto">
               {/* Header */}
               <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
@@ -37,11 +39,11 @@ function ViewArchivedAnnouncementModal({ announcement, setAnnouncement }) {
                   className="font-bold text-white mx-auto md:text-xl text-center"
                   style={{ letterSpacing: "0.3em" }}
                 >
-                  VIEW ARCHIVED ANNOUNCEMENT
+                  VIEW UPCOMING EVENT
                 </h3>
               </div>
 
-              <div className="flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
+              <div className="flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-screen">
                 <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                   <div className="w-full">
                     <label
@@ -51,7 +53,7 @@ function ViewArchivedAnnouncementModal({ announcement, setAnnouncement }) {
                       Logo
                     </label>
                     <div className="flex flex-col items-center space-y-2 relative">
-                    <div className="w-full border border-gray-300">
+                      <div className="w-full border border-gray-300">
                         <img
                           className="w-[200px] md:w-[250px] mx-auto lg:w-full md:h-[140px] lg:h-[250px] object-cover"
                           id="logo"
@@ -73,7 +75,7 @@ function ViewArchivedAnnouncementModal({ announcement, setAnnouncement }) {
                       Banner
                     </label>
                     <div className="flex flex-col items-center space-y-2 relative">
-                    <div className="w-full border border-gray-300">
+                      <div className="w-full border border-gray-300">
                         <img
                           className="w-[200px] md:w-[250px] mx-auto lg:w-full md:h-[140px] lg:h-[250px] object-cover"
                           id="banner"
@@ -144,10 +146,28 @@ function ViewArchivedAnnouncementModal({ announcement, setAnnouncement }) {
 
               {/* Buttons */}
               <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
+                <Link
+                  to={`/announcements/?id=${id}&brgy=${brgy}`}
+                  className="w-full"
+                  onClick={() => {
+                    window.innerWidth >= 300 && window.innerWidth <= 1920
+                      ? document
+                          .getQuerySelector("[data-hs-overlay-backdrop-template]")
+                          .remove()
+                      : null;
+                  }}
+                >
+                  <button
+                    type="button"
+                    className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-md borde text-sm font-base bg-teal-700 text-white shadow-sm"
+                  >
+                    CHECK ANNOUNCEMENT PAGE
+                  </button>
+                </Link>
                 <button
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
-                  data-hs-overlay="#hs-modal-viewArchivedAnnouncement"
+                  data-hs-overlay="#hs-modal-viewEvent"
                 >
                   CLOSE
                 </button>
@@ -160,4 +180,4 @@ function ViewArchivedAnnouncementModal({ announcement, setAnnouncement }) {
   );
 }
 
-export default ViewArchivedAnnouncementModal;
+export default ViewEvent;

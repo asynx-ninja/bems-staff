@@ -5,6 +5,7 @@ import { FaArchive, FaPlus } from "react-icons/fa";
 import { BsPrinter } from "react-icons/bs";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { MdFormatListBulletedAdd } from "react-icons/md";
+import { MdOutlineEditNote } from "react-icons/md";
 import ReactPaginate from "react-paginate";
 import GenerateReportsModal from "../components/services/GenerateReportsModal";
 import CreateServiceModal from "../components/services/CreateServiceModal";
@@ -14,15 +15,16 @@ import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
 import ManageServiceModal from "../components/services/ManageServiceModal";
 import AddServicesForm from "../components/services/form/AddServicesForm";
+import EditServicesForm from "../components/services/form/EditServicesForm";
 
 const Services = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [services, setServices] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
+  const id = searchParams.get("id");
   const [service, setService] = useState([]);
   const [status, setStatus] = useState({});
-
 
   useEffect(() => {
     const fetch = async () => {
@@ -36,7 +38,6 @@ const Services = () => {
     fetch();
   }, []);
 
-  
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
     let value = e.target.value;
@@ -123,7 +124,7 @@ const Services = () => {
                 </div>
               </div>
               <div className="w-full rounded-lg ">
-                <Link to={`/archivedservices/?brgy=${brgy}&archived=true`}>
+                <Link to={`/archivedservices/?id=${id}&brgy=${brgy}&archived=true`}>
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"
@@ -351,6 +352,17 @@ const Services = () => {
                           style={{ color: "#ffffff" }}
                         />
                       </button>
+                      <button
+                        type="button"
+                        data-hs-overlay="#hs-edit-serviceForm-modal"
+                        onClick={() => handleView({ ...item })}
+                        className="text-white bg-purple-700 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                      >
+                        <MdOutlineEditNote
+                          size={24}
+                          style={{ color: "#ffffff" }}
+                        />
+                      </button>
                       {/* <button
                         type="button"
                         onClick={() =>
@@ -394,7 +406,8 @@ const Services = () => {
       {/*<StatusServices status={status} setStatus={setStatus}/>*/}
       <ManageServiceModal service={service} setService={setService} />
       <GenerateReportsModal />
-      <AddServicesForm />
+      <AddServicesForm service_id={service.service_id} brgy={brgy} />
+      <EditServicesForm service_id={service.service_id} brgy={brgy} />
     </div>
   );
 };

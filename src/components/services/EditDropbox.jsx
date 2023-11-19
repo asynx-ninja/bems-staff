@@ -108,9 +108,15 @@ const EditDropbox = ({
                   </button>
                 </header>
               ) : null}
-              <h1 className="pb-3 font-semibold sm:text-lg text-gray-900">
-                To Upload
-              </h1>
+              {edit ? (
+                <h1 className="pb-3 font-semibold sm:text-lg text-gray-900">
+                  To Upload:
+                </h1>
+              ) : (
+                <h1 className="pb-3 font-semibold sm:text-lg text-gray-900">
+                  Files Attached:
+                </h1>
+              )}
               <ul id="gallery" className="flex flex-1 flex-wrap -m-1">
                 {files.length > 0 ? (
                   files.map((file, idx) => (

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Dropbox from "./Dropbox";
 import API_LINK from "../../config/API";
+import { CiImageOn } from "react-icons/ci";
 
 function CreateAnnouncementModal({ brgy }) {
   const [announcement, setAnnouncement] = useState({
@@ -19,15 +20,15 @@ function CreateAnnouncementModal({ brgy }) {
   const [files, setFiles] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    var logoSrc = document.getElementById("logo");
-    logoSrc.src =
-      "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+  // useEffect(() => {
+  //   var logoSrc = document.getElementById("logo");
+  //   logoSrc.src =
+  //     "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
 
-    var bannerSrc = document.getElementById("banner");
-    bannerSrc.src =
-      "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
-  }, []);
+  //   var bannerSrc = document.getElementById("banner");
+  //   bannerSrc.src =
+  //     "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+  // }, []);
 
   const handleLogoChange = (e) => {
     setLogo(e.target.files[0]);
@@ -52,11 +53,12 @@ function CreateAnnouncementModal({ brgy }) {
   const handleChange = (e) => {
     setAnnouncement((prev) => ({
       ...prev,
-      [e.target.name]: e.target.name === "isOpen" ? e.target.checked : e.target.value ,
+      [e.target.name]:
+        e.target.name === "isOpen" ? e.target.checked : e.target.value,
     }));
   };
 
-  console.log(announcement)
+  console.log(announcement);
 
   const handleFileChange = (e) => {
     e.preventDefault();
@@ -132,7 +134,7 @@ function CreateAnnouncementModal({ brgy }) {
               </h3>
             </div>
 
-            <div className="flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[475px]">
+            <div className="flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-screen">
               <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                 <div className="w-full">
                   <label
@@ -144,9 +146,15 @@ function CreateAnnouncementModal({ brgy }) {
                   <div className="flex flex-col items-center space-y-2 relative">
                     <div className="w-full border border-gray-300">
                       <img
-                        className="w-[200px] md:w-[250px] mx-auto lg:w-full md:h-[140px] lg:h-[250px] object-cover"
+                        className={`${
+                          logo ? "" : "hidden"
+                        } w-[200px] md:w-[250px]  lg:w-full md:h-[140px] lg:h-[250px] object-cover`}
                         id="logo"
                         alt="Current profile photo"
+                      />{" "}
+                      <CiImageOn
+                        size={250}
+                        className={`${!logo ? "" : "hidden"} mx-auto`}
                       />
                     </div>
                     <label className="w-full bg-white border border-gray-300">
@@ -171,10 +179,16 @@ function CreateAnnouncementModal({ brgy }) {
                   </label>
                   <div className="flex flex-col items-center space-y-2 relative">
                     <div className="w-full border border-gray-300">
-                      <img
-                        className="w-[200px] md:w-[250px] mx-auto lg:w-full md:h-[140px] lg:h-[250px] object-cover"
-                        id="banner"
+                    <img
+                        className={`${
+                          banner ? "" : "hidden"
+                        } w-[200px] md:w-[250px]  lg:w-full md:h-[140px] lg:h-[250px] object-cover`}
+                        id="logo"
                         alt="Current profile photo"
+                      />{" "}
+                      <CiImageOn
+                        size={250}
+                        className={`${!banner ? "" : "hidden"} mx-auto`}
                       />
                     </div>
                     <label className="w-full bg-white border border-gray-300">
@@ -215,7 +229,7 @@ function CreateAnnouncementModal({ brgy }) {
                 </label>
                 <input
                   id="title"
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                   name="title"
                   type="text"
                   value={announcement.title}
@@ -236,7 +250,7 @@ function CreateAnnouncementModal({ brgy }) {
                   name="details"
                   value={announcement.details}
                   onChange={handleChange}
-                  className="block p-2.5 w-full text-sm text-gray-700  rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 "
+                  className="block p-2.5 w-full text-sm text-gray-700  rounded-lg border border-gray-300 focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline "
                   placeholder="Enter announcement details..."
                 />
               </div>
@@ -248,7 +262,7 @@ function CreateAnnouncementModal({ brgy }) {
                   Date
                 </label>
                 <input
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                   id="date"
                   name="date"
                   type="date"

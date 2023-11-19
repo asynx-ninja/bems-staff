@@ -135,7 +135,7 @@ function ManageServiceModal({ service, setService }) {
         className="hs-overlay hidden fixed top-0 left-0 z-[70] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
       >
         {/* Modal */}
-        <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-full">
+        <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto">
             {/* Header */}
             <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
@@ -147,7 +147,7 @@ function ManageServiceModal({ service, setService }) {
               </h3>
             </div>
 
-            <div className="flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-screen">
+            <div className="flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
               <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                 <div className="w-full">
                   <label
@@ -217,7 +217,7 @@ function ManageServiceModal({ service, setService }) {
                   Document ID
                 </label>
                 <input
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                   id="username"
                   type="text"
                   disabled
@@ -234,7 +234,7 @@ function ManageServiceModal({ service, setService }) {
                   Service ID
                 </label>
                 <input
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                 className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                   id="username"
                   type="text"
                   placeholder="Username"
@@ -251,7 +251,7 @@ function ManageServiceModal({ service, setService }) {
                 </label>
                 <input
                   id="name"
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                   name="name"
                   type="text"
                   value={service && service.name}
@@ -270,7 +270,7 @@ function ManageServiceModal({ service, setService }) {
                 <select
                   name="type"
                   onChange={handleChange}
-                  className="w-full px-4 py-2 rounded-md border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-500"
+                  className="shadow appearance-none border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                   disabled={!edit}
                   value={service.type}
                 >
@@ -307,7 +307,7 @@ function ManageServiceModal({ service, setService }) {
                   value={service && service.details}
                   onChange={handleChange}
                   disabled={!edit}
-                  className="block p-2.5 w-full text-sm text-gray-700  rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 "
+                  className="shadow appearance-none border w-full p-2.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                   placeholder="Enter service details..."
                 />
               </div>
@@ -320,7 +320,7 @@ function ManageServiceModal({ service, setService }) {
                   Service Fee
                 </label>
                 <input
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                   id="fee"
                   name="fee"
                   type="number"

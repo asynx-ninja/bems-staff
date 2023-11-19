@@ -2,8 +2,9 @@ import React from "react";
 import { useState } from "react";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { TiDelete } from "react-icons/ti";
+import axios from "axios";
 
-const AddServicesForm = () => {
+const AddServicesForm = ({ service_id, brgy }) => {
   const [form, setForm] = useState({
     user_id: { display: "user id", checked: true, type: "text" },
     firstName: { display: "first name", checked: true, type: "text" },
@@ -28,10 +29,12 @@ const AddServicesForm = () => {
     {
       variable: "",
       display: "",
-      type: "",
+      type: "text",
       children: [{ value: "", option: "" }],
     },
   ]);
+
+  const [checked, setChecked] = useState(false);
 
   const addInputField = () => {
     setInputFields([
@@ -39,10 +42,16 @@ const AddServicesForm = () => {
       {
         variable: "",
         display: "",
-        type: "",
+        type: "text",
         children: [{ value: "", option: "" }],
       },
     ]);
+  };
+
+  const formatVariable = (value) => {
+    const newValue = value.toLowerCase();
+
+    return newValue.replace(/ /g, "_");
   };
 
   const handleInputChange = (e, index) => {
@@ -52,11 +61,16 @@ const AddServicesForm = () => {
       [e.target.name]: e.target.value,
     };
 
+    if (e.target.name === "display")
+      updatedInputFields[index] = {
+        ...updatedInputFields[index],
+        variable: formatVariable(e.target.value),
+      };
+
     if (
       updatedInputFields[index].type !== "radio" &&
       updatedInputFields[index].type !== "select"
     ) {
-      console.log("bakit");
       updatedInputFields[index] = {
         ...updatedInputFields[index],
         children: [{ value: "", option: "" }],
@@ -117,7 +131,7 @@ const AddServicesForm = () => {
   const handleSubmit = async (e) => {
     try {
       const response = await axios.post(
-        "http://localhost:8800/api/forms/?brgy=BALITE",
+        `http://localhost:8800/api/forms/?brgy=${brgy}&service_id=${service_id}&checked=${checked}`,
         {
           form: form,
           inputFields: inputFields,
@@ -155,6 +169,21 @@ const AddServicesForm = () => {
             </div>
             <div className="my-2">
               <div className="px-4 pb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block sm:text-xs lg:text-sm text-black font-bold">
+                    SERVE AS ACTIVE FORM?
+                  </label>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="isOpen"
+                      onChange={(e) => setChecked(e.target.checked)}
+                      checked={checked}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-400 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
+                  </label>
+                </div>
                 <fieldset className="border-2 border-black">
                   <legend className="ml-2 px-2 text-lg font-bold">
                     BASIC INFORMATION
@@ -219,18 +248,8 @@ const AddServicesForm = () => {
                           </button>
                           <input
                             type="text"
-                            name="variable"
-                            className="border border-1 border-black w-full text-sm"
-                            value={inputField.variable}
-                            placeholder="Variable Name (i.e: firstName, lastName)"
-                            onChange={(event) =>
-                              handleInputChange(event, index)
-                            }
-                          />
-                          <input
-                            type="text"
                             name="display"
-                            className="border border-1 border-black w-full text-sm"
+                            className="border border-1 border-black w-full text-sm px-2"
                             value={inputField.display}
                             placeholder="Display Name (i.e: First Name, Last Name)"
                             onChange={(event) =>
@@ -267,7 +286,10 @@ const AddServicesForm = () => {
                                 className=" text-white font-bold uppercase text-sm"
                                 onClick={() => addOptionField(index)}
                               >
-                                <IoIosAddCircleOutline size={24} />
+                                <IoIosAddCircleOutline
+                                  size={24}
+                                  className="hover:text-yellow-500 rounded-full"
+                                />
                               </button>
                             </div>
 
