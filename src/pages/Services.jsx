@@ -14,8 +14,8 @@ import axios from "axios";
 import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
 import ManageServiceModal from "../components/services/ManageServiceModal";
-import AddServicesForm from "../components/services/form/AddServicesForm";
-import EditServicesForm from "../components/services/form/EditServicesForm";
+import AddServicesForm from "../components/services/form/add_service/AddServicesForm";
+import EditServicesForm from "../components/services/form/edit_service/EditServicesForm";
 
 const Services = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -124,7 +124,9 @@ const Services = () => {
                 </div>
               </div>
               <div className="w-full rounded-lg ">
-                <Link to={`/archivedservices/?id=${id}&brgy=${brgy}&archived=true`}>
+                <Link
+                  to={`/archivedservices/?id=${id}&brgy=${brgy}&archived=true`}
+                >
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"
@@ -324,7 +326,7 @@ const Services = () => {
                     </div>
                   </td>
                   <td className="px-6 py-3">
-                  {item.isApproved === "Registered" && (
+                    {item.isApproved === "Registered" && (
                       <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2">
                         <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
                           APPROVED
