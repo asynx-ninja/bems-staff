@@ -58,8 +58,6 @@ function CreateAnnouncementModal({ brgy }) {
     }));
   };
 
-  console.log(announcement);
-
   const handleFileChange = (e) => {
     e.preventDefault();
 

@@ -214,7 +214,7 @@ const AddSectionForm = ({ section, setSection }) => {
                         className="flex flex-col bg-white rounded-lg px-2"
                         key={formIndex}
                       >
-                        <div className="flex space-x-2  py-2">
+                        <div className="flex flex-col md:flex-row md:space-x-2 py-2">
                           <input
                             type="text"
                             name="display"
@@ -227,7 +227,7 @@ const AddSectionForm = ({ section, setSection }) => {
                           />
                           <select
                             name="type"
-                            className="border border-1 border-gray-300 shadow bg-white w-6/12 px-2 py-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                            className="border border-1 border-gray-300 shadow bg-white w-full md:w-6/12 mt-2 md:mt-0 px-2 py-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                             onChange={(e) =>
                               handleInputChange(e, sectionIndex, formIndex)
                             }
@@ -247,11 +247,11 @@ const AddSectionForm = ({ section, setSection }) => {
                             onClick={() =>
                               removeInputField(sectionIndex, formIndex)
                             }
-                            className=" border-black"
+                            className=" border-black bg-pink-800 md:bg-transparent mt-2 md:mt-0 rounded-lg"
                           >
                             <IoTrashBin
                               size={24}
-                              className="text-red-600 hover:text-red-800 rounded-full"
+                              className="text-white md:text-red-600 my-1 md:my-0 mx-auto md:mx-none hover:text-gray-200 md:hover:text-red-800 rounded-full"
                             />
                           </button>
                         </div>

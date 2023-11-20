@@ -89,7 +89,7 @@ const EditServicesForm = ({ service_id, brgy }) => {
                   className="border border-1 border-gray-300 shadow bg-white w-full md:w-6/12 mt-2 md:mt-0 border p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                   onChange={handleSelectChange}
                 >
-                  <option value="" selected disabled>
+                  <option value="" disabled>
                     Select Form
                   </option>
                   {details &&

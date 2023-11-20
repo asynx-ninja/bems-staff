@@ -16,7 +16,6 @@ import ArchiveModal from "../components/announcement/ArchiveAnnouncementModal";
 import AddModal from "../components/announcement/AddAnnouncementModal";
 import ManageAnnouncementModal from "../components/announcement/ManageAnnouncementModal";
 
-
 const Announcement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
@@ -24,6 +23,30 @@ const Announcement = () => {
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
   const [announcement, setAnnouncement] = useState([]);
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortColumn, setSortColumn] = useState(null);
+
+  const handleSort = (sortBy) => {
+    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newSortOrder);
+    setSortColumn(sortBy);
+
+    const sortedData = announcements.slice().sort((a, b) => {
+      if (sortBy === "title") {
+        return newSortOrder === "asc"
+          ? a.title.localeCompare(b.title)
+          : b.title.localeCompare(a.title);
+      } else if (sortBy === "date") {
+        const dateA = new Date(a.date).getTime();
+        const dateB = new Date(b.date).getTime();
+        return newSortOrder === "asc" ? dateA - dateB : dateB - dateA;
+      }
+
+      return 0;
+    });
+
+    setAnnouncements(sortedData);
+  };
 
   useEffect(() => {
     const fetch = async () => {
@@ -121,7 +144,9 @@ const Announcement = () => {
                 </div>
               </div>
               <div className="w-full rounded-lg ">
-                <Link to={`/archivedannoucements/?id=${id}&brgy=${brgy}&archived=true`}>
+                <Link
+                  to={`/archivedannoucements/?id=${id}&brgy=${brgy}&archived=true`}
+                >
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"
@@ -155,7 +180,9 @@ const Announcement = () => {
               >
                 SORT BY
                 <svg
-                  className="hs-dropdown-open:rotate-180 w-2.5 h-2.5 text-white"
+                  className={`hs-dropdown-open:rotate-${
+                    sortOrder === "asc" ? "180" : "0"
+                  } w-2.5 h-2.5 text-white`}
                   width="16"
                   height="16"
                   viewBox="0 0 16 16"
@@ -171,14 +198,38 @@ const Announcement = () => {
                 </svg>
               </button>
               <ul
-                className="bg-[#295141] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                className="bg-[#295141] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10 shadow-md rounded-lg p-2"
                 aria-labelledby="hs-dropdown"
               >
-                <li className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ">
+                <li
+                  onClick={() => handleSort("title")}
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                >
                   TITLE
+                  {sortColumn === "title" && (
+                    <span className="ml-auto">
+                      {sortOrder === "asc" ? (
+                        <span>DESC &darr;</span>
+                      ) : (
+                        <span>ASC &uarr;</span>
+                      )}
+                    </span>
+                  )}
                 </li>
-                <li className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ">
-                  DATE
+                <li
+                  onClick={() => handleSort("date")}
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                >
+                  Date
+                  {sortColumn === "date" && (
+                    <span className="ml-auto">
+                      {sortOrder === "asc" ? (
+                        <span>OLD TO LATEST &darr;</span>
+                      ) : (
+                        <span>LATEST TO OLD &uarr;</span>
+                      )}
+                    </span>
+                  )}
                 </li>
               </ul>
             </div>
@@ -309,14 +360,14 @@ const Announcement = () => {
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {dateFormat(item.date) || ""}
+                        {dateFormat(item.date) || ""}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {item.attendees.length}
+                        {item.attendees.length}
                       </span>
                     </div>
                   </td>
@@ -354,9 +405,12 @@ const Announcement = () => {
             renderOnZeroPageCount={null}
           />
         </div>
-        <AddModal brgy={brgy}/>
+        <AddModal brgy={brgy} />
         <ArchiveModal selectedItems={selectedItems} />
-        <ManageAnnouncementModal announcement={announcement} setAnnouncement={setAnnouncement}/>
+        <ManageAnnouncementModal
+          announcement={announcement}
+          setAnnouncement={setAnnouncement}
+        />
       </div>
     </div>
   );

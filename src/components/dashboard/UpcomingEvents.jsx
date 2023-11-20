@@ -38,13 +38,18 @@ const UpcomingEvents = () => {
       <b className="border-solid border-0 border-black border-b-2 pb-2 uppercase font-heavy text-lg md:text-xl mb-4">
         UPCOMING EVENTS
       </b>
-      <div className="overflow-y-auto h-[300px] lg:h-[400px] xl:h-[400px] xxl:h-[400px] xxxl:h-[500px]">
+      <div className="overflow-y-auto h-[300px] lg:h-[400px] xl:h-[400px] xxl:h-[400px] xxxl:h-[410px]">
         <div className="w-full gap-3 flex flex-col border">
           {announcements.map((item, index) => (
             <div className="flex flex-row bg-gradient-to-r from-[#295141]  to-[#408D51] h-full text-white font-medium overflow-hidden">
-              <div className="bg-cover bg-center w-[20%] h-[4rem] md:h-[5rem] lg:h-[6rem] object-cover rounded-r-full border-solid border-0" style={{ backgroundImage: `url('${item.collections.banner.link}')` }}>
+              <div
+                className="bg-cover bg-center w-[20%] h-[4rem] md:h-[5rem] lg:h-[6rem] object-cover rounded-r-full border-solid border-0"
+                style={{
+                  backgroundImage: `url('${item.collections.banner.link}')`,
+                }}
+              >
                 <div
-                  class="w-full h-full flex  justify-center items-center 
+                  className="w-full h-full flex  justify-center items-center 
              bg-gradient-to-r from-[#00000000] to-[#FFCF67]/60 rounded-r-full"
                 ></div>
               </div>
@@ -71,7 +76,12 @@ const UpcomingEvents = () => {
           ))}
         </div>
       </div>
-      <ViewEvent announcement={announcement} setAnnouncement={setAnnouncement} brgy={brgy} id={id}/>
+      <ViewEvent
+        announcement={announcement}
+        setAnnouncement={setAnnouncement}
+        brgy={brgy}
+        id={id}
+      />
     </div>
   );
 };
