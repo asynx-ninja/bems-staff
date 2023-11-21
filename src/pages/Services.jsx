@@ -43,7 +43,7 @@ const Services = () => {
           ? a.name.localeCompare(b.name)
           : b.name.localeCompare(a.name);
       } else if (sortBy === "isApproved") {
-        const order = { Registered: 1, Pending: 2, Disapproved: 3 };
+        const order = { Approved: 1, Pending: 2, Disapproved: 3 };
         return newSortOrder === "asc"
           ? order[a.isApproved] - order[b.isApproved]
           : order[b.isApproved] - order[a.isApproved];
@@ -396,7 +396,7 @@ const Services = () => {
                     </div>
                   </td>
                   <td className="px-6 py-3">
-                    {item.isApproved === "Registered" && (
+                    {item.isApproved === "Approved" && (
                       <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                         <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
                           APPROVED
