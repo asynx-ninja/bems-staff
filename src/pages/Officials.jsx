@@ -17,6 +17,12 @@ import API_LINK from "../config/API";
 
 const Officials = () => {
   const [selectedItems, setSelectedItems] = useState([]);
+  const [officials, setOfficials] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const brgy = searchParams.get("brgy");
+  const id = searchParams.get("id");
+  const [selectedOfficial, setSelectedOfficial] = useState({});
+
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -88,6 +94,16 @@ const Officials = () => {
     "ACTIONS",
   ];
 
+  const dateFormat = (fromYear) => {
+    const eventdate = fromYear === undefined ? "" : fromYear.substr(0, 10);
+    return eventdate;
+  };
+
+  const dateFormat2 = (toYear) => {
+    const eventdate = toYear === undefined ? "" : toYear.substr(0, 10);
+    return eventdate;
+  };
+
   return (
     <div className="mx-4 my-5 md:mx-5 md:my-6 lg:ml-[19rem] lg:mt-8 lg:mr-6">
       {/* Body */}
@@ -125,7 +141,7 @@ const Officials = () => {
                 </div>
               </div>
               <div className="w-full rounded-lg ">
-                <Link to="/archived_officials">
+                <Link to={`/archived_officials/?id=${id}&brgy=${brgy}&archived=true`}>
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"
@@ -320,7 +336,8 @@ const Officials = () => {
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.fromYear} - {item.toYear}
+                      {dateFormat(item.fromYear) || ""} - {dateFormat(item.toYear) || ""}
+                        {/* {item.fromYear} - {item.toYear} */}
                       </span>
                     </div>
                   </td>
