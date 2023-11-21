@@ -257,11 +257,6 @@ const SampleDocument = ({ detail }) => {
       half: {
         width: "50%",
       },
-      bold: {
-        fontSize: 10,
-        fontFamily: "Helvetica-Bold",
-        fontWeight: 700,
-      },
       imageStyle: {
         height: 50,
         marginLeft: "auto",
