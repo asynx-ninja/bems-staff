@@ -63,14 +63,11 @@ const AddSectionForm = ({ section, setSection }) => {
     const updatedInputFields = [...section];
     updatedInputFields[sectionIndex].form[formIndex] = {
       ...updatedInputFields[sectionIndex].form[formIndex],
-      [e.target.name]: e.target.value,
+      [e.target.name]:
+        e.target.name === "variable"
+          ? formatVariable(e.target.value)
+          : e.target.value,
     };
-
-    if (e.target.name === "display")
-      updatedInputFields[sectionIndex].form[formIndex] = {
-        ...updatedInputFields[sectionIndex].form[formIndex],
-        variable: formatVariable(e.target.value),
-      };
 
     if (
       updatedInputFields[sectionIndex].form[formIndex].type !== "radio" &&
@@ -163,7 +160,7 @@ const AddSectionForm = ({ section, setSection }) => {
                     <input
                       type="text"
                       name="section_title"
-                      className="shadow placeholder-white appearance-none border w-full p-1 bg-transparent border-green-500 text-white rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                      className="shadow placeholder-white font-bold appearance-none border w-full p-1 bg-transparent border-green-500 text-white rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       value={section.section_title}
                       placeholder="Section Title (i.e: Family Information, Scholarship, etc.)"
                       onChange={(e) => handleSectionChange(e, sectionIndex)}
@@ -214,35 +211,47 @@ const AddSectionForm = ({ section, setSection }) => {
                         className="flex flex-col bg-white rounded-lg px-2"
                         key={formIndex}
                       >
-                        <div className="flex flex-col md:flex-row md:space-x-2 py-2">
-                          <input
-                            type="text"
-                            name="display"
-                            className="shadow appearance-none border w-full px-2 py-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                            value={form.display}
-                            placeholder="Display Name (i.e: First Name, Last Name)"
-                            onChange={(e) =>
-                              handleInputChange(e, sectionIndex, formIndex)
-                            }
-                          />
-                          <select
-                            name="type"
-                            className="border border-1 border-gray-300 shadow bg-white w-full md:w-6/12 mt-2 md:mt-0 px-2 py-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                            onChange={(e) =>
-                              handleInputChange(e, sectionIndex, formIndex)
-                            }
-                          >
-                            <option value="" disabled>
-                              Select Type
-                            </option>
-                            <option value="text">Text</option>
-                            <option value="number">Number</option>
-                            <option value="email">Email</option>
-                            <option value="select">Select</option>
-                            <option value="radio">Radio</option>
-                            <option value="checkbox">Checkbox</option>
-                            <option value="file">File</option>
-                          </select>
+                        <div className="flex space-x-2  py-2">
+                          <div className="w-full flex flex-col space-y-2">
+                            <input
+                              type="text"
+                              name="display"
+                              className="shadow appearance-none border w-full px-2 py-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                              value={form.display}
+                              placeholder="Display Name (i.e: First Name, Last Name)"
+                              onChange={(e) =>
+                                handleInputChange(e, sectionIndex, formIndex)
+                              }
+                            />
+                            <input
+                              type="text"
+                              name="variable"
+                              className="shadow appearance-none border w-full px-2 py-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                              value={form.variable}
+                              placeholder="Variable Name (e.g id_pic)"
+                              onChange={(e) =>
+                                handleInputChange(e, sectionIndex, formIndex)
+                              }
+                            />
+                            <select
+                              name="type"
+                              className="border border-1 border-gray-300 shadow bg-white px-2 py-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                              onChange={(e) =>
+                                handleInputChange(e, sectionIndex, formIndex)
+                              }
+                            >
+                              <option value="" disabled>
+                                Select Type
+                              </option>
+                              <option value="text">Text</option>
+                              <option value="number">Number</option>
+                              <option value="email">Email</option>
+                              <option value="select">Select</option>
+                              <option value="radio">Radio</option>
+                              <option value="checkbox">Checkbox</option>
+                              <option value="file">File</option>
+                            </select>
+                          </div>
                           <button
                             onClick={() =>
                               removeInputField(sectionIndex, formIndex)
