@@ -20,6 +20,8 @@ const StatisticsDashboard = () => {
   const [archivedUsers, setArchivedUsers] = useState([]);
   const [services, setServices] = useState([]);
   const [archivedServices, setArchivedServices] = useState([]);
+  const [officials, setOfficials] = useState([]);
+  const [archivedOfficials, setArchivedOfficials] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
@@ -51,6 +53,13 @@ const StatisticsDashboard = () => {
           servicesResponse.status === 200 ? servicesResponse.data : []
         );
 
+        const officialsResponse = await axios.get(
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
+        );
+        setOfficials(
+          officialsResponse.status === 200 ? officialsResponse.data : []
+        );
+
         const archivedServicesResponse = await axios.get(
           `${API_LINK}/services/?brgy=${brgy}&archived=true`
         );
@@ -66,6 +75,14 @@ const StatisticsDashboard = () => {
         setArchivedAnnouncements(
           archivedAnnouncementsResponse.status === 200
             ? archivedAnnouncementsResponse.data
+            : []
+        );
+        const archivedOfficialsResponse = await axios.get(
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=true`
+        );
+        setArchivedOfficials(
+          archivedOfficialsResponse.status === 200
+            ? archivedOfficialsResponse.data
             : []
         );
       } catch (error) {
@@ -131,8 +148,8 @@ const StatisticsDashboard = () => {
     },
     {
       title: "Barangay Officials",
-      active: "n/a",
-      archived: "n/a",
+      active: officials.length,
+      archived: archivedOfficials.length,
       activeLink: `/officials/?id=${id}&brgy=${brgy}`,
       archivedLink: `/archived_officials/?id=${id}&brgy=${brgy}`,
       icon: <FaPeopleGroup size={15} className="sm:block md:hidden" />,
