@@ -1,8 +1,61 @@
 import React from "react";
 import bgmodal from "../../assets/modals/bg-modal2.png";
 import officialimage from "../../assets/sample/official.jpg";
+import API_LINK from "../../config/API";
+import axios from "axios";
+import { useEffect } from "react";
+import { useState } from "react";
 
-function EditOfficialModal({ onClose }) {
+function EditOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
+  
+  console.log(selectedOfficial)
+  
+  const dateFormat = (date) => {
+    const eventdate = date === undefined ? "" : date.substr(0, 7);
+    console.log(eventdate);
+    return eventdate;
+  };
+
+  const handleChange = (e) => {
+    setSelectedOfficial((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const [pfp, setPfp] = useState();
+
+  const handlePfpChange = (e) => {
+    setPfp(e.target.files[0]);
+  
+    const output = document.getElementById("edit_pfp");
+    const reader = new FileReader();
+  
+    reader.onload = function () {
+      output.src = reader.result;
+    };
+  
+    reader.readAsDataURL(e.target.files[0]);
+  };
+
+  const handleSaveChanges = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+      if (pfp) formData.append("file", pfp);
+      formData.append("official", JSON.stringify(selectedOfficial));
+
+      const result = await axios.patch(
+        `${API_LINK}/brgyofficial/?brgy=${brgy}&doc_id=${selectedOfficial._id}`,
+        formData
+      );
+
+      console.log(result);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div>
       <div
@@ -14,9 +67,7 @@ function EditOfficialModal({ onClose }) {
           <div class="flex flex-col w-full lg:w-[700px] bg-white shadow-sm overflow-y-auto rounded-t-3xl rounded-b-3xl">
             {/* Header */}
             <div class="bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
-              <div
-                class="flex justify-between items-center px-3 py-5 md:p-5 w-full h-full bg-cover bg-no-repeat transform"
-              >
+              <div class="flex justify-between items-center px-3 py-5 md:p-5 w-full h-full bg-cover bg-no-repeat transform">
                 <h3
                   class="font-base text-white mx-auto text-sm md:text-xl"
                   style={{ letterSpacing: "0.3em" }}
@@ -37,7 +88,8 @@ function EditOfficialModal({ onClose }) {
                       <div className="relative w-full"></div>
                       <div>
                         <img
-                          src={officialimage}
+                          id="edit_pfp"
+                          src={selectedOfficial.picture?.link || ""}
                           alt=""
                           className="h-32 w-32 md:h-52 md:w-52 lg:h-60 lg:w-60 mx-auto rounded-lg"
                         />
@@ -48,6 +100,10 @@ function EditOfficialModal({ onClose }) {
                       class="block mt-5 w-64 mx-auto lg:w-full text-sm text-black rounded-lg cursor-pointer bg-gray-100 "
                       id="file_input"
                       type="file"
+                      onChange={handlePfpChange}
+                      name="pfp"
+                      accept="image/*"
+                      value={!pfp ? "" : pfp.originalname}
                     />
                   </div>
 
@@ -60,23 +116,14 @@ function EditOfficialModal({ onClose }) {
                       NAME OF THE OFFICIAL
                     </h1>
                     <input
-                      type="search"
-                      id="search-dropdown"
+                      type="name"
+                      id="name"
+                      name="name"
                       className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
                       placeholder=""
+                      value={selectedOfficial.name || ""}
+                      onChange={handleChange}
                     />
-                    <h1
-                      class="font-medium mb-1 mt-3 text-black text-sm"
-                      style={{ letterSpacing: "0.1em" }}
-                    >
-                      BACKGROUND OVERVIEW
-                    </h1>
-                    <textarea
-                      id="message"
-                      rows="4"
-                      class="block p-2.5 w-full h-48 text-sm text-gray-900 rounded-lg bg-gray-100 resize-none "
-                      placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, cons adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse."
-                    ></textarea>
                   </div>
                 </div>
 
@@ -90,13 +137,24 @@ function EditOfficialModal({ onClose }) {
                     >
                       POSITION
                     </h1>
-                    <input
-                      type="search"
-                      id="search-dropdown"
+                    <select
+                      id="position"
+                      name="position"
                       className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg"
-                      placeholder=""
+                      onChange={handleChange}
+                      value={selectedOfficial.position}
                       required
-                    />
+                    >
+                      <option value="" disabled>
+                        Select Position
+                      </option>
+                      <option value="Barangay Chairman">
+                        Barangay Chairman
+                      </option>
+                      <option value="Barangay Kagawad">Barangay Kagawad</option>
+                      <option value="SK Chairman">SK Chairman</option>
+                      <option value="SK Kagawad">SK Kagawad</option>
+                    </select>
                   </div>
                   <div className="w-full lg:w-1/2 sm:mt-2 md:mt-0">
                     <h1
@@ -106,151 +164,42 @@ function EditOfficialModal({ onClose }) {
                       SERVICE RENDERED
                     </h1>
 
-                     {/* Date 1*/}
-                    <div class="hs-dropdown relative inline-flex mr-2">
-                      <button
-                        id="hs-dropdown-basic"
-                        type="button"
-                        class="hs-dropdown-toggle py-1 px-2 lg:px-4 inline-flex justify-center items-center gap-2 rounded-md border font-base bg-white text-black shadow-sm align-middle"
+                    {/* Date 1 */}
+                    <div className="flex flex-row">
+                      <label
+                        htmlFor="from_year"
+                        className=" w-[7rem] flex items-center"
                       >
-                        START
-                        <svg
-                          class="hs-dropdown-open:rotate-180 w-2.5 h-2.5 text-gray-600"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                          />
-                        </svg>
-                      </button>
-
-                      <div
-                        class="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 w-56 hidden z-10 mt-2 min-w-[15rem] bg-white shadow-md rounded-lg p-2"
-                        aria-labelledby="hs-dropdown-basic"
-                      >
-                        <a
-                          class="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                          href="#"
-                        >
-                          2023
-                        </a>
-                        <a
-                          class="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                          href="#"
-                        >
-                          2022
-                        </a>
-                        <a
-                          class="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                          href="#"
-                        >
-                          2021
-                        </a>
-                        <a
-                          class="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                          href="#"
-                        >
-                          2020
-                        </a>
-                      </div>
+                        From year:{" "}
+                      </label>
+                      <input
+                        type="month"
+                        className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg"
+                        id="from_year"
+                        name="fromYear"
+                        onChange={handleChange}
+                        value={dateFormat(selectedOfficial.fromYear)}
+                        required
+                      />
                     </div>
-
-                     {/* Date 2 */}
-                    <div class="hs-dropdown relative inline-flex">
-                      <button
-                        id="hs-dropdown-basic"
-                        type="button"
-                        class="hs-dropdown-toggle mt-1 py-1 px-2 lg:px-4 inline-flex justify-center items-center gap-2 rounded-md border font-base bg-white text-black shadow-sm align-middle"
+                    {/* Date 2 */}
+                    <div className="flex flex-row">
+                      <label
+                        htmlFor="To_year"
+                        className=" w-[6rem] flex items-center"
                       >
-                        PRESENT
-                        <svg
-                          class="hs-dropdown-open:rotate-180 w-2.5 h-2.5 text-gray-600"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                          />
-                        </svg>
-                      </button>
-
-                      <div
-                        class="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 w-56 hidden z-10 mt-2 min-w-[15rem] bg-white shadow-md rounded-lg p-2"
-                        aria-labelledby="hs-dropdown-basic"
-                      >
-                        <a
-                          class="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                          href="#"
-                        >
-                          Present
-                        </a>
-                        <a
-                          class="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                          href="#"
-                        >
-                          2022
-                        </a>
-                        <a
-                          class="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                          href="#"
-                        >
-                          2021
-                        </a>
-                        <a
-                          class="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                          href="#"
-                        >
-                          2020
-                        </a>
-                      </div>
+                        To year:{" "}
+                      </label>
+                      <input
+                        type="month"
+                        className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg"
+                        id="To_year"
+                        name="toYear"
+                        onChange={handleChange}
+                        value={dateFormat(selectedOfficial.toYear)}
+                        required
+                      />
                     </div>
-                  </div>
-                </div>
-
-                {/* E-Mail and Password */}
-                <div class="relative mt-5 mx-6 overflow-y-auto flex flex-col md:flex-row md:space-x-3">
-                  <div className="w-full md:w-1/2">
-                    <h1
-                      class="font-base text-black mx-auto text-sm"
-                      style={{ letterSpacing: "0.1em" }}
-                    >
-                      E-MAIL
-                    </h1>
-                    <input
-                      type="search"
-                      id="search-dropdown"
-                      className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg"
-                      placeholder=""
-                      required
-                    />
-                  </div>
-                  <div className="w-full md:w-1/2 sm:mt-2 md:mt-0">
-                    <h1
-                      class="font-base text-black mx-auto text-sm"
-                      style={{ letterSpacing: "0.1em" }}
-                    >
-                      PASSWORD
-                    </h1>
-                    <input
-                      type="search"
-                      id="search-dropdown"
-                      className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg  "
-                      placeholder=""
-                      required
-                    />
                   </div>
                 </div>
               </div>
@@ -259,9 +208,10 @@ function EditOfficialModal({ onClose }) {
             {/* Buttons */}
             <div class="flex justify-end items-center gap-x-2 py-3 px-6 dark:border-gray-700">
               <button
+                onClick={handleSaveChanges}
                 type="button"
                 class="py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-custom-green-button3 text-white shadow-sm align-middle"
-                data-hs-overlay="#hs-edit-official-modal"
+                // data-hs-overlay="#hs-edit-official-modal"
               >
                 SAVE CHANGES
               </button>

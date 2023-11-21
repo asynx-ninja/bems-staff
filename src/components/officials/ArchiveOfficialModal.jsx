@@ -1,7 +1,27 @@
 import React from "react";
 import Error from "../../assets/modals/Error.png";
+import axios from "axios";
+import API_LINK from "../../config/API";
 
-function ArchiveOfficialModal() {
+
+function ArchiveOfficialModal({selectedItems}) {
+  
+  const handleSave = async (e) => {
+    try {
+      e.preventDefault();
+
+      for (let i = 0; i < selectedItems.length; i++) {
+        const response = await axios.patch(
+          `${API_LINK}/brgyofficial/archived/${selectedItems[i]}/true`
+        );
+
+      }
+
+      // window.location.reload();
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <div
       id="hs-archive-official-modal"
@@ -24,6 +44,7 @@ function ArchiveOfficialModal() {
               type="button"
               data-hs-overlay="#hs-archive-official-modal"
               className=" w-[6rem] lg:w-[12rem] px-4 py-2 bg-green-700 text-white rounded hover:bg-green-600"
+              onClick={handleSave}
             >
               Yes
             </button>

@@ -2,7 +2,14 @@ import React from "react";
 import bgmodal from "../../assets/modals/bg-modal2.png";
 import officialimage from "../../assets/sample/official.jpg";
 
-function ViewOfficialModal({ onClose }) {
+function ViewOfficialModal({ selectedOfficial, setSelectedOfficial, brgy, officials }) {
+  console.log("selected", selectedOfficial)
+  console.log("selected", officials)
+  const dateFormat = (date) => {
+    const eventdate = date === undefined ? "" : date.substr(0, 7);
+    console.log(eventdate);
+    return eventdate;
+  };
   return (
     <div>
       <div
@@ -35,7 +42,7 @@ function ViewOfficialModal({ onClose }) {
                       <div className="relative w-full"></div>
                       <div>
                         <img
-                          src={officialimage}
+                          src={selectedOfficial.picture?.link || ""}
                           alt=""
                           className="h-32 w-32 md:h-52 md:w-52 lg:h-60 lg:w-60 mx-auto rounded-lg"
                         />
@@ -62,21 +69,9 @@ function ViewOfficialModal({ onClose }) {
                       id="search-dropdown"
                       className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
                       placeholder=""
+                      value={selectedOfficial.name || ""}
                       readOnly
                     />
-                    <h1
-                      class="font-medium mb-1 mt-3 text-black text-sm"
-                      style={{ letterSpacing: "0.1em" }}
-                    >
-                      BACKGROUND OVERVIEW
-                    </h1>
-                    <textarea
-                      id="message"
-                      rows="4"
-                      class="block p-2.5 w-full h-48 text-sm text-gray-900 rounded-lg bg-gray-100 resize-none "
-                      placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, cons adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse."
-                      readOnly
-                    ></textarea>
                   </div>
                 </div>
 
@@ -95,10 +90,12 @@ function ViewOfficialModal({ onClose }) {
                       id="search-dropdown"
                       className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg"
                       placeholder=""
+                      value={selectedOfficial.position}
                       readOnly
                     />
                   </div>
-                  <div className="w-full lg:w-1/2 sm:mt-2 md:mt-0">
+                 
+                    <div className="w-full lg:w-1/2 sm:mt-2 md:mt-0">
                     <h1
                       class="font-base text-black mx-auto text-sm"
                       style={{ letterSpacing: "0.1em" }}
@@ -106,153 +103,49 @@ function ViewOfficialModal({ onClose }) {
                       SERVICE RENDERED
                     </h1>
 
-                    {/* Date 1*/}
-                    <div class="hs-dropdown relative inline-flex mr-2">
-                      <button
-                        id="hs-dropdown-basic"
-                        type="button"
-                        class="hs-dropdown-toggle py-1 px-2 lg:px-4 inline-flex justify-center items-center gap-2 rounded-md border font-base bg-white text-black shadow-sm align-middle"
+                    {/* Date 1 */}
+                    <div className="flex flex-row">
+                      <label
+                        htmlFor="from_year"
+                        className=" w-[7rem] flex items-center"
                       >
-                        START
-                        <svg
-                          class="hs-dropdown-open:rotate-180 w-2.5 h-2.5 text-gray-600"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                          />
-                        </svg>
-                      </button>
-
-                      <div
-                        class="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 w-56 hidden z-10 mt-2 min-w-[15rem] bg-white shadow-md rounded-lg p-2"
-                        aria-labelledby="hs-dropdown-basic"
-                      >
-                        <a
-                          class="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                          href="#"
-                        >
-                          2023
-                        </a>
-                        <a
-                          class="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                          href="#"
-                        >
-                          2022
-                        </a>
-                        <a
-                          class="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                          href="#"
-                        >
-                          2021
-                        </a>
-                        <a
-                          class="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                          href="#"
-                        >
-                          2020
-                        </a>
-                      </div>
+                        From year:{" "}
+                      </label>
+                      <input
+                        type="month"
+                        className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg"
+                        id="from_year"
+                        name="fromYear"
+                        
+                        value={dateFormat(selectedOfficial.fromYear)}
+                        required
+                      />
                     </div>
-
                     {/* Date 2 */}
-                    <div class="hs-dropdown relative inline-flex">
-                      <button
-                        id="hs-dropdown-basic"
-                        type="button"
-                        class="hs-dropdown-toggle mt-1 py-1 px-2 lg:px-4 inline-flex justify-center items-center gap-2 rounded-md border font-base bg-white text-black shadow-sm align-middle"
+                    <div className="flex flex-row">
+                      <label
+                        htmlFor="To_year"
+                        className=" w-[6rem] flex items-center"
                       >
-                        PRESENT
-                        <svg
-                          class="hs-dropdown-open:rotate-180 w-2.5 h-2.5 text-gray-600"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                          />
-                        </svg>
-                      </button>
-
-                      <div
-                        class="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 w-56 hidden z-10 mt-2 min-w-[15rem] bg-white shadow-md rounded-lg p-2"
-                        aria-labelledby="hs-dropdown-basic"
-                      >
-                        <a
-                          class="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                          href="#"
-                        >
-                          Present
-                        </a>
-                        <a
-                          class="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                          href="#"
-                        >
-                          2022
-                        </a>
-                        <a
-                          class="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                          href="#"
-                        >
-                          2021
-                        </a>
-                        <a
-                          class="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                          href="#"
-                        >
-                          2020
-                        </a>
-                      </div>
+                        To year:{" "}
+                      </label>
+                      <input
+                        type="month"
+                        className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg"
+                        id="To_year"
+                        name="toYear"
+                        
+                        value={dateFormat(selectedOfficial.toYear)}
+                        required
+                      />
                     </div>
+                  
+
+                  
                   </div>
                 </div>
 
-                {/* E-Mail and Password */}
-                <div class="relative mt-5 mx-6 overflow-y-auto flex flex-col md:flex-row md:space-x-3">
-                  <div className="w-full md:w-1/2">
-                    <h1
-                      class="font-base text-black mx-auto text-sm"
-                      style={{ letterSpacing: "0.1em" }}
-                    >
-                      E-MAIL
-                    </h1>
-                    <input
-                      type="search"
-                      id="search-dropdown"
-                      className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg"
-                      placeholder=""
-                      readOnly
-                    />
-                  </div>
-                  <div className="w-full md:w-1/2 sm:mt-2 md:mt-0">
-                    <h1
-                      class="font-base text-black mx-auto text-sm"
-                      style={{ letterSpacing: "0.1em" }}
-                    >
-                      PASSWORD
-                    </h1>
-                    <input
-                      type="search"
-                      id="search-dropdown"
-                      className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg  "
-                      placeholder=""
-                      readOnly
-                    />
-                  </div>
-                </div>
+              
               </div>
             </div>
 

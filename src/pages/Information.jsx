@@ -2,35 +2,142 @@ import React from "react";
 import { useEffect } from "react";
 import { BsCamera } from "react-icons/bs";
 import { MdOutlineFileUpload } from "react-icons/md";
-import EditMissionModal from "../components/information/EditMissionModal";
-import EditStoryModal from "../components/information/EditStoryModal";
-import EditVisionModal from "../components/information/EditVisionModal";
-import official from "../assets/sample/official.jpg";
-import header from "/imgs/bg-header.png";
+import { useSearchParams } from "react-router-dom";
+import axios from "axios";
+import API_LINK from "../config/API";
+import { useState } from "react";;
 
 const Information = () => {
+  const [information, setInformation] = useState({});
+  const [searchParams, setSearchParams] = useSearchParams();
+  const brgy = searchParams.get("brgy");
+  const [brgyInformation, setBrgyInformation] = useState({});
+  const [isEditingMode, setisEditingMode] = useState(false);
+  const [logo, setLogo] = useState();
+  const [banner, setBanner] = useState();
+  const renameFile = (file, newName) => {
+    const newFile = new File([file], newName, { type: file.type });
+    return newFile;
+  };
+
   useEffect(() => {
     document.title = "Barangay Information | Barangay E-Services Management";
-  }, []);
+
+    const fetchInformation = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/brgyinfo/?brgy=${brgy}&archived=true`
+        );
+
+        console.log("Response:", response);
+
+        if (response.status === 200) {
+          setInformation(response.data[0]);
+          var logoSrc = document.getElementById("edit_logo");
+          logoSrc.src = response.data[0].logo.link;
+          var bannerSrc = document.getElementById("edit_banner");
+          bannerSrc.src = response.data[0].banner.link;
+        } else {
+          setInformation({});
+        }
+      } catch (error) {
+        console.error("Error fetching information:", error);
+        setInformation({});
+      }
+    };
+
+    fetchInformation();
+  }, [brgy]);
+
+  const handleSaveChanges = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+      if (logo) formData.append("files", logo);
+      if (banner) formData.append("files", banner);
+
+      formData.append("brgyinfo", JSON.stringify(information));
+
+      const result = await axios.patch(
+        `${API_LINK}/brgyinfo/${brgy}`,
+        formData
+      );
+
+      // if (!response.ok) {
+      //   throw new Error("Info is not updated");
+      // }
+
+      console.log(result);
+      window.location.reload()
+      // setBrgyInformation({});
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+    const renamedFile = renameFile(file, "logo");
+
+    setLogo(renamedFile);
+
+    var output = document.getElementById("edit_logo");
+    output.src = URL.createObjectURL(file);
+    output.onload = function () {
+      URL.revokeObjectURL(output.src); // free memory
+    };
+  };
+
+  const handleBannerChange = (e) => {
+    const file = e.target.files[0];
+    const renamedFile = renameFile(file, "banner");
+
+    setBanner(renamedFile);
+
+    var output = document.getElementById("edit_banner");
+    output.src = URL.createObjectURL(e.target.files[0]);
+    output.onload = function () {
+      URL.revokeObjectURL(output.src); // free memory
+    };
+  };
+  const handleChange = (e) => {
+    setInformation((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
   return (
     <div className="mx-4 my-5 md:mx-5 md:my-6 lg:ml-[19rem] lg:mt-8 lg:mr-6">
       <div>
         <div className="bg-cover bg-center h-96 rounded-lg">
           <div className="relative flex justify-end">
-            <label
-              htmlFor="file_input"
-              className="absolute mt-7 transform -translate-x-1/2 -translate-y-1/2 block text-transparent font-medium rounded-full text-sm"
-            >
-              <MdOutlineFileUpload size={40} style={{ color: "#ffffff" }} />
-            </label>
-            <input className="hidden" id="file_input" type="file" />
+            {isEditingMode && (
+              <label
+                htmlFor="banner_input"
+                className="absolute mt-7 transform -translate-x-1/2 -translate-y-1/2 block text-transparent font-medium rounded-full text-sm"
+              >
+                <MdOutlineFileUpload size={40} style={{ color: "#ffffff" }} />
+              </label>
+            )}
+            {isEditingMode && (
+               <div>
+               <input
+                 type="file"
+                 id="banner_input"
+                 onChange={handleBannerChange}
+                 name="banner"
+                 accept="image/*"
+                 value={!banner ? "" : banner.originalname}
+                 className="hidden"
+               />
+             </div>
+            )}
           </div>
 
           <div>
             <img
-              src={header}
-              alt=""
+              id="edit_banner"
               className="w-full h-[150px] md:h-[300px] lg:h-[350px] xl:h-[470px] rounded-lg"
             />
           </div>
@@ -47,28 +154,33 @@ const Information = () => {
                   }}
                 >
                   <img
-                    src={official}
-                    alt=""
-                    className="sm:w-[120px] md:w-56 rounded-full border-4 border-white mx-auto absolute left-0 right-0 sm:-top-[73px] md:-top-[6rem]"
+                    id="edit_logo"
+                    className="sm:w-[120px] h-56 bg-cover md:w-56 rounded-full border-4 border-white mx-auto absolute left-0 right-0 sm:-top-[73px] md:-top-[6rem]"
                   />
-                  <div className="absolute top-[19px] left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                    <label
-                      htmlFor="file_input"
-                      className="block text-transparent px-8 py-8 mb-[60px] md:mb-0  md:px-[83px] md:py-[87px] font-medium rounded-full text-sm text-center opacity-0 hover:opacity-100 transition-opacity hover:bg-[#295141] hover:bg-opacity-60"
-                    >
-                      <BsCamera size={50} style={{ color: "#ffffff" }} />
-                    </label>
-                    <input className="hidden" id="file_input" type="file" />
-                  </div>
+
+                  {isEditingMode && (
+                    <div className="absolute top-[19px] left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+                      <label
+                        htmlFor="logo_input"
+                        className="block text-transparent px-8 py-8 mb-[60px] md:mb-0  md:px-[83px] md:py-[87px] font-medium rounded-full text-sm text-center opacity-0 hover:opacity-100 transition-opacity hover:bg-[#295141] hover:bg-opacity-60"
+                      >
+                        <BsCamera size={50} style={{ color: "#ffffff" }} />
+                      </label>
+                      <input
+                        id="logo_input"
+                        type="file"
+                        onChange={handleLogoChange}
+                        name="logo"
+                        accept="image/*"
+                        value={!logo ? "" : logo.originalname}
+                        className="hidden"
+                      />
+                    </div>
+                  )}
 
                   <div className="flex justify-center items-end h-full">
                     <div className="text-center">
-                      <h1
-                        className="font-bold text-sm md:text-xl md:text-2xl xl:text-3xl text-white mb-10"
-                        style={{ letterSpacing: "0.4em" }}
-                      >
-                        BARANGAY SAN JOSE
-                      </h1>
+                      <h1 className="font-bold text-sm md:text-xl md:text-2xl xl:text-3xl text-white mb-10" style={{ letterSpacing: "0.4em" }}>BARANGAY SAN JOSE</h1>
                     </div>
                   </div>
                 </div>
@@ -84,33 +196,26 @@ const Information = () => {
                   </h1>
                 </div>
                 <div className="w-full md:w-2/3 px-6 py-4 border md:rounded-tr-[20px] rounded-b-[20px] md:rounded-br-[20px] flex flex-col">
-                  <h1
+                <textarea
+                    name="story"
+                    readOnly={!isEditingMode}
                     className="font-base text-black text-sm h-36 lg:h-40 overflow-y-auto mb-5"
-                    style={{ letterSpacing: "0.1em" }}
-                  >
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo
-                    consequat.Lorem ipsum dolor sit amet, consectetur adipiscing
-                    elit, sed do eiusmod tempor incididunt ut labore et dolore
-                    magna aliqua. Ut enim ad minim veniam, quis nostrud
-                    exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                    consequat.
-                  </h1>
+                    style={{ letterSpacing: "0.1em", whiteSpace: "pre-line" }}
+                    value={information.story}
+                    onChange={handleChange}
+                  />
 
                   <div className="self-end">
-                    <button
+                    {/* <button
                       type="button"
                       className="text-white w-36 bg-custom-green-button3 font-medium rounded-full text-sm m-2 py-2 px-10 text-center"
                       data-hs-overlay="#hs-edit-story-modal"
+                      onClick={() =>
+                        setBrgyInformation({ ...information, brgy: brgy })
+                      }
                     >
                       EDIT
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               </div>
@@ -125,33 +230,24 @@ const Information = () => {
                   </h1>
                 </div>
                 <div className="w-full md:w-2/3 px-6 py-4 border md:rounded-tr-[20px] rounded-b-[20px] md:rounded-br-[20px] flex flex-col">
-                  <h1
+                  <textarea
+                    readOnly={!isEditingMode}
                     className="font-base text-black text-sm h-36 lg:h-40 overflow-y-auto mb-5"
-                    style={{ letterSpacing: "0.1em" }}
-                  >
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo
-                    consequat.Lorem ipsum dolor sit amet, consectetur adipiscing
-                    elit, sed do eiusmod tempor incididunt ut labore et dolore
-                    magna aliqua. Ut enim ad minim veniam, quis nostrud
-                    exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                    consequat.
-                  </h1>
+                    style={{ letterSpacing: "0.1em", whiteSpace: "pre-line" }}
+                    value={information.mission}
+                    name="mission"
+                    onChange={handleChange}
+                  />
 
                   <div className="self-end">
-                    <button
+                    {/* <button
                       type="button"
                       className="text-white w-36 bg-custom-green-button3 font-medium rounded-full text-sm m-2 py-2 px-10 text-center"
                       data-hs-overlay="#hs-edit-mission-modal"
+                      onClick={() => setBrgyInformation({ ...information })}
                     >
                       EDIT
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               </div>
@@ -166,43 +262,62 @@ const Information = () => {
                   </h1>
                 </div>
                 <div className="w-full md:w-2/3 px-6 py-4 border md:rounded-tr-[20px] rounded-b-[20px] md:rounded-br-[20px] flex flex-col">
-                  <h1
+                <textarea
+                    readOnly={!isEditingMode}
                     className="font-base text-black text-sm h-36 lg:h-40 overflow-y-auto mb-5"
-                    style={{ letterSpacing: "0.1em" }}
-                  >
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo
-                    consequat.Lorem ipsum dolor sit amet, consectetur adipiscing
-                    elit, sed do eiusmod tempor incididunt ut labore et dolore
-                    magna aliqua. Ut enim ad minim veniam, quis nostrud
-                    exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                    consequat.
-                  </h1>
-
-                  <div className="self-end">
-                    <button
-                      type="button"
-                      className="text-white w-36 bg-custom-green-button3 font-medium rounded-full text-sm m-2 py-2 px-10 text-center"
-                      data-hs-overlay="#hs-edit-vision-modal"
-                    >
-                      EDIT
-                    </button>
-                  </div>
+                    style={{ letterSpacing: "0.1em", whiteSpace: "pre-line" }}
+                    value={information.vision}
+                    name="vision"
+                    onChange={handleChange}
+                  />
                 </div>
+              </div>
+              <div className=" flex justify-center py-6 text-white">
+                {isEditingMode ? (
+                  <>
+                    <button
+                      onClick={handleSaveChanges}
+                      className="bg-green-800 px-7 py-2 rounded-xl mr-2"
+                    >
+                      Save changes
+                    </button>
+                    <button
+                      className="bg-red-800 px-7 py-2 rounded-xl mr-2"
+                      onClick={() => setisEditingMode(false)}
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    className="text-white w-36 bg-custom-green-button3 font-medium rounded-full text-sm m-2 py-2 px-10 text-center"
+                    onClick={() => setisEditingMode(true)}
+                  >
+                    Edit
+                  </button>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
-      <EditMissionModal />
-      <EditStoryModal />
-      <EditVisionModal />
+      {/* <EditMissionModal
+        brgyInformation={brgyInformation}
+        setBrgyInformation={setBrgyInformation}
+        updateInfo={handleSaveChanges}
+      />
+      <EditStoryModal
+        brgyInformation={brgyInformation}
+        setBrgyInformation={setBrgyInformation}
+        updateInfo={handleSaveChanges}
+        information={information}
+        brgy={brgy}
+      />
+      <EditVisionModal
+        brgyInformation={brgyInformation}
+        setBrgyInformation={setBrgyInformation}
+        updateInfo={handleSaveChanges}
+      /> */}
     </div>
   );
 };

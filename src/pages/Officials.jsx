@@ -12,16 +12,15 @@ import GenerateReportsModal from "../components/officials/GenerateReportsModal";
 import ArchiveOfficialModal from "../components/officials/ArchiveOfficialModal";
 import EditOfficialModal from "../components/officials/EditOfficialModal";
 import { useSearchParams } from "react-router-dom";
+import axios from "axios";
+import API_LINK from "../config/API";
 
 const Officials = () => {
   const [selectedItems, setSelectedItems] = useState([]);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const id = searchParams.get("id");
-  const brgy = searchParams.get("brgy");
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
-    let value = parseInt(e.target.value);
+    let value = e.target.value;
 
     if (isSelected) {
       setSelectedItems([...selectedItems, value]);
@@ -35,59 +34,51 @@ const Officials = () => {
   };
 
   const checkAllHandler = () => {
-    if (tableData.length === selectedItems.length) {
+    if (officials.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const postIds = tableData.map((item) => {
-        return item.id;
+      const officialIds = officials.map((item) => {
+        return item._id;
       });
 
-      setSelectedItems(postIds);
+      setSelectedItems(officialIds);
     }
   };
 
-  const tableData = [
-    {
-      id: 1,
-      imageSrc: officialimage,
-      name: "Nyle Lorenz A. Chua",
-      position: "Vice President",
-      startrenderedservice: "2001",
-      currentrenderedservice: "Present",
-    },
-    {
-      id: 2,
-      imageSrc: officialimage,
-      name: "Nyle Lorenz A. Chua",
-      position: "Vice President",
-      startrenderedservice: "2001",
-      currentrenderedservice: "Present",
-    },
-    {
-      id: 3,
-      imageSrc: officialimage,
-      name: "Nyle Lorenz A. Chua",
-      position: "Vice President",
-      startrenderedservice: "2001",
-      currentrenderedservice: "Present",
-    },
-    {
-      id: 4,
-      imageSrc: officialimage,
-      name: "Nyle Lorenz A. Chua",
-      position: "Vice President",
-      startrenderedservice: "2001",
-      currentrenderedservice: "Present",
-    },
-    {
-      id: 5,
-      imageSrc: officialimage,
-      name: "Nyle Lorenz A. Chua",
-      position: "Vice President",
-      startrenderedservice: "2001",
-      currentrenderedservice: "Present",
-    },
-  ];
+  useEffect(() => {
+    document.title = "Barangay Officials | Barangay E-Services Management";
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
+        );
+
+        if (response.status === 200) {
+          const officialsData = response.data || [];
+
+          if (officialsData.length > 0) {
+            setOfficials(officialsData);
+          } else {
+            setOfficials([]);
+            console.log(`No officials found for Barangay ${brgy}`);
+          }
+        } else {
+          setOfficials([]);
+          console.error('Failed to fetch officials:', response.status);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setOfficials([]);
+      }
+    };
+
+    fetchData();
+  }, [brgy]);
+
+  const handleEditClick = async (official) => {
+    setSelectedOfficial(official);
+  };
 
   const tableHeader = [
     "IMAGE",
@@ -96,10 +87,6 @@ const Officials = () => {
     "RENDERED SERVICE",
     "ACTIONS",
   ];
-
-  useEffect(() => {
-    document.title = "Barangay Officials | Barangay E-Services Management";
-  }, []);
 
   return (
     <div className="mx-4 my-5 md:mx-5 md:my-6 lg:ml-[19rem] lg:mt-8 lg:mr-6">
@@ -138,7 +125,7 @@ const Officials = () => {
                 </div>
               </div>
               <div className="w-full rounded-lg ">
-                <Link to={`/archived_officials/?id=${id}&brgy=${brgy}`}>
+                <Link to="/archived_officials">
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"
@@ -293,14 +280,14 @@ const Officials = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {tableData.map((item, index) => (
+              {officials.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <input
                         type="checkbox"
-                        checked={selectedItems.includes(item.id)}
-                        value={item.id}
+                        checked={selectedItems.includes(item._id)} // Update to use the correct property
+                        value={item._id}
                         onChange={checkboxHandler}
                       />
                     </div>
@@ -309,7 +296,7 @@ const Officials = () => {
                     <span className="text-xs sm:text-sm text-black line-clamp-2">
                       <div className="px-2 sm:px-6 py-2">
                         <img
-                          src={item.imageSrc}
+                          src={item.picture.link}
                           alt=""
                           className="w-32 mx-auto rounded-full"
                         />
@@ -333,8 +320,7 @@ const Officials = () => {
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.startrenderedservice} -{" "}
-                        {item.currentrenderedservice}
+                        {item.fromYear} - {item.toYear}
                       </span>
                     </div>
                   </td>
@@ -344,6 +330,7 @@ const Officials = () => {
                         type="button"
                         data-hs-overlay="#hs-edit-official-modal"
                         className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                        onClick={() => handleEditClick(item)}
                       >
                         <FiEdit size={24} style={{ color: "#ffffff" }} />
                       </button>
@@ -372,10 +359,14 @@ const Officials = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <CreateOfficialModal />
+      <CreateOfficialModal brgy={brgy} />
       <GenerateReportsModal />
-      <ArchiveOfficialModal />
-      <EditOfficialModal />
+      <ArchiveOfficialModal selectedItems={selectedItems} />
+      <EditOfficialModal
+        selectedOfficial={selectedOfficial}
+        setSelectedOfficial={setSelectedOfficial}
+        brgy={brgy}
+      />
     </div>
   );
 };
