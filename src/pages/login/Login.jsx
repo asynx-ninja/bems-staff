@@ -42,6 +42,12 @@ const Login = () => {
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleLogin();
+    }
+  };
+
   return (
     <div className='bg-[url("/imgs/login-bg.jpg")] bg-cover bg-center bg-no-repeat md:px-[3rem] md:py-[3rem] lg:px-[7rem] lg:py-[4rem] h-screen flex sm:flex-col md:flex-row sm:space-y-5 md:space-y-0'>
       <div className="sm:block md:hidden h-[320px] border-[5px] border-t-0 border-[#1C8058] bg-[url('/imgs/login.png)] flex flex-col w-full rounded-b-full overflow-hidden shadow-[0px_4px_4px_rgba(0,0,0,0.51)]">
@@ -152,6 +158,7 @@ const Login = () => {
                 aria-describedby="hs-input-helper-text"
                 value={data.username}
                 onChange={(e) => setData({ ...data, username: e.target.value })}
+                onKeyPress={handleKeyPress}
               />
             </div>
             <div>
@@ -169,6 +176,7 @@ const Login = () => {
                   aria-describedby="hs-input-helper-text"
                   value={data.password}
                   onChange={(e) => setData({ ...data, password: e.target.value })}
+                  onKeyPress={handleKeyPress}
                 />
                 <button
                   onClick={() => isEye(!eye)}

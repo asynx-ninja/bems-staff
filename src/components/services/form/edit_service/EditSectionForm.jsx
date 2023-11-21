@@ -242,7 +242,7 @@ const EditSectionForm = ({ detail, setDetail }) => {
                         className="flex flex-col bg-white rounded-lg px-2"
                         key={formIndex}
                       >
-                        <div className="flex space-x-2  py-2">
+                        <div className="flex flex-col md:flex-row md:space-x-2 py-2">
                           <div className="w-full flex flex-col space-y-2">
                             <input
                               type="text"

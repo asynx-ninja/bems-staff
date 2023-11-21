@@ -6,11 +6,10 @@ import { BsPrinter } from "react-icons/bs";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { FiEdit } from "react-icons/fi";
 import { FaArchive, FaPlus } from "react-icons/fa";
-import officialimage from "../assets/sample/official.jpg";
 import CreateOfficialModal from "../components/officials/CreateOfficialModal";
 import GenerateReportsModal from "../components/officials/GenerateReportsModal";
 import ArchiveOfficialModal from "../components/officials/ArchiveOfficialModal";
-import EditOfficialModal from "../components/officials/EditOfficialModal";
+import EditOfficialModal from "../components/officials/ManageOfficialModal";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import API_LINK from "../config/API";
@@ -22,7 +21,31 @@ const Officials = () => {
   const brgy = searchParams.get("brgy");
   const id = searchParams.get("id");
   const [selectedOfficial, setSelectedOfficial] = useState({});
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortColumn, setSortColumn] = useState(null);
 
+  const handleSort = (sortBy) => {
+    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newSortOrder);
+    setSortColumn(sortBy);
+
+    const sortedData = officials.slice().sort((a, b) => {
+      if (sortBy === "name") {
+        return newSortOrder === "asc"
+          ? a.name.localeCompare(b.name)
+          : b.name.localeCompare(a.name);
+      } else if (sortBy === "rendered_service") {
+        const dateA = new Date(a.fromYear);
+        const dateB = new Date(b.fromYear);
+
+        return newSortOrder === "asc" ? dateA - dateB : dateB - dateA;
+      }
+
+      return 0;
+    });
+
+    setOfficials(sortedData);
+  };
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -71,10 +94,10 @@ const Officials = () => {
           }
         } else {
           setOfficials([]);
-          console.error('Failed to fetch officials:', response.status);
+          console.error("Failed to fetch officials:", response.status);
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
         setOfficials([]);
       }
     };
@@ -94,14 +117,22 @@ const Officials = () => {
     "ACTIONS",
   ];
 
-  const dateFormat = (fromYear) => {
-    const eventdate = fromYear === undefined ? "" : fromYear.substr(0, 10);
-    return eventdate;
-  };
+  const dateFormat = (fromYear, toYear) => {
+    const startDate = fromYear ? new Date(fromYear) : null;
+    const endDate = toYear ? new Date(toYear) : null;
 
-  const dateFormat2 = (toYear) => {
-    const eventdate = toYear === undefined ? "" : toYear.substr(0, 10);
-    return eventdate;
+    const startYearMonth = startDate
+      ? `${startDate.toLocaleString("default", {
+          month: "short",
+        })} ${startDate.getFullYear()}`
+      : "";
+    const endYearMonth = endDate
+      ? `${endDate.toLocaleString("default", {
+          month: "short",
+        })} ${endDate.getFullYear()}`
+      : "";
+
+    return `${startYearMonth} ${endYearMonth}`;
   };
 
   return (
@@ -141,7 +172,9 @@ const Officials = () => {
                 </div>
               </div>
               <div className="w-full rounded-lg ">
-                <Link to={`/archived_officials/?id=${id}&brgy=${brgy}&archived=true`}>
+                <Link
+                  to={`/archived_officials/?id=${id}&brgy=${brgy}&archived=true`}
+                >
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"
@@ -176,7 +209,9 @@ const Officials = () => {
               >
                 SORT BY
                 <svg
-                  className="hs-dropdown-open:rotate-180 w-2.5 h-2.5 text-white"
+                  className={`hs-dropdown-open:rotate-${
+                    sortOrder === "asc" ? "180" : "0"
+                  } w-2.5 h-2.5 text-white`}
                   width="16"
                   height="16"
                   viewBox="0 0 16 16"
@@ -192,14 +227,38 @@ const Officials = () => {
                 </svg>
               </button>
               <ul
-                className="bg-[#295141] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                className="bg-[#295141] border-2 border-[#ffb13c] hs-dropdown-menu w-96 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10 shadow-md rounded-lg p-2"
                 aria-labelledby="hs-dropdown"
               >
-                <li className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ">
-                  TITLE
+                <li
+                  onClick={() => handleSort("name")}
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                >
+                  NAME
+                  {sortColumn === "name" && (
+                    <span className="ml-auto">
+                      {sortOrder === "asc" ? (
+                        <span>DESC &darr;</span>
+                      ) : (
+                        <span>ASC &uarr;</span>
+                      )}
+                    </span>
+                  )}
                 </li>
-                <li className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ">
-                  DATE
+                <li
+                  onClick={() => handleSort("rendered_service")}
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                >
+                  RENDERED SERVICE
+                  {sortColumn === "rendered_service" && (
+                    <span className="ml-auto">
+                      {sortOrder === "asc" ? (
+                        <span className="text-xs">OLD TO LATEST &darr;</span>
+                      ) : (
+                        <span className="text-xs">LATEST TO OLD &uarr;</span>
+                      )}
+                    </span>
+                  )}
                 </li>
               </ul>
             </div>
@@ -271,7 +330,7 @@ const Officials = () => {
 
         {/* Table */}
         <div className="overflow-auto sm:overflow-x-auto lg:h-[710px] xl:h-[700px] xxl:h-[700px] xxxl:h-[640px]">
-          <table className="w-full ">
+          <table className="w-full max">
             <thead className="bg-[#295141] sticky top-0">
               <tr className="">
                 <th scope="col" className="px-6 py-4">
@@ -308,13 +367,13 @@ const Officials = () => {
                       />
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="xl:px-6 xl:py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      <div className="px-2 sm:px-6 py-2">
+                      <div className="py-2 xl:px-6 xl:py-2">
                         <img
                           src={item.picture.link}
                           alt=""
-                          className="w-32 mx-auto rounded-full"
+                          className="w-[120px] h-[90px] md:w-[150px] md:h-[90px] lg:w-[150px] lg:h-[115px] xl:w-[150px] xl:h-[150px] rounded-full mx-auto border-[5px] border-[#295141] object-cover"
                         />
                       </div>
                     </span>
@@ -336,8 +395,8 @@ const Officials = () => {
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {dateFormat(item.fromYear) || ""} - {dateFormat(item.toYear) || ""}
-                        {/* {item.fromYear} - {item.toYear} */}
+                        {dateFormat(item.fromYear) || ""} -{" "}
+                        {dateFormat(item.toYear) || ""}
                       </span>
                     </div>
                   </td>

@@ -21,6 +21,31 @@ const ArchivedOfficials = () => {
   const brgy = searchParams.get("brgy");
   const id = searchParams.get("id");
   const [selectedOfficial, setSelectedOfficial] = useState({});
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortColumn, setSortColumn] = useState(null);
+
+  const handleSort = (sortBy) => {
+    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newSortOrder);
+    setSortColumn(sortBy);
+
+    const sortedData = officials.slice().sort((a, b) => {
+      if (sortBy === "name") {
+        return newSortOrder === "asc"
+          ? a.name.localeCompare(b.name)
+          : b.name.localeCompare(a.name);
+      } else if (sortBy === "rendered_service") {
+        const dateA = new Date(a.fromYear);
+        const dateB = new Date(b.fromYear);
+
+        return newSortOrder === "asc" ? dateA - dateB : dateB - dateA;
+      }
+
+      return 0;
+    });
+
+    setOfficials(sortedData);
+  };
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -93,6 +118,24 @@ const ArchivedOfficials = () => {
     "ACTIONS",
   ];
 
+  const dateFormat = (fromYear, toYear) => {
+    const startDate = fromYear ? new Date(fromYear) : null;
+    const endDate = toYear ? new Date(toYear) : null;
+
+    const startYearMonth = startDate
+      ? `${startDate.toLocaleString("default", {
+          month: "short",
+        })} ${startDate.getFullYear()}`
+      : "";
+    const endYearMonth = endDate
+      ? `${endDate.toLocaleString("default", {
+          month: "short",
+        })} ${endDate.getFullYear()}`
+      : "";
+
+    return `${startYearMonth} ${endYearMonth}`;
+  };
+
   return (
     <div className="mx-4 my-5 md:mx-5 md:my-6 lg:ml-[19rem] lg:mt-8 lg:mr-6">
       <Breadcrumbs />
@@ -112,7 +155,7 @@ const ArchivedOfficials = () => {
 
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse md:flex-row flex justify-between w-full">
-            <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+          <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
               <button
                 id="hs-dropdown"
                 type="button"
@@ -120,7 +163,9 @@ const ArchivedOfficials = () => {
               >
                 SORT BY
                 <svg
-                  className="hs-dropdown-open:rotate-180 w-2.5 h-2.5 text-white"
+                  className={`hs-dropdown-open:rotate-${
+                    sortOrder === "asc" ? "180" : "0"
+                  } w-2.5 h-2.5 text-white`}
                   width="16"
                   height="16"
                   viewBox="0 0 16 16"
@@ -136,14 +181,38 @@ const ArchivedOfficials = () => {
                 </svg>
               </button>
               <ul
-                className="bg-[#295141] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                className="bg-[#295141] border-2 border-[#ffb13c] hs-dropdown-menu w-96 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10 shadow-md rounded-lg p-2"
                 aria-labelledby="hs-dropdown"
               >
-                <li className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ">
-                  TITLE
+                <li
+                  onClick={() => handleSort("name")}
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                >
+                  NAME
+                  {sortColumn === "name" && (
+                    <span className="ml-auto">
+                      {sortOrder === "asc" ? (
+                        <span>DESC &darr;</span>
+                      ) : (
+                        <span>ASC &uarr;</span>
+                      )}
+                    </span>
+                  )}
                 </li>
-                <li className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ">
-                  DATE
+                <li
+                  onClick={() => handleSort("rendered_service")}
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                >
+                  RENDERED SERVICE
+                  {sortColumn === "rendered_service" && (
+                    <span className="ml-auto">
+                      {sortOrder === "asc" ? (
+                        <span className="text-xs">OLD TO LATEST &darr;</span>
+                      ) : (
+                        <span className="text-xs">LATEST TO OLD &uarr;</span>
+                      )}
+                    </span>
+                  )}
                 </li>
               </ul>
             </div>
@@ -258,7 +327,7 @@ const ArchivedOfficials = () => {
                         <img
                           src={item.picture.link}
                           alt=""
-                          className="w-32 mx-auto rounded-full"
+                          className="w-[120px] h-[120px] md:w-[150px] md:h-[150px] rounded-full mx-auto border-[5px] border-[#295141] object-cover"
                         />
                       </div>
                     </span>
@@ -280,8 +349,8 @@ const ArchivedOfficials = () => {
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.fromYear}
-                        {item.toYear}
+                      {dateFormat(item.fromYear) || ""} -{" "}
+                        {dateFormat(item.toYear) || ""}
                       </span>
                     </div>
                   </td>

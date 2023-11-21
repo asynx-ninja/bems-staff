@@ -1,8 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import bgmodal from "../../assets/modals/bg-modal2.png";
-import officialimage from "../../assets/sample/official.jpg";
-import { IoIosAdd } from "react-icons/io";
+import { CiImageOn } from "react-icons/ci";
 import API_LINK from "../../config/API";
 import axios from "axios";
 
@@ -17,12 +15,6 @@ function CreateOfficialModal({ brgy }) {
 
   const [pfp, setPfp] = useState();
 
-  useEffect(() => {
-    var imageSrc = document.getElementById("add_pfp");
-    imageSrc.src =
-      "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
-  }, []);
-
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
@@ -31,7 +23,14 @@ function CreateOfficialModal({ brgy }) {
       formData.append("file", pfp);
 
       const obj = {
-        name: official.name,
+        name:
+          official.lastName +
+          ", " +
+          official.firstName +
+          " " +
+          official.middleName +
+          " " +
+          official.suffix,
         position: official.position,
         fromYear: official.fromYear,
         toYear: official.toYear,
@@ -54,6 +53,7 @@ function CreateOfficialModal({ brgy }) {
           brgy: "",
         });
         setPfp(null);
+        window.location.reload();
       }
     } catch (err) {
       console.error("Error adding official:", err);
@@ -77,40 +77,42 @@ function CreateOfficialModal({ brgy }) {
         className="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center lg:ml-10 xxl:ml-0"
       >
         {/* Modal */}
-        <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 md:px-0 opacity-0 transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto">
-          <div className="flex flex-col w-full lg:w-[700px] bg-white shadow-sm overflow-y-auto rounded-t-3xl rounded-b-3xl">
+        <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
+          <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
             {/* Header */}
-            <div className="bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
-              <div className="flex justify-between items-center px-3 py-5 md:p-5 w-full h-full bg-cover bg-no-repeat transform">
-                <h3
-                  className="font-base text-white mx-auto md:text-xl"
-                  style={{ letterSpacing: "0.3em" }}
-                >
-                  CREATE NEW OFFICIAL
-                </h3>
-              </div>
+            <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
+              <h3
+                className="font-bold text-white mx-auto md:text-xl text-center"
+                style={{ letterSpacing: "0.3em" }}
+              >
+                CREATE BARANGAY OFFICIAL
+              </h3>
             </div>
 
-            {/* Modal Details */}
-            <div>
+            <div className="flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
               <div className="flex flex-col">
-                <div className="flex flex-col lg:flex-row border mb-1">
+                <div className="flex flex-col lg:flex-row mb-1">
                   {/* Service Description */}
-                  <div className="relative mt-4 lg:ml-6 overflow-y-auto flex flex-col w-full lg:w-1/2">
+                  <div className="relative mt-4 flex flex-col w-full lg:w-1/2">
                     {/* Modal Images */}
                     <div className="relative w-full overflow-y-auto">
-                      <div className="relative w-full"></div>
-                      <div>
+                      <div className="relative w-full border rounded-t-xl">
                         <img
+                          className={`${
+                            pfp ? "" : "hidden"
+                          } w-[250px] h-[250px] md:w-full md:h-[350px] lg:w-full lg:h-[250px] rounded-t-xl object-cover`}
                           id="add_pfp"
-                          alt=""
-                          className="h-32 w-32 md:h-52 md:w-52 lg:h-60 lg:w-60 mx-auto rounded-lg"
+                          alt="Current profile photo"
+                        />{" "}
+                        <CiImageOn
+                          size={250}
+                          className={`${!pfp ? "" : "hidden"} mx-auto`}
                         />
                       </div>
                     </div>
 
                     <input
-                      className="block mt-5 w-64 md:w-96 mx-auto lg:w-full text-sm text-black rounded-lg cursor-pointer bg-gray-100 "
+                      className="block p-2 mb-2 w-full  mx-auto lg:w-full text-sm text-black rounded-b-xl cursor-pointer bg-gray-100 "
                       type="file"
                       onChange={handlePfpChange}
                       name="pfp"
@@ -120,39 +122,96 @@ function CreateOfficialModal({ brgy }) {
                   </div>
 
                   {/* Request Information */}
-                  <div className="relative mt-4 p-4 lg:mx-6 p-2 pb-6 overflow-y-auto flex flex-col w-full lg:w-1/2 h-full rounded-lg">
+                  <div className="relative mt-2 lg:mx-6 pb-6 overflow-y-auto flex flex-col w-full lg:w-1/2 h-full rounded-lg space-y-2">
+                    <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg">
+                      Personal Informations
+                    </b>
                     <h1
                       className="font-medium mb-1 text-black text-sm"
                       style={{ letterSpacing: "0.1em" }}
                     >
-                      NAME OF THE OFFICIAL
+                      FIRST NAME
                     </h1>
                     <input
                       type="text"
-                      id="name"
-                      className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
+                      id="firstName"
+                      className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       placeholder=""
-                      value={official.name}
+                      value={official.firstName}
                       onChange={(e) =>
-                        setOfficial({ ...official, name: e.target.value })
+                        setOfficial({ ...official, firstName: e.target.value })
+                      }
+                    />
+
+                    <h1
+                      className="font-medium mb-1 text-black text-sm"
+                      style={{ letterSpacing: "0.1em" }}
+                    >
+                      MIDDLE NAME
+                    </h1>
+                    <input
+                      type="text"
+                      id="middleName"
+                      className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                      placeholder=""
+                      value={official.middleName}
+                      onChange={(e) =>
+                        setOfficial({ ...official, middleName: e.target.value })
+                      }
+                    />
+
+                    <h1
+                      className="font-medium mb-1 text-black text-sm"
+                      style={{ letterSpacing: "0.1em" }}
+                    >
+                      SUFFIX
+                    </h1>
+                    <input
+                      type="text"
+                      id="suffix"
+                      className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                      placeholder=""
+                      value={official.suffix}
+                      onChange={(e) =>
+                        setOfficial({ ...official, suffix: e.target.value })
+                      }
+                    />
+
+                    <h1
+                      className="font-medium mb-1 text-black text-sm"
+                      style={{ letterSpacing: "0.1em" }}
+                    >
+                      LAST NAME
+                    </h1>
+                    <input
+                      type="text"
+                      id="lastName"
+                      className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                      placeholder=""
+                      value={official.lastName}
+                      onChange={(e) =>
+                        setOfficial({ ...official, lastName: e.target.value })
                       }
                     />
                   </div>
                 </div>
 
                 {/* Other info */}
-                <div className="relative mt-5 mx-6 overflow-y-auto flex flex-col md:flex-row md:space-x-3">
+                <b className="border-solid border-0 border-black/50 border-b-2 uppercase font-medium text-lg md:text-lg mt-1">
+                  Government Information
+                </b>
+                <div className="relative mt-5  overflow-y-auto flex flex-col space-y-4">
                   {/* Position and Service Rendered */}
-                  <div className="w-full lg:w-1/2">
+                  <div className="w-full">
                     <h1
-                      className="font-base text-black mx-auto text-sm"
+                      className="font-bold text-black mx-auto text-sm"
                       style={{ letterSpacing: "0.1em" }}
                     >
                       POSITION
                     </h1>
                     <select
                       id="position"
-                      className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg"
+                      className="shadow border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       onChange={(e) =>
                         setOfficial({ ...official, position: e.target.value })
                       }
@@ -160,7 +219,7 @@ function CreateOfficialModal({ brgy }) {
                       required
                     >
                       <option value="" disabled>
-                        Select Position
+                        -- Select Position --
                       </option>
                       <option value="Barangay Chairman">
                         Barangay Chairman
@@ -170,51 +229,62 @@ function CreateOfficialModal({ brgy }) {
                       <option value="SK Kagawad">SK Kagawad</option>
                     </select>
                   </div>
-                  <div className="w-full lg:w-1/2 sm:mt-2 md:mt-0">
+                  <div className="w-full mt-2">
                     <h1
-                      className="font-base text-black mx-auto text-sm"
+                      className="font-bold text-black mx-auto text-sm"
                       style={{ letterSpacing: "0.1em" }}
                     >
                       SERVICE RENDERED
                     </h1>
 
                     {/* Date 1 */}
-                    <div className="flex flex-row">
-                      <label
-                        htmlFor="from_year"
-                        className=" w-[7rem] flex items-center"
-                      >
-                        From year:{" "}
-                      </label>
-                      <input
-                        type="month"
-                        className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg"
-                        id="from_year"
-                        onChange={(e) =>
-                          setOfficial({ ...official, fromYear: e.target.value })
-                        }
-                        value={official.fromYear}
-                        required
-                      />
+                    <div className="flex flex-col lg:flex-row mt-2">
+                      <div className="w-full lg:w-1/6">
+                        <label
+                          htmlFor="from_year"
+                          className=" w-full font-base flex items-center"
+                        >
+                          FROM YEAR:{" "}
+                        </label>
+                      </div>
+                      <div className="w-full lg:w-5/6">
+                        <input
+                          type="month"
+                          className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                          id="from_year"
+                          onChange={(e) =>
+                            setOfficial({
+                              ...official,
+                              fromYear: e.target.value,
+                            })
+                          }
+                          value={official.fromYear}
+                          required
+                        />
+                      </div>
                     </div>
                     {/* Date 2 */}
-                    <div className="flex flex-row">
-                      <label
-                        htmlFor="To_year"
-                        className=" w-[6rem] flex items-center"
-                      >
-                        To year:{" "}
-                      </label>
-                      <input
-                        type="month"
-                        className="block w-full mt-2 p-1 text-sm text-gray-900 bg-gray-100 rounded-lg"
-                        id="To_year"
-                        onChange={(e) =>
-                          setOfficial({ ...official, toYear: e.target.value })
-                        }
-                        value={official.toYear}
-                        required
-                      />
+                    <div className="flex flex-col lg:flex-row mt-3">
+                      <div className="w-full lg:w-1/6">
+                        <label
+                          htmlFor="To_year"
+                          className=" w-[6rem] flex items-center"
+                        >
+                          TO YEAR:{" "}
+                        </label>
+                      </div>
+                      <div className="w-full lg:w-5/6">
+                        <input
+                          type="month"
+                          className="shadow border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                          id="To_year"
+                          onChange={(e) =>
+                            setOfficial({ ...official, toYear: e.target.value })
+                          }
+                          value={official.toYear}
+                          required
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
