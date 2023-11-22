@@ -95,8 +95,8 @@ const StatisticsDashboard = () => {
 
   const gradients = [
     { gradient1: "from-[#2E3192]", gradient2: "to-[#2CAFFF]" },
-    { gradient1: "from-[#FE9090]", gradient2: "to-[#FF61D2]" },
-    { gradient1: "from-[#56ab2f]", gradient2: "to-[#a8e063]" },
+    { gradient1: "from-[#E65758]", gradient2: "to-[#771D32]" },
+    { gradient1: "from-[#067D68]", gradient2: "to-[#147a63]" },
     { gradient1: "from-[#662D8C]", gradient2: "to-[#ED1E79]" },
     { gradient1: "from-[#614385]", gradient2: "to-[#516395]" },
     { gradient1: "from-[#02AABD]", gradient2: "to-[#00CDAC]" },

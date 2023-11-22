@@ -293,9 +293,10 @@ function CreateOfficialModal({ brgy }) {
 
             {/* Buttons */}
             <div className="flex justify-end items-center gap-x-2 py-3 px-6 dark:border-gray-700">
+              <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
               <button
                 type="button"
-                className="py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-custom-green-button3 text-white shadow-sm align-middle"
+                className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
                 data-hs-overlay="#hs-create-official-modal"
                 onClick={handleSubmit}
               >
@@ -303,11 +304,12 @@ function CreateOfficialModal({ brgy }) {
               </button>
               <button
                 type="button"
-                className="py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-custom-red-button text-white shadow-sm align-middle"
+                className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                 data-hs-overlay="#hs-create-official-modal"
               >
                 CLOSE
               </button>
+              </div>
             </div>
           </div>
         </div>
