@@ -336,7 +336,7 @@ const Settings = () => {
   }
 
   return (
-    <div className="lg:pl-[275px]">
+    <div className="mx-4">
       <div className="flex flex-col w-full justify-center items-center">
         <div className="w-full relative">
           <img className="h-[200px] w-full obj object-cover bg-black opacity-[80%]" src={banner} alt="" />

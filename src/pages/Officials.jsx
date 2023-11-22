@@ -136,7 +136,7 @@ const Officials = () => {
   };
 
   return (
-    <div className="mx-4 my-5 md:mx-5 md:my-6 lg:ml-[19rem] lg:mt-8 lg:mr-6">
+    <div className="mx-4">
       {/* Body */}
       <div>
         {/* Header */}
@@ -329,7 +329,7 @@ const Officials = () => {
         </div>
 
         {/* Table */}
-        <div className="overflow-auto sm:overflow-x-auto lg:h-[710px] xl:h-[700px] xxl:h-[700px] xxxl:h-[640px]">
+        <div className="overflow-auto sm:overflow-x-auto h-[calc(100vh_-_270px)]">
           <table className="w-full max">
             <thead className="bg-[#295141] sticky top-0">
               <tr className="">

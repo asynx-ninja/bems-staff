@@ -118,8 +118,8 @@ const ArchivedRequests = () => {
   }, []);
 
   return (
-    <div className="mx-4 my-5 md:mx-5 md:my-6 lg:ml-[19rem] lg:mt-8 lg:mr-6">
-      <Breadcrumbs/>
+    <div className="mx-4 mt-8">
+      <Breadcrumbs />
       {/* Body */}
       <div>
         {/* Header */}
@@ -129,10 +129,9 @@ const ArchivedRequests = () => {
               className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[1.2rem] xl:text-[1.5rem] xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
-             ARCHIVED REQUESTS
+              ARCHIVED REQUESTS
             </h1>
           </div>
-        
         </div>
 
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
@@ -239,7 +238,7 @@ const ArchivedRequests = () => {
         </div>
 
         {/* Table */}
-        <div className="overflow-auto sm:overflow-x-auto lg:h-[710px] xl:h-[700px] xxl:h-[700px] xxxl:h-[640px]">
+        <div className="overflow-auto sm:overflow-x-auto h-[calc(100vh_-_315px)]">
           <table className="w-full ">
             <thead className="bg-[#295141] sticky top-0">
               <tr className="">
@@ -304,11 +303,11 @@ const ArchivedRequests = () => {
                     </div>
                   </td>
                   <td className="px-6 py-3">
-                  <div className="flex items-center justify-center bg-custom-green-button3 m-2">
-                        <span className="text-xs sm:text-sm text-white p-3 mx-5">
-                          APPROVED
-                        </span>
-                      </div>
+                    <div className="flex items-center justify-center bg-custom-green-button3 m-2">
+                      <span className="text-xs sm:text-sm text-white p-3 mx-5">
+                        APPROVED
+                      </span>
+                    </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center space-x-1 sm:space-x-none">
@@ -346,8 +345,8 @@ const ArchivedRequests = () => {
       </div>
       <ViewRequestModal />
       <ArchiveRequestsModal />
-      <RequestsReportsModal/>
-      <RestoreRequestsModal/>
+      <RequestsReportsModal />
+      <RestoreRequestsModal />
     </div>
   );
 };

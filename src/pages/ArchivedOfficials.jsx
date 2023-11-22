@@ -137,7 +137,7 @@ const ArchivedOfficials = () => {
   };
 
   return (
-    <div className="mx-4 my-5 md:mx-5 md:my-6 lg:ml-[19rem] lg:mt-8 lg:mr-6">
+    <div className="mx-4 mt-8">
       <Breadcrumbs />
       {/* Body */}
       <div>
@@ -155,7 +155,7 @@ const ArchivedOfficials = () => {
 
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse md:flex-row flex justify-between w-full">
-          <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+            <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
               <button
                 id="hs-dropdown"
                 type="button"
@@ -283,7 +283,7 @@ const ArchivedOfficials = () => {
         </div>
 
         {/* Table */}
-        <div className="overflow-auto sm:overflow-x-auto lg:h-[710px] xl:h-[700px] xxl:h-[700px] xxxl:h-[640px]">
+        <div className="overflow-auto sm:overflow-x-auto h-[calc(100vh_-_340px)]">
           <table className="w-full ">
             <thead className="bg-[#295141] sticky top-0">
               <tr className="">
@@ -349,7 +349,7 @@ const ArchivedOfficials = () => {
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {dateFormat(item.fromYear) || ""} -{" "}
+                        {dateFormat(item.fromYear) || ""} -{" "}
                         {dateFormat(item.toYear) || ""}
                       </span>
                     </div>
