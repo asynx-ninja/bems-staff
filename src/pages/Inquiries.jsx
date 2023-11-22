@@ -1,14 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
-import { FaArchive} from "react-icons/fa";
+import { FaArchive } from "react-icons/fa";
 import { FiEdit } from "react-icons/fi";
 import { BsPrinter } from "react-icons/bs";
 import ArchiveModal from "../components/inquiries/ArchiveInquiryModal";
 import imgSrc from "/imgs/bg-header.png";
-import ReplyModal from "../components/inquiries/ReplyInquiries"
-import ViewMessage from "../components/inquiries/viewMessage"
-import Status from "../components/inquiries/Status"
+import ReplyModal from "../components/inquiries/ReplyInquiries";
+import ViewMessage from "../components/inquiries/viewMessage";
+import Status from "../components/inquiries/Status";
 import { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
@@ -53,14 +53,12 @@ const Inquiries = () => {
       id: 1,
       imageSrc: imgSrc,
       name: "Juanito Madrigal",
-      email:
-        "JuanitoMadrigal@gmail.com",
+      email: "JuanitoMadrigal@gmail.com",
       subject: "English",
       message: "wag mo ginagalaw oten ko",
       status: "no reply",
       date: "10 Jan 2023",
     },
-   
   ];
 
   const tableHeader = [
@@ -78,7 +76,7 @@ const Inquiries = () => {
   }, []);
 
   return (
-    <div className="mx-4 my-5 md:mx-5 md:my-6 lg:ml-[19rem] lg:mt-8 lg:mr-6">
+    <div className="mx-4 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_440px)] xxl:w-[calc(100vw_-_310px)]">
       <div>
         <div className="flex flex-row mt-5 sm:flex-col-reverse lg:flex-row w-full">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
@@ -103,7 +101,7 @@ const Inquiries = () => {
                         Archived Inquiries
                       </span>
                       <span
-                        className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                        className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                         role="tooltip"
                       >
                         Archived Inquiries
@@ -184,7 +182,7 @@ const Inquiries = () => {
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full items-center justify-center space-x-2">
-              <div className="hs-tooltip inline-block w-full">
+                <div className="hs-tooltip inline-block w-full">
                   <button
                     type="button"
                     data-hs-overlay="#hs-modal-archive"
@@ -219,7 +217,7 @@ const Inquiries = () => {
           </div>
         </div>
 
-        <div className="overflow-auto sm:overflow-x-auto lg:h-[710px] xl:h-[700px] xxl:h-[700px] xxxl:h-[640px]">
+        <div className="overflow-auto sm:overflow-x-auto h-[calc(100vh_-_270px)] xxxl:h-[calc(100vh_-_286px)] ">
           <table className="w-full ">
             <thead className="bg-[#295141] sticky top-0">
               <tr className="">

@@ -118,21 +118,20 @@ const ArchivedRequests = () => {
   }, []);
 
   return (
-    <div className="mx-4 my-5 md:mx-5 md:my-6 lg:ml-[19rem] lg:mt-8 lg:mr-6">
-      <Breadcrumbs/>
+    <div className="mx-4 mt-8 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_440px)] xxl:w-[calc(100vw_-_310px)]">
+      <Breadcrumbs />
       {/* Body */}
       <div>
         {/* Header */}
-        <div className="flex flex-row mt-5 sm:flex-col-reverse lg:flex-row w-full">
+        <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
-              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[1.2rem] xl:text-[1.5rem] xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
+              className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-[1.5rem] xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
-             ARCHIVED REQUESTS
+              ARCHIVED REQUESTS
             </h1>
           </div>
-        
         </div>
 
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
@@ -239,7 +238,7 @@ const ArchivedRequests = () => {
         </div>
 
         {/* Table */}
-        <div className="overflow-auto sm:overflow-x-auto lg:h-[710px] xl:h-[700px] xxl:h-[700px] xxxl:h-[640px]">
+        <div className="overflow-auto sm:overflow-x-auto h-[calc(100vh_-_315px)] xxxl:h-[calc(100vh_-_326px)]">
           <table className="w-full ">
             <thead className="bg-[#295141] sticky top-0">
               <tr className="">
@@ -304,11 +303,11 @@ const ArchivedRequests = () => {
                     </div>
                   </td>
                   <td className="px-6 py-3">
-                  <div className="flex items-center justify-center bg-custom-green-button3 m-2">
-                        <span className="text-xs sm:text-sm text-white p-3 mx-5">
-                          APPROVED
-                        </span>
-                      </div>
+                    <div className="flex items-center justify-center bg-custom-green-button3 m-2">
+                      <span className="text-xs sm:text-sm text-white p-3 mx-5">
+                        APPROVED
+                      </span>
+                    </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center space-x-1 sm:space-x-none">
@@ -346,8 +345,8 @@ const ArchivedRequests = () => {
       </div>
       <ViewRequestModal />
       <ArchiveRequestsModal />
-      <RequestsReportsModal/>
-      <RestoreRequestsModal/>
+      <RequestsReportsModal />
+      <RestoreRequestsModal />
     </div>
   );
 };

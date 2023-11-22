@@ -12,14 +12,14 @@ const Breadcrumbs = () => {
       <ol className="flex items-center space-x-2 text-gray-500 mt-[-1rem]">
         <TfiAnnouncement size={22} />
         <li>
-          <a href={`/announcements/?id=${id}&brgy=${brgy}&archived=false`} className="text-gray-600 font-bold hover:underline">
+          <a href={`/announcements/?id=${id}&brgy=${brgy}&archived=false`} className="text-gray-600 font-bold hover:underline text-xs md:text-lg">
             ANNOUNCEMENT
           </a>
         </li>
         <li>
           <GrFormNext size={24} style={{ color: "#ffffff" }} />
         </li>
-        <li className="text-[#295141] font-bold">ARCHIVED ANNOUNCEMENT</li>
+        <li className="text-[10px] md:text-lg text-[#295141] font-bold">ARCHIVED ANNOUNCEMENT</li>
       </ol>
     </nav>
   );

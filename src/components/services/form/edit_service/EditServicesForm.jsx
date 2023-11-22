@@ -11,11 +11,14 @@ const EditServicesForm = ({ service_id, brgy }) => {
   const [detail, setDetail] = useState({});
 
   useEffect(() => {
+    // function to filter
     const fetch = async () => {
       try {
         const response = await axios.get(
           `${API_LINK}/forms/?brgy=${brgy}&service_id=${service_id}`
         );
+
+        // filter
         setDetails(response.data);
       } catch (err) {
         console.log(err.message);
@@ -24,6 +27,8 @@ const EditServicesForm = ({ service_id, brgy }) => {
 
     fetch();
   }, [brgy, service_id]);
+
+  console.log("Detail", detail);
 
   const handleFormChange = (e, key) => {
     const newState = detail.form[0];

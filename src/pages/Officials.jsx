@@ -136,14 +136,14 @@ const Officials = () => {
   };
 
   return (
-    <div className="mx-4 my-5 md:mx-5 md:my-6 lg:ml-[19rem] lg:mt-8 lg:mr-6">
+    <div className="mx-4 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_440px)] xxl:w-[calc(100vw_-_310px)]">
       {/* Body */}
       <div>
         {/* Header */}
         <div className="flex flex-row mt-5 sm:flex-col-reverse lg:flex-row w-full">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
-              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[1.2rem] xl:text-[1.5rem] xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
+              className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-[1.5rem] xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
               BARANGAY OFFICIALS
@@ -163,7 +163,7 @@ const Officials = () => {
                       Add Official
                     </span>
                     <span
-                      className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                      className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                       role="tooltip"
                     >
                       Add Official
@@ -186,7 +186,7 @@ const Officials = () => {
                         Archived Officials
                       </span>
                       <span
-                        className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                        className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                         role="tooltip"
                       >
                         Archived Officials
@@ -329,7 +329,7 @@ const Officials = () => {
         </div>
 
         {/* Table */}
-        <div className="overflow-auto sm:overflow-x-auto lg:h-[710px] xl:h-[700px] xxl:h-[700px] xxxl:h-[640px]">
+        <div className="overflow-auto sm:overflow-x-auto h-[calc(100vh_-_270px)] xxxl:h-[calc(100vh_-_286px)]">
           <table className="w-full max">
             <thead className="bg-[#295141] sticky top-0">
               <tr className="">
@@ -361,7 +361,7 @@ const Officials = () => {
                     <div className="flex justify-center items-center">
                       <input
                         type="checkbox"
-                        checked={selectedItems.includes(item._id)} // Update to use the correct property
+                        checked={selectedItems.includes(item._id)}
                         value={item._id}
                         onChange={checkboxHandler}
                       />
@@ -373,7 +373,7 @@ const Officials = () => {
                         <img
                           src={item.picture.link}
                           alt=""
-                          className="w-[120px] h-[90px] md:w-[150px] md:h-[90px] lg:w-[150px] lg:h-[115px] xl:w-[150px] xl:h-[150px] rounded-full mx-auto border-[5px] border-[#295141] object-cover"
+                          className="w-[120px] h-[90px] xl:h-28 xl:w-28 bg-cover rounded-full mx-auto border-[5px] border-[#295141] object-cover"
                         />
                       </div>
                     </span>

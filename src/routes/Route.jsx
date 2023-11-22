@@ -15,9 +15,9 @@ import Login from "../pages/login/Login";
 import ForgotPassword from "../pages/login/ForgotPassword";
 import SecurityPin from "../pages/login/SecurityPin";
 import ChangePassword from "../pages/login/ChangePassword";
-import ArchivedAnnouncements from "../pages/ArchivedAnnouncements"
-import ArchivedInquiries from "../pages/ArchivedInquiries"
-import ArchivedResidents from "../pages/ArchiveResidents"
+import ArchivedAnnouncements from "../pages/ArchivedAnnouncements";
+import ArchivedInquiries from "../pages/ArchivedInquiries";
+import ArchivedResidents from "../pages/ArchiveResidents";
 import ArchivedService from "../pages/ArchivedServices";
 import ArchivedRequests from "../pages/ArchivedRequests";
 import ArchivedOfficials from "../pages/ArchivedOfficials";
@@ -43,147 +43,63 @@ const pages = [
   },
   {
     path: "/dashboard",
-    element: (
-      <>
-        <Navbar />
-        <Dashboard />
-      </>
-    ),
+    element: <Navbar comp={<Dashboard />} />,
   },
   {
     path: "/announcements",
-    element: (
-      <>
-        <Navbar />
-        <Announcements />
-      </>
-    ),
+    element: <Navbar comp={<Announcements />} />,
   },
   {
     path: "/archivedannoucements",
-    element: (
-      <>
-        <Navbar />
-        <ArchivedAnnouncements />
-      </>
-    ),
+    element: <Navbar comp={<ArchivedAnnouncements />} />,
   },
   {
     path: "/archivedinquiries",
-    element: (
-      <>
-        <Navbar />
-        <ArchivedInquiries />
-      </>
-    ),
+    element: <Navbar comp={<ArchivedInquiries />} />,
   },
   {
     path: "/inquiries",
-    element: (
-      <>
-        <Navbar />
-        <Inquiries />
-      </>
-    ),
+    element: <Navbar comp={<Inquiries />} />,
   },
   {
     path: "/residents",
-    element: (
-      <>
-        <Navbar />
-        <Residents />
-      </>
-    ),
+    element: <Navbar comp={<Residents />} />,
   },
   {
     path: "/archivedresidents",
-    element: (
-      <>
-        <Navbar />
-        <ArchivedResidents />
-      </>
-    ),
+    element: <Navbar comp={<ArchivedResidents />} />,
   },
   {
     path: "/services",
-    element: (
-      <>
-        <Navbar />
-        <Services />
-      </>
-    ),
+    element: <Navbar comp={<Services />} />,
   },
   {
     path: "/archivedservices",
-    element: (
-      <>
-        <Navbar />
-        <ArchivedService />
-      </>
-    ),
+    element: <Navbar comp={<ArchivedService />} />,
   },
   {
     path: "/requests",
-    element: (
-      <>
-        <Navbar />
-        <Requests />
-      </>
-    ),
+    element: <Navbar comp={<Requests />} />,
   },
   {
     path: "/archivedrequests",
-    element: (
-      <>
-        <Navbar />
-        <ArchivedRequests />
-      </>
-    ),
+    element: <Navbar comp={<ArchivedRequests />} />,
   },
   {
     path: "/officials",
-    element: (
-      <>
-        <Navbar />
-        <Officials />
-      </>
-    ),
+    element: <Navbar comp={<Officials />} />,
   },
   {
     path: "/archived_officials",
-    element: (
-      <>
-        <Navbar />
-        <ArchivedOfficials />
-      </>
-    ),
+    element: <Navbar comp={<ArchivedOfficials />} />,
   },
   {
     path: "/info",
-    element: (
-      <>
-        <Navbar />
-        <Information />
-      </>
-    ),
+    element: <Navbar comp={<Information />} />,
   },
   {
     path: "/settings",
-    element: (
-      <>
-        <Navbar />
-        <Settings />
-      </>
-    ),
-  },
-  {
-    path: "/form",
-    element: (
-      <>
-        <Navbar />
-        <SampleForm />
-      </>
-    ),
+    element: <Navbar comp={<Settings />} />,
   },
   {
     path: "/document",
