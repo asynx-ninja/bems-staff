@@ -13,20 +13,25 @@ const EditSectionForm = ({ detail, setDetail }) => {
   // SECTION FIELD
 
   const addSectionField = () => {
+    const updatedData = [...detail.form[1]];
+    updatedData.push({
+      section_title: "",
+      section_variable: "",
+      form: [
+        {
+          variable: "",
+          display: "",
+          type: "text",
+          accept: "",
+          value: null,
+          children: [],
+        },
+      ],
+    });
+
     setDetail((prev) => ({
       ...prev,
-      form: [
-        detail.form[0],
-        [
-          ...detail.form[1],
-          {
-            variable: "",
-            display: "",
-            type: "text",
-            children: [],
-          },
-        ],
-      ],
+      form: [detail.form[0], updatedData],
     }));
   };
 
@@ -56,19 +61,31 @@ const EditSectionForm = ({ detail, setDetail }) => {
   };
 
   // INPUT FIELDS
+  const addInputField = (sectionIndex) => {
+    const updatedData = [...detail.form[1]];
+    updatedData[sectionIndex].form.push({
+      variable: "",
+      display: "",
+      type: "text",
+      accept: "",
+      value: null,
+      children: [],
+    });
+    setDetail((prev) => ({
+      ...prev,
+      form: [detail.form[0], updatedData],
+    }));
+  };
 
   const handleInputChange = (e, sectionIndex, formIndex) => {
     const updatedInputFields = [...detail.form[1]];
     updatedInputFields[sectionIndex].form[formIndex] = {
       ...updatedInputFields[sectionIndex].form[formIndex],
-      [e.target.name]: e.target.value,
+      [e.target.name]:
+        e.target.name === "variable"
+          ? formatVariable(e.target.value)
+          : e.target.value,
     };
-
-    if (e.target.name === "display")
-      updatedInputFields[sectionIndex].form[formIndex] = {
-        ...updatedInputFields[sectionIndex].form[formIndex],
-        variable: formatVariable(e.target.value),
-      };
 
     if (
       updatedInputFields[sectionIndex].form[formIndex].type !== "radio" &&
@@ -81,6 +98,13 @@ const EditSectionForm = ({ detail, setDetail }) => {
       };
     }
 
+    if (updatedInputFields[sectionIndex].form[formIndex].type !== "file") {
+      updatedInputFields[sectionIndex].form[formIndex] = {
+        ...updatedInputFields[sectionIndex].form[formIndex],
+        accept: "",
+      };
+    }
+
     setDetail((prev) => ({
       ...prev,
       form: [detail.form[0], updatedInputFields],
@@ -90,7 +114,10 @@ const EditSectionForm = ({ detail, setDetail }) => {
   const removeInputField = (sectionIndex, formIndex) => {
     const updatedData = [...detail.form[1]];
     updatedData[sectionIndex].form.splice(formIndex, 1);
-    setSection(updatedData);
+    setDetail((prev) => ({
+      ...prev,
+      form: [detail.form[0], updatedData],
+    }));
   };
 
   // OPTION FIELD
@@ -111,7 +138,10 @@ const EditSectionForm = ({ detail, setDetail }) => {
     const updatedData = [...detail.form[1]];
 
     updatedData[sectionIndex].form[formIndex].children.splice(childrenIndex, 1);
-    setSection(updatedData);
+    setDetail((prev) => ({
+      ...prev,
+      form: [detail.form[0], updatedData],
+    }));
   };
 
   const handleOptionChange = (e, sectionIndex, formIndex, childrenIndex) => {
@@ -129,26 +159,6 @@ const EditSectionForm = ({ detail, setDetail }) => {
       ...prev,
       form: [detail.form[0], updatedData],
     }));
-  };
-
-  const handleSubmit = async (e) => {
-    try {
-      const response = await axios.patch(
-        `http://localhost:8800/api/forms/`,
-        {
-          detail: detail,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      console.log(response);
-    } catch (err) {
-      console.log(err.message);
-    }
   };
 
   return (
@@ -283,6 +293,24 @@ const EditSectionForm = ({ detail, setDetail }) => {
                               <option value="checkbox">Checkbox</option>
                               <option value="file">File</option>
                             </select>
+                            {form.type === "file" && (
+                              <select
+                                name="accept"
+                                className="border border-1 border-gray-300 shadow bg-white px-2 py-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                                onChange={(e) =>
+                                  handleInputChange(e, sectionIndex, formIndex)
+                                }
+                                defaultValue={""}
+                              >
+                                <option value="" disabled>
+                                  Select File Type
+                                </option>
+                                <option value="image/*">Image</option>
+                                <option value=".doc,.docx,.pdf">
+                                  Document or PDF
+                                </option>
+                              </select>
+                            )}
                           </div>
                           <button
                             onClick={() =>

@@ -20,6 +20,8 @@ const AddSectionForm = ({ section, setSection }) => {
           variable: "",
           display: "",
           type: "text",
+          accept: "",
+          value: null,
           children: [],
         },
       ],
@@ -54,6 +56,8 @@ const AddSectionForm = ({ section, setSection }) => {
       variable: "",
       display: "",
       type: "text",
+      accept: "",
+      value: null,
       children: [],
     });
     setSection(updatedData);
@@ -77,6 +81,13 @@ const AddSectionForm = ({ section, setSection }) => {
       updatedInputFields[sectionIndex].form[formIndex] = {
         ...updatedInputFields[sectionIndex].form[formIndex],
         children: [],
+      };
+    }
+
+    if (updatedInputFields[sectionIndex].form[formIndex].type !== "file") {
+      updatedInputFields[sectionIndex].form[formIndex] = {
+        ...updatedInputFields[sectionIndex].form[formIndex],
+        accept: "",
       };
     }
 
@@ -251,7 +262,26 @@ const AddSectionForm = ({ section, setSection }) => {
                               <option value="checkbox">Checkbox</option>
                               <option value="file">File</option>
                             </select>
+                            {form.type === "file" && (
+                              <select
+                                name="accept"
+                                className="border border-1 border-gray-300 shadow bg-white px-2 py-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                                onChange={(e) =>
+                                  handleInputChange(e, sectionIndex, formIndex)
+                                }
+                                defaultValue={""}
+                              >
+                                <option value="" disabled>
+                                  Select File Type
+                                </option>
+                                <option value="image/*">Image</option>
+                                <option value=".doc,.docx,.pdf">
+                                  Document or PDF
+                                </option>
+                              </select>
+                            )}
                           </div>
+
                           <button
                             onClick={() =>
                               removeInputField(sectionIndex, formIndex)
@@ -264,6 +294,7 @@ const AddSectionForm = ({ section, setSection }) => {
                             />
                           </button>
                         </div>
+
                         {(form.type === "radio" ||
                           form.type === "select" ||
                           form.type === "checkbox") && (
