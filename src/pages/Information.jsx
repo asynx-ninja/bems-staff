@@ -155,7 +155,7 @@ const Information = () => {
                 >
                   <img
                     id="edit_logo"
-                    className="sm:w-[120px] h-56 bg-cover md:w-56 rounded-full border-4 border-white mx-auto absolute left-0 right-0 sm:-top-[73px] md:-top-[6rem]"
+                    className="w-[120px] md:h-56 bg-cover md:w-56 rounded-full border-4 border-white mx-auto absolute left-0 right-0 sm:-top-[73px] md:-top-[6rem]"
                   />
 
                   {isEditingMode && (

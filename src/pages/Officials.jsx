@@ -373,7 +373,7 @@ const Officials = () => {
                         <img
                           src={item.picture.link}
                           alt=""
-                          className="w-[120px] h-[90px] md:w-[150px] md:h-[90px] lg:w-[150px] lg:h-[115px] xl:w-[150px] xl:h-[150px] rounded-full mx-auto border-[5px] border-[#295141] object-cover"
+                          className="w-[120px] h-[90px] xl:h-40 xl:w-40 bg-cover rounded-full mx-auto border-[5px] border-[#295141] object-cover"
                         />
                       </div>
                     </span>

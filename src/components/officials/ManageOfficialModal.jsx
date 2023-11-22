@@ -93,21 +93,20 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
               <div className="flex flex-col">
                 <div className="flex flex-col lg:flex-row mb-1">
                   {/* Service Description */}
-                  <div class="relative mt-4 flex flex-col w-full lg:w-1/2">
+                  <div class="relative mt-4 flex flex-col w-full">
                     {/* Modal Images */}
-                    <div class="relative w-full border rounded-t-xl">
-                      <div>
+                    <div class="relative w-full rounded-t-xl">
+                      <div className="mx-auto items-center">
                         <img
-                          id="edit_pfp"
                           src={selectedOfficial.picture?.link || ""}
                           alt=""
-                          className="w-[250px] h-[250px] md:w-full md:h-[350px] lg:w-full lg:h-[250px] rounded-t-xl object-cover"
+                          className="w-[250px] h-[250px] md:w-full md:h-[350px] lg:max-w-[450px] lg:h-[350px] mx-auto rounded-xl object-cover"
                         />
                       </div>
                     </div>
 
                     <input
-                      class="block p-2 mb-2 w-full mx-auto lg:w-full text-sm text-black rounded-b-xl cursor-pointer bg-gray-100 "
+                      class="block p-2 mb-2 w-[250px] md:w-full lg:max-w-[450px] mx-auto text-sm text-black rounded-b-xl cursor-pointer bg-gray-100 "
                       id="file_input"
                       type="file"
                       onChange={handlePfpChange}
@@ -117,9 +116,10 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
                       disabled={!edit}
                     />
                   </div>
+                </div>
 
-                  {/* Request Information */}
-                  <div className="relative mt-2 lg:mx-6 pb-6 overflow-y-auto flex flex-col w-full lg:w-1/2 h-full rounded-lg space-y-2">
+                {/* Request Information */}
+                <div className="relative mt-2 overflow-y-auto flex flex-col w-fullh-full rounded-lg space-y-2">
                     <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg">
                       Personal Informations
                     </b>
@@ -206,10 +206,9 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
                       </div>
                     )}
                   </div>
-                </div>
 
                 {/* Other info */}
-                <b className="border-solid border-0 border-black/50 border-b-2 uppercase font-medium text-lg md:text-lg mt-1">
+                <b className="border-solid border-0 border-black/50 border-b-2 uppercase font-medium text-lg md:text-lg mt-4">
                   Government Information
                 </b>
                 <div class="relative mt-5  overflow-y-auto flex flex-col space-y-4">
