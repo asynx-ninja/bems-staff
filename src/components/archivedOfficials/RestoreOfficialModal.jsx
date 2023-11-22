@@ -1,7 +1,27 @@
 import React from "react";
 import Error from "../../assets/modals/Error.png";
+import { useEffect } from "react";
+import axios from "axios";
+import API_LINK from "../../config/API";
 
-function RestoreOfficialModal() {
+function RestoreOfficialModal({selectedItems}) {
+ 
+  const handleSave = async (e) => {
+    try {
+      e.preventDefault();
+
+      for (let i = 0; i < selectedItems.length; i++) {
+        const response = await axios.patch(
+          `${API_LINK}/brgyofficial/archived/${selectedItems[i]}/false`
+        );
+      }
+
+      // window.location.reload();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  
   return (
     <div
       id="hs-restore-official-modal"
@@ -21,6 +41,7 @@ function RestoreOfficialModal() {
 
           <div className="flex mt-8 space-x-4 relative bottom-[3rem]">
             <button
+              onClick={handleSave}
               type="button"
               data-hs-overlay="#hs-restore-official-modal"
               className=" w-[6rem] lg:w-[12rem] px-4 py-2 bg-green-700 text-white rounded hover:bg-green-600"
