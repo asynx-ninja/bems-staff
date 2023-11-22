@@ -29,8 +29,8 @@ const TopHeader = () => {
   });
 
   return (
-    <div className="flex justify-between items-center sm:px-2 lg:pr-3 bg-[url('/imgs/header-bg.png')] font-medium py-2 z-50 bg-[#295141] uppercase text-white text-sm  md:text-sm lg:text-base 2xl:text-xl">
-      <div className="flex flex-row justify-center items-center space-x-2">
+    <div className="flex flex-col-reverse md:flex-row justify-between items-center sm:px-2 lg:pr-3 bg-[url('/imgs/header-bg.png')] font-medium py-2 z-50 bg-[#295141] uppercase text-white text-sm  md:text-sm lg:text-base 2xl:text-xl">
+      <div className="flex flex-row justify-center items-center space-x-3">
         <button
           type="button"
           className="lg:hidden block"
@@ -38,14 +38,14 @@ const TopHeader = () => {
           aria-controls="hs-overlay-basic"
           aria-label="Toggle navigation"
         >
-          <FaBars size={window.innerWidth <= 640 ? 20 : 30} />
+          <FaBars size={window.innerWidth <= 640 ? 25 : 35} />
         </button>
         <div>
-          <h1>{formattedDate} </h1>
-          <h1>{formattedTime} Philippine Standard Time (PMT)</h1>
+          <h1 className="text-xs lg:text-lg">{formattedDate} </h1>
+          <h1 className="text-xs lg:text-lg">{formattedTime} Philippine Standard Time (PMT)</h1>
         </div>
       </div>
-      <img className="h-[50px]" src={header} alt="" />
+      <img className="mb-2 mx-auto md:mx-0 md:mb-0 h-[90px] md:h-[50px] w-full md:w-[170px]" src={header} alt="" />
     </div>
   );
 };

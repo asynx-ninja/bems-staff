@@ -105,13 +105,13 @@ const Announcement = () => {
   };
 
   return (
-    <div className="mx-4 mt-8">
+    <div className="mx-4 mt-8 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_440px)] xxl:w-[calc(100vw_-_310px)]">
       <div>
         <Breadcrumbs />
-        <div className="flex flex-row mt-5 sm:flex-col-reverse lg:flex-row w-full">
-          <div className="flex justify-center items-center sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
+        <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
+          <div className="flex justify-center items-center sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] py-4 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
-              className="sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[1.2rem] xxl:text-[1.3rem] xxxl:text-2xl xxxl:mt-1 text-white"
+              className="mx-auto font-bold text-xs md:text-xl lg:text-[13px] xl:text-[15px] xxl:text-[1.3rem] xxxl:text-2xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
               ARCHIVED ANNOUNCEMENT
@@ -249,7 +249,7 @@ const Announcement = () => {
           </div>
         </div>
 
-        <div className="overflow-auto sm:overflow-x-auto h-[calc(100vh_-_315px)]">
+        <div className="overflow-auto sm:overflow-x-auto h-[calc(100vh_-_315px)] xxxl:h-[calc(100vh_-_326px)]">
           <table className="w-full ">
             <thead className="bg-[#295141] sticky top-0">
               <tr className="">
