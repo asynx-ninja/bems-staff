@@ -624,12 +624,12 @@ function ManageResidentModal({ user, setUser }) {
                               password
                             </label>
                             <input
-                              type="text"
+                              type="password"
                               name="password"
                               id="password"
                               onChange={handleChange}
                               className="shadow appearance-none border w-full p-2 text-sm text-black rounded-r-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                              value={user.password}
+                              value={user.password?.substring(0, 8)}
                               disabled={!edit}
                             />
                           </div>

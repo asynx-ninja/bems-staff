@@ -7,7 +7,7 @@ const SubPendingRequest = () => {
       <b className="border-solid border-0 border-black border-b-2 pb-2 uppercase font-heavy text-lg md:text-xl mb-4">
         PENDING REQUESTS
       </b>
-      <div className="overflow-y-auto h-[300px] lg:h-[400px] xl:h-[400px] xxl:h-[400px] xxxl:h-[500px] rounded-lg">
+      <div className="overflow-y-auto h-[300px] lg:h-[400px] xl:h-[400px] xxl:h-[400px] xxxl:h-[410px] rounded-lg">
         <table className="table-auto w-full h-full ">
           <thead className="uppercase text-xs md:text-sm bg-gray-100 sticky top-0 ">
             <tr>

@@ -88,10 +88,10 @@ function CreateServiceModal({ brgy }) {
 
       if (result.status === 200) {
         var logoSrc = document.getElementById("logo");
-        logoSrc.src = <FaFileUpload />;
+        logoSrc.src = "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";;
 
         var bannerSrc = document.getElementById("banner");
-        bannerSrc.src = <FaFileUpload />;
+        bannerSrc.src = "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";;
         setService({
           name: "",
           type: "",
@@ -177,7 +177,7 @@ function CreateServiceModal({ brgy }) {
                         className={`${
                           logo ? "" : "hidden"
                         } w-[200px] md:w-[250px]  lg:w-full md:h-[140px] lg:h-[250px] object-cover`}
-                        id="logo"
+                        id="banner"
                         alt="Current profile photo"
                       />{" "}
                       <CiImageOn

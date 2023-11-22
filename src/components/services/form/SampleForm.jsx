@@ -8,11 +8,16 @@ import {
 import SampleDocument from "./SampleDocument";
 import { useEffect, useState } from "react";
 import saveAs from "file-saver";
+import axios from "axios";
+import API_LINK from "../../../config/API";
 
-const SampleForm = () => {
+const SampleForm = ({
+  brgy = "BALITE",
+  service_id = "BRGY-BALITE-S-ADMINISTRATIVE-20231119113007",
+}) => {
   const [document, setDocument] = useState(null);
   const [NewPDF, setNewPDF] = useState(null);
-  
+
   const styles = {
     container: {
       width: "220px",
@@ -41,37 +46,56 @@ const SampleForm = () => {
     },
   };
 
+  // useEffect(() => {
+  //   const generatePDF = async () => {
+  //     try {
+  //       setDocument(await pdf(<SampleDocument />).toBlob());
+  //       setNewPDF(new File([document], "filename"));
+  //       // saveAs(document, 'NewFile.pdf');
+  //     } catch (error) {
+  //       console.error(error.message);
+  //       alert("Error generating PDF");
+  //     }
+  //   };
+
+  //   generatePDF();
+  // }, []);
+
+  const [detail, setDetail] = useState({});
+
   useEffect(() => {
-    const generatePDF = async () => {
+    const fetch = async () => {
       try {
-        setDocument(await pdf(<SampleDocument />).toBlob());
-        setNewPDF(new File([document], "filename"));
-        // saveAs(document, 'NewFile.pdf');
-      } catch (error) {
-        console.error(error.message);
-        alert("Error generating PDF");
+        const response = await axios.get(
+          `${API_LINK}/forms/?brgy=${brgy}&service_id=${service_id}`
+        );
+        setDetail(response.data[0]);
+      } catch (err) {
+        console.log(err.message);
       }
     };
 
-    generatePDF();
-  }, []);
+    fetch();
+  }, [brgy, service_id]);
+
+  console.log(detail)
 
   return (
     <>
-      <a
-        download={NewPDF}
-        target="_blank"
-      >
+      <a download={NewPDF} target="_blank">
         download
       </a>
 
-      <PDFDownloadLink document={<SampleDocument />} fileName="invoice.pdf">
+      <PDFDownloadLink
+        document={<SampleDocument detail={detail} />}
+        fileName="invoice.pdf"
+      >
         <div style={styles.btn}>
           <span>Download</span>
         </div>
       </PDFDownloadLink>
 
-      <BlobProvider document={<SampleDocument />}>
+      <BlobProvider document={<SampleDocument detail={detail} />}>
         {({ url, blob }) => (
           <a href={url} target="_blank" style={styles.btn}>
             <span>Print</span>

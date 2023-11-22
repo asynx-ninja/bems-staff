@@ -24,23 +24,25 @@ const Sidebar = () => {
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
 
-  useEffect (() => {
+  useEffect(() => {
     const fetch = async () => {
       try {
         const res = await axios.get(`${API_LINK}/users/specific/${id}`);
         if (res.status === 200) {
           setUserData(res.data[0]);
           var pfpSrc = document.getElementById("sidebarPFP");
-          pfpSrc.src = res.data[0].profile.link !== "" ? res.data[0].profile.link : defaultPFP
+          pfpSrc.src =
+            res.data[0].profile.link !== ""
+              ? res.data[0].profile.link
+              : defaultPFP;
         } else {
-          
         }
       } catch (error) {
         console.log(error);
       }
-    }
-     fetch()
-  }, [id])
+    };
+    fetch();
+  }, [id]);
 
   return (
     <div className="">
@@ -48,8 +50,12 @@ const Sidebar = () => {
         id="hs-overlay-basic"
         className="bg-[#295141] h-screen 2xl:h-full overflow-hidden hs-overlay hs-overlay-open:translate-x-0 -translate-x-full transition-all duration-300 transform hidden absolute top-9 left-0 bottom-0 z-[60] lg:z-[50] w-64 m-5 rounded-[25px] overflow-y-auto scrollbar-y lg:block lg:translate-x-0 lg:right-auto lg:bottom-0 "
       >
-        <div className='bg-[url("/imgs/bg-header.png")] w-full flex flex-col items-center justify-center py-5 px-2 space-y-3'>
-          <img src={logo} alt="" className="" width={80} />
+        <div className='bg-[url("/src/assets/image/bg-sidebar.jpg")] w-full flex flex-col items-center justify-center py-5 px-2 space-y-3 object-cover'>
+          {/* <img src={logo} alt="" className="" width={80} /> */}
+          <img
+            id="sidebarPFP"
+            className="w-[120px] h-[120px] md:w-[150px] md:h-[150px] rounded-full border-[5px] border-[#295141] object-cover"
+          />
           <div>
             <h1 className="uppercase font-bold text-white text-sm">
               {userData.firstName} {userData.lastName}

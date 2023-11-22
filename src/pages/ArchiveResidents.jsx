@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { FaTrashRestore } from "react-icons/fa";
+import { MdRestartAlt } from "react-icons/md";
 import { BsPrinter } from "react-icons/bs";
 import { AiOutlineEye } from "react-icons/ai";
 import ReactPaginate from "react-paginate";
@@ -19,6 +19,35 @@ const Residents = () => {
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
   const [user, setUser] = useState({});
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortColumn, setSortColumn] = useState(null);
+
+  const handleSort = (sortBy) => {
+    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newSortOrder);
+    setSortColumn(sortBy);
+  
+    const sortedData = users.slice().sort((a, b) => {
+      if (sortBy === "user_id") {
+        return newSortOrder === "asc"
+          ? a.user_id.localeCompare(b.user_id)
+          : b.user_id.localeCompare(a.user_id);
+      } else if (sortBy === "lastName") {
+        return newSortOrder === "asc"
+          ? a.lastName.localeCompare(b.lastName)
+          : b.lastName.localeCompare(a.lastName);
+      } else if (sortBy === "isApproved") {
+        const order = { Registered: 1, Pending: 2, Denied: 3 };
+        return newSortOrder === "asc"
+          ? order[a.isApproved] - order[b.isApproved]
+          : order[b.isApproved] - order[a.isApproved];
+      }
+  
+      return 0;
+    });
+  
+    setUsers(sortedData);
+  };
 
   useEffect(() => {
     const fetch = async () => {
@@ -79,7 +108,6 @@ const Residents = () => {
     setUser(item);
   };
 
-
   return (
     <div className="mx-4 my-5 md:mx-5 md:my-6 lg:ml-[19rem] lg:mt-8 lg:mr-6">
       {/* Body */}
@@ -107,7 +135,9 @@ const Residents = () => {
               >
                 SORT BY
                 <svg
-                  className="hs-dropdown-open:rotate-180 w-2.5 h-2.5 text-white"
+                  className={`hs-dropdown-open:rotate-${
+                    sortOrder === "asc" ? "180" : "0"
+                  } w-2.5 h-2.5 text-white`}
                   width="16"
                   height="16"
                   viewBox="0 0 16 16"
@@ -123,14 +153,53 @@ const Residents = () => {
                 </svg>
               </button>
               <ul
-                className="bg-[#295141] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                className="bg-[#295141] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10 shadow-md rounded-lg p-2"
                 aria-labelledby="hs-dropdown"
               >
-                <li className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ">
-                  TITLE
+                <li
+                  onClick={() => handleSort("user_id")}
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                >
+                  USER ID
+                  {sortColumn === "user_id" && (
+                    <span className="ml-auto">
+                      {sortOrder === "asc" ? (
+                        <span>DESC &darr;</span>
+                      ) : (
+                        <span>ASC &uarr;</span>
+                      )}
+                    </span>
+                  )}
                 </li>
-                <li className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ">
-                  DATE
+                <li
+                  onClick={() => handleSort("lastName")}
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                >
+                  LAST NAME
+                  {sortColumn === "lastName" && (
+                    <span className="ml-auto">
+                      {sortOrder === "asc" ? (
+                        <span>DESC &darr;</span>
+                      ) : (
+                        <span>ASC &uarr;</span>
+                      )}
+                    </span>
+                  )}
+                </li>
+                <li
+                  onClick={() => handleSort("isApproved")}
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                >
+                  STATUS
+                  {sortColumn === "isApproved" && (
+                    <span className="ml-auto">
+                      {sortOrder === "asc" ? (
+                        <span>DESC &darr;</span>
+                      ) : (
+                        <span>ASC &uarr;</span>
+                      )}
+                    </span>
+                  )}
                 </li>
               </ul>
             </div>
@@ -184,9 +253,9 @@ const Residents = () => {
                   <button
                     type="button"
                     data-hs-overlay="#hs-modal-restoreResident"
-                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md  bg-pink-800 font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
+                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md bg-[#295141] font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
                   >
-                    <FaTrashRestore size={24} style={{ color: "#ffffff" }} />
+                    <MdRestartAlt size={24} style={{ color: "#ffffff" }} />
                     <span
                       className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                       role="tooltip"
@@ -247,11 +316,11 @@ const Residents = () => {
                   </td>
                   <td className="px-6 py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                      {item.firstName +
-                        " " +
+                      {item.lastName +
+                        ", " +
                         item.middleName +
                         " " +
-                        item.lastName}
+                        item.firstName}
                     </span>
                   </td>
                   <td className="px-6 py-3">
@@ -283,22 +352,22 @@ const Residents = () => {
                     </div>
                   </td>
                   <td className="px-6 py-3">
-                  {item.isApproved === "Registered" && (
-                      <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2">
+                    {item.isApproved === "Registered" && (
+                      <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                         <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
                           REGISTERED
                         </span>
                       </div>
                     )}
                     {item.isApproved === "Denied" && (
-                      <div className="flex w-full items-center justify-center bg-custom-red-button m-2">
+                      <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
                         <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
                           DENIED
                         </span>
                       </div>
                     )}
                     {item.isApproved === "Pending" && (
-                      <div className="flex w-full items-center justify-center bg-custom-amber m-2">
+                      <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
                         <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
                           PENDING
                         </span>
@@ -340,8 +409,8 @@ const Residents = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <ViewResidentModal  user={user} setUser={setUser} />
-      <RestoreResidentModal selectedItems={selectedItems}/>
+      <ViewResidentModal user={user} setUser={setUser} />
+      <RestoreResidentModal selectedItems={selectedItems} />
       <GenerateReportsModal />
     </div>
   );

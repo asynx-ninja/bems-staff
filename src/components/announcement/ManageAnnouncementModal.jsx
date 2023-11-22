@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import EditDropbox from "./EditDropbox";
+import API_LINK from "../../config/API";
 
 function ManageAnnouncementModal({ announcement, setAnnouncement }) {
   const [logo, setLogo] = useState();
@@ -111,7 +112,7 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
       formData.append("announcement", JSON.stringify(announcement));
 
       const result = await axios.patch(
-        `http://localhost:8800/api/announcement/${announcement._id}`,
+        `${API_LINK}/announcement/${announcement._id}`,
         formData
       );
 

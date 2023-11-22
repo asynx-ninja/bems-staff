@@ -334,22 +334,22 @@ const Requests = () => {
                   </td>
                   <td className="px-6 py-3">
                     {item.status === "approved" && (
-                      <div className="flex items-center justify-center bg-custom-green-button3 m-2">
-                        <span className="text-xs sm:text-sm text-white p-3 mx-5">
+                      <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
                           APPROVED
                         </span>
                       </div>
                     )}
                     {item.status === "rejected" && (
-                      <div className="flex items-center justify-center bg-custom-red-button m-2">
-                        <span className="text-xs sm:text-sm text-white p-3 mx-5">
+                      <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
                           REJECTED
                         </span>
                       </div>
                     )}
                     {item.status === "pending" && (
-                      <div className="flex items-center justify-center bg-custom-amber m-2">
-                        <span className="text-xs sm:text-sm text-white p-3 mx-5">
+                      <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
                           PENDING
                         </span>
                       </div>

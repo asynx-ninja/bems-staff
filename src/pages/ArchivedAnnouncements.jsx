@@ -1,6 +1,6 @@
 import React from "react";
 import { AiOutlineEye } from "react-icons/ai";
-import { FaTrashRestore } from "react-icons/fa";
+import { MdRestartAlt } from "react-icons/md";
 import { BsPrinter } from "react-icons/bs";
 import { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
@@ -18,6 +18,30 @@ const Announcement = () => {
   const brgy = searchParams.get("brgy");
   const [announcement, setAnnouncement] = useState([]);
   const [status, setStatus] = useState({});
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortColumn, setSortColumn] = useState(null);
+
+  const handleSort = (sortBy) => {
+    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newSortOrder);
+    setSortColumn(sortBy);
+
+    const sortedData = announcements.slice().sort((a, b) => {
+      if (sortBy === "title") {
+        return newSortOrder === "asc"
+          ? a.title.localeCompare(b.title)
+          : b.title.localeCompare(a.title);
+      } else if (sortBy === "date") {
+        const dateA = new Date(a.date).getTime();
+        const dateB = new Date(b.date).getTime();
+        return newSortOrder === "asc" ? dateA - dateB : dateB - dateA;
+      }
+
+      return 0;
+    });
+
+    setAnnouncements(sortedData);
+  };
 
   useEffect(() => {
     const fetch = async () => {
@@ -106,7 +130,9 @@ const Announcement = () => {
               >
                 SORT BY
                 <svg
-                  className="hs-dropdown-open:rotate-180 w-2.5 h-2.5 text-white"
+                  className={`hs-dropdown-open:rotate-${
+                    sortOrder === "asc" ? "180" : "0"
+                  } w-2.5 h-2.5 text-white`}
                   width="16"
                   height="16"
                   viewBox="0 0 16 16"
@@ -122,14 +148,38 @@ const Announcement = () => {
                 </svg>
               </button>
               <ul
-                className="bg-[#295141] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                className="bg-[#295141] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10 shadow-md rounded-lg p-2"
                 aria-labelledby="hs-dropdown"
               >
-                <li className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ">
+                <li
+                  onClick={() => handleSort("title")}
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                >
                   TITLE
+                  {sortColumn === "title" && (
+                    <span className="ml-auto">
+                      {sortOrder === "asc" ? (
+                        <span>DESC &darr;</span>
+                      ) : (
+                        <span>ASC &uarr;</span>
+                      )}
+                    </span>
+                  )}
                 </li>
-                <li className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ">
-                  DATE
+                <li
+                  onClick={() => handleSort("date")}
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                >
+                  Date
+                  {sortColumn === "date" && (
+                    <span className="ml-auto">
+                      {sortOrder === "asc" ? (
+                        <span>OLD TO LATEST &darr;</span>
+                      ) : (
+                        <span>LATEST TO OLD &uarr;</span>
+                      )}
+                    </span>
+                  )}
                 </li>
               </ul>
             </div>
@@ -183,9 +233,9 @@ const Announcement = () => {
                   <button
                     type="button"
                     data-hs-overlay="#hs-modal-restore"
-                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md  bg-pink-800 font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
+                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md bg-[#295141] font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
                   >
-                    <FaTrashRestore size={24} style={{ color: "#ffffff" }} />
+                    <MdRestartAlt size={24} style={{ color: "#ffffff" }} />
                     <span
                       className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                       role="tooltip"
@@ -306,7 +356,10 @@ const Announcement = () => {
           />
         </div>
 
-        <ViewArchivedAnnouncementModal announcement={announcement} setAnnouncement={setAnnouncement} />
+        <ViewArchivedAnnouncementModal
+          announcement={announcement}
+          setAnnouncement={setAnnouncement}
+        />
         <RestoreAnnouncementModal selectedItems={selectedItems} />
       </div>
     </div>

@@ -22,6 +22,7 @@ import ArchivedService from "../pages/ArchivedServices";
 import ArchivedRequests from "../pages/ArchivedRequests";
 import ArchivedOfficials from "../pages/ArchivedOfficials";
 import SampleForm from "../components/services/form/SampleForm";
+import SampleDocument from "../components/services/form/SampleDocument";
 
 const pages = [
   {
@@ -180,6 +181,14 @@ const pages = [
     element: (
       <>
         <Navbar />
+        <SampleForm />
+      </>
+    ),
+  },
+  {
+    path: "/document",
+    element: (
+      <>
         <SampleForm />
       </>
     ),

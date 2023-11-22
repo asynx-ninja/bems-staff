@@ -489,7 +489,7 @@ function ViewResidentModal({ user, setUser }) {
                             type="text"
                             id="facebook_name"
                             className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
-                            value={user.username}
+                            value={user.socials?.facebook?.name ?? ''}
                             placeholder=""
                             disabled
                           />
@@ -501,7 +501,7 @@ function ViewResidentModal({ user, setUser }) {
                               type="text"
                               id="facebook_link"
                               className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
-                              value={user.username}
+                              value={user.socials?.facebook?.link ?? ''}
                               placeholder=""
                               disabled
                             />
@@ -538,7 +538,7 @@ function ViewResidentModal({ user, setUser }) {
                             type="text"
                             id="facebook_name"
                             className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
-                            value={user.username}
+                            value={user.socials?.twitter?.name ?? ''}
                             placeholder=""
                             disabled
                           />
@@ -550,7 +550,7 @@ function ViewResidentModal({ user, setUser }) {
                               type="text"
                               id="facebook_link"
                               className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
-                              value={user.username}
+                              value={user.socials?.twitter?.link ?? ''}
                               placeholder=""
                               disabled
                             />
@@ -587,7 +587,7 @@ function ViewResidentModal({ user, setUser }) {
                             type="text"
                             id="facebook_name"
                             className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
-                            value={user.username}
+                            value={user.socials?.instagram?.name ?? ''}
                             placeholder=""
                             disabled
                           />
@@ -599,7 +599,7 @@ function ViewResidentModal({ user, setUser }) {
                               type="text"
                               id="facebook_link"
                               className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
-                              value={user.username}
+                              value={user.socials?.instagram?.link ?? ''}
                               placeholder=""
                               disabled
                             />

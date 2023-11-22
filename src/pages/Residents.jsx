@@ -23,14 +23,42 @@ const Residents = () => {
   const brgy = searchParams.get("brgy");
   const [user, setUser] = useState({});
   const [status, setStatus] = useState({});
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortColumn, setSortColumn] = useState(null);
+
+  const handleSort = (sortBy) => {
+    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newSortOrder);
+    setSortColumn(sortBy);
+  
+    const sortedData = users.slice().sort((a, b) => {
+      if (sortBy === "user_id") {
+        return newSortOrder === "asc"
+          ? a.user_id.localeCompare(b.user_id)
+          : b.user_id.localeCompare(a.user_id);
+      } else if (sortBy === "lastName") {
+        return newSortOrder === "asc"
+          ? a.lastName.localeCompare(b.lastName)
+          : b.lastName.localeCompare(a.lastName);
+      } else if (sortBy === "isApproved") {
+        const order = { Registered: 1, Pending: 2, Denied: 3 };
+        return newSortOrder === "asc"
+          ? order[a.isApproved] - order[b.isApproved]
+          : order[b.isApproved] - order[a.isApproved];
+      }
+  
+      return 0;
+    });
+  
+    setUsers(sortedData);
+  };
+  
 
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(`${API_LINK}/users/${brgy}`);
       if (response.status === 200) setUsers(response.data);
       else setUsers([]);
-
-      console.log(response);
     };
 
     fetch();
@@ -158,7 +186,9 @@ const Residents = () => {
               >
                 SORT BY
                 <svg
-                  className="hs-dropdown-open:rotate-180 w-2.5 h-2.5 text-white"
+                  className={`hs-dropdown-open:rotate-${
+                    sortOrder === "asc" ? "180" : "0"
+                  } w-2.5 h-2.5 text-white`}
                   width="16"
                   height="16"
                   viewBox="0 0 16 16"
@@ -174,14 +204,53 @@ const Residents = () => {
                 </svg>
               </button>
               <ul
-                className="bg-[#295141] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                className="bg-[#295141] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10 shadow-md rounded-lg p-2"
                 aria-labelledby="hs-dropdown"
               >
-                <li className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ">
+                <li
+                  onClick={() => handleSort("user_id")}
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                >
                   USER ID
+                  {sortColumn === "user_id" && (
+                    <span className="ml-auto">
+                      {sortOrder === "asc" ? (
+                        <span>DESC &darr;</span>
+                      ) : (
+                        <span>ASC &uarr;</span>
+                      )}
+                    </span>
+                  )}
                 </li>
-                <li className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ">
-                  NAME
+                <li
+                  onClick={() => handleSort("lastName")}
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                >
+                  LAST NAME
+                  {sortColumn === "lastName" && (
+                    <span className="ml-auto">
+                      {sortOrder === "asc" ? (
+                        <span>DESC &darr;</span>
+                      ) : (
+                        <span>ASC &uarr;</span>
+                      )}
+                    </span>
+                  )}
+                </li>
+                <li
+                  onClick={() => handleSort("isApproved")}
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                >
+                  STATUS
+                  {sortColumn === "isApproved" && (
+                    <span className="ml-auto">
+                      {sortOrder === "asc" ? (
+                        <span>DESC &darr;</span>
+                      ) : (
+                        <span>ASC &uarr;</span>
+                      )}
+                    </span>
+                  )}
                 </li>
               </ul>
             </div>
@@ -298,11 +367,11 @@ const Residents = () => {
                   </td>
                   <td className="px-6 py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                      {item.firstName +
-                        " " +
+                      {item.lastName +
+                        ", " +
                         item.middleName +
                         " " +
-                        item.lastName}
+                        item.firstName}
                     </span>
                   </td>
                   <td className="px-6 py-3">
@@ -335,21 +404,21 @@ const Residents = () => {
                   </td>
                   <td className="px-6 py-3">
                     {item.isApproved === "Registered" && (
-                      <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2">
+                      <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                         <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
                           REGISTERED
                         </span>
                       </div>
                     )}
                     {item.isApproved === "Denied" && (
-                      <div className="flex w-full items-center justify-center bg-custom-red-button m-2">
+                      <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
                         <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
                           DENIED
                         </span>
                       </div>
                     )}
                     {item.isApproved === "Pending" && (
-                      <div className="flex w-full items-center justify-center bg-custom-amber m-2">
+                      <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
                         <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
                           PENDING
                         </span>
