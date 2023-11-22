@@ -100,7 +100,7 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
                         <img
                           src={selectedOfficial.picture?.link || ""}
                           alt=""
-                          className="w-[250px] h-[250px] md:w-full md:h-[350px] lg:max-w-[450px] lg:h-[350px] mx-auto rounded-xl object-cover"
+                          className="w-[250px] h-[250px] md:w-full md:h-[350px] lg:max-w-[450px] lg:h-[350px] mx-auto rounded-t-xl object-cover"
                         />
                       </div>
                     </div>
