@@ -5,38 +5,68 @@ import AddSectionForm from "./AddSectionForm";
 
 const AddServicesForm = ({ service_id, brgy }) => {
   const [form, setForm] = useState({
-    user_id: { display: "user id", checked: true, type: "text" },
-    firstName: { display: "first name", checked: true, type: "text" },
-    middleName: { display: "middle name", checked: true, type: "text" },
-    lastName: { display: "last name", checked: true, type: "text" },
-    suffix: { display: "suffix", checked: true, type: "text" },
-    birthday: { display: "birthday", checked: false, type: "date" },
-    age: { display: "age", checked: false, type: "number" },
-    sex: { display: "sex", checked: false, type: "radio" },
-    contact: { display: "contact", checked: false, type: "text" },
+    user_id: { display: "user id", checked: true, type: "text", value: "" },
+    firstName: {
+      display: "first name",
+      checked: true,
+      type: "text",
+      value: "",
+    },
+    middleName: {
+      display: "middle name",
+      checked: true,
+      type: "text",
+      value: "",
+    },
+    lastName: { display: "last name", checked: true, type: "text", value: "" },
+    suffix: { display: "suffix", checked: true, type: "text", value: "" },
+    birthday: { display: "birthday", checked: false, type: "date", value: "" },
+    age: { display: "age", checked: false, type: "number", value: 1 },
+    sex: { display: "sex", checked: false, type: "radio", value: "" },
+    contact: { display: "contact", checked: false, type: "text", value: "" },
     civil_status: {
       display: "civil status",
       checked: false,
       type: "select",
+      value: "",
     },
     height: {
       display: "height (ft)",
       checked: false,
       type: "text",
+      value: "",
     },
     weight: {
       display: "weight (kg)",
       checked: false,
       type: "number",
+      value: 0,
     },
-    address: { display: "address", checked: false, type: "object" },
-    religion: { display: "religion", checked: false, type: "select" },
-    email: { display: "email", checked: false, type: "email" },
-    occupation: { display: "occupation", checked: false, type: "select" },
+    address: {
+      display: "address",
+      checked: false,
+      type: "text",
+      value: "",
+    },
+    religion: {
+      display: "religion",
+      checked: false,
+      type: "select",
+      value: "",
+    },
+    email: { display: "email", checked: false, type: "email", value: "" },
+    occupation: {
+      display: "occupation",
+      checked: false,
+      type: "select",
+      value: "",
+    },
     id_pic: {
       display: "id picture (white background)",
       checked: false,
       type: "file",
+      accept: "image/*",
+      value: null,
     },
   });
 
@@ -49,6 +79,8 @@ const AddServicesForm = ({ service_id, brgy }) => {
           variable: "",
           display: "",
           type: "text",
+          accept: "",
+          value: null,
           children: [],
         },
       ],
@@ -84,6 +116,8 @@ const AddServicesForm = ({ service_id, brgy }) => {
       console.log(err.message);
     }
   };
+
+  console.log('Section in Add Service', section)
 
   return (
     <div>
