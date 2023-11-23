@@ -105,7 +105,7 @@ const Announcement = () => {
   };
 
   return (
-    <div className="mx-4 mt-8 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_440px)] xxl:w-[calc(100vw_-_310px)]">
+    <div className="mx-4 mt-8 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_300px)] xxxl:w-[calc(100vw_-_305px)]">
       <div>
         <Breadcrumbs />
         <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
@@ -249,7 +249,7 @@ const Announcement = () => {
           </div>
         </div>
 
-        <div className="overflow-auto sm:overflow-x-auto h-[calc(100vh_-_315px)] xxxl:h-[calc(100vh_-_326px)]">
+        <div className="overflow-auto sm:overflow-x-auto h-[calc(100vh_-_315px)] xxxl:h-[calc(100vh_-_330px)]">
           <table className="w-full ">
             <thead className="bg-[#295141] sticky top-0">
               <tr className="">
