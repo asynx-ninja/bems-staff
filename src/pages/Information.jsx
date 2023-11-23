@@ -5,7 +5,7 @@ import { MdOutlineFileUpload } from "react-icons/md";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import API_LINK from "../config/API";
-import { useState } from "react";;
+import { useState } from "react";
 
 const Information = () => {
   const [information, setInformation] = useState({});
@@ -68,7 +68,7 @@ const Information = () => {
       // }
 
       console.log(result);
-      window.location.reload()
+      window.location.reload();
       // setBrgyInformation({});
     } catch (error) {
       console.error(error);
@@ -121,24 +121,24 @@ const Information = () => {
               </label>
             )}
             {isEditingMode && (
-               <div>
-               <input
-                 type="file"
-                 id="banner_input"
-                 onChange={handleBannerChange}
-                 name="banner"
-                 accept="image/*"
-                 value={!banner ? "" : banner.originalname}
-                 className="hidden"
-               />
-             </div>
+              <div>
+                <input
+                  type="file"
+                  id="banner_input"
+                  onChange={handleBannerChange}
+                  name="banner"
+                  accept="image/*"
+                  value={!banner ? "" : banner.originalname}
+                  className="hidden"
+                />
+              </div>
             )}
           </div>
 
           <div>
             <img
               id="edit_banner"
-              className="w-full h-[150px] md:h-[300px] lg:h-[350px] xl:h-[470px] rounded-lg"
+              className="w-full h-[150px] md:h-[300px] lg:h-[350px] xl:h-[470px] rounded-lg object-contain"
             />
           </div>
         </div>
@@ -155,7 +155,7 @@ const Information = () => {
                 >
                   <img
                     id="edit_logo"
-                    className="w-[120px] md:h-56 bg-cover md:w-56 rounded-full border-4 border-white mx-auto absolute left-0 right-0 sm:-top-[73px] md:-top-[6rem]"
+                    className="w-[120px] bg-white object-cover md:h-56 bg-cover md:w-56 rounded-full border-4 border-white mx-auto absolute left-0 right-0 sm:-top-[73px] md:-top-[6rem]"
                   />
 
                   {isEditingMode && (
@@ -180,7 +180,12 @@ const Information = () => {
 
                   <div className="flex justify-center items-end h-full">
                     <div className="text-center">
-                      <h1 className="font-bold text-sm md:text-xl md:text-2xl xl:text-3xl text-white mb-10" style={{ letterSpacing: "0.4em" }}>BARANGAY SAN JOSE</h1>
+                      <h1
+                        className="font-bold text-sm md:text-xl md:text-2xl xl:text-3xl text-white mb-10"
+                        style={{ letterSpacing: "0.4em" }}
+                      >
+                        BARANGAY {brgy}
+                      </h1>
                     </div>
                   </div>
                 </div>
@@ -196,7 +201,7 @@ const Information = () => {
                   </h1>
                 </div>
                 <div className="w-full md:w-2/3 px-6 py-4 border md:rounded-tr-[20px] rounded-b-[20px] md:rounded-br-[20px] flex flex-col">
-                <textarea
+                  <textarea
                     name="story"
                     readOnly={!isEditingMode}
                     className="font-base text-black text-sm h-36 lg:h-40 overflow-y-auto mb-5"
@@ -262,7 +267,7 @@ const Information = () => {
                   </h1>
                 </div>
                 <div className="w-full md:w-2/3 px-6 py-4 border md:rounded-tr-[20px] rounded-b-[20px] md:rounded-br-[20px] flex flex-col">
-                <textarea
+                  <textarea
                     readOnly={!isEditingMode}
                     className="font-base text-black text-sm h-36 lg:h-40 overflow-y-auto mb-5"
                     style={{ letterSpacing: "0.1em", whiteSpace: "pre-line" }}

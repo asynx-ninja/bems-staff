@@ -1,5 +1,4 @@
 import React from "react";
-import logo from "../../assets/header/montalban-logo.png";
 import { Link } from "react-router-dom";
 import { BiSolidDashboard } from "react-icons/bi";
 import { ImBullhorn } from "react-icons/im";
@@ -19,6 +18,7 @@ import axios from "axios";
 const Sidebar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [userData, setUserData] = useState({});
+  const [logo, setLogo] = useState({});
   const location = useLocation();
   const currentPath = location.pathname;
   const id = searchParams.get("id");
@@ -28,11 +28,19 @@ const Sidebar = () => {
     const fetch = async () => {
       try {
         const res = await axios.get(`${API_LINK}/users/specific/${id}`);
-        if (res.status === 200) {
+        const res1 = await axios.get(
+          `${API_LINK}/brgyinfo/?brgy=${brgy}&logo=true`
+        );
+
+        if (res.status === 200 && res1.status === 200) {
           setUserData(res.data[0]);
+          setLogo(res1.data[0]);
           var pfpSrc = document.getElementById("sidebarPFP");
           pfpSrc.src =
             res.data[0].profile.link !== "" ? res.data[0].profile.link : null;
+          var logoSidebar = document.getElementById("logoSidebar");
+          logoSidebar.src =
+            res1.data[0].logo.link !== "" ? res1.data[0].logo.link : null;
         } else {
         }
       } catch (error) {
@@ -41,6 +49,8 @@ const Sidebar = () => {
     };
     fetch();
   }, [id]);
+
+  console.log(logo);
 
   return (
     <>
@@ -53,8 +63,8 @@ const Sidebar = () => {
             <div className='bg-[url("/src/assets/image/bg-sidebar.jpg")] w-full shrink-0 flex flex-col items-center justify-center py-5 px-2 space-y-3 object-cover'>
               {/* <img src={logo} alt="" className="" width={80} /> */}
               <img
-                src={logo}
-                className="w-[100px] h-[100px] rounded-full object-contain"
+                id="logoSidebar"
+                className="w-[100px] h-[100px] rounded-full object-cover"
               />
               <div>
                 <h1 className="uppercase font-bold text-white text-lg text-center">
