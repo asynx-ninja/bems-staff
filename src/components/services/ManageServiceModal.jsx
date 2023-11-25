@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import EditDropbox from "./EditDropbox";
+import API_LINK from "../../config/API";
 
 function ManageServiceModal({ service, setService }) {
   const [logo, setLogo] = useState();
@@ -100,7 +101,7 @@ function ManageServiceModal({ service, setService }) {
       formData.append("service", JSON.stringify(service));
 
       const result = await axios.patch(
-        `http://localhost:8800/api/services/${service._id}`,
+        `${API_LINK}/services/${service._id}`,
         formData
       );
 
@@ -138,7 +139,7 @@ function ManageServiceModal({ service, setService }) {
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
             {/* Header */}
-            <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
+            <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#3e5fc2] to-[#1f2f5e] overflow-hidden rounded-t-2xl">
               <h3
                 className="font-bold text-white mx-auto md:text-xl text-center"
                 style={{ letterSpacing: "0.3em" }}

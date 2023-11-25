@@ -13,7 +13,7 @@ function ReplyServiceModal({ onClose }) {
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 md:px-0 opacity-0 transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto">
           <div className="flex flex-col w-full lg:w-[700px] xl:w-[800px] bg-white shadow-sm overflow-y-auto lg:ml-11 xl:ml-0 rounded-t-3xl rounded-b-3xl">
             {/* Header */}
-            <div className="bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
+            <div className="bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#3e5fc2] to-[#1f2f5e] overflow-hidden rounded-t-2xl">
               <div
                 className="flex justify-between items-center p-5 w-full h-full bg-cover bg-no-repeat transform"
               >

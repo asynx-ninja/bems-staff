@@ -41,7 +41,7 @@ const UpcomingEvents = () => {
       <div className="overflow-y-auto h-[calc(100vh_-_475px)]">
         <div className="w-full gap-3 flex flex-col border">
           {announcements.map((item, index) => (
-            <div className="flex flex-row bg-gradient-to-r from-[#295141]  to-[#408D51] h-full text-white font-medium overflow-hidden">
+            <div className="flex flex-row bg-gradient-to-r from-[#1f2f5e] to-[#3e5fc2] h-full text-white font-medium overflow-hidden">
               <div
                 className="bg-cover bg-center w-[20%] h-[4rem] md:h-[5rem] lg:h-[6rem] object-cover rounded-r-full border-solid border-0"
                 style={{
@@ -67,7 +67,7 @@ const UpcomingEvents = () => {
                   type="button"
                   data-hs-overlay="#hs-modal-viewEvent"
                   onClick={() => handleView({ ...item })}
-                  className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                  className="text-white bg-blue-900 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                 >
                   <MdEvent size={24} style={{ color: "#ffffff" }} />
                 </button>

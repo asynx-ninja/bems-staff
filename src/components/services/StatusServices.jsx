@@ -15,10 +15,9 @@ function StatusServices({ status, setStatus }) {
         { headers: { "Content-Type": "application/json" } }
       );
 
-      if (response.status === 200){ 
+      if (response.status === 200) {
         window.location.reload();
-    }
-      else ;
+      } else;
     } catch (err) {
       console.log(err);
     }
@@ -42,7 +41,7 @@ function StatusServices({ status, setStatus }) {
           <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-xl">
             <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto">
               {/* Header */}
-              <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
+              <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#3e5fc2] to-[#1f2f5e] overflow-hidden rounded-t-2xl">
                 <h3
                   className="font-bold text-white mx-auto md:text-xl text-center"
                   style={{ letterSpacing: "0.3em" }}
@@ -50,7 +49,6 @@ function StatusServices({ status, setStatus }) {
                   STATUS
                 </h3>
               </div>
-
 
               <div className="mt-5">
                 <form>

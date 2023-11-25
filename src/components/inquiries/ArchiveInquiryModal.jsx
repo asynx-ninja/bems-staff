@@ -1,7 +1,25 @@
 import React from "react";
 import Error from "../../assets/modals/Error.png";
+import axios from "axios";
+import API_LINK from "../../config/API";
 
-function ArchiveInquiryModal() {
+function ArchiveInquiryModal({ selectedItems }) {
+
+  const handleSave = async (e) => {
+    try {
+      e.preventDefault();
+
+      for (let i = 0; i < selectedItems.length; i++) {
+        const response = await axios.patch(
+          `${API_LINK}/inquiries/archived/${selectedItems[i]}/true`
+        );
+      }
+
+      window.location.reload();
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <div
       id="hs-modal-archiveInquiry"
@@ -23,6 +41,7 @@ function ArchiveInquiryModal() {
             <button
               type="button"
               data-hs-overlay="#hs-modal-archiveInquiry"
+              onClick={handleSave} 
               className=" w-[6rem] lg:w-[12rem] px-4 py-2 bg-green-700 text-white rounded hover:bg-green-600"
             >
               Yes

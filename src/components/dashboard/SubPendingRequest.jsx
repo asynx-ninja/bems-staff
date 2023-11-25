@@ -41,7 +41,7 @@ const SubPendingRequest = () => {
                       1961
                     </td>
                     <td className="px-4 py-1 md:px-5 md:py-2 lg:px-6 lg:py-3">
-                      <button className="rounded-xl bg-[#295141] text-white p-2 text">
+                      <button className="rounded-xl bg-cyan-800 text-white p-2 text">
                         <AiFillEye size={20} />
                       </button>
                     </td>
