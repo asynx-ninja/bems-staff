@@ -108,7 +108,7 @@ const Information = () => {
   };
 
   return (
-    <div className="mx-4">
+    <div className="mt-6 mx-4">
       <div>
         <div className="bg-cover bg-center h-96 rounded-lg">
           <div className="relative flex justify-end">
