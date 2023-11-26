@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { AiOutlineEye } from "react-icons/ai";
-import { FaArchive, FaReply, FaTrashRestore } from "react-icons/fa";
+import { MdRestartAlt } from "react-icons/md";
 import { BsPrinter } from "react-icons/bs";
 import RestoreModal from "../components/inquiries/RestoreInquiries";
 import imgSrc from "/imgs/bg-header.png";
@@ -229,14 +229,14 @@ const Inquiries = () => {
                   <button
                     type="button"
                     data-hs-overlay="#hs-modal-restoreInquiry"
-                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md  bg-pink-800 font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
+                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md  bg-[#253a7a] font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
                   >
-                    <FaTrashRestore size={24} style={{ color: "#ffffff" }} />
+                     <MdRestartAlt size={24} style={{ color: "#ffffff" }} />
                     <span
                       className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                       role="tooltip"
                     >
-                      Archived Selected Inquiries
+                      Restore Selected Inquiries
                     </span>
                   </button>
                 </div>

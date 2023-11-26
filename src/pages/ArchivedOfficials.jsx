@@ -184,7 +184,7 @@ const ArchivedOfficials = () => {
                 className="bg-[#253a7a] border-2 border-[#ffb13c] hs-dropdown-menu w-96 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10 shadow-md rounded-lg p-2"
                 aria-labelledby="hs-dropdown"
               >
-                 <li
+                <li
                   onClick={() => handleSort("lastName")}
                   className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
                 >
@@ -335,7 +335,11 @@ const ArchivedOfficials = () => {
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {item.lastName + ", " +  item.firstName + " " + item.middleName}
+                        {item.lastName +
+                          ", " +
+                          item.firstName +
+                          " " +
+                          item.middleName}
                       </span>
                     </div>
                   </td>
@@ -356,14 +360,25 @@ const ArchivedOfficials = () => {
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center space-x-1 sm:space-x-none">
-                      <button
-                        onClick={() => handleView(item)}
-                        type="button"
-                        data-hs-overlay="#hs-view-archived-official-modal"
-                        className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                      >
-                        <AiOutlineEye size={24} style={{ color: "#ffffff" }} />
-                      </button>
+                      <div className="hs-tooltip inline-block w-full">
+                        <button
+                          onClick={() => handleView(item)}
+                          type="button"
+                          data-hs-overlay="#hs-view-archived-official-modal"
+                          className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                        >
+                          <AiOutlineEye
+                            size={24}
+                            style={{ color: "#ffffff" }}
+                          />
+                        </button>
+                        <span
+                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                          role="tooltip"
+                        >
+                          View Official
+                        </span>
+                      </div>
                     </div>
                   </td>
                 </tr>

@@ -168,7 +168,7 @@ function AddResidentModal({ brgy }) {
                   className="font-bold text-white mx-auto md:text-xl text-center"
                   style={{ letterSpacing: "0.3em" }}
                 >
-                  ADD RESIDENTS
+                  CREATE RESIDENT
                 </h3>
               </div>
 
