@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-const EditDropbox = ({ files, setFiles }) => {
+const ViewDropbox = ({ viewFiles, setViewFiles }) => {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef();
   const navigate = useNavigate();
@@ -9,7 +9,7 @@ const EditDropbox = ({ files, setFiles }) => {
   const dropHandler = (e) => {
     e.preventDefault();
     const droppedFiles = e.dataTransfer.files;
-    setFiles([...files, ...droppedFiles]);
+    setViewFiles([...viewFiles, ...droppedFiles]);
     setIsDragging(false);
   };
 
@@ -37,7 +37,7 @@ const EditDropbox = ({ files, setFiles }) => {
   };
 
   const handleDelete = (idx) => {
-    setFiles((prev) => prev.filter((_, index) => index !== idx));
+    setViewFiles((prev) => prev.filter((_, index) => index !== idx));
   };
 
   const handleFileClick = (file) => {
@@ -52,7 +52,7 @@ const EditDropbox = ({ files, setFiles }) => {
 
   return (
     <div className="">
-      <main className="container mx-auto max-w-screen-lg h-full mt-3 px-1">
+      <main className="container mx-auto max-w-screen-lg h-full px-1">
         <article
           aria-label="File Upload Modal"
           className="relative h-full flex flex-col "
@@ -71,12 +71,12 @@ const EditDropbox = ({ files, setFiles }) => {
             </div>
           )}
           <section className="h-full overflow-auto p-1 w-full flex flex-col">
-            <h1 className="pb-3 text-sm font-medium text-gray-700">
+            <h1 className="pb-2 text-sm font-medium text-gray-700">
               Files Attached:
             </h1>
             <ul id="gallery" className="flex flex-1 flex-wrap -m-1">
-              {files.length > 0 ? (
-                files.map((file, idx) => (
+              {viewFiles && viewFiles.length > 0 ? (
+                viewFiles.map((file, idx) => (
                   <li
                     className="block p-1 w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/6 xl:w-1/8 h-24"
                     key={idx}
@@ -91,12 +91,26 @@ const EditDropbox = ({ files, setFiles }) => {
                         className="img-preview hidden w-full h-full sticky object-cover rounded-md bg-fixed"
                       />
                       <section className="flex flex-col rounded-md text-xs break-words w-full h-full z-20 absolute top-0 py-2 px-3">
-                        <a href={file.link} target="_blank" className="flex-1 group-hover:text-blue-800 line-clamp-1">
+                        <a
+                          href={file.link}
+                          target="_blank"
+                          className="flex-1 group-hover:text-blue-800 line-clamp-1"
+                        >
                           {file.name}
                         </a>
                         <div className="flex">
                           <span className="p-1 text-blue-800">
-                            <i>{/* SVG code */}</i>
+                            <i>
+                              <svg
+                                className="fill-current w-4 h-4 pt-1"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width={24}
+                                height={24}
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M15 2v5h5v15h-16v-20h11zm1-2h-14v24h20v-18l-6-6z" />
+                              </svg>
+                            </i>
                           </span>
                         </div>
                       </section>
@@ -126,4 +140,4 @@ const EditDropbox = ({ files, setFiles }) => {
   );
 };
 
-export default EditDropbox;
+export default ViewDropbox;

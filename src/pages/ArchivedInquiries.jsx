@@ -21,6 +21,8 @@ const Inquiries = () => {
   const brgy = searchParams.get("brgy");
   const [inquiries, setInquiries] = useState([]);
   const [inquiry, setInquiry] = useState([]);
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortColumn, setSortColumn] = useState(null);
 
   useEffect(() => {
     const fetch = async () => {
@@ -29,6 +31,7 @@ const Inquiries = () => {
       );
       if (response.status === 200) setInquiries(response.data);
       else setInquiries([]);
+        console.log(response.data);
     };
 
     fetch();
@@ -91,6 +94,38 @@ const Inquiries = () => {
     const dateFormat = date === undefined ? "" : date.substr(0, 10);
     return dateFormat;
   };
+
+  const handleSort = (sortBy) => {
+    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newSortOrder);
+    setSortColumn(sortBy);
+
+    const sortedData = inquiries.slice().sort((a, b) => {
+      if (sortBy === "inquiries_id") {
+        return newSortOrder === "asc"
+          ? a.inquiries_id.localeCompare(b.inquiries_id)
+          : b.inquiries_id.localeCompare(a.inquiries_id);
+      } else if (sortBy === "lastName") {
+        return newSortOrder === "asc"
+          ? a.lastName.localeCompare(b.lastName)
+          : b.lastName.localeCompare(a.lastName);
+      } else if (sortBy === "isApproved") {
+        const order = { Completed: 1, "In Progress": 2, "Not Responded": 3 };
+        return newSortOrder === "asc"
+          ? order[a.isApproved] - order[b.isApproved]
+          : order[b.isApproved] - order[a.isApproved];
+      }
+
+      return 0;
+    });
+
+    setInquiries(sortedData);
+  };
+
+  const handleView = (item) => {
+    setInquiry(item);
+  };
+
 
   return (
     <div className="mx-4 mt-8 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_300px)] xxxl:w-[calc(100vw_-_305px)]">
@@ -306,6 +341,7 @@ const Inquiries = () => {
                         <button
                           type="button"
                           data-hs-overlay="#hs-modal-viewArchived"
+                          onClick={() => handleView({ ...item })}
                           className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                         >
                           <AiOutlineEye
@@ -346,7 +382,7 @@ const Inquiries = () => {
         </div>
         <RestoreModal selectedItems={selectedItems}/>
         <ReplyModal />
-        <ViewArchivedModal />
+        <ViewArchivedModal inquiry={inquiry} setInquiry={setInquiry} />
       </div>
     </div>
   );

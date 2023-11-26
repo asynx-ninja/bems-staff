@@ -52,7 +52,7 @@ const Residents = () => {
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/users/showArchived/${brgy}`
+        `${API_LINK}/users/showArchived/?brgy=${brgy}&type=Resident`
       );
 
       if (response.status === 200) setUsers(response.data);
@@ -109,7 +109,7 @@ const Residents = () => {
   };
 
   return (
-    <div className="mx-4 mt-8 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_300px)] xxxl:w-[calc(100vw_-_305px)]">
+    <div className="mx-4 mt-8 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_305px)] xxxl:w-[calc(100vw_-_310px)]">
       {/* Body */}
       <div>
         <Breadcrumbs />

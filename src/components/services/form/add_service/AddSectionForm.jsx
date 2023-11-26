@@ -84,6 +84,13 @@ const AddSectionForm = ({ section, setSection }) => {
       };
     }
 
+    if (updatedInputFields[sectionIndex].form[formIndex].type === "checkbox") {
+      updatedInputFields[sectionIndex].form[formIndex] = {
+        ...updatedInputFields[sectionIndex].form[formIndex],
+        value: [],
+      };
+    }
+
     if (updatedInputFields[sectionIndex].form[formIndex].type !== "file") {
       updatedInputFields[sectionIndex].form[formIndex] = {
         ...updatedInputFields[sectionIndex].form[formIndex],

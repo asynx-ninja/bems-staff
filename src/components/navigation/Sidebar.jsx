@@ -9,11 +9,13 @@ import { HiMiniInformationCircle } from "react-icons/hi2";
 import { FaServicestack, FaChalkboardTeacher } from "react-icons/fa";
 import { FaPeopleGroup } from "react-icons/fa6";
 import { GoGitPullRequest } from "react-icons/go";
+import { MdManageAccounts } from "react-icons/md";
 import { useLocation, useNavigate, matchRoutes } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import API_LINK from "../../config/API";
 import axios from "axios";
+import default_pfp from "../../assets/sample-image/default-pfp.png";
 
 const Sidebar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -37,7 +39,7 @@ const Sidebar = () => {
           setLogo(res1.data[0]);
           var pfpSrc = document.getElementById("sidebarPFP");
           pfpSrc.src =
-            res.data[0].profile.link !== "" ? res.data[0].profile.link : null;
+            res.data[0].profile.link !== "" ? res.data[0].profile.link : default_pfp;
           var logoSidebar = document.getElementById("logoSidebar");
           logoSidebar.src =
             res1.data[0].logo.link !== "" ? res1.data[0].logo.link : null;
@@ -253,7 +255,8 @@ const Sidebar = () => {
                     </Link>
                   </div>
                 </li>
-                <li>
+                {userData.type === "Brgy Admin" ? 
+                  <li>
                   <button
                     id="hs-unstyled-collapse"
                     data-hs-collapse="#hs-info-collapse-heading"
@@ -307,6 +310,27 @@ const Sidebar = () => {
                       Barangay Officials
                     </Link>
                     <Link
+                      to={`/staff_management/?id=${id}&brgy=${brgy}`}
+                      onClick={() => {
+                        window.innerWidth >= 320 && window.innerWidth <= 1023
+                          ? document
+                              .getQuerySelector(
+                                "[data-hs-overlay-backdrop-template]"
+                              )
+                              .remove()
+                          : null;
+                      }}
+                      className={`${
+                        currentPath === "/staff_management"
+                          ? "bg-gradient-to-r from-[#213469] to-[#2c489e] text-[#EFC586]"
+                          : null
+                      } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#213469] to-[#2c489e]`}
+                    >
+                      <MdManageAccounts size={15} />
+                      Staff Management
+                    </Link>
+
+                    <Link
                       to={`/info/?id=${id}&brgy=${brgy}`}
                       onClick={() => {
                         window.innerWidth >= 320 && window.innerWidth <= 1023
@@ -328,6 +352,7 @@ const Sidebar = () => {
                     </Link>
                   </div>
                 </li>
+                : null} 
                 <li>
                   <Link
                     to={`/settings/?id=${id}&brgy=${brgy}`}
@@ -350,6 +375,7 @@ const Sidebar = () => {
                     Profile Settings
                   </Link>
                 </li>
+                
                 <li>
                   <Link
                     to="/"

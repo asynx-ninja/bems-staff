@@ -21,15 +21,20 @@ const Login = () => {
     const obj = {
       username: data.username,
       password: data.password,
-      type: "Staff",
     };
 
     try {
-      const res = await axios.get(`${API_LINK}/auth/${obj.username}/${obj.password}/${obj.type}`);
+      const res = await axios.get(`${API_LINK}/auth/${obj.username}/${obj.password}`);
       setErrorMessage("");
+      console.log(res);
       if (res.status === 200) {
-        const id = res.data[0]._id;
-        navigate(`/dashboard/?id=${id}&brgy=${res.data[0].address.brgy}`);
+        if (res.data[0].type === "Brgy Admin" || res.data[0].type === "Staff"){
+          const id = res.data[0]._id;
+          navigate(`/dashboard/?id=${id}&brgy=${res.data[0].address.brgy}`);
+        }
+        else {
+          setErrorMessage("Your user credentials is not available. Please contact an administrator.");
+        }
       } 
     } catch (error) {
       if (error.response) {
@@ -200,7 +205,7 @@ const Login = () => {
               </Link>
               <button
                 onClick={handleLogin}
-                className="w-full rounded-[12px] bg-gradient-to-r from-[#295141] to-[#408D51] sm:py-1.5 lg:py-2.5 text-white font-medium text-base"
+                className="w-full rounded-[12px] bg-gradient-to-r from-[#3e5fc2] to-[#1f2f5e] sm:py-1.5 lg:py-2.5 text-white font-medium text-base"
               >
                 Login
               </button>
@@ -209,7 +214,7 @@ const Login = () => {
           <div className="hs-tooltip sm:hidden md:inline-block">
             <button
               type="button"
-              class="hs-tooltip-toggle w-10 h-10 absolute md:bottom-3 right-[1rem] bg-gradient-to-r from-[#295141] to-[#408D51] inline-flex justify-center items-center gap-2 rounded-full border border-gray-200 text-white font-bold "
+              class="hs-tooltip-toggle w-10 h-10 absolute md:bottom-3 right-[1rem] bg-gradient-to-r from-[#3e5fc2] to-[#1f2f5e] inline-flex justify-center items-center gap-2 rounded-full border border-gray-200 text-white font-bold "
             >
               ?
               <span

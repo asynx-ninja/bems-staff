@@ -214,7 +214,7 @@ const ChangePassword = () => {
             <div className="flex flex-col w-full space-y-3">
               <button
                 onClick={handleOnSubmit}
-                className="w-full rounded-[12px] bg-gradient-to-r from-[#295141] to-[#408D51] sm:py-1.5 lg:py-2.5 text-white font-medium text-base"
+                className="w-full rounded-[12px] bg-gradient-to-r from-[#3e5fc2] to-[#1f2f5e] sm:py-1.5 lg:py-2.5 text-white font-medium text-base"
               >
                 Save Password
               </button>
@@ -223,7 +223,7 @@ const ChangePassword = () => {
           <div className="hs-tooltip sm:hidden md:inline-block">
             <button
               type="button"
-              class="hs-tooltip-toggle w-10 h-10 absolute md:bottom-3 right-[1rem] bg-gradient-to-r from-[#295141] to-[#408D51] inline-flex justify-center items-center gap-2 rounded-full border border-gray-200 text-white font-bold "
+              class="hs-tooltip-toggle w-10 h-10 absolute md:bottom-3 right-[1rem] bg-gradient-to-r from-[#3e5fc2] to-[#1f2f5e] inline-flex justify-center items-center gap-2 rounded-full border border-gray-200 text-white font-bold "
             >
               ?
               <span

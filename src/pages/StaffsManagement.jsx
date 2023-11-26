@@ -1,51 +1,45 @@
 import React from "react";
-import ReactPaginate from "react-paginate";
-import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { FaArchive, FaPlus, FaTrash } from "react-icons/fa";
 import { BsPrinter } from "react-icons/bs";
-import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
+import { AiOutlineEye, AiOutlineStop } from "react-icons/ai";
 import { FiEdit } from "react-icons/fi";
-import { FaArchive, FaPlus } from "react-icons/fa";
-import CreateOfficialModal from "../components/officials/CreateOfficialModal";
-import GenerateReportsModal from "../components/officials/GenerateReportsModal";
-import ArchiveOfficialModal from "../components/officials/ArchiveOfficialModal";
-import EditOfficialModal from "../components/officials/ManageOfficialModal";
-import { useSearchParams } from "react-router-dom";
+import ReactPaginate from "react-paginate";
+import AddResidentsModal from "../components/residents/AddResidentModal";
+import GenerateReportsModal from "../components/services/GenerateReportsModal";
+import ArchiveResidentModal from "../components/residents/ArchiveResidentModal";
 import axios from "axios";
 import API_LINK from "../config/API";
+import { useSearchParams } from "react-router-dom";
+import ManageResidentModal from "../components/residents/ManageResidentsModal";
+import AddStaffModal from "../components/staff/AddStaffModal";
+import ManageStaffModal from "../components/staff/ManageStaffModal";
+import ArchiveStaffModal from "../components/staff/ArchiveStaffModal";
 
-const Officials = () => {
+const StaffManagement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
-  const [officials, setOfficials] = useState([]);
+  const [users, setUsers] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
-  const brgy = searchParams.get("brgy");
   const id = searchParams.get("id");
-  const [selectedOfficial, setSelectedOfficial] = useState({});
+  const brgy = searchParams.get("brgy");
+  const [user, setUser] = useState({});
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
 
-  const handleSort = (sortBy) => {
-    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
-    setSortOrder(newSortOrder);
-    setSortColumn(sortBy);
+  useEffect(() => {
+    const fetch = async () => {
+      const response = await axios.get(`${API_LINK}/staffs/${brgy}`);
+      if (response.status === 200) setUsers(response.data);
+      else setUsers([]);
+    };
 
-    const sortedData = officials.slice().sort((a, b) => {
-      if (sortBy === "lastName") {
-        return newSortOrder === "asc"
-          ? a.lastName.localeCompare(b.lastName)
-          : b.lastName.localeCompare(a.lastName);
-      } else if (sortBy === "rendered_service") {
-        const dateA = new Date(a.fromYear);
-        const dateB = new Date(b.fromYear);
+    fetch();
+  }, []);
 
-        return newSortOrder === "asc" ? dateA - dateB : dateB - dateA;
-      }
-
-      return 0;
-    });
-
-    setOfficials(sortedData);
-  };
+  useEffect(() => {
+    document.title = "Residents | Barangay E-Services Management";
+  }, []);
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -63,78 +57,53 @@ const Officials = () => {
   };
 
   const checkAllHandler = () => {
-    if (officials.length === selectedItems.length) {
+    if (users.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const officialIds = officials.map((item) => {
+      const postIds = users.map((item) => {
         return item._id;
       });
 
-      setSelectedItems(officialIds);
+      setSelectedItems(postIds);
     }
   };
 
-  useEffect(() => {
-    document.title = "Barangay Officials | Barangay E-Services Management";
-
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
-        );
-
-        if (response.status === 200) {
-          const officialsData = response.data || [];
-
-          if (officialsData.length > 0) {
-            setOfficials(officialsData);
-          } else {
-            setOfficials([]);
-            console.log(`No officials found for Barangay ${brgy}`);
-          }
-        } else {
-          setOfficials([]);
-          console.error("Failed to fetch officials:", response.status);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setOfficials([]);
-      }
-    };
-
-    fetchData();
-  }, [brgy]);
-
-  const handleEditClick = async (official) => {
-    setSelectedOfficial(official);
-  };
-
   const tableHeader = [
-    "IMAGE",
+    "USER_ID",
     "NAME",
-    "POSITION",
-    "RENDERED SERVICE",
+    "AGE",
+    "GENDER",
+    "CONTACT",
+    "CIVIL STATUS",
+    "STATUS",
     "ACTIONS",
   ];
 
-  const dateFormat = (fromYear, toYear) => {
-    const startDate = fromYear ? new Date(fromYear) : null;
-    const endDate = toYear ? new Date(toYear) : null;
-
-    const startYearMonth = startDate
-      ? `${startDate.toLocaleString("default", {
-          month: "short",
-        })} ${startDate.getFullYear()}`
-      : "";
-    const endYearMonth = endDate
-      ? `${endDate.toLocaleString("default", {
-          month: "short",
-        })} ${endDate.getFullYear()}`
-      : "";
-
-    return `${startYearMonth} ${endYearMonth}`;
+  const handleView = (item) => {
+    setUser(item);
   };
 
+  const handleSort = (sortBy) => {
+    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newSortOrder);
+    setSortColumn(sortBy);
+
+    const sortedData = users.slice().sort((a, b) => {
+      if (sortBy === "user_id") {
+        return newSortOrder === "asc"
+          ? a.user_id.localeCompare(b.user_id)
+          : b.user_id.localeCompare(a.user_id);
+      } else if (sortBy === "lastName") {
+        return newSortOrder === "asc"
+          ? a.lastName.localeCompare(b.lastName)
+          : b.lastName.localeCompare(a.lastName);
+      } 
+
+      return 0;
+    });
+
+    setUsers(sortedData);
+  };
   return (
     <div className="mx-4 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_305px)] xxxl:w-[calc(100vw_-_310px)]">
       {/* Body */}
@@ -143,10 +112,10 @@ const Officials = () => {
         <div className="flex flex-row mt-5 sm:flex-col-reverse lg:flex-row w-full">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#3e5fc2] to-[#1f2f5e] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
-              className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
+              className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-2xl xxxl:text-2xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
-              BARANGAY OFFICIALS
+              BARANGAY STAFF MANAGEMENT
             </h1>
           </div>
           <div className="lg:w-3/5 flex flex-row justify-end items-center ">
@@ -155,26 +124,24 @@ const Officials = () => {
                 <div className="hs-tooltip inline-block w-full">
                   <button
                     type="button"
-                    data-hs-overlay="#hs-create-official-modal"
+                    data-hs-overlay="#hs-modal-addStaff"
                     className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#3e5fc2] to-[#1f2f5e] w-full text-white font-medium text-sm  text-center inline-flex items-center "
                   >
                     <FaPlus size={24} style={{ color: "#ffffff" }} />
                     <span className="sm:block md:hidden sm:pl-5">
-                      Add Official
+                      Add Residents
                     </span>
                     <span
                       className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                       role="tooltip"
                     >
-                      Add Official
+                      Add Residents
                     </span>
                   </button>
                 </div>
               </div>
               <div className="w-full rounded-lg ">
-                <Link
-                  to={`/archived_officials/?id=${id}&brgy=${brgy}&archived=true`}
-                >
+                <Link to={`/archived_staff_management/?id=${id}&brgy=${brgy}`}>
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"
@@ -183,13 +150,13 @@ const Officials = () => {
                     >
                       <FaArchive size={24} style={{ color: "#ffffff" }} />
                       <span className="sm:block md:hidden sm:pl-5">
-                        Archived Officials
+                        Archived Residents
                       </span>
                       <span
                         className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                         role="tooltip"
                       >
-                        Archived Officials
+                        Archived Residents
                       </span>
                     </button>
                   </div>
@@ -227,15 +194,15 @@ const Officials = () => {
                 </svg>
               </button>
               <ul
-                className="bg-[#253a7a] border-2 border-[#ffb13c] hs-dropdown-menu w-96 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10 shadow-md rounded-lg p-2"
+                className="bg-[#253a7a] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10 shadow-md rounded-lg p-2"
                 aria-labelledby="hs-dropdown"
               >
                 <li
-                  onClick={() => handleSort("lastName")}
+                  onClick={() => handleSort("user_id")}
                   className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
                 >
-                  NAME
-                  {sortColumn === "lastName" && (
+                  USER ID
+                  {sortColumn === "user_id" && (
                     <span className="ml-auto">
                       {sortOrder === "asc" ? (
                         <span>DESC &darr;</span>
@@ -246,16 +213,16 @@ const Officials = () => {
                   )}
                 </li>
                 <li
-                  onClick={() => handleSort("rendered_service")}
+                  onClick={() => handleSort("lastName")}
                   className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
                 >
-                  RENDERED SERVICE
-                  {sortColumn === "rendered_service" && (
+                  LAST NAME
+                  {sortColumn === "lastName" && (
                     <span className="ml-auto">
                       {sortOrder === "asc" ? (
-                        <span className="text-xs">OLD TO LATEST &darr;</span>
+                        <span>DESC &darr;</span>
                       ) : (
-                        <span className="text-xs">LATEST TO OLD &uarr;</span>
+                        <span>ASC &uarr;</span>
                       )}
                     </span>
                   )}
@@ -311,7 +278,7 @@ const Officials = () => {
                 <div className="hs-tooltip inline-block w-full">
                   <button
                     type="button"
-                    data-hs-overlay="#hs-archive-official-modal"
+                    data-hs-overlay="#hs-modal-archiveStaff"
                     className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md  bg-pink-800 font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
                   >
                     <AiOutlineStop size={24} style={{ color: "#ffffff" }} />
@@ -319,7 +286,7 @@ const Officials = () => {
                       className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                       role="tooltip"
                     >
-                      Archive Selected Officials
+                      Archived Selected Residents
                     </span>
                   </button>
                 </div>
@@ -330,7 +297,7 @@ const Officials = () => {
 
         {/* Table */}
         <div className="overflow-auto sm:overflow-x-auto h-[calc(100vh_-_270px)] xxxl:h-[calc(100vh_-_286px)]">
-          <table className="w-full max">
+          <table className="w-full ">
             <thead className="bg-[#253a7a] sticky top-0">
               <tr className="">
                 <th scope="col" className="px-6 py-4">
@@ -355,7 +322,7 @@ const Officials = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {officials.map((item, index) => (
+              {users.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
@@ -364,52 +331,96 @@ const Officials = () => {
                         checked={selectedItems.includes(item._id)}
                         value={item._id}
                         onChange={checkboxHandler}
+                        id=""
                       />
                     </div>
                   </td>
-                  <td className="xl:px-6 xl:py-3">
-                    <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      <div className="py-2 xl:px-6 xl:py-2">
-                        <img
-                          src={item.picture.link}
-                          alt=""
-                          className="w-[120px] h-[90px] xl:h-28 xl:w-28 bg-cover rounded-full mx-auto border-[5px] border-[#295141] object-cover"
-                        />
-                      </div>
+                  <td className="px-6 py-3">
+                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
+                      {item.user_id}
+                    </span>
+                  </td>
+                  <td className="px-6 py-3">
+                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
+                      {item.lastName +
+                        ", " +
+                        item.middleName +
+                        " " +
+                        item.firstName}
                     </span>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.lastName + ", " +  item.firstName + " " + item.middleName}
+                      <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
+                        {item.age}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.position}
+                        {item.sex}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {dateFormat(item.fromYear) || ""} -{" "}
-                        {dateFormat(item.toYear) || ""}
+                        {item.contact}
                       </span>
                     </div>
+                  </td>
+                  <td className="px-6 py-3">
+                    <div className="flex justify-center items-center">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {item.civil_status}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-3">
+                    {item.isApproved === "Registered" && (
+                      <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                          REGISTERED
+                        </span>
+                      </div>
+                    )}
+                    {item.isApproved === "Denied" && (
+                      <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                          DENIED
+                        </span>
+                      </div>
+                    )}
+                    {item.isApproved === "Pending" && (
+                      <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                          PENDING
+                        </span>
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center space-x-1 sm:space-x-none">
-                      <button
-                        type="button"
-                        data-hs-overlay="#hs-edit-official-modal"
-                        className=" text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                        onClick={() => handleEditClick(item)}
-                      >
-                        <FiEdit size={24} style={{ color: "#ffffff" }} />
-                      </button>
+                      <div className="hs-tooltip inline-block">
+                        <button
+                          type="button"
+                          data-hs-overlay="#hs-modal-editStaff"
+                          onClick={() => handleView({ ...item })}
+                          className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                        >
+                          <AiOutlineEye
+                            size={24}
+                            style={{ color: "#ffffff" }}
+                          />
+                        </button>
+                        <span
+                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                          role="tooltip"
+                        >
+                          View Resident
+                        </span>
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -435,16 +446,12 @@ const Officials = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <CreateOfficialModal brgy={brgy} />
+      <AddStaffModal brgy={brgy} />
+      <ArchiveStaffModal selectedItems={selectedItems} />
       <GenerateReportsModal />
-      <ArchiveOfficialModal selectedItems={selectedItems} />
-      <EditOfficialModal
-        selectedOfficial={selectedOfficial}
-        setSelectedOfficial={setSelectedOfficial}
-        brgy={brgy}
-      />
+      <ManageStaffModal user={user} setUser={setUser} />
     </div>
   );
 };
 
-export default Officials;
+export default StaffManagement;

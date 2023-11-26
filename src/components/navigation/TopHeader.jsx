@@ -45,7 +45,7 @@ const TopHeader = () => {
           <h1 className="text-xs lg:text-lg">{formattedTime} Philippine Standard Time (PMT)</h1>
         </div>
       </div>
-      <img className="mb-2 mx-auto md:mx-0 md:mb-0 h-[90px] md:h-[50px] w-full md:w-[170px]" src={header} alt="" />
+      <img className="mb-2 mx-auto md:mx-0 md:mb-0 h-[50px] md:h-[50px] w-[150px] md:w-[170px]" src={header} alt="" />
     </div>
   );
 };

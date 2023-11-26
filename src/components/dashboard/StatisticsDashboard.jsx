@@ -22,9 +22,14 @@ const StatisticsDashboard = () => {
   const [archivedServices, setArchivedServices] = useState([]);
   const [officials, setOfficials] = useState([]);
   const [archivedOfficials, setArchivedOfficials] = useState([]);
+  const [inquiries, setInquiries] = useState([]);
+  const [archivedInquiries, setArchivedInquiries] = useState([]);
+  const [userData, setUserData] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
+
+  console.log(userData);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,11 +41,11 @@ const StatisticsDashboard = () => {
           announcementsResponse.status === 200 ? announcementsResponse.data : []
         );
 
-        const usersResponse = await axios.get(`${API_LINK}/users/${brgy}`);
+        const usersResponse = await axios.get(`${API_LINK}/users/?brgy=${brgy}&type=Resident`);
         setUsers(usersResponse.status === 200 ? usersResponse.data : []);
 
         const archivedUsersResponse = await axios.get(
-          `${API_LINK}/users/showArchived/${brgy}`
+          `${API_LINK}/users/showArchived/?brgy=${brgy}&type=Resident`
         );
         setArchivedUsers(
           archivedUsersResponse.status === 200 ? archivedUsersResponse.data : []
@@ -77,6 +82,7 @@ const StatisticsDashboard = () => {
             ? archivedAnnouncementsResponse.data
             : []
         );
+
         const archivedOfficialsResponse = await axios.get(
           `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=true`
         );
@@ -85,6 +91,36 @@ const StatisticsDashboard = () => {
             ? archivedOfficialsResponse.data
             : []
         );
+
+        const inquiriesResponse = await axios.get(
+          `${API_LINK}/inquiries/?brgy=${brgy}&archived=false`
+        );
+        setInquiries(
+          inquiriesResponse.status === 200
+            ? inquiriesResponse.data
+            : []
+        );
+
+        const archivedInquiriesResponse = await axios.get(
+          `${API_LINK}/inquiries/?brgy=${brgy}&archived=true`
+        );
+        setArchivedInquiries(
+          archivedInquiriesResponse.status === 200
+            ? archivedInquiriesResponse.data
+            : []
+        );
+
+        const getUser = await axios.get(
+          `${API_LINK}/staffs/specific/${id}`
+        );
+        setUserData(
+          getUser.status === 200
+            ? getUser.data[0]
+            : []
+        );
+
+        console.log("label daw:", getUser);
+
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -116,8 +152,8 @@ const StatisticsDashboard = () => {
     },
     {
       title: "Inquiries",
-      active: "n/a",
-      archived: "n/a",
+      active: inquiries.length,
+      archived: archivedInquiries.length,
       activeLink: `/inquiries/?id=${id}&brgy=${brgy}`,
       archivedLink: `/archivedinquiries/?id=${id}&brgy=${brgy}`,
       icon: <FaRegNoteSticky size={15} className="sm:block md:hidden" />,
@@ -146,6 +182,7 @@ const StatisticsDashboard = () => {
       archivedLink: `/archivedrequests/?id=${id}&brgy=${brgy}`,
       icon: <GoGitPullRequest size={15} className="sm:block md:hidden" />,
     },
+    (userData.type === "Brgy Admin" ? 
     {
       title: "Barangay Officials",
       active: officials.length,
@@ -153,7 +190,7 @@ const StatisticsDashboard = () => {
       activeLink: `/officials/?id=${id}&brgy=${brgy}`,
       archivedLink: `/archived_officials/?id=${id}&brgy=${brgy}`,
       icon: <FaPeopleGroup size={15} className="sm:block md:hidden" />,
-    },
+    } : null),
     {
       title: "Profits",
       active: services.length,
@@ -181,6 +218,7 @@ const StatisticsDashboard = () => {
           const shouldDisplayGradient = titleItem && titleItem.title.length > 0;
 
           return shouldDisplayGradient ? (
+            
             <div className="flex flex-col">
               <div
                 className={`hs-dropdown relative bg-gradient-to-r ${item.gradient1} ${item.gradient2} text-white flex flex-col justify-between items-center p-3 text-sm md:text-base lg:text-lg rounded-lg`}
@@ -188,11 +226,11 @@ const StatisticsDashboard = () => {
                 <button
                   id="hs-unstyled-collapse"
                   data-hs-collapse={`#hs-statistics-dashboard-${idx}`}
-                  className="hs-collapse-toggle justify-between flex items-center w-full  gap-x-3 py-2 px-2.5  text-sm rounded-md"
+                  className="hs-collapse-toggle justify-between flex items-center w-full  gap-x-3  text-[12px] xl:text-base rounded-md"
                 >
-                  <div className="flex items-center gap-x-3 p-1.5 w-full inline-flex items-center text-base  font-heavy rounded-lg">
+                  <div className="flex items-center gap-x-3 p-0.5 w-full inline-flex font-heavy rounded-lg line-clamp-1">
                     {titleItem ? titleItem.icon : ""}
-                    <span className="flex uppercase block justify-end item-end">
+                    <span className="flex uppercase block justify-end item-end ">
                       {titleItem ? titleItem.title : ""}
                     </span>
                   </div>
@@ -221,7 +259,7 @@ const StatisticsDashboard = () => {
                   aria-labelledby="hs-unstyled-collapse"
                 >
                   <Link to={titleItem ? titleItem.activeLink : ""}>
-                    <a className={`flex items-center p-3 gap-x-3.5 rounded-lg font-heavy text-sm text-white hover:bg-gradient-to-r ${item.gradient1} hover:border hover:border-gray-300`}>
+                    <a className={`flex items-center p-1 gap-x-3.5 rounded-lg font-heavy text-[12px] xl:text-[14px] text-white hover:bg-gradient-to-r ${item.gradient1} hover:border hover:border-gray-300`}>
                       Active:
                       <strong className="ml-auto">
                         {titleItem ? titleItem.active : ""}
@@ -229,7 +267,7 @@ const StatisticsDashboard = () => {
                     </a>
                   </Link>
                   <Link to={titleItem ? titleItem.archivedLink : ""}>
-                    <a className={`flex items-center p-3 gap-x-3.5 rounded-lg font-heavy text-sm text-white hover:bg-gradient-to-r ${item.gradient1} hover:border hover:border-gray-300`}>
+                    <a className={`flex items-center p-1 gap-x-3.5 rounded-lg font-heavy text-[12px] xl:text-[14px] text-white hover:bg-gradient-to-r ${item.gradient1} hover:border hover:border-gray-300`}>
                       Archived:
                       <strong className="ml-auto">
                         {titleItem ? titleItem.archived : ""}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from "react";
 import defaultPFP from "../assets/sample-image/default-pfp.png";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import {
@@ -7,17 +7,17 @@ import {
   FaEnvelope,
   FaPhone,
   FaTwitter,
-  FaInstagram
+  FaInstagram,
 } from "react-icons/fa";
 import { useSearchParams } from "react-router-dom";
-import axios from 'axios'
-import API_LINK from '../config/API';
+import axios from "axios";
+import API_LINK from "../config/API";
 import banner from "../assets/image/1.png";
-import OccupationList from "../components/occupations/OccupationList"
+import OccupationList from "../components/occupations/OccupationList";
 
 const Settings = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const id = searchParams.get("id")
+  const id = searchParams.get("id");
   const fileInputRef = useRef();
   const handleAdd = (e) => {
     e.preventDefault();
@@ -27,34 +27,34 @@ const Settings = () => {
   const [activeButton, setActiveButton] = useState({
     personal: true,
     credential: false,
-  })
-  const [editButton, setEditButton] = useState(true)
+  });
+  const [editButton, setEditButton] = useState(true);
   const [pfp, setPfp] = useState();
   const [userAddress, setUserAddress] = useState({
     street: "",
     brgy: "",
     city: "",
-  })
+  });
   const [userData, setUserData] = useState({});
   const [userCred, setUserCred] = useState({
     username: "",
     oldPass: "",
-    newPass: ""
-  })
+    newPass: "",
+  });
   const [message, setMessage] = useState({
     display: false,
     success: false,
     error: false,
-    message: ""
-  })
+    message: "",
+  });
   const [newpasswordShown, setNewPasswordShown] = useState(false);
   const [oldpasswordShown, setOldPasswordShown] = useState(false);
-  const [changePass, setChangePass] = useState(false)
+  const [changePass, setChangePass] = useState(false);
   const toggleOldPassword = (e) => {
-    setOldPasswordShown(!oldpasswordShown)
+    setOldPasswordShown(!oldpasswordShown);
   };
   const toggleNewPassword = (e) => {
-    setNewPasswordShown(!newpasswordShown)
+    setNewPasswordShown(!newpasswordShown);
   };
   const [passwordStrengthError, setPasswordStrengthError] = useState(false);
   const [passwordStrengthSuccess, setPasswordStrengthSuccess] = useState(false);
@@ -62,17 +62,17 @@ const Settings = () => {
   const [userSocials, setUserSocials] = useState({
     facebook: {
       name: "",
-      link: ""
+      link: "",
     },
     instagram: {
       name: "",
-      link: ""
+      link: "",
     },
     twitter: {
       name: "",
-      link: ""
+      link: "",
     },
-  })
+  });
 
   const handleFileChange = (e) => {
     e.preventDefault();
@@ -95,37 +95,40 @@ const Settings = () => {
           setUserAddress({
             street: res.data[0].address.street,
             brgy: res.data[0].address.brgy,
-            city: res.data[0].address.city
-          })
+            city: res.data[0].address.city,
+          });
           setUserCred({
             username: res.data[0].username,
             oldPass: "",
-            newPass: ""
-          })
+            newPass: "",
+          });
           setUserSocials({
             facebook: {
               name: res.data[0].socials.facebook.name,
-              link: res.data[0].socials.facebook.link
+              link: res.data[0].socials.facebook.link,
             },
             instagram: {
               name: res.data[0].socials.instagram.name,
-              link: res.data[0].socials.instagram.link
+              link: res.data[0].socials.instagram.link,
             },
             twitter: {
               name: res.data[0].socials.twitter.name,
-              link: res.data[0].socials.twitter.link
+              link: res.data[0].socials.twitter.link,
             },
-          })
+          });
           var pfpSrc = document.getElementById("pfp");
-          pfpSrc.src = res.data[0].profile.link !== "" ? res.data[0].profile.link : defaultPFP
+          pfpSrc.src =
+            res.data[0].profile.link !== ""
+              ? res.data[0].profile.link
+              : defaultPFP;
         } else {
           setError("Invalid username or password");
         }
       } catch (error) {
         console.log(error);
       }
-    }
-    fetch()
+    };
+    fetch();
   }, [id]);
 
   useEffect(() => {
@@ -139,14 +142,14 @@ const Settings = () => {
   const handleUserChangeAdd = (field, value) => {
     setUserAddress((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   const handleUserChangeCred = (field, value) => {
     setUserCred((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
 
     if (field === "newPass") {
@@ -177,15 +180,14 @@ const Settings = () => {
       ...userSocials,
       [social]: {
         ...userSocials[social],
-        [subsocial]: value
-      }
+        [subsocial]: value,
+      },
     });
   };
 
   // console.log(userSocials)
 
   const saveChanges = async (e) => {
-
     const obj = {
       firstName: userData.firstName,
       middleName: userData.middleName,
@@ -212,66 +214,80 @@ const Settings = () => {
       socials: {
         facebook: userSocials.facebook,
         instagram: userSocials.instagram,
-        twitter: userSocials.twitter
-      }
+        twitter: userSocials.twitter,
+      },
     };
 
     try {
-      console.log(pfp)
-      var formData = new FormData()
-      formData.append("users", JSON.stringify(obj))
-      formData.append("file", pfp)
-      const response = await axios.patch(`${API_LINK}/users/${id}`,
-        formData
-      );
+      console.log(pfp);
+      var formData = new FormData();
+      formData.append("users", JSON.stringify(obj));
+      formData.append("file", pfp);
+      const response = await axios.patch(`${API_LINK}/users/?doc_id=${id}`, formData);
 
       // CHANGE USER CREDENTIALS
 
       // CHANGE USERNAME
       if (userCred.username !== userData.username) {
-        changeCredentials(userData.username, userCred.username, userCred.oldPass, userCred.newPass)
+        changeCredentials(
+          userData.username,
+          userCred.username,
+          userCred.oldPass,
+          userCred.newPass
+        );
       }
 
       // CHANGE PASSWORD
       if (userCred.newPass !== "") {
-        changeCredentials(userData.username, userCred.username, userCred.oldPass, userCred.newPass)
+        changeCredentials(
+          userData.username,
+          userCred.username,
+          userCred.oldPass,
+          userCred.newPass
+        );
       }
 
       if (response.status === 200) {
-        console.log('Update successful:', response);
+        console.log("Update successful:", response);
         setUserData(response.data);
         setUserAddress({
           street: response.data.address.street,
           brgy: response.data.address.brgy,
-          city: response.data.address.city
-        })
+          city: response.data.address.city,
+        });
         setUserSocials({
           facebook: response.data.socials.facebook,
           instagram: response.data.socials.instagram,
           twitter: response.data.socials.twitter,
-        })
-        setEditButton(true)
+        });
+        setEditButton(true);
       } else {
-        console.error('Update failed. Status:', response.status);
+        console.error("Update failed. Status:", response.status);
       }
-
     } catch (error) {
-      console.error('Error saving changes:', error);
+      console.error("Error saving changes:", error);
     }
   };
 
-  const changeCredentials = async (oldUsername, newUsername, oldPassword, newPassword) => {
+  const changeCredentials = async (
+    oldUsername,
+    newUsername,
+    oldPassword,
+    newPassword
+  ) => {
     const user = {
       username: newUsername !== oldUsername ? newUsername : oldUsername,
-      password: newPassword !== "" ? newPassword : oldPassword
-    }
+      password: newPassword !== "" ? newPassword : oldPassword,
+    };
 
-    console.log(user)
+    console.log(user);
 
     try {
-      const response = await axios.get(`${API_LINK}/auth/${oldUsername}/${oldPassword}/${userData.type}`);
+      const response = await axios.get(
+        `${API_LINK}/auth/${oldUsername}/${oldPassword}/${userData.type}`
+      );
 
-      console.log(response)
+      console.log(response);
 
       if (response.status === 200) {
         await axios.patch(`${API_LINK}/auth/${id}`, user);
@@ -279,24 +295,23 @@ const Settings = () => {
           display: true,
           success: true,
           error: false,
-          message: "Success!"
-        })
+          message: "Success!",
+        });
       }
-
     } catch (err) {
       setMessage({
         display: true,
         success: false,
         error: true,
-        message: "The password you entered is incorrect"
-      })
+        message: "The password you entered is incorrect",
+      });
     }
-  }
+  };
 
   const birthdayFormat = (date) => {
-    const birthdate = date === undefined ? "" : date.substr(0, 10)
+    const birthdate = date === undefined ? "" : date.substr(0, 10);
     return birthdate;
-  }
+  };
 
   const calculateAge = (birthDate) => {
     const today = new Date();
@@ -318,28 +333,32 @@ const Settings = () => {
       setActiveButton({
         personal: true,
         credential: false,
-      })
+      });
     } else {
       setActiveButton({
         personal: false,
-        credential: true
-      })
+        credential: true,
+      });
     }
-  }
+  };
 
   const handleOnEdit = (e) => {
     if (e.target.name === "edit") {
-      setEditButton(false)
+      setEditButton(false);
     } else {
-      setEditButton(true)
+      setEditButton(true);
     }
-  }
+  };
 
   return (
-    <div className="mx-4">
+    <div className="mx-4 overflow-y-auto lg:h-[calc(100vh_-_80px)]">
       <div className="flex flex-col w-full justify-center items-center">
         <div className="w-full relative">
-          <img className="h-[200px] w-full obj object-cover bg-black opacity-[80%]" src={banner} alt="" />
+          <img
+            className="h-[200px] w-full obj object-cover bg-black opacity-[80%]"
+            src={banner}
+            alt=""
+          />
           <div className="absolute inset-0 flex items-center justify-center bg-black transition-opacity duration-300 opacity-[50%]"></div>
         </div>
         <div className="flex flex-col-reverse sm:px-[5px] px-[20px] justify-center items-center mb-[20px] sm:w-[95%] lg:w-full">
@@ -348,16 +367,22 @@ const Settings = () => {
               <button
                 name="personal"
                 onClick={handleOnActive}
-                className={activeButton.personal ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-custom-green-button text-white font-medium"
-                  : "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-white text-black font-medium transition-all ease-in-out hover:bg-custom-green-button hover:text-white"}
+                className={
+                  activeButton.personal
+                    ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-[#2f4da5] text-white font-medium"
+                    : "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-white text-black font-medium transition-all ease-in-out hover:bg-[#2f4da5] hover:text-white"
+                }
               >
                 Personal Info
               </button>
               <button
                 name="credential"
                 onClick={handleOnActive}
-                className={activeButton.credential ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-custom-green-button text-white font-medium"
-                  : "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-white text-black font-medium transition-all ease-in-out hover:bg-custom-green-button hover:text-white"}
+                className={
+                  activeButton.credential
+                    ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-[#2f4da5] text-white font-medium"
+                    : "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-white text-black font-medium transition-all ease-in-out hover:bg-[#2f4da5] hover:text-white"
+                }
               >
                 Account Info
               </button>
@@ -365,14 +390,13 @@ const Settings = () => {
 
             <div className={activeButton.personal ? "block" : "hidden"}>
               <div className="h-full w-full shadow-lg px-[30px] pb-[30px]">
-
                 {/* PERSONAL DATA */}
 
                 <div>
-                  <div className='w-full border-b-[2px] border-black mb-5'>
-                    <h6 className='font-bold'>PERSONAL DATA</h6>
+                  <div className="w-full border-b-[2px] border-black mb-5">
+                    <h6 className="font-bold">PERSONAL DATA</h6>
                   </div>
-                  <div className='grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3'>
+                  <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3">
                     <div>
                       <label
                         htmlFor="fistName"
@@ -386,7 +410,7 @@ const Settings = () => {
                         id="fistName"
                         className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                         placeholder="First name"
-                        value={userData.firstName || ''}
+                        value={userData.firstName || ""}
                         // onChange={(e) =>
                         //   handleUserDataChange('firstName', e.target.value)
                         // }
@@ -405,9 +429,9 @@ const Settings = () => {
                         id="middleName"
                         className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                         placeholder="First name"
-                        value={userData.middleName || ''}
+                        value={userData.middleName || ""}
                         onChange={(e) =>
-                          handleUserDataChange('middleName', e.target.value)
+                          handleUserDataChange("middleName", e.target.value)
                         }
                       />
                     </div>
@@ -425,9 +449,9 @@ const Settings = () => {
                         className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                         placeholder="Last name"
                         aria-describedby="hs-input-helper-text"
-                        value={userData.lastName || ''}
+                        value={userData.lastName || ""}
                         onChange={(e) =>
-                          handleUserDataChange('lastName', e.target.value)
+                          handleUserDataChange("lastName", e.target.value)
                         }
                       />
                     </div>
@@ -446,9 +470,9 @@ const Settings = () => {
                         className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                         placeholder="Suffix"
                         aria-describedby="hs-input-helper-text"
-                        value={userData.suffix || ''}
+                        value={userData.suffix || ""}
                         onChange={(e) =>
-                          handleUserDataChange('suffix', e.target.value)
+                          handleUserDataChange("suffix", e.target.value)
                         }
                       />
                     </div>
@@ -466,9 +490,9 @@ const Settings = () => {
                         aria-describedby="hs-input-helper-text"
                         id="gender"
                         name="gender"
-                        value={userData.sex || ''}
+                        value={userData.sex || ""}
                         onChange={(e) =>
-                          handleUserDataChange('sex', e.target.value)
+                          handleUserDataChange("sex", e.target.value)
                         }
                       >
                         <option value="male">Male</option>
@@ -483,7 +507,7 @@ const Settings = () => {
                         Birthday
                       </label>
                       <input
-                        type='date'
+                        type="date"
                         disabled={editButton}
                         id="birthday"
                         className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
@@ -491,7 +515,7 @@ const Settings = () => {
                         aria-describedby="hs-input-helper-text"
                         value={birthdayFormat(userData.birthday) || ""}
                         onChange={(e) =>
-                          handleUserDataChange('birthday', e.target.value)
+                          handleUserDataChange("birthday", e.target.value)
                         }
                       />
                     </div>
@@ -503,14 +527,14 @@ const Settings = () => {
                         Age
                       </label>
                       <input
-                        type='number'
+                        type="number"
                         disabled={editButton}
                         readOnly
                         id="age"
                         className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                         placeholder="Suffix"
                         aria-describedby="hs-input-helper-text"
-                        value={calculateAge(userData.birthday) || ''}
+                        value={calculateAge(userData.birthday) || ""}
                       />
                     </div>
                     <div>
@@ -521,15 +545,15 @@ const Settings = () => {
                         Phone number
                       </label>
                       <input
-                        type='text'
+                        type="text"
                         disabled={editButton}
                         id="phone"
                         className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                         placeholder="#"
                         aria-describedby="hs-input-helper-text"
-                        value={userData.contact || ''}
+                        value={userData.contact || ""}
                         onChange={(e) =>
-                          handleUserDataChange('contact', e.target.value)
+                          handleUserDataChange("contact", e.target.value)
                         }
                       />
                     </div>
@@ -547,9 +571,9 @@ const Settings = () => {
                         className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                         placeholder="you@example.com"
                         aria-describedby="hs-input-helper-text"
-                        value={userData.email || ''}
+                        value={userData.email || ""}
                         onChange={(e) =>
-                          handleUserDataChange('email', e.target.value)
+                          handleUserDataChange("email", e.target.value)
                         }
                       />
                     </div>
@@ -559,10 +583,10 @@ const Settings = () => {
                 {/* ADDRESS DETAILS */}
 
                 <div>
-                  <div className='w-full border-b-[2px] border-black my-5'>
-                    <h6 className='font-bold'>ADDRESS DETAILS</h6>
+                  <div className="w-full border-b-[2px] border-black my-5">
+                    <h6 className="font-bold">ADDRESS DETAILS</h6>
                   </div>
-                  <div className='grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3'>
+                  <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3">
                     <div>
                       <label
                         htmlFor="street"
@@ -571,15 +595,15 @@ const Settings = () => {
                         Street
                       </label>
                       <input
-                        type='text'
+                        type="text"
                         disabled={editButton}
                         id="street"
                         className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                         placeholder="Street"
                         aria-describedby="hs-input-helper-text"
-                        value={userAddress.street || ''}
+                        value={userAddress.street || ""}
                         onChange={(e) =>
-                          handleUserChangeAdd('street', e.target.value)
+                          handleUserChangeAdd("street", e.target.value)
                         }
                       />
                     </div>
@@ -592,11 +616,11 @@ const Settings = () => {
                       </label>
                       <select
                         disabled={editButton}
-                        id='brgy'
+                        id="brgy"
                         name="brgy"
-                        value={userAddress.brgy || ''}
+                        value={userAddress.brgy || ""}
                         onChange={(e) =>
-                          handleUserChangeAdd('brgy', e.target.value)
+                          handleUserChangeAdd("brgy", e.target.value)
                         }
                         className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                       >
@@ -622,13 +646,13 @@ const Settings = () => {
                         City
                       </label>
                       <select
-                        id='city'
-                        name='city'
+                        id="city"
+                        name="city"
                         disabled={editButton}
                         readOnly
-                        value={userAddress.city || ''}
+                        value={userAddress.city || ""}
                         onChange={(e) =>
-                          handleUserChangeAdd('city', e.target.value)
+                          handleUserChangeAdd("city", e.target.value)
                         }
                         className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                       >
@@ -641,10 +665,10 @@ const Settings = () => {
                 {/* OTHER PERSONAL DATA */}
 
                 <div>
-                  <div className='w-full border-b-[2px] border-black my-5'>
-                    <h6 className='font-bold'>OTHER PERSONAL DATA</h6>
+                  <div className="w-full border-b-[2px] border-black my-5">
+                    <h6 className="font-bold">OTHER PERSONAL DATA</h6>
                   </div>
-                  <div className='grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3'>
+                  <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3">
                     <div>
                       <label
                         htmlFor="occupation"
@@ -653,7 +677,11 @@ const Settings = () => {
                         Occupation
                       </label>
                       <div className="relative z-0 w-full mb-3 group">
-                        <OccupationList handleUserDataChange={handleUserDataChange} occupation={userData.occ} editButton={editButton} />
+                        <OccupationList
+                          handleUserDataChange={handleUserDataChange}
+                          occupation={userData.occ}
+                          editButton={editButton}
+                        />
                       </div>
                     </div>
                     <div>
@@ -664,14 +692,12 @@ const Settings = () => {
                         <input
                           className="shrink-0 mt-0.5 border-gray-200 rounded-full text-green-500 focus:ring-green-500"
                           disabled={editButton}
-                          id='isHeadYes'
-                          name='isHead'
+                          id="isHeadYes"
+                          name="isHead"
                           type="radio"
                           value={1}
                           checked={userData.isHead}
-                          onChange={(e) =>
-                            handleUserDataChange('isHead', true)
-                          }
+                          onChange={(e) => handleUserDataChange("isHead", true)}
                         />
                         <label htmlFor="male" className="ml-2">
                           Yes
@@ -679,13 +705,13 @@ const Settings = () => {
                         <input
                           className="ml-4 shrink-0 mt-0.5 border-gray-200 rounded-full text-green-500 focus:ring-green-500"
                           disabled={editButton}
-                          id='isHeadNo'
-                          name='isHead'
+                          id="isHeadNo"
+                          name="isHead"
                           type="radio"
                           value={0}
                           checked={!userData.isHead}
                           onChange={(e) =>
-                            handleUserDataChange('isHead', false)
+                            handleUserDataChange("isHead", false)
                           }
                         />
                         <label className="ml-2">No</label>
@@ -699,13 +725,13 @@ const Settings = () => {
                         <input
                           className="shrink-0 mt-0.5 border-gray-200 rounded-full text-green-500 focus:ring-green-500"
                           disabled={editButton}
-                          id='isVoterYes'
-                          name='isVoter'
+                          id="isVoterYes"
+                          name="isVoter"
                           type="radio"
                           value={1}
                           checked={userData.isVoter}
                           onChange={(e) =>
-                            handleUserDataChange('isVoter', true)
+                            handleUserDataChange("isVoter", true)
                           }
                         />
                         <label htmlFor="male" className="ml-2">
@@ -714,13 +740,13 @@ const Settings = () => {
                         <input
                           disabled={editButton}
                           className="ml-4 shrink-0 mt-0.5 border-gray-200 rounded-full text-green-500 focus:ring-green-500"
-                          id='isVoterNo'
-                          name='isVoter'
+                          id="isVoterNo"
+                          name="isVoter"
                           type="radio"
                           value={0}
                           checked={!userData.isVoter}
                           onChange={(e) =>
-                            handleUserDataChange('isVoter', false)
+                            handleUserDataChange("isVoter", false)
                           }
                         />
                         <label className="ml-2">No</label>
@@ -732,11 +758,11 @@ const Settings = () => {
                 {/* SOCIALS */}
 
                 <div className={editButton ? "hidden" : "block"}>
-                  <div className='w-full border-b-[2px] border-black my-5'>
-                    <h6 className='font-bold'>SOCIALS</h6>
+                  <div className="w-full border-b-[2px] border-black my-5">
+                    <h6 className="font-bold">SOCIALS</h6>
                   </div>
-                  <div className='grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3'>
-                    <div className='flex flex-col gap-3 p-2'>
+                  <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3">
+                    <div className="flex flex-col gap-3 p-2">
                       <div>
                         <label
                           htmlFor="facebookName"
@@ -746,13 +772,19 @@ const Settings = () => {
                         </label>
                         <input
                           id="facebookName"
-                          type='text'
-                          value={userSocials.facebook.name || ''}
+                          type="text"
+                          value={userSocials.facebook.name || ""}
                           disabled={editButton}
-                          onChange={(e) => { handleUserSocials("facebook", "name", e.target.value) }}
+                          onChange={(e) => {
+                            handleUserSocials(
+                              "facebook",
+                              "name",
+                              e.target.value
+                            );
+                          }}
                           className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                           aria-describedby="hs-input-helper-text"
-                          placeholder='Enter your Facebook Link'
+                          placeholder="Enter your Facebook Link"
                         />
                       </div>
                       <div>
@@ -763,18 +795,24 @@ const Settings = () => {
                           Facebook Link
                         </label>
                         <input
-                          type='text'
+                          type="text"
                           id="facebookLink"
-                          value={userSocials.facebook.link || ''}
+                          value={userSocials.facebook.link || ""}
                           disabled={editButton}
-                          onChange={(e) => { handleUserSocials("facebook", "link", e.target.value) }}
+                          onChange={(e) => {
+                            handleUserSocials(
+                              "facebook",
+                              "link",
+                              e.target.value
+                            );
+                          }}
                           className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                           aria-describedby="hs-input-helper-text"
-                          placeholder='Enter your Facebook Link'
+                          placeholder="Enter your Facebook Link"
                         />
                       </div>
                     </div>
-                    <div className='flex flex-col gap-3 p-2 sm:border-[0px] sm:border-t-[1px] sm:border-b-[1px] md:border-t-[0px] md:border-b-[0px] md:border-l-[1px] md:border-r-[1px] border-green-300'>
+                    <div className="flex flex-col gap-3 p-2 sm:border-[0px] sm:border-t-[1px] sm:border-b-[1px] md:border-t-[0px] md:border-b-[0px] md:border-l-[1px] md:border-r-[1px] border-green-300">
                       <div>
                         <label
                           htmlFor="instagramName"
@@ -783,14 +821,20 @@ const Settings = () => {
                           Instagram Name
                         </label>
                         <input
-                          id='instagramName'
-                          type='text'
-                          value={userSocials.instagram.name || ''}
+                          id="instagramName"
+                          type="text"
+                          value={userSocials.instagram.name || ""}
                           disabled={editButton}
-                          onChange={(e) => { handleUserSocials("instagram", "name", e.target.value) }}
+                          onChange={(e) => {
+                            handleUserSocials(
+                              "instagram",
+                              "name",
+                              e.target.value
+                            );
+                          }}
                           className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                           aria-describedby="hs-input-helper-text"
-                          placeholder='Enter your Facebook Link'
+                          placeholder="Enter your Facebook Link"
                         />
                       </div>
                       <div>
@@ -802,17 +846,23 @@ const Settings = () => {
                         </label>
                         <input
                           id="instagramLink"
-                          type='text'
+                          type="text"
                           value={userSocials.instagram.link || ""}
                           disabled={editButton}
-                          onChange={(e) => { handleUserSocials("instagram", "link", e.target.value) }}
+                          onChange={(e) => {
+                            handleUserSocials(
+                              "instagram",
+                              "link",
+                              e.target.value
+                            );
+                          }}
                           className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                           aria-describedby="hs-input-helper-text"
-                          placeholder='Enter your Facebook Link'
+                          placeholder="Enter your Facebook Link"
                         />
                       </div>
                     </div>
-                    <div className='flex flex-col gap-3 p-2'>
+                    <div className="flex flex-col gap-3 p-2">
                       <div>
                         <label
                           htmlFor="twitterName"
@@ -822,13 +872,19 @@ const Settings = () => {
                         </label>
                         <input
                           id="twitterName"
-                          type='text'
+                          type="text"
                           value={userSocials.twitter.name || ""}
                           disabled={editButton}
-                          onChange={(e) => { handleUserSocials("twitter", "name", e.target.value) }}
+                          onChange={(e) => {
+                            handleUserSocials(
+                              "twitter",
+                              "name",
+                              e.target.value
+                            );
+                          }}
                           className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                           aria-describedby="hs-input-helper-text"
-                          placeholder='Enter your Facebook Link'
+                          placeholder="Enter your Facebook Link"
                         />
                       </div>
                       <div>
@@ -839,31 +895,57 @@ const Settings = () => {
                           Twitter Link
                         </label>
                         <input
-                          id='twitterLink'
-                          type='text'
+                          id="twitterLink"
+                          type="text"
                           value={userSocials.twitter.link || ""}
                           disabled={editButton}
-                          onChange={(e) => { handleUserSocials("twitter", "link", e.target.value) }}
+                          onChange={(e) => {
+                            handleUserSocials(
+                              "twitter",
+                              "link",
+                              e.target.value
+                            );
+                          }}
                           className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                           aria-describedby="hs-input-helper-text"
-                          placeholder='Enter your Facebook Link'
+                          placeholder="Enter your Facebook Link"
                         />
                       </div>
                     </div>
                   </div>
                 </div>
-
               </div>
             </div>
-            <div className={activeButton.credential ? "shadow-lg px-[30px] pb-[30px]" : "hidden"}>
+            <div
+              className={
+                activeButton.credential
+                  ? "shadow-lg px-[30px] pb-[30px]"
+                  : "hidden"
+              }
+            >
               <div className="flex flex-col w-[80%] justify-center mx-auto gap-4">
                 <div className={message.display ? "block" : "hidden"}>
-
-                  <div className={message.success ? "w-[100%] bg-green-400 rounded-md flex" : "hidden"}>
-                    <p className="py-[10px] text-[12px] px-[20px] text-white font-medium">{message.message}</p>
+                  <div
+                    className={
+                      message.success
+                        ? "w-[100%] bg-green-400 rounded-md flex"
+                        : "hidden"
+                    }
+                  >
+                    <p className="py-[10px] text-[12px] px-[20px] text-white font-medium">
+                      {message.message}
+                    </p>
                   </div>
-                  <div className={message.error ? "w-[100%] bg-red-500 rounded-md flex" : "hidden"}>
-                    <p className="py-[10px] text-[12px] px-[20px] text-white font-medium">{message.message}</p>
+                  <div
+                    className={
+                      message.error
+                        ? "w-[100%] bg-red-500 rounded-md flex"
+                        : "hidden"
+                    }
+                  >
+                    <p className="py-[10px] text-[12px] px-[20px] text-white font-medium">
+                      {message.message}
+                    </p>
                   </div>
                 </div>
                 <div className={!changePass ? "flex flex-col" : "hidden"}>
@@ -874,20 +956,20 @@ const Settings = () => {
                     Username
                   </label>
                   <input
-                    type='text'
+                    type="text"
                     disabled={editButton}
                     id="username"
                     className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                     placeholder="username"
                     aria-describedby="hs-input-helper-text"
-                    value={userCred.username || ''}
+                    value={userCred.username || ""}
                     onChange={(e) =>
-                      handleUserChangeCred('username', e.target.value)
+                      handleUserChangeCred("username", e.target.value)
                     }
                   />
                 </div>
 
-                <div className='relative z-0'>
+                <div className="relative z-0">
                   <label
                     htmlFor="oldpass"
                     className="block sm:text-xs lg:text-sm font-medium mb-2"
@@ -902,11 +984,11 @@ const Settings = () => {
                     placeholder="password"
                     aria-describedby="hs-input-helper-text"
                     onChange={(e) =>
-                      handleUserChangeCred('oldPass', e.target.value)
+                      handleUserChangeCred("oldPass", e.target.value)
                     }
                   />
                   <button
-                    name='old'
+                    name="old"
                     type="button"
                     onClick={toggleOldPassword}
                     className="absolute right-2 sm:top-5 lg:top-7 p-2.5 mt-1 text-sm font-medium text-white"
@@ -914,12 +996,15 @@ const Settings = () => {
                     {oldpasswordShown ? (
                       <AiOutlineEye style={{ color: "green" }} size={20} />
                     ) : (
-                      <AiOutlineEyeInvisible style={{ color: "green" }} size={20} />
+                      <AiOutlineEyeInvisible
+                        style={{ color: "green" }}
+                        size={20}
+                      />
                     )}
                   </button>
                 </div>
-                <div className={changePass ? 'flex flex-col' : 'hidden'}>
-                  <div className='relative z-0'>
+                <div className={changePass ? "flex flex-col" : "hidden"}>
+                  <div className="relative z-0">
                     <label
                       htmlFor="newpass"
                       className="block sm:text-xs lg:text-sm font-medium mb-2"
@@ -935,11 +1020,11 @@ const Settings = () => {
                       placeholder="password"
                       aria-describedby="hs-input-helper-text"
                       onChange={(e) =>
-                        handleUserChangeCred('newPass', e.target.value)
+                        handleUserChangeCred("newPass", e.target.value)
                       }
                     />
                     <button
-                      name='new'
+                      name="new"
                       type="button"
                       onClick={toggleNewPassword}
                       className="absolute right-2 sm:top-5 lg:top-7 p-2.5 mt-1 text-sm font-medium text-white"
@@ -947,7 +1032,10 @@ const Settings = () => {
                       {newpasswordShown ? (
                         <AiOutlineEye style={{ color: "green" }} size={20} />
                       ) : (
-                        <AiOutlineEyeInvisible style={{ color: "green" }} size={20} />
+                        <AiOutlineEyeInvisible
+                          style={{ color: "green" }}
+                          size={20}
+                        />
                       )}
                     </button>
                   </div>
@@ -955,16 +1043,17 @@ const Settings = () => {
                     {userCred.newPass && (
                       <div className="flex w-full h-1.5 bg-gray-200 rounded-full overflow-hidden dark:bg-gray-700">
                         <div
-                          className={`flex flex-col justify-center overflow-hidden ${passwordStrength < 25
-                            ? "bg-red-500"
-                            : passwordStrength < 50
+                          className={`flex flex-col justify-center overflow-hidden ${
+                            passwordStrength < 25
+                              ? "bg-red-500"
+                              : passwordStrength < 50
                               ? "bg-yellow-500"
                               : passwordStrength < 75
-                                ? "bg-amber-500"
-                                : passwordStrength < 100
-                                  ? "bg-blue-500"
-                                  : "bg-green-500"
-                            }`}
+                              ? "bg-amber-500"
+                              : passwordStrength < 100
+                              ? "bg-blue-500"
+                              : "bg-green-500"
+                          }`}
                           role="progressbar"
                           style={{ width: `${passwordStrength}%` }}
                           aria-valuenow={passwordStrength}
@@ -978,8 +1067,8 @@ const Settings = () => {
                         className="bg-green-50 border border-green-200 text-sm text-green-600 rounded-md p-4 mt-2"
                         role="alert"
                       >
-                        <span className="font-bold">Sucess:</span> Password is already
-                        strong
+                        <span className="font-bold">Sucess:</span> Password is
+                        already strong
                       </div>
                     )}
                     {passwordStrengthError && passwordStrength < 100 && (
@@ -987,28 +1076,36 @@ const Settings = () => {
                         className="bg-orange-50 border border-orange-200 text-sm text-orange-600 rounded-md p-4 mt-2"
                         role="alert"
                       >
-                        <span className="font-bold">Warning:</span> Password must contain
-                        at least 8 characters, one uppercase letter, one lowercase letter,
-                        one number, and one special character
+                        <span className="font-bold">Warning:</span> Password
+                        must contain at least 8 characters, one uppercase
+                        letter, one lowercase letter, one number, and one
+                        special character
                       </div>
                     )}
                   </div>
                 </div>
                 <div className={editButton ? "hidden" : "mx-auto"}>
                   <button
-                    className={changePass ? 'bg-custom-green-button text-white mx-auto w-[200px] font-medium px-[20px] py-[5px] rounded-md' : 'hidden'}
+                    className={
+                      changePass
+                        ? "bg-custom-green-button text-white mx-auto w-[200px] font-medium px-[20px] py-[5px] rounded-md"
+                        : "hidden"
+                    }
                     onClick={() => setChangePass(!changePass)}
                   >
                     Change Username
                   </button>
                   <button
-                    className={changePass ? 'hidden' : 'bg-custom-green-button text-white mx-auto w-[200px] font-medium px-[20px] py-[5px] rounded-md'}
+                    className={
+                      changePass
+                        ? "hidden"
+                        : "bg-[#2f4da5] text-white mx-auto w-[200px] font-medium px-[20px] py-[5px] rounded-md"
+                    }
                     onClick={() => setChangePass(!changePass)}
                   >
                     Change Password
                   </button>
                 </div>
-
               </div>
             </div>
           </div>
@@ -1020,9 +1117,17 @@ const Settings = () => {
                     <label
                       htmlFor="file_input"
                       onClick={handleAdd}
-                      className={editButton ? "hidden" : "block text-transparent p-[70px] font-medium rounded-full text-sm text-center opacity-0 hover:opacity-100 transition-opacity hover:bg-[#295141] hover:bg-opacity-60 cursor-pointer"}
+                      className={
+                        editButton
+                          ? "hidden"
+                          : "block text-transparent p-[70px] font-medium rounded-full text-sm text-center opacity-0 hover:opacity-100 transition-opacity hover:bg-[#295141] hover:bg-opacity-60 cursor-pointer"
+                      }
                     >
-                      <FaCamera size={50} style={{ color: "#ffffff" }} className="cursor-none" />
+                      <FaCamera
+                        size={50}
+                        style={{ color: "#ffffff" }}
+                        className="cursor-none"
+                      />
                     </label>
                     <input
                       disabled={editButton}
@@ -1044,34 +1149,48 @@ const Settings = () => {
                                 </button> */}
                 </div>
                 <div className="flex flex-col justify-center items-center mt-1">
-                  <h6 className="font-bold">{userData.firstName} {userData.lastName}</h6>
-                  <p className="text-[12px] leading-[10px]">{userData.username}</p>
+                  <h6 className="font-bold">
+                    {userData.firstName} {userData.lastName}
+                  </h6>
+                  <p className="text-[12px] leading-[10px]">
+                    {userData.username}
+                  </p>
                 </div>
               </div>
-              <div className='flex flex-col justify-center sm:w-[80%] md:w-[95%] lg:w-full items-center mx-auto mt-5 rounded-md p-[10px]'>
-                <div className='flex justify-center items-center border-b-[1px] border-gray-300 w-full pb-[10px]'>
-                  <h6 className='font-bold text-black'>SOCIALS</h6>
+              <div className="flex flex-col justify-center sm:w-[80%] md:w-[95%] lg:w-full items-center mx-auto mt-5 rounded-md p-[10px]">
+                <div className="flex justify-center items-center border-b-[1px] border-gray-300 w-full pb-[10px]">
+                  <h6 className="font-bold text-black">SOCIALS</h6>
                 </div>
-                <div className='p-[10px] flex sm:flex-col md:flex-row gap-5'>
-                  <button className='flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2'>
+                <div className="p-[10px] flex sm:flex-col md:flex-row gap-5">
+                  <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
                     <FaFacebook />
-                    <p className='text-left truncate text-[14px]'>{userSocials.facebook.name}</p>
+                    <p className="text-left truncate text-[14px]">
+                      {userSocials.facebook.name}
+                    </p>
                   </button>
-                  <button className='flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2'>
+                  <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
                     <FaInstagram />
-                    <p className='text-left truncate text-[14px]'>{userSocials.instagram.name}</p>
+                    <p className="text-left truncate text-[14px]">
+                      {userSocials.instagram.name}
+                    </p>
                   </button>
-                  <button className='flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2'>
+                  <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
                     <FaTwitter />
-                    <p className='text-left truncate text-[14px]'>{userSocials.twitter.name}</p>
+                    <p className="text-left truncate text-[14px]">
+                      {userSocials.twitter.name}
+                    </p>
                   </button>
-                  <button className='flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2'>
+                  <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
                     <FaPhone />
-                    <p className='text-left truncate text-[14px]'>{userData.contact}</p>
+                    <p className="text-left truncate text-[14px]">
+                      {userData.contact}
+                    </p>
                   </button>
-                  <button className=' flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2'>
+                  <button className=" flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
                     <FaEnvelope />
-                    <p className='text-left truncate text-[14px]'>{userData.email}</p>
+                    <p className="text-left truncate text-[14px]">
+                      {userData.email}
+                    </p>
                   </button>
                 </div>
               </div>
@@ -1080,33 +1199,33 @@ const Settings = () => {
         </div>
       </div>
       <div className="mb-[20px] flex justify-center items-center gap-5">
-        {
-          editButton ?
+        {editButton ? (
+          <button
+            name="edit"
+            onClick={handleOnEdit}
+            className="bg-[#2f4da5] text-white font-medium px-[20px] py-[5px] rounded-md"
+          >
+            Edit
+          </button>
+        ) : (
+          <div className="flex gap-5">
             <button
-              name="edit"
-              onClick={handleOnEdit}
+              type="submit"
+              name="save"
+              onClick={saveChanges}
               className="bg-custom-green-button text-white font-medium px-[20px] py-[5px] rounded-md"
             >
-              Edit
+              Save
             </button>
-            :
-            <div className="flex gap-5">
-              <button
-                type='submit'
-                name="save"
-                onClick={saveChanges}
-                className="bg-custom-green-button text-white font-medium px-[20px] py-[5px] rounded-md"
-              >Save
-              </button>
-              <button
-                onClick={handleOnEdit}
-                name="cancel"
-                className="bg-custom-red-button text-white font-medium px-[20px] py-[5px] rounded-md"
-              >
-                Cancel
-              </button>
-            </div>
-        }
+            <button
+              onClick={handleOnEdit}
+              name="cancel"
+              className="bg-custom-red-button text-white font-medium px-[20px] py-[5px] rounded-md"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

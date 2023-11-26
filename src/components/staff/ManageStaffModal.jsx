@@ -7,7 +7,7 @@ import { LiaRandomSolid } from "react-icons/lia";
 import { FaFacebookSquare, FaInstagram } from "react-icons/fa";
 import { FaSquareXTwitter } from "react-icons/fa6";
 
-function ManageResidentModal({ user, setUser }) {
+function ManageStaffModal({ user, setUser }) {
   const [edit, setEdit] = useState(false);
 
   const handleOnEdit = () => {
@@ -64,13 +64,13 @@ function ManageResidentModal({ user, setUser }) {
       formData.append("users", JSON.stringify(user));
 
       const response = await axios.patch(
-        `${API_LINK}/users/?doc_id=${user._id}`,
+        `${API_LINK}/staffs/${user._id}`,
         formData
       );
 
       if (response.status === 200) {
         console.log("Update successful:", response.data);
-        // window.location.reload();
+        window.location.reload();
       } else {
         console.error("Update failed. Status:", response.status);
       }
@@ -103,7 +103,7 @@ function ManageResidentModal({ user, setUser }) {
     <div>
       <div className="">
         <div
-          id="hs-modal-editResident"
+          id="hs-modal-editStaff"
           className="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
         >
           {/* Modal */}
@@ -115,7 +115,7 @@ function ManageResidentModal({ user, setUser }) {
                   className="font-bold text-white mx-auto md:text-xl text-center"
                   style={{ letterSpacing: "0.3em" }}
                 >
-                  MANAGE RESIDENT
+                  MANAGE BARANGAY STAFF
                 </h3>
               </div>
 
@@ -571,6 +571,7 @@ function ManageResidentModal({ user, setUser }) {
                                 Barangay Staff
                               </option> */}
                               <option value="Resident">Resident</option>
+                              <option value="Staff">Barangay Staff</option>
                             </select>
                           </div>
                         </div>
@@ -635,157 +636,6 @@ function ManageResidentModal({ user, setUser }) {
                           </div>
                         </div>
                       </div>
-
-                      {/* Section 4 */}
-                      <b className="border-solid border-0 border-black/50 border-b-2 mt-5 uppercase font-medium text-lg md:text-lg">
-                        Socials
-                      </b>
-                      <div className="flex flex-col md:flex-row md:space-x-2 mt-4">
-                        <div className="flex flex-row gap-1 md:gap-1.5">
-                          <FaFacebookSquare
-                            size={24}
-                            style={{ color: "#1877F2" }}
-                            className="my-auto"
-                          />
-                          <h1
-                            className="font-medium mb-1 mt-1.5 md:my-auto text-black text-sm"
-                            style={{ letterSpacing: "0.1em" }}
-                          >
-                            FACEBOOK
-                          </h1>
-                        </div>
-                        <div>
-                          <h1
-                            className="font-light mb-1 mt-1.5 text-black text-xs md:text-sm"
-                            style={{ letterSpacing: "0.1em" }}
-                          >
-                            (USERNAME & PROFILE LINK)
-                          </h1>
-                        </div>
-                      </div>
-                      <div className="flex flex-col mt-1 md:flex-row">
-                        <div className="flex flex-col w-full">
-                          <input
-                            type="text"
-                            id="facebook_name"
-                            className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                            value={user.socials?.facebook?.name ?? ''}
-                            placeholder=""
-                            disabled
-                          />
-                        </div>
-
-                        <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full">
-                          <div className="flex flex-col w-full md:mr-2">
-                            <input
-                              type="text"
-                              id="facebook_link"
-                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                              value={user.socials?.facebook?.link ?? ''}
-                              placeholder=""
-                              disabled
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col md:flex-row md:space-x-2 mt-4">
-                        <div className="flex flex-row gap-1 md:gap-1.5">
-                          <FaSquareXTwitter
-                            size={24}
-                            style={{ color: "#14171A" }}
-                            className="my-auto"
-                          />
-                          <h1
-                            className="font-medium mb-1 mt-1.5 md:my-auto text-black text-sm"
-                            style={{ letterSpacing: "0.1em" }}
-                          >
-                            TWITTER / X
-                          </h1>
-                        </div>
-                        <div>
-                          <h1
-                            className="font-light mb-1 mt-1.5 text-black text-xs md:text-sm"
-                            style={{ letterSpacing: "0.1em" }}
-                          >
-                            (USERNAME & PROFILE LINK)
-                          </h1>
-                        </div>
-                      </div>
-                      <div className="flex flex-col mt-1 md:flex-row">
-                        <div className="flex flex-col w-full">
-                          <input
-                            type="text"
-                            id="facebook_name"
-                            className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                            value={user.socials?.twitter?.name ?? ''}
-                            placeholder=""
-                            disabled
-                          />
-                        </div>
-
-                        <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full">
-                          <div className="flex flex-col w-full md:mr-2">
-                            <input
-                              type="text"
-                              id="facebook_link"
-                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                              value={user.socials?.twitter?.link ?? ''}
-                              placeholder=""
-                              disabled
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col md:flex-row md:space-x-2 mt-4">
-                        <div className="flex flex-row gap-1 md:gap-1.5">
-                          <FaInstagram
-                            size={24}
-                            style={{ color: "#E4405F" }}
-                            className="my-auto"
-                          />
-                          <h1
-                            className="font-medium mb-1 mt-1.5 md:my-auto text-black text-sm"
-                            style={{ letterSpacing: "0.1em" }}
-                          >
-                            INSTAGRAM
-                          </h1>
-                        </div>
-                        <div>
-                          <h1
-                            className="font-light mb-1 mt-1.5 text-black text-xs md:text-sm"
-                            style={{ letterSpacing: "0.1em" }}
-                          >
-                            (USERNAME & PROFILE LINK)
-                          </h1>
-                        </div>
-                      </div>
-                      <div className="flex flex-col mt-1 md:flex-row">
-                        <div className="flex flex-col w-full">
-                          <input
-                            type="text"
-                            id="facebook_name"
-                            className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                            value={user.socials?.instagram?.name ?? ''}
-                            placeholder=""
-                            disabled
-                          />
-                        </div>
-
-                        <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full">
-                          <div className="flex flex-col w-full md:mr-2">
-                            <input
-                              type="text"
-                              id="facebook_link"
-                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                              value={user.socials?.instagram?.link ?? ''}
-                              placeholder=""
-                              disabled
-                            />
-                          </div>
-                        </div>
-                      </div>
                     </div>
                   </div>
                 </form>
@@ -804,7 +654,7 @@ function ManageResidentModal({ user, setUser }) {
                     <button
                       type="button"
                       className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
-                      data-hs-overlay="#hs-modal-editResident"
+                      data-hs-overlay="#hs-modal-editStaff"
                     >
                       CLOSE
                     </button>
@@ -836,4 +686,4 @@ function ManageResidentModal({ user, setUser }) {
   );
 }
 
-export default ManageResidentModal;
+export default ManageStaffModal;

@@ -1,26 +1,26 @@
 import React from "react";
-import ReactPaginate from "react-paginate";
 import { useState, useEffect } from "react";
-import { BsPrinter } from "react-icons/bs";
-import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { MdRestartAlt } from "react-icons/md";
-import officialimage from "../assets/sample/official.jpg";
-import GenerateReportsModal from "../components/officials/GenerateReportsModal";
-import ArchiveOfficialModal from "../components/officials/ArchiveOfficialModal";
-import Breadcrumbs from "../components/archivedOfficials/Breadcrumbs";
-import RestoreOfficialModal from "../components/archivedOfficials/RestoreOfficialModal";
-import ViewOfficialModal from "../components/archivedOfficials/ViewOfficialModal";
+import { BsPrinter } from "react-icons/bs";
+import { AiOutlineEye } from "react-icons/ai";
+import ReactPaginate from "react-paginate";
+import GenerateReportsModal from "../components/services/GenerateReportsModal";
+import RestoreResidentModal from "../components/residents/RestoreResidentModal";
+import ViewResidentModal from "../components/residents/ViewArchivedResident";
+import Breadcrumbs from "../components/archivedStaffs/Breadcrumb";
 import axios from "axios";
 import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
+import RestoreStaffModal from "../components/staff/RestoreStaffModal";
+import ViewArchivedStaff from "../components/staff/ViewArchivedStaff";
 
-const ArchivedOfficials = () => {
+const ArchivedStaffsManagement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
-  const [officials, setOfficials] = useState([]);
+  const [users, setUsers] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
-  const brgy = searchParams.get("brgy");
   const id = searchParams.get("id");
-  const [selectedOfficial, setSelectedOfficial] = useState({});
+  const brgy = searchParams.get("brgy");
+  const [user, setUser] = useState({});
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
 
@@ -28,24 +28,41 @@ const ArchivedOfficials = () => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
     setSortOrder(newSortOrder);
     setSortColumn(sortBy);
-
-    const sortedData = officials.slice().sort((a, b) => {
-      if (sortBy === "lastName") {
+  
+    const sortedData = users.slice().sort((a, b) => {
+      if (sortBy === "user_id") {
+        return newSortOrder === "asc"
+          ? a.user_id.localeCompare(b.user_id)
+          : b.user_id.localeCompare(a.user_id);
+      } else if (sortBy === "lastName") {
         return newSortOrder === "asc"
           ? a.lastName.localeCompare(b.lastName)
           : b.lastName.localeCompare(a.lastName);
-      } else if (sortBy === "rendered_service") {
-        const dateA = new Date(a.fromYear);
-        const dateB = new Date(b.fromYear);
-
-        return newSortOrder === "asc" ? dateA - dateB : dateB - dateA;
+      } else if (sortBy === "isApproved") {
+        const order = { Registered: 1, Pending: 2, Denied: 3 };
+        return newSortOrder === "asc"
+          ? order[a.isApproved] - order[b.isApproved]
+          : order[b.isApproved] - order[a.isApproved];
       }
-
+  
       return 0;
     });
-
-    setOfficials(sortedData);
+  
+    setUsers(sortedData);
   };
+
+  useEffect(() => {
+    const fetch = async () => {
+      const response = await axios.get(
+        `${API_LINK}/staffs/showArchived/${brgy}`
+      );
+
+      if (response.status === 200) setUsers(response.data);
+      else setUsers([]);
+    };
+
+    fetch();
+  }, []);
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -63,92 +80,49 @@ const ArchivedOfficials = () => {
   };
 
   const checkAllHandler = () => {
-    if (officials.length === selectedItems.length) {
+    if (users.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const officialIds = officials.map((item) => {
+      const postIds = users.map((item) => {
         return item._id;
       });
 
-      setSelectedItems(officialIds);
+      setSelectedItems(postIds);
     }
   };
 
-  const handleView = async (official) => {
-    setSelectedOfficial(official);
-  };
-
-  useEffect(() => {
-    document.title =
-      "Archived Barangay Officials | Barangay E-Services Management";
-
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=true`
-        );
-
-        if (response.status === 200) {
-          const officialsData = response.data || [];
-
-          if (officialsData.length > 0) {
-            setOfficials(officialsData);
-          } else {
-            setOfficials([]);
-            console.log(`No officials found for Barangay ${brgy}`);
-          }
-        } else {
-          setOfficials([]);
-          console.error("Failed to fetch officials:", response.status);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setOfficials([]);
-      }
-    };
-
-    fetchData();
-  }, [brgy]);
-
   const tableHeader = [
-    "IMAGE",
+    "USER_ID",
     "NAME",
-    "POSITION",
-    "RENDERED SERVICE",
+    "AGE",
+    "GENDER",
+    "CONTACT",
+    "CIVIL STATUS",
+    "STATUS",
     "ACTIONS",
   ];
 
-  const dateFormat = (fromYear, toYear) => {
-    const startDate = fromYear ? new Date(fromYear) : null;
-    const endDate = toYear ? new Date(toYear) : null;
+  useEffect(() => {
+    document.title = "Archived Residents | Barangay E-Services Management";
+  }, []);
 
-    const startYearMonth = startDate
-      ? `${startDate.toLocaleString("default", {
-          month: "short",
-        })} ${startDate.getFullYear()}`
-      : "";
-    const endYearMonth = endDate
-      ? `${endDate.toLocaleString("default", {
-          month: "short",
-        })} ${endDate.getFullYear()}`
-      : "";
-
-    return `${startYearMonth} ${endYearMonth}`;
+  const handleView = (item) => {
+    setUser(item);
   };
 
   return (
-    <div className="mx-4 mt-8 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_305px)] xxxl:w-[calc(100vw_-_305px)]">
-      <Breadcrumbs />
+    <div className="mx-4 mt-8 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_305px)] xxxl:w-[calc(100vw_-_310px)]">
       {/* Body */}
       <div>
+        <Breadcrumbs />
         {/* Header */}
         <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#253a7a] to-[#2645a6] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
-              className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-[1.5rem] xxxl:text-3xl xxxl:mt-1 text-white"
+              className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-3xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
-              ARCHIVED OFFICIALS
+              ARCHIVED STAFFS
             </h1>
           </div>
         </div>
@@ -181,14 +155,29 @@ const ArchivedOfficials = () => {
                 </svg>
               </button>
               <ul
-                className="bg-[#253a7a] border-2 border-[#ffb13c] hs-dropdown-menu w-96 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10 shadow-md rounded-lg p-2"
+                className="bg-[#253a7a] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10 shadow-md rounded-lg p-2"
                 aria-labelledby="hs-dropdown"
               >
-                 <li
+                <li
+                  onClick={() => handleSort("user_id")}
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                >
+                  USER ID
+                  {sortColumn === "user_id" && (
+                    <span className="ml-auto">
+                      {sortOrder === "asc" ? (
+                        <span>DESC &darr;</span>
+                      ) : (
+                        <span>ASC &uarr;</span>
+                      )}
+                    </span>
+                  )}
+                </li>
+                <li
                   onClick={() => handleSort("lastName")}
                   className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
                 >
-                  NAME
+                  LAST NAME
                   {sortColumn === "lastName" && (
                     <span className="ml-auto">
                       {sortOrder === "asc" ? (
@@ -200,16 +189,16 @@ const ArchivedOfficials = () => {
                   )}
                 </li>
                 <li
-                  onClick={() => handleSort("rendered_service")}
+                  onClick={() => handleSort("isApproved")}
                   className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
                 >
-                  RENDERED SERVICE
-                  {sortColumn === "rendered_service" && (
+                  STATUS
+                  {sortColumn === "isApproved" && (
                     <span className="ml-auto">
                       {sortOrder === "asc" ? (
-                        <span className="text-xs">OLD TO LATEST &darr;</span>
+                        <span>DESC &darr;</span>
                       ) : (
-                        <span className="text-xs">LATEST TO OLD &uarr;</span>
+                        <span>ASC &uarr;</span>
                       )}
                     </span>
                   )}
@@ -265,15 +254,15 @@ const ArchivedOfficials = () => {
                 <div className="hs-tooltip inline-block w-full">
                   <button
                     type="button"
-                    data-hs-overlay="#hs-restore-official-modal"
-                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md   bg-[#253a7a] font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
+                    data-hs-overlay="#hs-modal-restoreStaff"
+                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md bg-[#253a7a] font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
                   >
                     <MdRestartAlt size={24} style={{ color: "#ffffff" }} />
                     <span
                       className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                       role="tooltip"
                     >
-                      Restore Selected Officials
+                      Archived Selected Residents
                     </span>
                   </button>
                 </div>
@@ -283,7 +272,7 @@ const ArchivedOfficials = () => {
         </div>
 
         {/* Table */}
-        <div className="overflow-auto sm:overflow-x-auto h-[calc(100vh_-_314px)] xxxl:h-[calc(100vh_-_330px)]">
+        <div className="overflow-auto sm:overflow-x-auto h-[calc(100vh_-_315px)] xxxl:h-[calc(100vh_-_330px)]">
           <table className="w-full ">
             <thead className="bg-[#253a7a] sticky top-0">
               <tr className="">
@@ -309,7 +298,7 @@ const ArchivedOfficials = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {officials.map((item, index) => (
+              {users.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
@@ -318,52 +307,93 @@ const ArchivedOfficials = () => {
                         checked={selectedItems.includes(item._id)}
                         value={item._id}
                         onChange={checkboxHandler}
+                        id=""
                       />
                     </div>
                   </td>
-                  <td className="xl:px-6 xl:py-3">
-                    <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      <div className="py-2 xl:px-6 xl:py-2">
-                        <img
-                          src={item.picture.link}
-                          alt=""
-                          className="w-[120px] h-[90px] xl:h-28 xl:w-28 bg-cover rounded-full mx-auto border-[5px] border-[#295141] object-cover"
-                        />
-                      </div>
+                  <td className="px-6 py-3">
+                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
+                      {item.user_id}
+                    </span>
+                  </td>
+                  <td className="px-6 py-3">
+                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
+                      {item.lastName +
+                        ", " +
+                        item.middleName +
+                        " " +
+                        item.firstName}
                     </span>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {item.lastName + ", " +  item.firstName + " " + item.middleName}
+                      <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
+                        {item.age}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.position}
+                        {item.sex}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {dateFormat(item.fromYear) || ""} -{" "}
-                        {dateFormat(item.toYear) || ""}
+                        {item.contact}
                       </span>
                     </div>
+                  </td>
+                  <td className="px-6 py-3">
+                    <div className="flex justify-center items-center">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {item.civil_status}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-3">
+                    {item.isApproved === "Registered" && (
+                      <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                          REGISTERED
+                        </span>
+                      </div>
+                    )}
+                    {item.isApproved === "Denied" && (
+                      <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                          DENIED
+                        </span>
+                      </div>
+                    )}
+                    {item.isApproved === "Pending" && (
+                      <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                          PENDING
+                        </span>
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center space-x-1 sm:space-x-none">
+                    <div className="hs-tooltip inline-block">
                       <button
-                        onClick={() => handleView(item)}
                         type="button"
-                        data-hs-overlay="#hs-view-archived-official-modal"
-                        className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                        data-hs-overlay="#hs-modal-viewArchivedStaff"
+                        onClick={() => handleView({ ...item })}
+                        className="hs-tooltip-toggle text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                       >
                         <AiOutlineEye size={24} style={{ color: "#ffffff" }} />
                       </button>
+                      <span
+                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                          role="tooltip"
+                        >
+                          View Resident
+                        </span>
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -389,16 +419,11 @@ const ArchivedOfficials = () => {
           renderOnZeroPageCount={null}
         />
       </div>
+      <ViewArchivedStaff user={user} setUser={setUser} />
+      <RestoreStaffModal selectedItems={selectedItems} />
       <GenerateReportsModal />
-      <ArchiveOfficialModal />
-      <RestoreOfficialModal selectedItems={selectedItems} />
-      <ViewOfficialModal
-        selectedOfficial={selectedOfficial}
-        setSelectedOfficial={setSelectedOfficial}
-        brgy={brgy}
-      />
     </div>
   );
 };
 
-export default ArchivedOfficials;
+export default ArchivedStaffsManagement;
