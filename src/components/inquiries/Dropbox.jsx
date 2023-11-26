@@ -32,7 +32,8 @@ const Dropbox = ({ createFiles, setCreateFiles, handleFileChange }) => {
     setIsDragging(true);
   };
 
-  const handleDelete = (idx) => {
+  const handleDelete = (e, idx) => {
+    e.preventDefault();
     setCreateFiles((prev) => prev.filter((_, index) => index !== idx));
   };
 
@@ -105,7 +106,7 @@ const Dropbox = ({ createFiles, setCreateFiles, handleFileChange }) => {
                           </p>
                           <button
                             className="delete ml-auto focus:outline-none hover:bg-gray-300 p-1 rounded-md text-gray-800"
-                            onClick={(e) => handleDelete(idx)}
+                            onClick={(e) => handleDelete(e, idx)}
                           >
                             <svg
                               className="pointer-events-none fill-current w-4 h-4 ml-auto"

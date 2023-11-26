@@ -1,27 +1,26 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
-import { FaArchive } from "react-icons/fa";
-import { FiEdit } from "react-icons/fi";
-import { BsPrinter } from "react-icons/bs";
-import ArchiveModal from "../components/inquiries/ArchiveInquiryModal";
-import ReplyModal from "../components/inquiries/ReplyInquiries";
-import Status from "../components/inquiries/Status";
 import { useState, useEffect } from "react";
+import { MdRestartAlt } from "react-icons/md";
+import { BsPrinter } from "react-icons/bs";
+import { AiOutlineEye } from "react-icons/ai";
 import ReactPaginate from "react-paginate";
+import GenerateReportsModal from "../components/services/GenerateReportsModal";
+import RestoreResidentModal from "../components/residents/RestoreResidentModal";
+import ViewResidentModal from "../components/residents/ViewArchivedResident";
+import Breadcrumbs from "../components/archivedStaffs/Breadcrumb";
 import axios from "axios";
 import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
-import ViewInquiriesModal from "../components/inquiries/ViewInquiriesModal";
+import RestoreStaffModal from "../components/staff/RestoreStaffModal";
+import ViewArchivedStaff from "../components/staff/ViewArchivedStaff";
 
-const Inquiries = () => {
+const ArchivedStaffsManagement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
+  const [users, setUsers] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
-  const [inquiries, setInquiries] = useState([]);
-  const [inquiry, setInquiry] = useState({compose: {file: []}, response: [{file: []}]});
-  const [status, setStatus] = useState({});
+  const [user, setUser] = useState({});
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
 
@@ -29,42 +28,41 @@ const Inquiries = () => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
     setSortOrder(newSortOrder);
     setSortColumn(sortBy);
-
-    const sortedData = inquiries.slice().sort((a, b) => {
-      if (sortBy === "inquiries_id") {
+  
+    const sortedData = users.slice().sort((a, b) => {
+      if (sortBy === "user_id") {
         return newSortOrder === "asc"
-          ? a.inquiries_id.localeCompare(b.inquiries_id)
-          : b.inquiries_id.localeCompare(a.inquiries_id);
+          ? a.user_id.localeCompare(b.user_id)
+          : b.user_id.localeCompare(a.user_id);
       } else if (sortBy === "lastName") {
         return newSortOrder === "asc"
           ? a.lastName.localeCompare(b.lastName)
           : b.lastName.localeCompare(a.lastName);
       } else if (sortBy === "isApproved") {
-        const order = { Completed: 1, "In Progress": 2, "Not Responded": 3 };
+        const order = { Registered: 1, Pending: 2, Denied: 3 };
         return newSortOrder === "asc"
           ? order[a.isApproved] - order[b.isApproved]
           : order[b.isApproved] - order[a.isApproved];
       }
-
+  
       return 0;
     });
-
-    setInquiries(sortedData);
+  
+    setUsers(sortedData);
   };
 
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/inquiries/?brgy=${brgy}&archived=false`
+        `${API_LINK}/staffs/showArchived/${brgy}`
       );
-      if (response.status === 200) setInquiries(response.data);
-      else setInquiries([]);
+
+      if (response.status === 200) setUsers(response.data);
+      else setUsers([]);
     };
 
     fetch();
   }, []);
-
-  console.log(inquiry);
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -82,10 +80,10 @@ const Inquiries = () => {
   };
 
   const checkAllHandler = () => {
-    if (inquiries.length === selectedItems.length) {
+    if (users.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const postIds = inquiries.map((item) => {
+      const postIds = users.map((item) => {
         return item._id;
       });
 
@@ -94,67 +92,38 @@ const Inquiries = () => {
   };
 
   const tableHeader = [
-    "Inquiry id",
-    "name",
-    "e-mail",
-    "date",
-    "status",
-    "actions",
+    "USER_ID",
+    "NAME",
+    "AGE",
+    "GENDER",
+    "CONTACT",
+    "CIVIL STATUS",
+    "STATUS",
+    "ACTIONS",
   ];
 
   useEffect(() => {
-    document.title = "Inquiries | Barangay E-Services Management";
+    document.title = "Archived Residents | Barangay E-Services Management";
   }, []);
 
-  const DateFormat = (date) => {
-    const dateFormat = date === undefined ? "" : date.substr(0, 10);
-    return dateFormat;
-  };
-
   const handleView = (item) => {
-    setInquiry(item);
-  };
-
-  const handleStatus = (status) => {
-    setStatus(status);
+    setUser(item);
   };
 
   return (
-    <div className="mx-4 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_305px)] xxxl:w-[calc(100vw_-_310px)]">
+    <div className="mx-4 mt-8 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_305px)] xxxl:w-[calc(100vw_-_310px)]">
+      {/* Body */}
       <div>
-        <div className="flex flex-row mt-5 sm:flex-col-reverse lg:flex-row w-full">
-          <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#3e5fc2] to-[#1f2f5e] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
+        <Breadcrumbs />
+        {/* Header */}
+        <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
+          <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#253a7a] to-[#2645a6] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
-              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[1.2rem] xl:text-[1.5rem] xxl:text-[2.1rem] xxxl:text-4xl xxxl:mt-1 text-white"
+              className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-3xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
-              INQUIRIES
+              ARCHIVED STAFFS
             </h1>
-          </div>
-          <div className="lg:w-3/5 flex flex-row justify-end items-center ">
-            <div className="sm:w-full md:w-full lg:w-2/5 flex sm:flex-col md:flex-row md:justify-center md:items-center sm:space-y-2 md:space-y-0 md:space-x-2 ">
-              <div className="w-full rounded-lg ">
-                <Link to={`/archivedinquiries/?id=${id}&brgy=${brgy}`}>
-                  <div className="hs-tooltip inline-block w-full">
-                    <button
-                      type="button"
-                      className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#3e5fc2] to-[#1f2f5e] w-full text-white font-medium text-sm text-center inline-flex items-center"
-                    >
-                      <FaArchive size={24} style={{ color: "#ffffff" }} />
-                      <span className="sm:block md:hidden sm:pl-5">
-                        Archived Inquiries
-                      </span>
-                      <span
-                        className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                        role="tooltip"
-                      >
-                        Archived Inquiries
-                      </span>
-                    </button>
-                  </div>
-                </Link>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -186,15 +155,15 @@ const Inquiries = () => {
                 </svg>
               </button>
               <ul
-                className="bg-[#253a7a] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                className="bg-[#253a7a] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10 shadow-md rounded-lg p-2"
                 aria-labelledby="hs-dropdown"
               >
                 <li
-                  onClick={() => handleSort("inquiries_id")}
+                  onClick={() => handleSort("user_id")}
                   className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
                 >
-                  INQUIRY ID
-                  {sortColumn === "inquiries_id" && (
+                  USER ID
+                  {sortColumn === "user_id" && (
                     <span className="ml-auto">
                       {sortOrder === "asc" ? (
                         <span>DESC &darr;</span>
@@ -205,16 +174,16 @@ const Inquiries = () => {
                   )}
                 </li>
                 <li
-                  onClick={() => handleSort("date")}
+                  onClick={() => handleSort("lastName")}
                   className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
                 >
-                  Date
-                  {sortColumn === "date" && (
+                  LAST NAME
+                  {sortColumn === "lastName" && (
                     <span className="ml-auto">
                       {sortOrder === "asc" ? (
-                        <span>OLD TO LATEST &darr;</span>
+                        <span>DESC &darr;</span>
                       ) : (
-                        <span>LATEST TO OLD &uarr;</span>
+                        <span>ASC &uarr;</span>
                       )}
                     </span>
                   )}
@@ -270,7 +239,7 @@ const Inquiries = () => {
                 <div className="hs-tooltip inline-block w-full">
                   <button
                     type="button"
-                    data-hs-overlay="#hs-modal-archive"
+                    data-hs-overlay="#hs-generate-reports-modal"
                     className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md bg-blue-800 font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
                   >
                     <BsPrinter size={24} style={{ color: "#ffffff" }} />
@@ -285,15 +254,15 @@ const Inquiries = () => {
                 <div className="hs-tooltip inline-block w-full">
                   <button
                     type="button"
-                    data-hs-overlay="#hs-modal-archiveInquiry"
-                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md  bg-pink-800 font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
+                    data-hs-overlay="#hs-modal-restoreStaff"
+                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md bg-[#253a7a] font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
                   >
-                    <AiOutlineStop size={24} style={{ color: "#ffffff" }} />
+                    <MdRestartAlt size={24} style={{ color: "#ffffff" }} />
                     <span
                       className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                       role="tooltip"
                     >
-                      Archived Selected Inquiries
+                      Archived Selected Residents
                     </span>
                   </button>
                 </div>
@@ -302,9 +271,10 @@ const Inquiries = () => {
           </div>
         </div>
 
-        <div className="overflow-y-auto sm:overflow-x-auto h-[calc(100vh_-_270px)] xxxl:h-[calc(100vh_-_286px)]">
+        {/* Table */}
+        <div className="overflow-auto sm:overflow-x-auto h-[calc(100vh_-_315px)] xxxl:h-[calc(100vh_-_330px)]">
           <table className="w-full ">
-            <thead className="bg-[#2a3f80] sticky top-0">
+            <thead className="bg-[#253a7a] sticky top-0">
               <tr className="">
                 <th scope="col" className="px-6 py-4">
                   <div className="flex justify-center items-center">
@@ -328,11 +298,11 @@ const Inquiries = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {inquiries.map((item, index) => (
+              {users.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
-                    <input
+                      <input
                         type="checkbox"
                         checked={selectedItems.includes(item._id)}
                         value={item._id}
@@ -343,97 +313,85 @@ const Inquiries = () => {
                   </td>
                   <td className="px-6 py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                      {item.inq_id}
+                      {item.user_id}
+                    </span>
+                  </td>
+                  <td className="px-6 py-3">
+                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
+                      {item.lastName +
+                        ", " +
+                        item.middleName +
+                        " " +
+                        item.firstName}
                     </span>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                        {item.name}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                        {item.email}
+                        {item.age}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {DateFormat(item.compose.date) || ""}
+                        {item.sex}
                       </span>
                     </div>
                   </td>
-
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
-                      {item.isApproved === "Completed" && (
-                        <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
-                            COMPLETED
-                          </span>
-                        </div>
-                      )}
-                      {item.isApproved === "Not Responded" && (
-                        <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
-                            NOT RESPONDED
-                          </span>
-                        </div>
-                      )}
-                      {item.isApproved === "In Progress" && (
-                        <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
-                            IN PROGRESS
-                          </span>
-                        </div>
-                      )}
+                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {item.contact}
+                      </span>
                     </div>
                   </td>
-
                   <td className="px-6 py-3">
-                    <div className="flex justify-center space-x-1 sm:space-x-none">
-                      <div className="hs-tooltip inline-block">
-                        <button
-                          type="button"
-                          data-hs-overlay="#hs-modal-viewInquiries"
-                          onClick={() => handleView({ ...item })}
-                          className="hs-tooltip-toggle text-white bg-teal-800  font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                        >
-                          <AiOutlineEye
-                            size={24}
-                            style={{ color: "#ffffff" }}
-                          />
-                        </button>
-                        <span
-                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                          role="tooltip"
-                        >
-                          View Inquiry
+                    <div className="flex justify-center items-center">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {item.civil_status}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-3">
+                    {item.isApproved === "Registered" && (
+                      <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                          REGISTERED
                         </span>
                       </div>
-                      <div className="hs-tooltip inline-block">
-                        <button
-                          type="button"
-                          data-hs-overlay="#hs-modal-status"
-                          onClick={() =>
-                            handleStatus({
-                              id: item._id,
-                              status: item.isApproved,
-                            })
-                          }
-                          className="hs-tooltip-toggle text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                        >
-                          <FiEdit size={24} style={{ color: "#ffffff" }} />
-                        </button>
-                        <span
+                    )}
+                    {item.isApproved === "Denied" && (
+                      <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                          DENIED
+                        </span>
+                      </div>
+                    )}
+                    {item.isApproved === "Pending" && (
+                      <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                          PENDING
+                        </span>
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-6 py-3">
+                    <div className="flex justify-center space-x-1 sm:space-x-none">
+                    <div className="hs-tooltip inline-block">
+                      <button
+                        type="button"
+                        data-hs-overlay="#hs-modal-viewArchivedStaff"
+                        onClick={() => handleView({ ...item })}
+                        className="hs-tooltip-toggle text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                      >
+                        <AiOutlineEye size={24} style={{ color: "#ffffff" }} />
+                      </button>
+                      <span
                           className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                           role="tooltip"
                         >
-                          Edit Status
+                          View Resident
                         </span>
                       </div>
                     </div>
@@ -443,30 +401,29 @@ const Inquiries = () => {
             </tbody>
           </table>
         </div>
-        <div className="md:py-4 md:px-4 bg-[#253a7a] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
-          <span className="font-medium text-white sm:text-xs text-sm">
-            Showing 1 out of 15 pages
-          </span>
-          <ReactPaginate
-            breakLabel="..."
-            nextLabel=">>"
-            onPageChange={() => {}}
-            pageRangeDisplayed={3}
-            pageCount={15}
-            previousLabel="<<"
-            className="flex space-x-3 text-white font-bold "
-            activeClassName="text-yellow-500"
-            disabledLinkClassName="text-gray-300"
-            renderOnZeroPageCount={null}
-          />
-        </div>
-        <ArchiveModal selectedItems={selectedItems} />
-        <ReplyModal />
-        <ViewInquiriesModal inquiry={inquiry} setInquiry={setInquiry} />
-        <Status status={status} setStatus={setStatus} />
       </div>
+      <div className="md:py-4 md:px-4 bg-[#253a7a] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
+        <span className="font-medium text-white sm:text-xs text-sm">
+          Showing 1 out of 15 pages
+        </span>
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel=">>"
+          onPageChange={() => {}}
+          pageRangeDisplayed={3}
+          pageCount={15}
+          previousLabel="<<"
+          className="flex space-x-3 text-white font-bold "
+          activeClassName="text-yellow-500"
+          disabledLinkClassName="text-gray-300"
+          renderOnZeroPageCount={null}
+        />
+      </div>
+      <ViewArchivedStaff user={user} setUser={setUser} />
+      <RestoreStaffModal selectedItems={selectedItems} />
+      <GenerateReportsModal />
     </div>
   );
 };
 
-export default Inquiries;
+export default ArchivedStaffsManagement;

@@ -91,9 +91,9 @@ const EditDropbox = ({ files, setFiles }) => {
                         className="img-preview hidden w-full h-full sticky object-cover rounded-md bg-fixed"
                       />
                       <section className="flex flex-col rounded-md text-xs break-words w-full h-full z-20 absolute top-0 py-2 px-3">
-                        <h1 className="flex-1 group-hover:text-blue-800 line-clamp-1">
+                        <a href={file.link} target="_blank" className="flex-1 group-hover:text-blue-800 line-clamp-1">
                           {file.name}
-                        </h1>
+                        </a>
                         <div className="flex">
                           <span className="p-1 text-blue-800">
                             <i>{/* SVG code */}</i>

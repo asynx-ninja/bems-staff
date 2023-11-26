@@ -52,7 +52,7 @@ const Residents = () => {
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/users/showArchived/${brgy}`
+        `${API_LINK}/users/showArchived/?brgy=${brgy}&type=Resident`
       );
 
       if (response.status === 200) setUsers(response.data);

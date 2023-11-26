@@ -21,15 +21,20 @@ const Login = () => {
     const obj = {
       username: data.username,
       password: data.password,
-      type: "Staff",
     };
 
     try {
-      const res = await axios.get(`${API_LINK}/auth/${obj.username}/${obj.password}/${obj.type}`);
+      const res = await axios.get(`${API_LINK}/auth/${obj.username}/${obj.password}`);
       setErrorMessage("");
+      console.log(res);
       if (res.status === 200) {
-        const id = res.data[0]._id;
-        navigate(`/dashboard/?id=${id}&brgy=${res.data[0].address.brgy}`);
+        if (res.data[0].type === "Brgy Admin" || res.data[0].type === "Staff"){
+          const id = res.data[0]._id;
+          navigate(`/dashboard/?id=${id}&brgy=${res.data[0].address.brgy}`);
+        }
+        else {
+          setErrorMessage("Your user credentials is not available. Please contact an administrator.");
+        }
       } 
     } catch (error) {
       if (error.response) {

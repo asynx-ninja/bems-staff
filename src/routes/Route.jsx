@@ -23,6 +23,8 @@ import ArchivedRequests from "../pages/ArchivedRequests";
 import ArchivedOfficials from "../pages/ArchivedOfficials";
 import SampleForm from "../components/services/form/SampleForm";
 import SampleDocument from "../components/services/form/SampleDocument";
+import StaffManagement from "../pages/StaffsManagement";
+import ArchivedStaffsManagement from "../pages/ArchivedStaffsManagement";
 
 const pages = [
   {
@@ -92,6 +94,14 @@ const pages = [
   {
     path: "/archived_officials",
     element: <Navbar comp={<ArchivedOfficials />} />,
+  },
+  {
+    path: "/staff_management",
+    element: <Navbar comp={<StaffManagement />} />,
+  },
+  {
+    path: "/archived_staff_management",
+    element: <Navbar comp={<ArchivedStaffsManagement />} />,
   },
   {
     path: "/info",
