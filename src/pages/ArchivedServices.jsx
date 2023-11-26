@@ -340,7 +340,7 @@ const ArchivedServices = () => {
                     </div>
                   </td>
                   <td className="px-6 py-3">
-                    {item.isApproved === "Registered" && (
+                    {item.isApproved === "Approved" && (
                       <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                         <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
                           APPROVED

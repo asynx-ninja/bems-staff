@@ -188,11 +188,11 @@ const StatisticsDashboard = () => {
                 <button
                   id="hs-unstyled-collapse"
                   data-hs-collapse={`#hs-statistics-dashboard-${idx}`}
-                  className="hs-collapse-toggle justify-between flex items-center w-full  gap-x-3 py-2 px-2.5  text-sm rounded-md"
+                  className="hs-collapse-toggle justify-between flex items-center w-full  gap-x-3  text-[12px] xl:text-base rounded-md"
                 >
-                  <div className="flex items-center gap-x-3 p-1.5 w-full inline-flex items-center text-base  font-heavy rounded-lg">
+                  <div className="flex items-center gap-x-3 p-0.5 w-full inline-flex items-center font-heavy rounded-lg line-clamp-1">
                     {titleItem ? titleItem.icon : ""}
-                    <span className="flex uppercase block justify-end item-end">
+                    <span className="flex uppercase block justify-end item-end ">
                       {titleItem ? titleItem.title : ""}
                     </span>
                   </div>
@@ -221,7 +221,7 @@ const StatisticsDashboard = () => {
                   aria-labelledby="hs-unstyled-collapse"
                 >
                   <Link to={titleItem ? titleItem.activeLink : ""}>
-                    <a className={`flex items-center p-3 gap-x-3.5 rounded-lg font-heavy text-sm text-white hover:bg-gradient-to-r ${item.gradient1} hover:border hover:border-gray-300`}>
+                    <a className={`flex items-center p-1 gap-x-3.5 rounded-lg font-heavy text-[12px] xl:text-[14px] text-white hover:bg-gradient-to-r ${item.gradient1} hover:border hover:border-gray-300`}>
                       Active:
                       <strong className="ml-auto">
                         {titleItem ? titleItem.active : ""}
@@ -229,7 +229,7 @@ const StatisticsDashboard = () => {
                     </a>
                   </Link>
                   <Link to={titleItem ? titleItem.archivedLink : ""}>
-                    <a className={`flex items-center p-3 gap-x-3.5 rounded-lg font-heavy text-sm text-white hover:bg-gradient-to-r ${item.gradient1} hover:border hover:border-gray-300`}>
+                    <a className={`flex items-center p-1 gap-x-3.5 rounded-lg font-heavy text-[12px] xl:text-[14px] text-white hover:bg-gradient-to-r ${item.gradient1} hover:border hover:border-gray-300`}>
                       Archived:
                       <strong className="ml-auto">
                         {titleItem ? titleItem.archived : ""}

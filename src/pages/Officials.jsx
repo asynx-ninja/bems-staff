@@ -30,10 +30,10 @@ const Officials = () => {
     setSortColumn(sortBy);
 
     const sortedData = officials.slice().sort((a, b) => {
-      if (sortBy === "name") {
+      if (sortBy === "lastName") {
         return newSortOrder === "asc"
-          ? a.name.localeCompare(b.name)
-          : b.name.localeCompare(a.name);
+          ? a.lastName.localeCompare(b.lastName)
+          : b.lastName.localeCompare(a.lastName);
       } else if (sortBy === "rendered_service") {
         const dateA = new Date(a.fromYear);
         const dateB = new Date(b.fromYear);
@@ -231,11 +231,11 @@ const Officials = () => {
                 aria-labelledby="hs-dropdown"
               >
                 <li
-                  onClick={() => handleSort("name")}
+                  onClick={() => handleSort("lastName")}
                   className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
                 >
                   NAME
-                  {sortColumn === "name" && (
+                  {sortColumn === "lastName" && (
                     <span className="ml-auto">
                       {sortOrder === "asc" ? (
                         <span>DESC &darr;</span>

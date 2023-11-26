@@ -6,13 +6,13 @@ import { FiEdit } from "react-icons/fi";
 import { BsPrinter } from "react-icons/bs";
 import ArchiveModal from "../components/inquiries/ArchiveInquiryModal";
 import ReplyModal from "../components/inquiries/ReplyInquiries";
-import ViewMessage from "../components/inquiries/viewMessage";
 import Status from "../components/inquiries/Status";
 import { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
 import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
+import ViewInquiriesModal from "../components/inquiries/ViewInquiriesModal";
 
 const Inquiries = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -193,7 +193,7 @@ const Inquiries = () => {
                   onClick={() => handleSort("inquiries_id")}
                   className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
                 >
-                  SERVICE ID
+                  INQUIRY ID
                   {sortColumn === "inquiries_id" && (
                     <span className="ml-auto">
                       {sortOrder === "asc" ? (
@@ -462,7 +462,7 @@ const Inquiries = () => {
         </div>
         <ArchiveModal selectedItems={selectedItems} />
         <ReplyModal />
-        <ViewMessage inquiry={inquiry} setInquiry={setInquiry} />
+        <ViewInquiriesModal inquiry={inquiry} setInquiry={setInquiry} />
         <Status status={status} setStatus={setStatus} />
       </div>
     </div>

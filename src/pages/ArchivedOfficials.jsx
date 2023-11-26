@@ -30,10 +30,10 @@ const ArchivedOfficials = () => {
     setSortColumn(sortBy);
 
     const sortedData = officials.slice().sort((a, b) => {
-      if (sortBy === "name") {
+      if (sortBy === "lastName") {
         return newSortOrder === "asc"
-          ? a.name.localeCompare(b.name)
-          : b.name.localeCompare(a.name);
+          ? a.lastName.localeCompare(b.lastName)
+          : b.lastName.localeCompare(a.lastName);
       } else if (sortBy === "rendered_service") {
         const dateA = new Date(a.fromYear);
         const dateB = new Date(b.fromYear);
@@ -137,7 +137,7 @@ const ArchivedOfficials = () => {
   };
 
   return (
-    <div className="mx-4 mt-8 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_300px)] xxxl:w-[calc(100vw_-_305px)]">
+    <div className="mx-4 mt-8 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_305px)] xxxl:w-[calc(100vw_-_305px)]">
       <Breadcrumbs />
       {/* Body */}
       <div>
@@ -184,12 +184,12 @@ const ArchivedOfficials = () => {
                 className="bg-[#253a7a] border-2 border-[#ffb13c] hs-dropdown-menu w-96 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10 shadow-md rounded-lg p-2"
                 aria-labelledby="hs-dropdown"
               >
-                <li
-                  onClick={() => handleSort("name")}
+                 <li
+                  onClick={() => handleSort("lastName")}
                   className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
                 >
                   NAME
-                  {sortColumn === "name" && (
+                  {sortColumn === "lastName" && (
                     <span className="ml-auto">
                       {sortOrder === "asc" ? (
                         <span>DESC &darr;</span>
@@ -283,7 +283,7 @@ const ArchivedOfficials = () => {
         </div>
 
         {/* Table */}
-        <div className="overflow-auto sm:overflow-x-auto h-[calc(100vh_-_340px)] xxxl:h-[calc(100vh_-_330px)]">
+        <div className="overflow-auto sm:overflow-x-auto h-[calc(100vh_-_314px)] xxxl:h-[calc(100vh_-_330px)]">
           <table className="w-full ">
             <thead className="bg-[#253a7a] sticky top-0">
               <tr className="">
@@ -335,7 +335,7 @@ const ArchivedOfficials = () => {
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.name}
+                      {item.lastName + ", " +  item.firstName + " " + item.middleName}
                       </span>
                     </div>
                   </td>

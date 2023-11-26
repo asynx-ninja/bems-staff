@@ -7,6 +7,7 @@ import EditDropbox from "./EditDropbox";
 import { IoIosAttach } from "react-icons/io";
 import { IoSend } from "react-icons/io5";
 import Dropbox from "./Dropbox";
+import ViewDropbox from "./ViewDropbox";
 
 function ViewInquiriesModal({ inquiry, setInquiry }) {
   const [reply, setReply] = useState(false);
@@ -14,10 +15,39 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
   const [expandedIndexes, setExpandedIndexes] = useState([]);
   const [files, setFiles] = useState([]);
   const [createFiles, setCreateFiles] = useState([]);
+  const [newMessage, setNewMessage] = useState({
+    sender: "Staff",
+    message: "",
+    date: new Date(),
+  });
 
   useEffect(() => {
     setFiles(inquiry.length === 0 ? [] : inquiry.compose.file);
   }, [inquiry]);
+
+  // Initialize with the last index expanded
+  useEffect(() => {
+    const lastIndex = inquiry.response ? inquiry.response.length - 1 : 0;
+    setExpandedIndexes([lastIndex]);
+  }, [inquiry.response]);
+
+  const fileInputRef = useRef();
+
+  const handleToggleClick = (index) => {
+    if (expandedIndexes.includes(index)) {
+      // Collapse the clicked div
+      setExpandedIndexes((prev) => prev.filter((i) => i !== index));
+    } else {
+      // Expand the clicked div
+      setExpandedIndexes((prev) => [...prev, index]);
+    }
+  };
+
+  const handleAdd = (e) => {
+    e.preventDefault();
+
+    fileInputRef.current.click();
+  };
 
   const handleOnReply = () => {
     setReply(!reply);
@@ -28,7 +58,8 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
   };
 
   const handleChange = (e) => {
-    setInquiry((prev) => ({
+    e.preventDefault();
+    setNewMessage((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
@@ -48,34 +79,31 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
     return new Intl.DateTimeFormat("en-US", options).format(new Date(date));
   };
 
-  const handleToggleClick = (index) => {
-    if (expandedIndexes.includes(index)) {
-      // Collapse the clicked div
-      setExpandedIndexes((prev) => prev.filter((i) => i !== index));
-    } else {
-      // Expand the clicked div
-      setExpandedIndexes((prev) => [...prev, index]);
-    }
-  };
-
-  // Initialize with the last index expanded
-  useEffect(() => {
-    const lastIndex = inquiry.response ? inquiry.response.length - 1 : 0;
-    setExpandedIndexes([lastIndex]);
-  }, [inquiry.response]);
-
-  const fileInputRef = useRef();
-
-  const handleAdd = (e) => {
-    e.preventDefault();
-
-    fileInputRef.current.click();
-  };
-
   const handleFileChange = (e) => {
     e.preventDefault();
 
     setCreateFiles([...createFiles, ...e.target.files]);
+  };
+
+  const handleOnSend = async (e) => {
+    e.preventDefault();
+
+    try {
+      var formData = new FormData();
+      formData.append("response", JSON.stringify(newMessage));
+      for (let i = 0; i < createFiles.length; i++) {
+        formData.append("files", createFiles[i]);
+      }
+
+      const response = await axios.patch(
+        `${API_LINK}/inquiries/?inq_id=${inquiry._id}`,
+        formData
+      );
+
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -249,6 +277,7 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
                                   </p>
                                 </div>
                               </div>
+                              <ViewDropbox files={inquiry && files} setFiles={setFiles} />
                               {index === inquiry.response.length - 1 && (
                                 <div className="flex flex-row items-center">
                                   <button
@@ -259,6 +288,7 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
                                   >
                                     REPLY
                                   </button>
+                                  
 
                                   {!reply ? (
                                     <div></div>
@@ -266,19 +296,22 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
                                     <div className="relative w-full mx-2">
                                       <div className="relative w-full">
                                         <textarea
-                                          id="response"
-                                          name="response"
-                                          class="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
+                                          id="message"
+                                          name="message"
+                                          onChange={handleChange}
+                                          className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
                                           placeholder="Input response..."
                                         ></textarea>
 
-                                        <div class="absolute bottom-px inset-x-px p-2 rounded-b-md bg-white">
-                                          <div class="flex justify-between items-center">
-                                            <div class="flex items-center">
+                                        <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-white">
+                                          <div className="flex justify-between items-center">
+                                            <div className="flex items-center">
                                               <input
                                                 type="file"
                                                 name="file"
-                                                onChange={handleFileChange}
+                                                onChange={(e) =>
+                                                  handleFileChange(e)
+                                                }
                                                 ref={fileInputRef}
                                                 accept=".xlsx,.xls,.doc,.docx,.ppt,.pptx,.txt,.pdf"
                                                 multiple="multiple"
@@ -296,10 +329,11 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
                                               {/* <IoIosAttach size={24} /> */}
                                             </div>
 
-                                            <div class="flex items-center gap-x-1">
+                                            <div className="flex items-center gap-x-1">
                                               <button
                                                 type="submit"
-                                                class="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700"
+                                                onClick={handleOnSend}
+                                                className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700"
                                               >
                                                 <span>SEND</span>
                                                 <IoSend
