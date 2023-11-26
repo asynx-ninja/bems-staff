@@ -168,7 +168,7 @@ function AddStaffModal({ brgy }) {
                   className="font-bold text-white mx-auto md:text-xl text-center"
                   style={{ letterSpacing: "0.3em" }}
                 >
-                  ADD STAFF
+                  CREATE BARANGAY STAFF
                 </h3>
               </div>
 

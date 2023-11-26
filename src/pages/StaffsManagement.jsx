@@ -129,13 +129,13 @@ const StaffManagement = () => {
                   >
                     <FaPlus size={24} style={{ color: "#ffffff" }} />
                     <span className="sm:block md:hidden sm:pl-5">
-                      Add Residents
+                      Add Barangay Staff
                     </span>
                     <span
                       className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                       role="tooltip"
                     >
-                      Add Residents
+                      Add Barangay Staff
                     </span>
                   </button>
                 </div>
@@ -150,13 +150,13 @@ const StaffManagement = () => {
                     >
                       <FaArchive size={24} style={{ color: "#ffffff" }} />
                       <span className="sm:block md:hidden sm:pl-5">
-                        Archived Residents
+                        Archived Barangay Staffs
                       </span>
                       <span
                         className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                         role="tooltip"
                       >
-                        Archived Residents
+                        Archived Barangay Staffs
                       </span>
                     </button>
                   </div>
@@ -286,7 +286,7 @@ const StaffManagement = () => {
                       className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                       role="tooltip"
                     >
-                      Archived Selected Residents
+                      Archive Selected Barangay Staffs
                     </span>
                   </button>
                 </div>
@@ -418,7 +418,7 @@ const StaffManagement = () => {
                           className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                           role="tooltip"
                         >
-                          View Resident
+                          View Barangay Staff
                         </span>
                       </div>
                     </div>
