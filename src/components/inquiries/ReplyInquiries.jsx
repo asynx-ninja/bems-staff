@@ -13,7 +13,7 @@ function ReplyInquiryModal() {
           <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 md:px-0 opacity-0 transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto lg:ml-96 xl:ml-[500px] xxl:ml-[600px] xxxl:ml-[850px]">
             <div className="flex flex-col bg-white rounded-xl shadow-sm ">
               {/* Header */}
-              <div className="rounded-t-xl bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden ">
+              <div className="rounded-t-xl bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#3e5fc2] to-[#1f2f5e] overflow-hidden ">
                 <div
                   className="flex justify-between items-center p-5 w-full h-full"
                 >

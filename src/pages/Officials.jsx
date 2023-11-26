@@ -136,14 +136,14 @@ const Officials = () => {
   };
 
   return (
-    <div className=" mx-4 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_440px)] xxl:w-[calc(100vw_-_310px)]">
+    <div className="mx-4 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_305px)] xxxl:w-[calc(100vw_-_310px)]">
       {/* Body */}
       <div>
         {/* Header */}
         <div className="flex flex-row mt-5 sm:flex-col-reverse lg:flex-row w-full">
-          <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
+          <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#3e5fc2] to-[#1f2f5e] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
-              className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-[1.5rem] xxxl:text-3xl xxxl:mt-1 text-white"
+              className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
               BARANGAY OFFICIALS
@@ -156,7 +156,7 @@ const Officials = () => {
                   <button
                     type="button"
                     data-hs-overlay="#hs-create-official-modal"
-                    className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] w-full text-white font-medium text-sm  text-center inline-flex items-center "
+                    className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#3e5fc2] to-[#1f2f5e] w-full text-white font-medium text-sm  text-center inline-flex items-center "
                   >
                     <FaPlus size={24} style={{ color: "#ffffff" }} />
                     <span className="sm:block md:hidden sm:pl-5">
@@ -179,7 +179,7 @@ const Officials = () => {
                     <button
                       type="button"
                       data-hs-overlay="#hs-modal-add"
-                      className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] w-full text-white font-medium text-sm text-center inline-flex items-center"
+                      className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#3e5fc2] to-[#1f2f5e] w-full text-white font-medium text-sm text-center inline-flex items-center"
                     >
                       <FaArchive size={24} style={{ color: "#ffffff" }} />
                       <span className="sm:block md:hidden sm:pl-5">
@@ -205,7 +205,7 @@ const Officials = () => {
               <button
                 id="hs-dropdown"
                 type="button"
-                className="bg-[#295141] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                className="bg-[#253a7a] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
               >
                 SORT BY
                 <svg
@@ -227,12 +227,12 @@ const Officials = () => {
                 </svg>
               </button>
               <ul
-                className="bg-[#295141] border-2 border-[#ffb13c] hs-dropdown-menu w-96 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10 shadow-md rounded-lg p-2"
+                className="bg-[#253a7a] border-2 border-[#ffb13c] hs-dropdown-menu w-96 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10 shadow-md rounded-lg p-2"
                 aria-labelledby="hs-dropdown"
               >
                 <li
                   onClick={() => handleSort("name")}
-                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
                 >
                   NAME
                   {sortColumn === "name" && (
@@ -247,7 +247,7 @@ const Officials = () => {
                 </li>
                 <li
                   onClick={() => handleSort("rendered_service")}
-                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#295141] to-[#408D51] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
                 >
                   RENDERED SERVICE
                   {sortColumn === "rendered_service" && (
@@ -264,7 +264,7 @@ const Officials = () => {
             </div>
             <div className="sm:flex-col md:flex-row flex sm:w-full md:w-7/12">
               <div className="flex flex-row w-full md:mr-2">
-                <button className=" bg-[#295141] p-3 rounded-l-md">
+                <button className=" bg-[#253a7a] p-3 rounded-l-md">
                   <div className="w-full overflow-hidden">
                     <svg
                       className="h-3.5 w-3.5 text-white"
@@ -331,7 +331,7 @@ const Officials = () => {
         {/* Table */}
         <div className="overflow-auto sm:overflow-x-auto h-[calc(100vh_-_270px)] xxxl:h-[calc(100vh_-_286px)]">
           <table className="w-full max">
-            <thead className="bg-[#295141] sticky top-0">
+            <thead className="bg-[#253a7a] sticky top-0">
               <tr className="">
                 <th scope="col" className="px-6 py-4">
                   <div className="flex justify-center items-center">
@@ -381,7 +381,7 @@ const Officials = () => {
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.name}
+                        {item.lastName + ", " +  item.firstName + " " + item.middleName}
                       </span>
                     </div>
                   </td>
@@ -405,7 +405,7 @@ const Officials = () => {
                       <button
                         type="button"
                         data-hs-overlay="#hs-edit-official-modal"
-                        className="text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                        className=" text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                         onClick={() => handleEditClick(item)}
                       >
                         <FiEdit size={24} style={{ color: "#ffffff" }} />
@@ -418,7 +418,7 @@ const Officials = () => {
           </table>
         </div>
       </div>
-      <div className="md:py-4 md:px-4 bg-[#295141] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
+      <div className="md:py-4 md:px-4 bg-[#253a7a] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
         <span className="font-medium text-white sm:text-xs text-sm">
           Showing 1 out of 15 pages
         </span>

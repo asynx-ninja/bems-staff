@@ -20,18 +20,11 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
   };
 
   const handleChange = (e) => {
-    setSelectedOfficial((prev) => {
-      const updatedOfficial = { ...prev, [e.target.name]: e.target.value };
-  
-      // Update the name based on the new input values
-      if (e.target.name === "lastName" || e.target.name === "firstName" || e.target.name === "middleName" || e.target.name === "suffix") {
-        updatedOfficial.name = `${updatedOfficial.lastName || ""}, ${updatedOfficial.firstName || ""} ${updatedOfficial.middleName || ""} ${updatedOfficial.suffix || ""}`;
-      }
-  
-      return updatedOfficial;
-    });
+    setSelectedOfficial((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
-  
 
   const [pfp, setPfp] = useState();
 
@@ -61,10 +54,6 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
       );
 
       console.log(result);
-      setTimeout(() => {
-        HSOverlay.close(document.getElementById("hs-modal-editServices"));
-        window.location.reload();
-      }, 1000);
     } catch (error) {
       console.error(error);
     }
@@ -80,7 +69,7 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
             {/* Header */}
-            <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
+            <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#3e5fc2] to-[#1f2f5e] overflow-hidden rounded-t-2xl">
               <h3
                 className="font-bold text-white mx-auto md:text-xl text-center"
                 style={{ letterSpacing: "0.3em" }}
@@ -120,92 +109,77 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
 
                 {/* Request Information */}
                 <div className="relative mt-2 overflow-y-auto flex flex-col w-fullh-full rounded-lg space-y-2">
-                    <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg">
-                      Personal Informations
-                    </b>
-                    {!edit ? (
-                      <div>
-                        <h1
-                          className="font-medium mb-1 text-black text-sm"
-                          style={{ letterSpacing: "0.1em" }}
-                        >
-                          FULL NAME
-                        </h1>
-                        <input
-                          type="name"
-                          id="name"
-                          name="name"
-                          className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                          placeholder=""
-                          value={selectedOfficial.name || ""}
-                          onChange={handleChange}
-                          disabled
-                        />
-                      </div>
-                    ) : (
-                      <div>
-                        <h1
-                          className="font-medium mb-1 mt-2 text-black text-sm"
-                          style={{ letterSpacing: "0.1em" }}
-                        >
-                          FIRST NAME
-                        </h1>
-                        <input
-                          type="text"
-                          id="firstName"
-                          name="firstName"
-                          className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                          placeholder=""
-                          onChange={handleChange}
-                        />
+                  <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg">
+                    Personal Informations
+                  </b>
+                  <h1
+                    className="font-medium mb-1 mt-2 text-black text-sm"
+                    style={{ letterSpacing: "0.1em" }}
+                  >
+                    FIRST NAME
+                  </h1>
+                  <input
+                    type="text"
+                    id="firstName"
+                    name="firstName"
+                    className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                    placeholder=""
+                    onChange={handleChange}
+                    value={selectedOfficial.firstName || ""}
+                    disabled={!edit}
+                  />
 
-                        <h1
-                          className="font-medium mb-1 mt-2 text-black text-sm"
-                          style={{ letterSpacing: "0.1em" }}
-                        >
-                          MIDDLE NAME
-                        </h1>
-                        <input
-                          type="text"
-                          id="middleName"
-                          name="middleName"
-                          className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                          placeholder=""
-                          onChange={handleChange}
-                        />
+                  <h1
+                    className="font-medium mb-1 mt-2 text-black text-sm"
+                    style={{ letterSpacing: "0.1em" }}
+                  >
+                    MIDDLE NAME
+                  </h1>
+                  <input
+                    type="text"
+                    id="middleName"
+                    name="middleName"
+                    className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                    placeholder=""
+                    onChange={handleChange}
+                    value={selectedOfficial.middleName || ""}
+                    disabled={!edit}
+                  />
 
-                        <h1
-                          className="font-medium mb-1 mt-2 text-black text-sm"
-                          style={{ letterSpacing: "0.1em" }}
-                        >
-                          SUFFIX
-                        </h1>
-                        <input
-                          type="text"
-                          id="suffix"
-                          name="suffix"
-                          className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                          placeholder=""
-                          onChange={handleChange}
-                        />
+                  <h1
+                    className="font-medium mb-1 mt-2 text-black text-sm"
+                    style={{ letterSpacing: "0.1em" }}
+                  >
+                    SUFFIX
+                  </h1>
+                  <input
+                    type="text"
+                    id="suffix"
+                    name="suffix"
+                    className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                    placeholder=""
+                    onChange={handleChange}
+                    value={selectedOfficial.suffix || ""}
+                    disabled={!edit}
+                  />
 
-                        <h1
-                          className="font-medium mb-1 mt-2 text-black text-sm"
-                          style={{ letterSpacing: "0.1em" }}
-                        >
-                          LAST NAME
-                        </h1>
-                        <input
-                          type="text"
-                          id="lastName"
-                          name="lastName"
-                          className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                          placeholder=""
-                          onChange={handleChange}
-                        />
-                      </div>
-                    )}
-                  </div>
+                  <h1
+                    className="font-medium mb-1 mt-2 text-black text-sm"
+                    style={{ letterSpacing: "0.1em" }}
+                  >
+                    LAST NAME
+                  </h1>
+                  <input
+                    type="text"
+                    id="lastName"
+                    name="lastName"
+                    className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                    placeholder=""
+                    onChange={handleChange}
+                    value={selectedOfficial.lastName || ""}
+                    disabled={!edit}
+                  />
+                </div>
 
                 {/* Other info */}
                 <b className="border-solid border-0 border-black/50 border-b-2 uppercase font-medium text-lg md:text-lg mt-4">

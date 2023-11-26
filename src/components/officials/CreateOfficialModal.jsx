@@ -6,7 +6,10 @@ import axios from "axios";
 
 function CreateOfficialModal({ brgy }) {
   const [official, setOfficial] = useState({
-    name: "",
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    suffix: "",
     position: "",
     fromYear: "",
     toYear: "",
@@ -23,14 +26,10 @@ function CreateOfficialModal({ brgy }) {
       formData.append("file", pfp);
 
       const obj = {
-        name:
-          official.lastName +
-          ", " +
-          official.firstName +
-          " " +
-          official.middleName +
-          " " +
-          official.suffix,
+        firstName: official.firstName,
+        middleName: official.middleName,
+        lastName: official.lastName,
+        suffix: official.suffix,
         position: official.position,
         fromYear: official.fromYear,
         toYear: official.toYear,
@@ -46,7 +45,10 @@ function CreateOfficialModal({ brgy }) {
       if (result.status === 200) {
         console.log("Official added successfully!");
         setOfficial({
-          name: "",
+          firstName: "",
+          middleName: "",
+          lastName: "",
+          suffix: "",
           position: "",
           fromYear: "",
           toYear: "",
@@ -80,7 +82,7 @@ function CreateOfficialModal({ brgy }) {
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
             {/* Header */}
-            <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] overflow-hidden rounded-t-2xl">
+            <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#3e5fc2] to-[#1f2f5e] overflow-hidden rounded-t-2xl">
               <h3
                 className="font-bold text-white mx-auto md:text-xl text-center"
                 style={{ letterSpacing: "0.3em" }}
@@ -294,21 +296,21 @@ function CreateOfficialModal({ brgy }) {
             {/* Buttons */}
             <div className="flex justify-end items-center gap-x-2 py-3 px-6 dark:border-gray-700">
               <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
-              <button
-                type="button"
-                className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                data-hs-overlay="#hs-create-official-modal"
-                onClick={handleSubmit}
-              >
-                SAVE CHANGES
-              </button>
-              <button
-                type="button"
-                className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
-                data-hs-overlay="#hs-create-official-modal"
-              >
-                CLOSE
-              </button>
+                <button
+                  type="button"
+                  className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
+                  data-hs-overlay="#hs-create-official-modal"
+                  onClick={handleSubmit}
+                >
+                  SAVE CHANGES
+                </button>
+                <button
+                  type="button"
+                  className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
+                  data-hs-overlay="#hs-create-official-modal"
+                >
+                  CLOSE
+                </button>
               </div>
             </div>
           </div>
