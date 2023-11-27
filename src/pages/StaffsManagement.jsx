@@ -74,7 +74,6 @@ const StaffManagement = () => {
     "AGE",
     "GENDER",
     "CONTACT",
-    "CIVIL STATUS",
     "STATUS",
     "ACTIONS",
   ];
@@ -115,7 +114,7 @@ const StaffManagement = () => {
               className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-2xl xxxl:text-2xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
-              BARANGAY STAFF MANAGEMENT
+              STAFF MANAGEMENT
             </h1>
           </div>
           <div className="lg:w-3/5 flex flex-row justify-end items-center ">
@@ -367,13 +366,6 @@ const StaffManagement = () => {
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {item.contact}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.civil_status}
                       </span>
                     </div>
                   </td>

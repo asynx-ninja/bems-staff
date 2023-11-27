@@ -8,7 +8,7 @@ const SubPendingRequest = () => {
         <b className="border-solid border-0 border-black border-b-2 pb-2 uppercase font-heavy text-lg md:text-xl mb-4 shrink-0">
           PENDING REQUESTS
         </b>
-        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-auto h-[calc(100vh_-_410px)]">
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-auto h-[calc(100vh_-_350px)]">
           <table className="table-auto ">
             <thead className="uppercase text-xs md:text-sm bg-gray-100 sticky top-0">
               <tr>
