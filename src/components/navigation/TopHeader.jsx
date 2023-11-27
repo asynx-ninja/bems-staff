@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import header from "../../assets/image/rizallogo.png"
+import header from "../../assets/image/rizallogo.png";
 import { FaBars } from "react-icons/fa";
 
 const TopHeader = () => {
@@ -29,8 +29,8 @@ const TopHeader = () => {
   });
 
   return (
-    <div className="flex flex-col-reverse md:flex-row justify-between items-center sm:px-2 lg:pr-3 bg-[url('/imgs/header-bg.png')] font-medium py-2 z-50 bg-[#253a7a] uppercase text-white text-sm  md:text-sm lg:text-base 2xl:text-xl">
-      <div className="flex flex-row justify-center items-center space-x-3">
+    <div className="flex  md:flex-row justify-between items-center sm:px-2 lg:pr-3 bg-[url('/imgs/header-bg.png')] font-medium py-2 z-50 bg-[#253a7a] uppercase text-white text-sm  md:text-sm lg:text-base 2xl:text-xl">
+      <div className="flex flex-row sm:justify-between md:justify-center items-center space-x-3">
         <button
           type="button"
           className="lg:hidden block"
@@ -42,10 +42,16 @@ const TopHeader = () => {
         </button>
         <div>
           <h1 className="text-xs lg:text-lg">{formattedDate} </h1>
-          <h1 className="text-xs lg:text-lg">{formattedTime} Philippine Standard Time (PMT)</h1>
+          <h1 className="text-xs lg:text-lg">
+            {formattedTime} Philippine Standard Time (PMT)
+          </h1>
         </div>
       </div>
-      <img className="mb-2 mx-auto md:mx-0 md:mb-0 h-[50px] md:h-[50px] w-[150px] md:w-[170px]" src={header} alt="" />
+      <img
+        className=" md:mx-0 md:mb-0 h-[50px] md:h-[50px] w-[165px] md:w-[170px]"
+        src={header}
+        alt=""
+      />
     </div>
   );
 };

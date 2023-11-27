@@ -12,32 +12,26 @@
 }
 
 /* width */
-::-webkit-scrollbar {
-  height: 5px;
-  width: 5px;
+.scrollbarWidth::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
 }
 
-/* Track */
-::-webkit-scrollbar-track {
+.scrollbarTrack::-webkit-scrollbar-track {
   background: #ebeaea;
-  border-radius: 5px;
 }
 
 /* Handle */
-::-webkit-scrollbar-thumb {
+.scrollbarThumb::-webkit-scrollbar-thumb {
   background: #efc586;
-  border-radius: 5px;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #efc586;
-  border-radius: 5px;
+/* Handle on hover */
+.scrollbarHover::-webkit-scrollbar-thumb:hover {
+  background: #fdb242;
 }
 
-/* Handle on hover
-::-webkit-scrollbar-thumb:hover {
-  background: #fff;
-} */
+
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
@@ -49,6 +43,7 @@ input:-webkit-autofill:focus {
   transition: background-color 5000s ease-in-out 0s;
   color: black;
 }
+
 textarea:-webkit-autofill,
 textarea:-webkit-autofill:hover,
 textarea:-webkit-autofill:focus,

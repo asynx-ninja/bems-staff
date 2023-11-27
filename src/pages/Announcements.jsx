@@ -53,7 +53,17 @@ const Announcement = () => {
       const response = await axios.get(
         `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
       );
-      if (response.status === 200) setAnnouncements(response.data);
+      if (response.status === 200) {
+        const arr = [
+          ...response.data,
+          ...response.data,
+          ...response.data,
+          ...response.data,
+          ...response.data,
+          ...response.data,
+        ];
+        setAnnouncements(arr)
+      }
       else setAnnouncements([]);
     };
 
@@ -112,9 +122,9 @@ const Announcement = () => {
   console.log(selectedItems);
 
   return (
-    <div className="mx-4 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_305px)] xxxl:w-[calc(100vw_-_310px)]">
-      <div className="flex flex-col">
-        <div className="flex flex-row mt-5 sm:flex-col-reverse lg:flex-row w-full shrink-0">
+    <div className="mx-4 mt-4">
+      <div className="flex flex-col ">
+        <div className="flex flex-row sm:flex-col-reverse lg:flex-row w-full ">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#3e5fc2] to-[#1f2f5e] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
               className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[1.2rem] xl:text-[1.5rem] xxl:text-[2.1rem] xxxl:text-4xl xxxl:mt-1 text-white"
@@ -300,8 +310,9 @@ const Announcement = () => {
             </div>
           </div>
         </div>
-        <div className="sm:overflow-x-auto overflow-y-auto  h-[calc(100vh_-_270px)] xxxl:h-[calc(100vh_-_286px)]">
-          <table className="w-full ">
+
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_273px)] xxxl:h-[calc(100vh_-_330px)]">
+          <table className="relative table-auto w-full">
             <thead className="bg-[#253a7a] sticky top-0">
               <tr className="">
                 <th scope="col" className="px-6 py-4">
@@ -325,7 +336,7 @@ const Announcement = () => {
                 ))}
               </tr>
             </thead>
-            <tbody className="odd:bg-slate-100">
+            <tbody className="odd:bg-slate-100 ">
               {announcements.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
@@ -400,6 +411,7 @@ const Announcement = () => {
             </tbody>
           </table>
         </div>
+
         <div className="md:py-4 md:px-4 bg-[#253a7a] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
           <span className="font-medium text-white sm:text-xs text-sm">
             Showing 1 out of 15 pages

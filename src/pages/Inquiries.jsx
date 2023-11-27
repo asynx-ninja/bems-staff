@@ -64,7 +64,7 @@ const Inquiries = () => {
     fetch();
   }, []);
 
-  console.log(inquiry);
+  console.log('inquiries', inquiries);
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
