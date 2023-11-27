@@ -206,6 +206,7 @@ const StatisticsDashboard = () => {
     },
   ];
 
+  console.log("titles: ", titles);
   return (
     <div className="flex flex-col w-full">
       <b className="border-solid border-0 border-black border-b-2 pb-2 uppercase font-heavy text-lg md:text-xl">
