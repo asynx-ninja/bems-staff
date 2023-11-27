@@ -21,10 +21,9 @@ import ArchivedResidents from "../pages/ArchiveResidents";
 import ArchivedService from "../pages/ArchivedServices";
 import ArchivedRequests from "../pages/ArchivedRequests";
 import ArchivedOfficials from "../pages/ArchivedOfficials";
-import SampleForm from "../components/services/form/SampleForm";
-import SampleDocument from "../components/services/form/SampleDocument";
 import StaffManagement from "../pages/StaffsManagement";
 import ArchivedStaffsManagement from "../pages/ArchivedStaffsManagement";
+import PrintForm from "../components/requests/form/PrintForm";
 
 const pages = [
   {
@@ -115,7 +114,7 @@ const pages = [
     path: "/document",
     element: (
       <>
-        <SampleForm />
+        <PrintForm />
       </>
     ),
   },
