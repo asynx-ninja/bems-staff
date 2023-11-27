@@ -84,7 +84,7 @@ const EditServicesForm = ({ service_id, brgy }) => {
                 EDIT SERVICE FORM
               </h3>
             </div>
-            <div className="my-2 py-5 px-2 overflow-y-auto relative h-[470px]">
+            <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb my-2 py-5 px-2 overflow-y-auto relative h-[470px]">
               <div className="px-4 pb-2 flex flex-col md:flex-row justify-between items-center">
                 <label htmlFor="" className="font-bold uppercase">
                   Select which form to edit:

@@ -29,7 +29,7 @@ const TopHeader = () => {
   });
 
   return (
-    <div className="flex  md:flex-row justify-between items-center sm:px-2 lg:pr-3 bg-[url('/imgs/header-bg.png')] font-medium py-2 z-50 bg-[#253a7a] uppercase text-white text-sm  md:text-sm lg:text-base 2xl:text-xl">
+    <div className="flex flex-col-reverse md:flex-row justify-between items-center sm:px-2 lg:pr-3 bg-[url('/imgs/header-bg.png')] font-medium py-2 z-50 bg-[#253a7a] uppercase text-white text-sm  md:text-sm lg:text-base 2xl:text-xl">
       <div className="flex flex-row sm:justify-between md:justify-center items-center space-x-3">
         <button
           type="button"
@@ -48,7 +48,7 @@ const TopHeader = () => {
         </div>
       </div>
       <img
-        className=" md:mx-0 md:mb-0 h-[50px] md:h-[50px] w-[165px] md:w-[170px]"
+        className="mx-auto md:mx-0 md:mb-0 h-[50px] md:h-[50px] w-[165px] md:w-[170px]"
         src={header}
         alt=""
       />

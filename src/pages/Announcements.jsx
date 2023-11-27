@@ -53,17 +53,7 @@ const Announcement = () => {
       const response = await axios.get(
         `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
       );
-      if (response.status === 200) {
-        const arr = [
-          ...response.data,
-          ...response.data,
-          ...response.data,
-          ...response.data,
-          ...response.data,
-          ...response.data,
-        ];
-        setAnnouncements(arr)
-      }
+      if (response.status === 200) setAnnouncements(response.data);
       else setAnnouncements([]);
     };
 
@@ -311,7 +301,7 @@ const Announcement = () => {
           </div>
         </div>
 
-        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_273px)] xxxl:h-[calc(100vh_-_330px)]">
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_275px)] xxl:h-[calc(100vh_-_275px)] xxxl:h-[calc(100vh_-_300px)]">
           <table className="relative table-auto w-full">
             <thead className="bg-[#253a7a] sticky top-0">
               <tr className="">
