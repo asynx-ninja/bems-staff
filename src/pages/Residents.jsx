@@ -59,15 +59,7 @@ const Residents = () => {
         `${API_LINK}/users/?brgy=${brgy}&type=Resident`
       );
       if (response.status === 200) {
-        const arr = [
-          ...response.data,
-          ...response.data,
-          ...response.data,
-          ...response.data,
-          ...response.data,
-          ...response.data,
-        ];
-        setUsers(arr);
+        setUsers(response.data);
       } else setUsers([]);
     };
 

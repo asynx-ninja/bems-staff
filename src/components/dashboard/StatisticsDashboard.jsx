@@ -34,93 +34,133 @@ const StatisticsDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const announcementsResponse = await axios.get(
-          `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
-        );
-        setAnnouncements(
-          announcementsResponse.status === 200 ? announcementsResponse.data : []
-        );
+        try {
+          const announcementsResponse = await axios.get(
+            `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
+          );
+          setAnnouncements(
+            announcementsResponse.status === 200
+              ? announcementsResponse.data
+              : []
+          );
+        } catch (err) {
+          console.log("err", err.message);
+        }
 
-        const usersResponse = await axios.get(`${API_LINK}/users/?brgy=${brgy}&type=Resident`);
-        setUsers(usersResponse.status === 200 ? usersResponse.data : []);
+        try {
+          const usersResponse = await axios.get(
+            `${API_LINK}/users/?brgy=${brgy}&type=Resident`
+          );
+          setUsers(usersResponse.status === 200 ? usersResponse.data : []);
+        } catch (err) {
+          console.log("err", err.message);
+        }
 
-        const archivedUsersResponse = await axios.get(
-          `${API_LINK}/users/showArchived/?brgy=${brgy}&type=Resident`
-        );
-        setArchivedUsers(
-          archivedUsersResponse.status === 200 ? archivedUsersResponse.data : []
-        );
+        try {
+          const archivedUsersResponse = await axios.get(
+            `${API_LINK}/users/showArchived/?brgy=${brgy}&type=Resident`
+          );
+          setArchivedUsers(
+            archivedUsersResponse.status === 200
+              ? archivedUsersResponse.data
+              : []
+          );
+        } catch (err) {
+          console.log("err", err.message);
+        }
 
-        const servicesResponse = await axios.get(
-          `${API_LINK}/services/?brgy=${brgy}&archived=false`
-        );
-        setServices(
-          servicesResponse.status === 200 ? servicesResponse.data : []
-        );
+        try {
+          const servicesResponse = await axios.get(
+            `${API_LINK}/services/?brgy=${brgy}&archived=false`
+          );
+          setServices(
+            servicesResponse.status === 200 ? servicesResponse.data : []
+          );
+        } catch (err) {
+          console.log("err", err.message);
+        }
 
-        const officialsResponse = await axios.get(
-          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
-        );
-        setOfficials(
-          officialsResponse.status === 200 ? officialsResponse.data : []
-        );
+        try {
+          const officialsResponse = await axios.get(
+            `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
+          );
+          console.log("officials", officialsResponse);
+          setOfficials(
+            officialsResponse.status === 200 ? officialsResponse.data : []
+          );
+        } catch (err) {
+          console.log("err", err.message);
+        }
 
-        const archivedServicesResponse = await axios.get(
-          `${API_LINK}/services/?brgy=${brgy}&archived=true`
-        );
-        setArchivedServices(
-          archivedServicesResponse.status === 200
-            ? archivedServicesResponse.data
-            : []
-        );
+        try {
+          const archivedServicesResponse = await axios.get(
+            `${API_LINK}/services/?brgy=${brgy}&archived=true`
+          );
+          setArchivedServices(
+            archivedServicesResponse.status === 200
+              ? archivedServicesResponse.data
+              : []
+          );
+        } catch (err) {
+          console.log("err", err.message);
+        }
 
-        const archivedAnnouncementsResponse = await axios.get(
-          `${API_LINK}/announcement/?brgy=${brgy}&archived=true`
-        );
-        setArchivedAnnouncements(
-          archivedAnnouncementsResponse.status === 200
-            ? archivedAnnouncementsResponse.data
-            : []
-        );
+        try {
+          const archivedAnnouncementsResponse = await axios.get(
+            `${API_LINK}/announcement/?brgy=${brgy}&archived=true`
+          );
+          setArchivedAnnouncements(
+            archivedAnnouncementsResponse.status === 200
+              ? archivedAnnouncementsResponse.data
+              : []
+          );
+        } catch (err) {
+          console.log("err", err.message);
+        }
 
-        const archivedOfficialsResponse = await axios.get(
-          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=true`
-        );
-        setArchivedOfficials(
-          archivedOfficialsResponse.status === 200
-            ? archivedOfficialsResponse.data
-            : []
-        );
+        try {
+          const archivedOfficialsResponse = await axios.get(
+            `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=true`
+          );
+          setArchivedOfficials(
+            archivedOfficialsResponse.status === 200
+              ? archivedOfficialsResponse.data
+              : []
+          );
+        } catch (err) {
+          console.log("err", err.message);
+        }
 
-        const inquiriesResponse = await axios.get(
-          `${API_LINK}/inquiries/?brgy=${brgy}&archived=false`
-        );
-        setInquiries(
-          inquiriesResponse.status === 200
-            ? inquiriesResponse.data
-            : []
-        );
+        try {
+          const inquiriesResponse = await axios.get(
+            `${API_LINK}/inquiries/?brgy=${brgy}&archived=false`
+          );
+          setInquiries(
+            inquiriesResponse.status === 200 ? inquiriesResponse.data : []
+          );
+        } catch (err) {
+          console.log("err", err.message);
+        }
 
-        const archivedInquiriesResponse = await axios.get(
-          `${API_LINK}/inquiries/?brgy=${brgy}&archived=true`
-        );
-        setArchivedInquiries(
-          archivedInquiriesResponse.status === 200
-            ? archivedInquiriesResponse.data
-            : []
-        );
+        try {
+          const archivedInquiriesResponse = await axios.get(
+            `${API_LINK}/inquiries/?brgy=${brgy}&archived=true`
+          );
+          setArchivedInquiries(
+            archivedInquiriesResponse.status === 200
+              ? archivedInquiriesResponse.data
+              : []
+          );
+        } catch (err) {
+          console.log("err", err.message);
+        }
 
-        const getUser = await axios.get(
-          `${API_LINK}/staffs/specific/${id}`
-        );
-        setUserData(
-          getUser.status === 200
-            ? getUser.data[0]
-            : []
-        );
-
-        console.log("label daw:", getUser);
-
+        try {
+          const getUser = await axios.get(`${API_LINK}/staffs/specific/${id}`);
+          setUserData(getUser.status === 200 ? getUser.data[0] : []);
+        } catch (err) {
+          console.log("err", err.message);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -182,15 +222,16 @@ const StatisticsDashboard = () => {
       archivedLink: `/archivedrequests/?id=${id}&brgy=${brgy}`,
       icon: <GoGitPullRequest size={15} className="sm:block md:hidden" />,
     },
-    (userData.type === "Brgy Admin" ? 
-    {
-      title: "Barangay Officials",
-      active: officials.length,
-      archived: archivedOfficials.length,
-      activeLink: `/officials/?id=${id}&brgy=${brgy}`,
-      archivedLink: `/archived_officials/?id=${id}&brgy=${brgy}`,
-      icon: <FaPeopleGroup size={15} className="sm:block md:hidden" />,
-    } : null),
+    userData.type === "Brgy Admin"
+      ? {
+          title: "Barangay Officials",
+          active: officials.length,
+          archived: archivedOfficials.length,
+          activeLink: `/officials/?id=${id}&brgy=${brgy}`,
+          archivedLink: `/archived_officials/?id=${id}&brgy=${brgy}`,
+          icon: <FaPeopleGroup size={15} className="sm:block md:hidden" />,
+        }
+      : null,
     {
       title: "Profits",
       active: services.length,
@@ -218,7 +259,6 @@ const StatisticsDashboard = () => {
           const shouldDisplayGradient = titleItem && titleItem.title.length > 0;
 
           return shouldDisplayGradient ? (
-            
             <div className="flex flex-col">
               <div
                 className={`hs-dropdown relative bg-gradient-to-r ${item.gradient1} ${item.gradient2} text-white flex flex-col justify-between items-center p-3 text-sm md:text-base lg:text-lg rounded-lg`}
@@ -259,7 +299,9 @@ const StatisticsDashboard = () => {
                   aria-labelledby="hs-unstyled-collapse"
                 >
                   <Link to={titleItem ? titleItem.activeLink : ""}>
-                    <a className={`flex items-center p-1 gap-x-3.5 rounded-lg font-heavy text-[12px] xl:text-[14px] text-white hover:bg-gradient-to-r ${item.gradient1} hover:border hover:border-gray-300`}>
+                    <a
+                      className={`flex items-center p-1 gap-x-3.5 rounded-lg font-heavy text-[12px] xl:text-[14px] text-white hover:bg-gradient-to-r ${item.gradient1} hover:border hover:border-gray-300`}
+                    >
                       Active:
                       <strong className="ml-auto">
                         {titleItem ? titleItem.active : ""}
@@ -267,7 +309,9 @@ const StatisticsDashboard = () => {
                     </a>
                   </Link>
                   <Link to={titleItem ? titleItem.archivedLink : ""}>
-                    <a className={`flex items-center p-1 gap-x-3.5 rounded-lg font-heavy text-[12px] xl:text-[14px] text-white hover:bg-gradient-to-r ${item.gradient1} hover:border hover:border-gray-300`}>
+                    <a
+                      className={`flex items-center p-1 gap-x-3.5 rounded-lg font-heavy text-[12px] xl:text-[14px] text-white hover:bg-gradient-to-r ${item.gradient1} hover:border hover:border-gray-300`}
+                    >
                       Archived:
                       <strong className="ml-auto">
                         {titleItem ? titleItem.archived : ""}
