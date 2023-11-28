@@ -1,8 +1,136 @@
 import React from "react";
+import { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import API_LINK from "../../config/API";
 import bgmodal from "../../assets/modals/bg-modal2.png";
 import { AiOutlineSend } from "react-icons/ai";
+import { MdOutlineCancel } from "react-icons/md";
+import { IoIosAttach } from "react-icons/io";
+import { IoMdOptions } from "react-icons/io";
+import { IoSend } from "react-icons/io5";
+import Dropbox from "./Dropbox";
+import ViewDropbox from "./ViewDropbox";
+import EditDropbox from "./EditDropbox";
 
-function ReplyServiceModal({ onClose }) {
+function ReplyServiceModal({ request }) {
+  const [reply, setReply] = useState(false);
+  const [statusChanger, setStatusChanger] = useState(false);
+  const [upload, setUpload] = useState(false);
+  const [expandedIndexes, setExpandedIndexes] = useState([]);
+  const [files, setFiles] = useState([]);
+  const [createFiles, setCreateFiles] = useState([]);
+  const [viewFiles, setViewFiles] = useState([]);
+
+  useEffect(() => {
+    setFiles(request.length === 0 ? [] : request.file);
+  }, [request]);
+
+  // useEffect(() => {
+  //   if (request && request.response.length !== 0) {
+  //     const lastResponse = request.response[request.response.length - 1];
+
+  //     if (lastResponse.file && lastResponse.file.length > 0) {
+  //       setViewFiles(lastResponse.file);
+  //     } else {
+  //       setViewFiles([]);
+  //     }
+  //   } else {
+  //     setViewFiles([]);
+  //   }
+  // }, [request]);
+
+  // Initialize with the last index expanded
+  useEffect(() => {
+    const lastIndex = request.response ? request.response.length - 1 : 0;
+    setExpandedIndexes([lastIndex]);
+  }, [request.response]);
+
+  const fileInputRef = useRef();
+
+  const handleToggleClick = (index) => {
+    if (expandedIndexes.includes(index)) {
+      // Collapse the clicked div
+      setExpandedIndexes((prev) => prev.filter((i) => i !== index));
+    } else {
+      // Expand the clicked div
+      setExpandedIndexes((prev) => [...prev, index]);
+    }
+  };
+
+  const handleChange = (e) => {
+    e.preventDefault();
+    setNewMessage((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const DateFormat = (date) => {
+    if (!date) return "";
+
+    const options = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    };
+    return new Intl.DateTimeFormat("en-US", options).format(new Date(date));
+  };
+
+  const handleFileChange = (e) => {
+    e.preventDefault();
+
+    setCreateFiles([...createFiles, ...e.target.files]);
+  };
+
+  const handleAdd = (e) => {
+    e.preventDefault();
+
+    fileInputRef.current.click();
+  };
+
+  const handleOnReply = () => {
+    setReply(!reply);
+  };
+
+  const handleOnUpload = () => {
+    setUpload(!upload);
+  };
+
+  const handleOnStatusChanger = () => {
+    setStatusChanger(!statusChanger);
+  };
+
+  // const handleOnSend = async (e) => {
+  //   e.preventDefault();
+  //   console.log(newMessage);
+
+  //   try {
+  //     const obj = {
+  //       sender: newMessage.sender,
+  //       message: newMessage.message,
+  //       date: newMessage.date,
+  //       folder_id: request.folder_id,
+  //     };
+  //     var formData = new FormData();
+  //     formData.append("response", JSON.stringify(obj));
+  //     for (let i = 0; i < createFiles.length; i++) {
+  //       formData.append("files", createFiles[i]);
+  //     }
+
+  //     const response = await axios.patch(
+  //       `${API_LINK}/inquiries/?inq_id=${request._id}`,
+  //       formData
+  //     );
+
+  //     window.location.reload();
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
   return (
     <div>
       <div
@@ -23,111 +151,308 @@ function ReplyServiceModal({ onClose }) {
             </div>
 
             <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
-              <div className="flex flex-col">
-                <div className="flex flex-col-reverse lg:flex-row border mb-1 pb-5">
-                  {/* Service Description */}
-                  <div className="relative lg:mt-4 p-5 lg:p-3 lg:ml-2 pb-6 overflow-y-auto flex flex-col w-full lg:w-2/3 h-full rounded-lg">
-                    <h1
-                      className="font-medium mb-1 text-black text-sm"
-                      style={{ letterSpacing: "0.1em" }}
-                    >
-                      DETAILS
-                    </h1>
-                    <textarea
-                      id="message"
-                      rows="4"
-                      className="block p-2.5 w-full text-sm text-gray-900 rounded-lg bg-gray-100 resize-none overflow-y-auto"
-                      placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, cons adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. "
-                      readOnly
-                    ></textarea>
-
-                    <h1
-                      className="font-medium mb-1 my-2 text-black text-sm"
-                      style={{ letterSpacing: "0.1em" }}
-                    >
-                      REASON
-                    </h1>
-                    <textarea
-                      id="message"
-                      rows="4"
-                      className="block p-2.5 w-full text-sm text-gray-900 rounded-lg bg-gray-100 resize-none "
-                      placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, cons adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse."
-                      readOnly
-                    ></textarea>
-                  </div>
-
-                  {/* Request Information */}
-                  <div className="relative mt-4 mr-6 ml-3 p-5 pb-6 lg:py-3 xl:py-3 xxxl:py-8 overflow-y-auto flex flex-col lg:w-1/3 h-full bg-zinc-100 rounded-lg">
-                    <h1
-                      className="font-medium mb-1 text-black text-sm"
-                      style={{ letterSpacing: "0.1em" }}
-                    >
-                      NAME OF SERVICE
-                    </h1>
-                    <input
-                      type="search"
-                      id="search-dropdown"
-                      className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
-                      placeholder=""
-                      readOnly
-                    />
-                    <h1
-                      className="font-medium mb-1 mt-3 text-black text-sm"
-                      style={{ letterSpacing: "0.1em" }}
-                    >
-                      TYPE OF SERVICE
-                    </h1>
-                    <input
-                      type="search"
-                      id="search-dropdown"
-                      className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
-                      placeholder=""
-                      readOnly
-                    />
-                    <h1
-                      className="font-medium mb-1 mt-3 text-black text-sm"
-                      style={{ letterSpacing: "0.1em" }}
-                    >
-                      REFERENCE NUMBER
-                    </h1>
-                    <input
-                      type="search"
-                      id="search-dropdown"
-                      className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
-                      placeholder=""
-                      readOnly
-                    />
-                    <h1
-                      className="font-medium mb-1 mt-3 text-black text-sm"
-                      style={{ letterSpacing: "0.1em" }}
-                    >
-                      DATE POSTED
-                    </h1>
-                    <input
-                      type="search"
-                      id="search-dropdown"
-                      className="block w-full p-1 text-sm text-black bg-gray-200 rounded-lg"
-                      placeholder=""
-                      readOnly
-                    />
-                  </div>
+              <b className="border-solid border-0 border-black/50 border-b-2 uppercase font-medium text-lg md:text-lg mb-4">
+                Evaluation
+              </b>
+              <div className="flex flex-col border rounded-xl p-2">
+                <p className="font-medium">DISAPPROVED</p>
+                <div className="flex flex-row justify-between">
+                  <p className="font-medium">Processed by: Andrei Nuguid</p>
+                  <p className="font-base">January 20, 2024 - 2:20 AM</p>
                 </div>
 
-                {/* Response */}
-                <div className="w-full px-5">
-                  <h1
-                    className="font-medium mb-1 my-2 text-black text-sm"
-                    style={{ letterSpacing: "0.1em" }}
-                  >
-                    RESPONSE
-                  </h1>
+                <div className="my-2">
                   <textarea
-                    id="message"
+                    id="details"
+                    name="details"
                     rows="4"
-                    className="block p-2.5 w-full h-40 text-sm text-gray-900 rounded-lg bg-gray-100 resize-none"
-                    placeholder="Enter response..."
-                  ></textarea>
+                    className="shadow appearance-none border w-full h-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                    disabled
+                  />
                 </div>
+              </div>
+
+              <div className="mt-4">
+                <form>
+                  <div className="flex flex-col lg:flex-row">
+                    <div className="w-full">
+                      <label
+                        htmlFor="civilStatus"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        STATUS OF REQUEST
+                      </label>
+
+                      <div className="flex flex-row space-x-2">
+                        {!statusChanger ? (
+                          <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex mt-2">
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleOnStatusChanger();
+                              }}
+                              className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
+                            >
+                              <IoMdOptions size={24} className="mx-auto" />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex mt-2">
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleOnStatusChanger();
+                              }}
+                              className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-900 text-white shadow-sm"
+                            >
+                              <MdOutlineCancel size={24} className="mx-auto" />
+                            </button>
+                          </div>
+                        )}
+                        <select
+                          id="civilStatus"
+                          name="status"
+                          onChange={handleChange}
+                          className="shadow  border w-5/6 py-2 px-4 mt-2 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
+                          value={request.status}
+                          disabled={!statusChanger}
+                        >
+                          <option value="Pending">PENDING</option>
+                          <option value="Not Responded">NOT RESPONDED</option>
+                          <option value="In Progress">IN PROGRESS</option>
+                          <option value="Paid">PAID</option>
+                          <option value="Cancelled">CANCELLED</option>
+                          <option value="Rejected">REJECTED</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              <div className="flex flex-col mt-5 w-full">
+                <b className="border-solid border-0 w-full border-black/50 border-b-2 my-4 uppercase font-medium text-lg md:text-lg mb-4">
+                  Conversation History
+                </b>
+                <form>
+                  {!request.response || request.response.length === 0 ? (
+                    <div className="flex flex-row items-center">
+                      <div className="relative w-full mt-4 mx-2">
+                        <div className="relative w-full">
+                          <textarea
+                            id="message"
+                            name="message"
+                            onChange={handleChange}
+                            className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
+                            placeholder="Input response..."
+                          ></textarea>
+
+                          <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-white">
+                            <div className="flex justify-between items-center">
+                              <div className="flex items-center">
+                                <input
+                                  type="file"
+                                  name="file"
+                                  onChange={(e) => handleFileChange(e)}
+                                  ref={fileInputRef}
+                                  accept=".xlsx,.xls,.doc,.docx,.ppt,.pptx,.txt,.pdf"
+                                  multiple="multiple"
+                                  className="hidden"
+                                />
+                                <button
+                                  id="button"
+                                  onClick={handleAdd || handleOnUpload}
+                                  className="mt-2 rounded-xl px-3 py-1 hover:bg-gray-300 focus:shadow-outline focus:outline-none"
+                                >
+                                  <IoIosAttach size={24} />
+                                </button>
+                              </div>
+
+                              <div className="flex items-center gap-x-1">
+                                <button
+                                  type="submit"
+                                  // onClick={handleOnSend}
+                                  className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700"
+                                >
+                                  <span>SEND</span>
+                                  <IoSend size={18} className="flex-shrink-0" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {!upload ? (
+                          // Render Dropbox only when there are uploaded files
+                          createFiles.length > 0 && (
+                            <Dropbox
+                              createFiles={createFiles}
+                              setCreateFiles={setCreateFiles}
+                              handleFileChange={handleFileChange}
+                            />
+                          )
+                        ) : (
+                          <div></div>
+                        )}
+                      </div>
+                    </div>
+                  ) : null}
+                  {request &&
+                    request.response &&
+                    request.response.map((responseItem, index) => (
+                      <div
+                        key={index}
+                        className={`flex flex-col lg:flex-row h-16 mb-2 border-b ${
+                          expandedIndexes.includes(index)
+                            ? "h-auto border-b"
+                            : ""
+                        }`}
+                        onClick={() => handleToggleClick(index)}
+                      >
+                        {!expandedIndexes.includes(index) ? (
+                          <div className="flex flex-col w-full px-2 md:px-4 py-2">
+                            <div className="flex flex-row w-full justify-between">
+                              <p className="text-[14px] md:text-sm font-medium uppercase">
+                                {responseItem.sender}
+                              </p>
+                              <p className="text-[10px] md:text-xs text-right text-xs">
+                                {DateFormat(responseItem.date) || ""}
+                              </p>
+                            </div>
+                            <p className="text-[10px] md:text-xs overflow-hidden line-clamp-3">
+                              {responseItem.message}
+                            </p>
+                          </div>
+                        ) : (
+                          <div
+                            className="flex flex-col w-full px-2 md:px-4 py-2"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <div
+                              className="flex flex-row w-full justify-between"
+                              onClick={() => handleToggleClick(index)}
+                            >
+                              <div className="flex flex-col md:flex-row md:items-center">
+                                <p className="text-[14px] md:text-sm font-medium uppercase ">
+                                  {responseItem.sender}
+                                </p>
+                              </div>
+                              <p className="text-[10px] md:text-xs text-right text-xs">
+                                {DateFormat(responseItem.date) || ""}
+                              </p>
+                            </div>
+                            <div className="w-full py-4 h-full md:px-2">
+                              <div className="w-full border h-full rounded-xl p-5">
+                                <p className="text-[10px] md:text-xs">
+                                  {responseItem.message}
+                                </p>
+                              </div>
+                            </div>
+                            {viewFiles.length > 0 && (
+                              <ViewDropbox
+                                viewFiles={responseItem.file || []}
+                                setViewFiles={setViewFiles}
+                              />
+                            )}
+                            {index === inquiry.response.length - 1 && (
+                              <div>
+                                <div className="flex flex-row space-x-2 my-2 justify-end">
+                                  <p className="font-medium">IS REPLIABLE? </p>
+                                  <label className="relative inline-flex items-center cursor-pointer">
+                                    <input
+                                      type="checkbox"
+                                      name="isRepliable"
+                                      className="sr-only peer"
+                                    />
+                                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-400 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
+                                  </label>
+                                </div>
+                                <div className="flex flex-row items-center">
+                                  <button
+                                    type="button"
+                                    className="h-8 w-full lg:w-32 py-1 px-2 gap-2 rounded-full borde text-sm font-base bg-teal-900 text-white shadow-sm"
+                                    onClick={handleOnReply}
+                                    hidden={reply}
+                                  >
+                                    REPLY
+                                  </button>
+
+                                  {!reply ? (
+                                    <div></div>
+                                  ) : (
+                                    <div className="relative w-full mt-4 mx-2">
+                                      <div className="relative w-full">
+                                        <textarea
+                                          id="message"
+                                          name="message"
+                                          onChange={handleChange}
+                                          className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
+                                          placeholder="Input response..."
+                                        ></textarea>
+
+                                        <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-white">
+                                          <div className="flex justify-between items-center">
+                                            <div className="flex items-center">
+                                              <input
+                                                type="file"
+                                                name="file"
+                                                onChange={(e) =>
+                                                  handleFileChange(e)
+                                                }
+                                                ref={fileInputRef}
+                                                accept=".xlsx,.xls,.doc,.docx,.ppt,.pptx,.txt,.pdf"
+                                                multiple="multiple"
+                                                className="hidden"
+                                              />
+                                              <button
+                                                id="button"
+                                                onClick={
+                                                  handleAdd || handleOnUpload
+                                                }
+                                                className="mt-2 rounded-xl px-3 py-1 hover:bg-gray-300 focus:shadow-outline focus:outline-none"
+                                              >
+                                                <IoIosAttach size={24} />
+                                              </button>
+                                              {/* <IoIosAttach size={24} /> */}
+                                            </div>
+
+                                            <div className="flex items-center gap-x-1">
+                                              <button
+                                                type="submit"
+                                                onClick={handleOnSend}
+                                                className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700"
+                                              >
+                                                <span>SEND</span>
+                                                <IoSend
+                                                  size={18}
+                                                  className="flex-shrink-0"
+                                                />
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      {!upload ? (
+                                        // Render Dropbox only when there are uploaded files
+                                        createFiles.length > 0 && (
+                                          <Dropbox
+                                            createFiles={createFiles}
+                                            setCreateFiles={setCreateFiles}
+                                            handleFileChange={handleFileChange}
+                                          />
+                                        )
+                                      ) : (
+                                        <div></div>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                </form>
               </div>
             </div>
 
@@ -135,17 +460,10 @@ function ReplyServiceModal({ onClose }) {
             <div className="flex justify-end items-center gap-x-2 py-3 px-6 dark:border-gray-700">
               <button
                 type="button"
-                className="py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-custom-green-button3 text-white shadow-sm align-middle"
+                className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-900 text-white shadow-sm"
                 data-hs-overlay="#hs-reply-modal"
               >
-                SEND
-              </button>
-              <button
-                type="button"
-                className="py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-custom-red-button text-white shadow-sm align-middle"
-                data-hs-overlay="#hs-reply-modal"
-              >
-                CANCEL
+                CLOSE
               </button>
             </div>
           </div>

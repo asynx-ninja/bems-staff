@@ -3,14 +3,13 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import API_LINK from "../../config/API";
 import { useSearchParams } from "react-router-dom";
-import EditDropbox from "./EditDropbox";
 import { IoIosAttach } from "react-icons/io";
 import { IoSend } from "react-icons/io5";
 import Dropbox from "./Dropbox";
 import ViewDropbox from "./ViewDropbox";
+import EditDropbox from "./EditDropbox";
 
 function ViewInquiriesModal({ inquiry, setInquiry }) {
-  console.log(inquiry.folder_id);
   const [reply, setReply] = useState(false);
   const [upload, setUpload] = useState(false);
   const [expandedIndexes, setExpandedIndexes] = useState([]);
@@ -335,7 +334,7 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
                                   {DateFormat(responseItem.date) || ""}
                                 </p>
                               </div>
-                              <p className="text-[10px] md:text-xs">
+                              <p className="text-[10px] md:text-xs overflow-hidden line-clamp-3">
                                 {responseItem.message}
                               </p>
                             </div>
