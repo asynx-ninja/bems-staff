@@ -30,16 +30,15 @@ const Requests = () => {
           `${API_LINK}/requests/?brgy=${brgy}&archived=false`
         );
 
-        if (response.status === 200) setRequests(response.data);
+        if (response.status === 200) 
+          setRequests(response.data);
       } catch (err) {
         console.log(err);
       }
     };
 
-    fetch()
+    fetch();
   }, []);
-
-  console.log("reqs", requests);
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -76,6 +75,10 @@ const Requests = () => {
     "STATUS",
     "ACTIONS",
   ];
+
+  const handleView = (item) => {
+    setRequest(item);
+  };
 
   useEffect(() => {
     document.title = "Service Requests | Barangay E-Services Management";
@@ -292,24 +295,46 @@ const Requests = () => {
                     </div>
                   </td>
                   <td className="px-6 py-3">
-                    {item.status === "approved" && (
+                    {item.status === "Approved" && (
                       <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                         <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                          APPROVED
+                          COMPLETED
                         </span>
                       </div>
                     )}
-                    {item.status === "rejected" && (
+                    {item.status === "Rejected" && (
                       <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
                         <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
                           REJECTED
                         </span>
                       </div>
                     )}
-                    {item.status === "pending" && (
+                    {item.status === "Pending" && (
                       <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
                         <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                          PENDING
+                          IN PROGRESS
+                        </span>
+                      </div>
+                    )}
+                    {item.status === "Not Responded" && (
+                      <div className="flex items-center justify-center bg-pink-700 m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          NOT RESPONDED
+                        </span>
+                      </div>
+                    )}
+                    {item.status === "Paid" && (
+                      <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          PAID
+                        </span>
+                      </div>
+                    )}
+
+                    {item.status === "Paid" && (
+                      <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          CANCELLED
                         </span>
                       </div>
                     )}
@@ -320,6 +345,7 @@ const Requests = () => {
                         <button
                           type="button"
                           data-hs-overlay="#hs-view-request-modal"
+                          onClick={() => handleView({ ...item })}
                           className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                         >
                           <AiOutlineEye
@@ -378,7 +404,9 @@ const Requests = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <ViewRequestModal />
+      {Object.hasOwn(request, "service_id") ? (
+        <ViewRequestModal request={request} />
+      ) : null}
       <ReplyServiceModal />
       <ArchiveRequestsModal />
       <RequestsReportsModal />
