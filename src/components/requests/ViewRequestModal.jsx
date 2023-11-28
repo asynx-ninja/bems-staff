@@ -3,8 +3,9 @@ import { useState, React, useRef } from "react";
 import PersonalDetails from "./PersonalDetails";
 import OtherDetails from "./OtherDetails";
 import PrintForm from "./form/PrintForm";
+import PrintPDF from "./form/PrintPDF";
 
-import { jsPDF } from "jspdf";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 
 function ViewRequestModal({ request }) {
   const [detail, setDetail] = useState(request);
@@ -57,6 +58,20 @@ function ViewRequestModal({ request }) {
     return null;
   };
 
+    function printDocument() {
+      const input = document.getElementById("divToPrint");
+      html2canvas(input).then((canvas) => {
+        let imgWidth = 208;
+        let imgHeight = (canvas.height * imgWidth) / canvas.width;
+        const imgData = canvas.toDataURL("img/png");
+        const pdf = new jsPDF("p", "mm", "a4");
+        pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+        // pdf.output('dataurlnewwindow');
+        pdf.save("download.pdf");
+      });
+    }
+
+
   // const generatePDF = async () => {
   //   try {
   //     const result = await pdf(<SampleDocument detail={detail} />).toBlob();
@@ -65,25 +80,6 @@ function ViewRequestModal({ request }) {
   //     console.error(error.message);
   //   }
   // };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const content = pdfRef.current;
-
-    const doc = new jsPDF();
-    doc.html(content, {
-      callback: function (doc) {
-        doc.save("sample.pdf");
-      },
-      x: 0,
-      y: 0,
-      autoPaging: "text",
-      margin: 20,
-      width: 500,
-      windowWidth: 595,
-    });
-  };
 
   return (
     <div>
@@ -115,15 +111,6 @@ function ViewRequestModal({ request }) {
                     Please fill out the required information!
                   </div>
                 )}
-                <div className="flex mx-5">
-                  <div className="relative lg:w-4/12 flex m-auto justify-end items-center">
-                    <img
-                      id="formPicture"
-                      src={detail.file[0].link}
-                      className={`border-[#295141] w-[200px] border-[1px] h-[200px] sm:mb-3 lg:mb-0  object-cover`}
-                    />
-                  </div>
-                </div>
                 <PersonalDetails detail={detail} />
                 <OtherDetails detail={detail} returnFile={returnFile} />
                 <fieldset className="flex-col border-[1px] border-black rounded-md">
@@ -146,30 +133,6 @@ function ViewRequestModal({ request }) {
                       placeholder="Write your thoughts here..."
                     ></textarea>
                   </div>
-                  <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 justify-center items-start gap-3 px-6 pb-5">
-                    <div>
-                      <label
-                        htmlFor="signature"
-                        className="block sm:text-xs lg:text-sm font-medium mb-2"
-                      >
-                        Signature of the Requester
-                      </label>
-                      {returnFile(
-                        `${detail.form[0].lastName.value} - SIGNATURE`
-                      )}
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="signature"
-                        className="block sm:text-xs lg:text-sm font-medium mb-2"
-                      >
-                        Signature of the Guardian
-                      </label>
-                      {returnFile(
-                        `${detail.form[0].lastName.value} - SIGNATURE GUARDIAN`
-                      )}
-                    </div>
-                  </div>
                 </fieldset>
               </form>
             </div>
@@ -177,13 +140,13 @@ function ViewRequestModal({ request }) {
             {/* BUTTON BELOW */}
             <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
               <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
-                <button
-                  type="submit"
-                  className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                  onClick={handleSubmit}
+                <PDFDownloadLink
+                  document={<PrintPDF detail={detail} />}
+                  fileName="SAMPLE.pdf"
+                  className="h-[2.5rem] flex justify-center items-center w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
                 >
                   PRINT
-                </button>
+                </PDFDownloadLink>
                 <button
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
@@ -196,7 +159,6 @@ function ViewRequestModal({ request }) {
           </div>
         </div>
       </div>
-      <PrintForm pdfRef={pdfRef} />
     </div>
   );
 }

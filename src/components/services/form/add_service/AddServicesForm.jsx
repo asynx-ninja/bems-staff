@@ -61,13 +61,6 @@ const AddServicesForm = ({ service_id, brgy }) => {
       type: "select",
       value: "",
     },
-    id_pic: {
-      display: "id picture (white background)",
-      checked: false,
-      type: "file",
-      accept: "image/*",
-      value: null,
-    },
   });
 
   const [section, setSection] = useState([

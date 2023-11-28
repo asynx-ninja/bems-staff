@@ -95,7 +95,7 @@ const PrintForm = ({ pdfRef }) => {
   };
 
   return (
-    <div ref={pdfRef}>
+    <div id="divToPrint" className="max-w-3xl mx-auto">
       <div
         // className="flex justify-between items-center"
         style={{
