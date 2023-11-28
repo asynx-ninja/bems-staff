@@ -236,8 +236,19 @@ function ReplyServiceModal({ request }) {
                 </b>
                 <form>
                   {!request.response || request.response.length === 0 ? (
-                    <div className="flex flex-row items-center">
-                      <div className="relative w-full mt-4 mx-2">
+                    <div className="flex flex-col items-center">
+                      <div className="relative w-full mx-2">
+                        <div className="flex flex-row space-x-2 my-2 justify-end">
+                          <p className="font-medium">IS REPLIABLE? </p>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              name="isRepliable"
+                              className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
+                          </label>
+                        </div>
                         <div className="relative w-full">
                           <textarea
                             id="message"
