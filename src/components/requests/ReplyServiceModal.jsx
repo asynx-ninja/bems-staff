@@ -20,6 +20,7 @@ function ReplyServiceModal({ request }) {
   const [files, setFiles] = useState([]);
   const [createFiles, setCreateFiles] = useState([]);
   const [viewFiles, setViewFiles] = useState([]);
+  const [newMessage, setNewMessage] = useState({});
 
   useEffect(() => {
     setFiles(request.length === 0 ? [] : request.file);
@@ -103,33 +104,33 @@ function ReplyServiceModal({ request }) {
     setStatusChanger(!statusChanger);
   };
 
-  // const handleOnSend = async (e) => {
-  //   e.preventDefault();
-  //   console.log(newMessage);
+  const handleOnSend = async (e) => {
+    e.preventDefault();
+    console.log(newMessage);
 
-  //   try {
-  //     const obj = {
-  //       sender: newMessage.sender,
-  //       message: newMessage.message,
-  //       date: newMessage.date,
-  //       folder_id: request.folder_id,
-  //     };
-  //     var formData = new FormData();
-  //     formData.append("response", JSON.stringify(obj));
-  //     for (let i = 0; i < createFiles.length; i++) {
-  //       formData.append("files", createFiles[i]);
-  //     }
+    // try {
+    //   const obj = {
+    //     sender: newMessage.sender,
+    //     message: newMessage.message,
+    //     date: newMessage.date,
+    //     folder_id: request.folder_id,
+    //   };
+    //   var formData = new FormData();
+    //   formData.append("response", JSON.stringify(obj));
+    //   for (let i = 0; i < createFiles.length; i++) {
+    //     formData.append("files", createFiles[i]);
+    //   }
 
-  //     const response = await axios.patch(
-  //       `${API_LINK}/inquiries/?inq_id=${request._id}`,
-  //       formData
-  //     );
+    //   const response = await axios.patch(
+    //     `${API_LINK}/inquiries/?inq_id=${request._id}`,
+    //     formData
+    //   );
 
-  //     window.location.reload();
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+    //   window.location.reload();
+    // } catch (error) {
+    //   console.log(error);
+    // }
+  };
 
   return (
     <div>
@@ -289,7 +290,7 @@ function ReplyServiceModal({ request }) {
                               <div className="flex items-center gap-x-1">
                                 <button
                                   type="submit"
-                                  // onClick={handleOnSend}
+                                  onClick={handleOnSend}
                                   className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700"
                                 >
                                   <span>SEND</span>
