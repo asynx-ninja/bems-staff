@@ -104,28 +104,28 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
     e.preventDefault();
     console.log(newMessage);
 
-    try {
-      const obj = {
-        sender: newMessage.sender,
-        message: newMessage.message,
-        date: newMessage.date,
-        folder_id: inquiry.folder_id,
-      };
-      var formData = new FormData();
-      formData.append("response", JSON.stringify(obj));
-      for (let i = 0; i < createFiles.length; i++) {
-        formData.append("files", createFiles[i]);
-      }
+    // try {
+    //   const obj = {
+    //     sender: newMessage.sender,
+    //     message: newMessage.message,
+    //     date: newMessage.date,
+    //     folder_id: inquiry.folder_id,
+    //   };
+    //   var formData = new FormData();
+    //   formData.append("response", JSON.stringify(obj));
+    //   for (let i = 0; i < createFiles.length; i++) {
+    //     formData.append("files", createFiles[i]);
+    //   }
 
-      const response = await axios.patch(
-        `${API_LINK}/inquiries/?inq_id=${inquiry._id}`,
-        formData
-      );
+    //   const response = await axios.patch(
+    //     `${API_LINK}/inquiries/?inq_id=${inquiry._id}`,
+    //     formData
+    //   );
 
-      window.location.reload();
-    } catch (error) {
-      console.log(error);
-    }
+    //   window.location.reload();
+    // } catch (error) {
+    //   console.log(error);
+    // }
   };
 
   return (

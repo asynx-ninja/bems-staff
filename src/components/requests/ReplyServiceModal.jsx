@@ -2,8 +2,6 @@ import React from "react";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import API_LINK from "../../config/API";
-import bgmodal from "../../assets/modals/bg-modal2.png";
-import { AiOutlineSend } from "react-icons/ai";
 import { MdOutlineCancel } from "react-icons/md";
 import { IoIosAttach } from "react-icons/io";
 import { IoMdOptions } from "react-icons/io";
@@ -11,8 +9,9 @@ import { IoSend } from "react-icons/io5";
 import Dropbox from "./Dropbox";
 import ViewDropbox from "./ViewDropbox";
 import EditDropbox from "./EditDropbox";
+import { useSearchParams } from "react-router-dom";
 
-function ReplyServiceModal({ request }) {
+function ReplyServiceModal({ request, setRequest }) {
   const [reply, setReply] = useState(false);
   const [statusChanger, setStatusChanger] = useState(false);
   const [upload, setUpload] = useState(false);
@@ -20,10 +19,32 @@ function ReplyServiceModal({ request }) {
   const [files, setFiles] = useState([]);
   const [createFiles, setCreateFiles] = useState([]);
   const [viewFiles, setViewFiles] = useState([]);
+  const [newMessage, setNewMessage] = useState({
+    message: "",
+    isRepliable: false,
+  });
+  const [userData, setUserData] = useState({});
+  const [searchParams, setSearchParams] = useSearchParams();
+  const id = searchParams.get("id");
 
   useEffect(() => {
     setFiles(request.length === 0 ? [] : request.file);
   }, [request]);
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const res = await axios.get(`${API_LINK}/users/specific/${id}`);
+
+        if (res.status === 200) {
+          setUserData(res.data[0]);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetch();
+  }, [id]);
 
   // useEffect(() => {
   //   if (request && request.response.length !== 0) {
@@ -58,10 +79,10 @@ function ReplyServiceModal({ request }) {
   };
 
   const handleChange = (e) => {
-    e.preventDefault();
     setNewMessage((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [e.target.name]:
+        e.target.name === "isRepliable" ? e.target.checked : e.target.value,
     }));
   };
 
@@ -103,33 +124,37 @@ function ReplyServiceModal({ request }) {
     setStatusChanger(!statusChanger);
   };
 
-  // const handleOnSend = async (e) => {
-  //   e.preventDefault();
-  //   console.log(newMessage);
+  const handleOnSend = async (e) => {
+    try {
+      e.preventDefault();
 
-  //   try {
-  //     const obj = {
-  //       sender: newMessage.sender,
-  //       message: newMessage.message,
-  //       date: newMessage.date,
-  //       folder_id: request.folder_id,
-  //     };
-  //     var formData = new FormData();
-  //     formData.append("response", JSON.stringify(obj));
-  //     for (let i = 0; i < createFiles.length; i++) {
-  //       formData.append("files", createFiles[i]);
-  //     }
+      const obj = {
+        sender: `${userData.firstName} ${userData.lastName} (STAFF)`,
+        message: newMessage.message,
+        status: request.status,
+        isRepliable: newMessage.isRepliable,
+        folder_id: request.folder_id,
+      };
 
-  //     const response = await axios.patch(
-  //       `${API_LINK}/inquiries/?inq_id=${request._id}`,
-  //       formData
-  //     );
+      var formData = new FormData();
+      formData.append("response", JSON.stringify(obj));
 
-  //     window.location.reload();
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+      for (let i = 0; i < createFiles.length; i++) {
+        formData.append("files", createFiles[i]);
+      }
+
+      const response = await axios.patch(
+        `${API_LINK}/requests/?req_id=${request._id}`,
+        formData
+      );
+
+      console.log(response)
+
+      // window.location.reload();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div>
@@ -210,9 +235,14 @@ function ReplyServiceModal({ request }) {
                           </div>
                         )}
                         <select
-                          id="civilStatus"
+                          id="status"
                           name="status"
-                          onChange={handleChange}
+                          onChange={(e) => {
+                            setRequest((prev) => ({
+                              ...prev,
+                              status: e.target.value,
+                            }));
+                          }}
                           className="shadow  border w-5/6 py-2 px-4 mt-2 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
                           value={request.status}
                           disabled={!statusChanger}
@@ -273,6 +303,8 @@ function ReplyServiceModal({ request }) {
                                     <input
                                       type="checkbox"
                                       name="isRepliable"
+                                      defaultChecked={newMessage.isRepliable}
+                                      onChange={handleChange}
                                       className="hs-tooltip-toggle sr-only peer"
                                     />
                                     <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
@@ -289,7 +321,7 @@ function ReplyServiceModal({ request }) {
                               <div className="flex items-center gap-x-1">
                                 <button
                                   type="submit"
-                                  // onClick={handleOnSend}
+                                  onClick={handleOnSend}
                                   className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700"
                                 >
                                   <span>SEND</span>
@@ -371,7 +403,7 @@ function ReplyServiceModal({ request }) {
                                 setViewFiles={setViewFiles}
                               />
                             )}
-                            {index === inquiry.response.length - 1 && (
+                            {index === request.response.length - 1 && (
                               <div className="flex flex-row items-center">
                                 <button
                                   type="button"
@@ -424,6 +456,10 @@ function ReplyServiceModal({ request }) {
                                                 <input
                                                   type="checkbox"
                                                   name="isRepliable"
+                                                  defaultChecked={
+                                                    newMessage.isRepliable
+                                                  }
+                                                  onChange={handleChange}
                                                   className="hs-tooltip-toggle sr-only peer"
                                                 />
                                                 <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />

@@ -8,9 +8,8 @@ import PrintPDF from "./form/PrintPDF";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 
 function ViewRequestModal({ request }) {
-  const [detail, setDetail] = useState(request);
-  const [empty, setEmpty] = useState(false);
-  const pdfRef = useRef(null);
+  const [detail, ] = useState(request);
+  const [empty, ] = useState(false);
 
   const returnFile = (string) => {
     for (const item of detail.file) {
@@ -57,29 +56,6 @@ function ViewRequestModal({ request }) {
 
     return null;
   };
-
-    function printDocument() {
-      const input = document.getElementById("divToPrint");
-      html2canvas(input).then((canvas) => {
-        let imgWidth = 208;
-        let imgHeight = (canvas.height * imgWidth) / canvas.width;
-        const imgData = canvas.toDataURL("img/png");
-        const pdf = new jsPDF("p", "mm", "a4");
-        pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
-        // pdf.output('dataurlnewwindow');
-        pdf.save("download.pdf");
-      });
-    }
-
-
-  // const generatePDF = async () => {
-  //   try {
-  //     const result = await pdf(<SampleDocument detail={detail} />).toBlob();
-  //     saveAs(new File([result], "filename"), "NewFile.pdf");
-  //   } catch (error) {
-  //     console.error(error.message);
-  //   }
-  // };
 
   return (
     <div>

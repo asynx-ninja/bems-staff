@@ -84,6 +84,8 @@ const Requests = () => {
     document.title = "Service Requests | Barangay E-Services Management";
   }, []);
 
+  console.log('req parent', request)
+
   return (
     <div className="mx-4 ">
       {/* Body */}
@@ -365,6 +367,7 @@ const Requests = () => {
                         <button
                           type="button"
                           data-hs-overlay="#hs-reply-modal"
+                          onClick={() => handleView({ ...item })}
                           className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                         >
                           <AiOutlineSend
