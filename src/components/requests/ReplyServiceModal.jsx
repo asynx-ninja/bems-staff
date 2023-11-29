@@ -2,17 +2,16 @@ import React from "react";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import API_LINK from "../../config/API";
-import bgmodal from "../../assets/modals/bg-modal2.png";
-import { AiOutlineSend } from "react-icons/ai";
 import { MdOutlineCancel } from "react-icons/md";
 import { IoIosAttach } from "react-icons/io";
-import { IoMdOptions } from "react-icons/io";
+import { FaTasks } from "react-icons/fa";
 import { IoSend } from "react-icons/io5";
 import Dropbox from "./Dropbox";
 import ViewDropbox from "./ViewDropbox";
 import EditDropbox from "./EditDropbox";
+import { useSearchParams } from "react-router-dom";
 
-function ReplyServiceModal({ request }) {
+function ReplyServiceModal({ request, setRequest }) {
   const [reply, setReply] = useState(false);
   const [statusChanger, setStatusChanger] = useState(false);
   const [upload, setUpload] = useState(false);
@@ -20,25 +19,46 @@ function ReplyServiceModal({ request }) {
   const [files, setFiles] = useState([]);
   const [createFiles, setCreateFiles] = useState([]);
   const [viewFiles, setViewFiles] = useState([]);
-  const [newMessage, setNewMessage] = useState({});
+  const [newMessage, setNewMessage] = useState({
+    message: "",
+    isRepliable: false,
+  });
+  const [userData, setUserData] = useState({});
+  const [searchParams, setSearchParams] = useSearchParams();
+  const id = searchParams.get("id");
 
   useEffect(() => {
     setFiles(request.length === 0 ? [] : request.file);
   }, [request]);
 
-  // useEffect(() => {
-  //   if (request && request.response.length !== 0) {
-  //     const lastResponse = request.response[request.response.length - 1];
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const res = await axios.get(`${API_LINK}/users/specific/${id}`);
 
-  //     if (lastResponse.file && lastResponse.file.length > 0) {
-  //       setViewFiles(lastResponse.file);
-  //     } else {
-  //       setViewFiles([]);
-  //     }
-  //   } else {
-  //     setViewFiles([]);
-  //   }
-  // }, [request]);
+        if (res.status === 200) {
+          setUserData(res.data[0]);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetch();
+  }, [id]);
+
+  useEffect(() => {
+    if (request && request.response.length !== 0) {
+      const lastResponse = request.response[request.response.length - 1];
+
+      if (lastResponse.file && lastResponse.file.length > 0) {
+        setViewFiles(lastResponse.file);
+      } else {
+        setViewFiles([]);
+      }
+    } else {
+      setViewFiles([]);
+    }
+  }, [request]);
 
   // Initialize with the last index expanded
   useEffect(() => {
@@ -59,10 +79,10 @@ function ReplyServiceModal({ request }) {
   };
 
   const handleChange = (e) => {
-    e.preventDefault();
     setNewMessage((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [e.target.name]:
+        e.target.name === "isRepliable" ? e.target.checked : e.target.value,
     }));
   };
 
@@ -105,31 +125,36 @@ function ReplyServiceModal({ request }) {
   };
 
   const handleOnSend = async (e) => {
-    e.preventDefault();
-    console.log(newMessage);
+    try {
+      e.preventDefault();
 
-    // try {
-    //   const obj = {
-    //     sender: newMessage.sender,
-    //     message: newMessage.message,
-    //     date: newMessage.date,
-    //     folder_id: request.folder_id,
-    //   };
-    //   var formData = new FormData();
-    //   formData.append("response", JSON.stringify(obj));
-    //   for (let i = 0; i < createFiles.length; i++) {
-    //     formData.append("files", createFiles[i]);
-    //   }
+      const obj = {
+        sender: `${userData.firstName} ${userData.lastName} (STAFF)`,
+        message: newMessage.message,
+        status: request.status,
+        isRepliable: newMessage.isRepliable,
+        folder_id: request.folder_id,
+      };
 
-    //   const response = await axios.patch(
-    //     `${API_LINK}/inquiries/?inq_id=${request._id}`,
-    //     formData
-    //   );
+      console.log("obj", obj);
+      var formData = new FormData();
+      formData.append("response", JSON.stringify(obj));
 
-    //   window.location.reload();
-    // } catch (error) {
-    //   console.log(error);
-    // }
+      for (let i = 0; i < createFiles.length; i++) {
+        formData.append("files", createFiles[i]);
+      }
+
+      const response = await axios.patch(
+        `${API_LINK}/requests/?req_id=${request._id}`,
+        formData
+      );
+
+      console.log(response);
+
+      // window.location.reload();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -152,86 +177,7 @@ function ReplyServiceModal({ request }) {
             </div>
 
             <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
-              <b className="border-solid border-0 border-black/50 border-b-2 uppercase font-medium text-lg md:text-lg mb-4">
-                Evaluation
-              </b>
-              <div className="flex flex-col border rounded-xl p-2">
-                <p className="font-medium">DISAPPROVED</p>
-                <div className="flex flex-row justify-between">
-                  <p className="font-medium">Processed by: Andrei Nuguid</p>
-                  <p className="font-base">January 20, 2024 - 2:20 AM</p>
-                </div>
-
-                <div className="my-2">
-                  <textarea
-                    id="details"
-                    name="details"
-                    rows="4"
-                    className="shadow appearance-none border w-full h-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                    disabled
-                  />
-                </div>
-              </div>
-
-              <div className="mt-4">
-                <form>
-                  <div className="flex flex-col lg:flex-row">
-                    <div className="w-full">
-                      <label
-                        htmlFor="civilStatus"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        STATUS OF REQUEST
-                      </label>
-
-                      <div className="flex flex-row space-x-2">
-                        {!statusChanger ? (
-                          <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex mt-2">
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                handleOnStatusChanger();
-                              }}
-                              className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                            >
-                              <IoMdOptions size={24} className="mx-auto" />
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex mt-2">
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                handleOnStatusChanger();
-                              }}
-                              className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-900 text-white shadow-sm"
-                            >
-                              <MdOutlineCancel size={24} className="mx-auto" />
-                            </button>
-                          </div>
-                        )}
-                        <select
-                          id="civilStatus"
-                          name="status"
-                          onChange={handleChange}
-                          className="shadow  border w-5/6 py-2 px-4 mt-2 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
-                          value={request.status}
-                          disabled={!statusChanger}
-                        >
-                          <option value="Pending">PENDING</option>
-                          <option value="Not Responded">NOT RESPONDED</option>
-                          <option value="In Progress">IN PROGRESS</option>
-                          <option value="Paid">PAID</option>
-                          <option value="Cancelled">CANCELLED</option>
-                          <option value="Rejected">REJECTED</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </form>
-              </div>
-
-              <div className="flex flex-col mt-5 w-full">
+              <div className="flex flex-col w-full">
                 <b className="border-solid border-0 w-full border-black/50 border-b-2 my-4 uppercase font-medium text-lg md:text-lg mb-4">
                   Conversation History
                 </b>
@@ -244,13 +190,14 @@ function ReplyServiceModal({ request }) {
                             id="message"
                             name="message"
                             onChange={handleChange}
-                            className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
+                            rows={7}
+                            className="p-4 pb-12 block w-full border-gray-200 ounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
                             placeholder="Input response..."
                           ></textarea>
 
                           <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-white">
                             <div className="flex justify-between items-center">
-                              <div className="flex items-center">
+                              <div className="flex items-center space-x-2">
                                 <input
                                   type="file"
                                   name="file"
@@ -260,20 +207,108 @@ function ReplyServiceModal({ request }) {
                                   multiple="multiple"
                                   className="hidden"
                                 />
-
                                 <button
                                   id="button"
                                   onClick={handleAdd || handleOnUpload}
-                                  className=" rounded-xl px-3 py-1 hover:bg-gray-300 focus:shadow-outline focus:outline-none"
+                                  className="rounded-xl px-3 py-2 bg-[#329ba8] text-white hover:bg-pink-900 focus:shadow-outline focus:outline-none"
                                 >
-                                  <IoIosAttach size={24} />
+                                  <IoIosAttach size={24} className="mx-auto" />
                                 </button>
 
-                                <div className="hs-tooltip inline-block w-full">
-                                  <label className="relative inline-flex justify-center my-2 items-center cursor-pointer">
+                                <div className="flex flex-col lg:flex-row">
+                                  <div className="w-full">
+                                    <div className="flex flex-row space-x-4">
+                                      {!statusChanger ? (
+                                        <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                          <div className="hs-tooltip inline-block">
+                                            <button
+                                              onClick={(e) => {
+                                                e.preventDefault();
+                                                handleOnStatusChanger();
+                                              }}
+                                              className="hs-tooltip-toggle rounded-xl px-3 py-2 bg-teal-800 text-white hover:bg-teal-900 focus:shadow-outline focus:outline-none"
+                                            >
+                                              <FaTasks
+                                                size={24}
+                                                className="mx-auto"
+                                              />
+                                              <span
+                                                className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                                role="tooltip"
+                                              >
+                                                Change Request Status
+                                              </span>
+                                            </button>
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                          <div className="hs-tooltip inline-block">
+                                            <button
+                                              onClick={(e) => {
+                                                e.preventDefault();
+                                                handleOnStatusChanger();
+                                              }}
+                                              className="hs-tooltip-toggle rounded-xl px-3 py-[8px] bg-pink-800 text-white hover:bg-pink-900 focus:shadow-outline focus:outline-none"
+                                            >
+                                              <MdOutlineCancel
+                                                size={24}
+                                                className="mx-auto"
+                                              />
+                                            </button>
+                                            <span
+                                              className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                              role="tooltip"
+                                            >
+                                              Change Request Status
+                                            </span>
+                                          </div>
+                                        </div>
+                                      )}
+                                      <select
+                                        id="status"
+                                        name="status"
+                                        onChange={(e) => {
+                                          setRequest((prev) => ({
+                                            ...prev,
+                                            status: e.target.value,
+                                          }));
+                                        }}
+                                        className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
+                                        value={request.status}
+                                        hidden={!statusChanger}
+                                      >
+                                        <option value="Not Responded">
+                                          NOT RESPONDED
+                                        </option>
+                                        <option value="Pending">PENDING</option>
+                                        <option value="Paid">PAID</option>
+                                        <option value="Processing">
+                                          PROCESSING
+                                        </option>
+                                        <option value="Cancelled">
+                                          CANCELLED
+                                        </option>
+                                        <option value="Completed">
+                                          COMPLETED
+                                        </option>
+                                        <option value="Rejected">
+                                          REJECTED
+                                        </option>
+                                      </select>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex justify-center items-center gap-x-2">
+                                <div className="hs-tooltip inline-block">
+                                  <label className="relative flex  justify-center items-center cursor-pointer">
                                     <input
                                       type="checkbox"
                                       name="isRepliable"
+                                      defaultChecked={newMessage.isRepliable}
+                                      onChange={handleChange}
                                       className="hs-tooltip-toggle sr-only peer"
                                     />
                                     <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
@@ -285,9 +320,6 @@ function ReplyServiceModal({ request }) {
                                     Client can Reply
                                   </span>
                                 </div>
-                              </div>
-
-                              <div className="flex items-center gap-x-1">
                                 <button
                                   type="submit"
                                   onClick={handleOnSend}
@@ -372,7 +404,7 @@ function ReplyServiceModal({ request }) {
                                 setViewFiles={setViewFiles}
                               />
                             )}
-                            {index === inquiry.response.length - 1 && (
+                            {index === request.response.length - 1 && (
                               <div className="flex flex-row items-center">
                                 <button
                                   type="button"
@@ -392,13 +424,14 @@ function ReplyServiceModal({ request }) {
                                         id="message"
                                         name="message"
                                         onChange={handleChange}
+                                        rows={7}
                                         className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
                                         placeholder="Input response..."
                                       ></textarea>
 
                                       <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-white">
                                         <div className="flex justify-between items-center">
-                                          <div className="flex items-center">
+                                          <div className="flex items-center space-x-2">
                                             <input
                                               type="file"
                                               name="file"
@@ -415,16 +448,115 @@ function ReplyServiceModal({ request }) {
                                               onClick={
                                                 handleAdd || handleOnUpload
                                               }
-                                              className="mt-2 rounded-xl px-3 py-1 hover:bg-gray-300 focus:shadow-outline focus:outline-none"
+                                              className="rounded-xl px-3 py-2 bg-[#329ba8] text-white hover:bg-pink-900 focus:shadow-outline focus:outline-none"
                                             >
-                                              <IoIosAttach size={24} />
+                                              <IoIosAttach
+                                                size={24}
+                                                className="mx-auto"
+                                              />
                                             </button>
 
-                                            <div className="hs-tooltip inline-block w-full">
-                                              <label className="relative inline-flex justify-center my-2 items-center cursor-pointer">
+                                            <div className="flex flex-col lg:flex-row">
+                                              <div className="w-full">
+                                                <div className="flex flex-row space-x-4">
+                                                  {!statusChanger ? (
+                                                    <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                                      <div className="hs-tooltip inline-block">
+                                                        <button
+                                                          onClick={(e) => {
+                                                            e.preventDefault();
+                                                            handleOnStatusChanger();
+                                                          }}
+                                                          className="hs-tooltip-toggle rounded-xl px-3 py-2 bg-teal-800 text-white hover:bg-teal-900 focus:shadow-outline focus:outline-none"
+                                                        >
+                                                          <FaTasks
+                                                            size={24}
+                                                            className="mx-auto"
+                                                          />
+                                                          <span
+                                                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                                            role="tooltip"
+                                                          >
+                                                            Change Request
+                                                            Status
+                                                          </span>
+                                                        </button>
+                                                      </div>
+                                                    </div>
+                                                  ) : (
+                                                    <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                                      <div className="hs-tooltip inline-block">
+                                                        <button
+                                                          onClick={(e) => {
+                                                            e.preventDefault();
+                                                            handleOnStatusChanger();
+                                                          }}
+                                                          className="hs-tooltip-toggle rounded-xl px-3 py-[8px] bg-pink-800 text-white hover:bg-pink-900 focus:shadow-outline focus:outline-none"
+                                                        >
+                                                          <MdOutlineCancel
+                                                            size={24}
+                                                            className="mx-auto"
+                                                          />
+                                                        </button>
+                                                        <span
+                                                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                                          role="tooltip"
+                                                        >
+                                                          Change Request Status
+                                                        </span>
+                                                      </div>
+                                                    </div>
+                                                  )}
+                                                  <select
+                                                    id="status"
+                                                    name="status"
+                                                    onChange={(e) => {
+                                                      setRequest((prev) => ({
+                                                        ...prev,
+                                                        status: e.target.value,
+                                                      }));
+                                                    }}
+                                                    className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
+                                                    value={request.status}
+                                                    hidden={!statusChanger}
+                                                  >
+                                                    <option value="Not Responded">
+                                                      NOT RESPONDED
+                                                    </option>
+                                                    <option value="Pending">
+                                                      PENDING
+                                                    </option>
+                                                    <option value="Paid">
+                                                      PAID
+                                                    </option>
+                                                    <option value="Processing">
+                                                      PROCESSING
+                                                    </option>
+                                                    <option value="Cancelled">
+                                                      CANCELLED
+                                                    </option>
+                                                    <option value="Completed">
+                                                      COMPLETED
+                                                    </option>
+                                                    <option value="Rejected">
+                                                      REJECTED
+                                                    </option>
+                                                  </select>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+
+                                          <div className="flex justify-center items-center gap-x-2">
+                                            <div className="hs-tooltip inline-block">
+                                              <label className="relative flex  justify-center items-center cursor-pointer">
                                                 <input
                                                   type="checkbox"
                                                   name="isRepliable"
+                                                  defaultChecked={
+                                                    newMessage.isRepliable
+                                                  }
+                                                  onChange={handleChange}
                                                   className="hs-tooltip-toggle sr-only peer"
                                                 />
                                                 <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
@@ -436,9 +568,6 @@ function ReplyServiceModal({ request }) {
                                                 Client can Reply
                                               </span>
                                             </div>
-                                          </div>
-
-                                          <div className="flex items-center gap-x-1">
                                             <button
                                               type="submit"
                                               onClick={handleOnSend}

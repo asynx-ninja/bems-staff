@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 const ViewDropbox = ({ viewFiles, setViewFiles }) => {
+  console.log("View Files", viewFiles);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef();
   const navigate = useNavigate();
@@ -52,7 +53,7 @@ const ViewDropbox = ({ viewFiles, setViewFiles }) => {
 
   return (
     <div className="">
-      <main className="container mx-auto max-w-screen-lg h-full px-1">
+      <main className="container mx-auto max-w-screen-lg h-full px-1 mb-3">
         <article
           aria-label="File Upload Modal"
           className="relative h-full flex flex-col "

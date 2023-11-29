@@ -17,7 +17,7 @@ import axios from "axios";
 
 const Requests = () => {
   const [requests, setRequests] = useState([]);
-  const [request, setRequest] = useState({});
+  const [request, setRequest] = useState({ response: [{ file: [] }] });
   const [selectedItems, setSelectedItems] = useState([]);
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
@@ -30,8 +30,7 @@ const Requests = () => {
           `${API_LINK}/requests/?brgy=${brgy}&archived=false`
         );
 
-        if (response.status === 200) 
-          setRequests(response.data);
+        if (response.status === 200) setRequests(response.data);
       } catch (err) {
         console.log(err);
       }
@@ -83,6 +82,8 @@ const Requests = () => {
   useEffect(() => {
     document.title = "Service Requests | Barangay E-Services Management";
   }, []);
+
+  console.log("req parent", request);
 
   return (
     <div className="mx-4 ">
@@ -295,7 +296,7 @@ const Requests = () => {
                     </div>
                   </td>
                   <td className="px-6 py-3">
-                    {item.status === "Approved" && (
+                    {item.status === "Completed" && (
                       <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                         <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
                           COMPLETED
@@ -312,7 +313,7 @@ const Requests = () => {
                     {item.status === "Pending" && (
                       <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
                         <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                          IN PROGRESS
+                          PENDING
                         </span>
                       </div>
                     )}
@@ -331,7 +332,15 @@ const Requests = () => {
                       </div>
                     )}
 
-                    {item.status === "Paid" && (
+                    {item.status === "Processing" && (
+                      <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          PROCESSING
+                        </span>
+                      </div>
+                    )}
+
+                    {item.status === "Cancelled" && (
                       <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
                         <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
                           CANCELLED
@@ -365,6 +374,7 @@ const Requests = () => {
                         <button
                           type="button"
                           data-hs-overlay="#hs-reply-modal"
+                          onClick={() => handleView({ ...item })}
                           className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                         >
                           <AiOutlineSend
@@ -407,7 +417,7 @@ const Requests = () => {
       {Object.hasOwn(request, "service_id") ? (
         <ViewRequestModal request={request} />
       ) : null}
-      <ReplyServiceModal request={request} setRequest={setRequest}/>
+      <ReplyServiceModal request={request} setRequest={setRequest} />
       <ArchiveRequestsModal />
       <RequestsReportsModal />
     </div>
