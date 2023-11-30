@@ -12,12 +12,32 @@ import RequestsReportsModal from "../components/requests/RequestsReportsModal";
 import imgSrc from "/imgs/bg-header.png";
 import ViewRequestModal from "../components/requests/ViewRequestModal";
 import { useSearchParams } from "react-router-dom";
+import API_LINK from "../config/API";
+import axios from "axios";
 
 const Requests = () => {
+  const [requests, setRequests] = useState([]);
+  const [request, setRequest] = useState({ response: [{ file: [] }] });
   const [selectedItems, setSelectedItems] = useState([]);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/requests/?brgy=${brgy}&archived=false`
+        );
+
+        if (response.status === 200) setRequests(response.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetch();
+  }, []);
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -46,84 +66,27 @@ const Requests = () => {
     }
   };
 
-  const tableData = [
-    {
-      id: 1,
-      imageSrc: imgSrc,
-      title: "PANGKABUHAYAN QC",
-      details:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, ",
-      typeofservice: "MEDICAL",
-      date: "10 Jan 2023",
-      status: "approved",
-    },
-    {
-      id: 2,
-      imageSrc: imgSrc,
-      title: "PANGKABUHAYAN QC",
-      details:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, ",
-      typeofservice: "MEDICAL",
-      date: "10 Jan 2023",
-      status: "rejected",
-    },
-    {
-      id: 3,
-      imageSrc: imgSrc,
-      title: "PANGKABUHAYAN QC",
-      details:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, ",
-      typeofservice: "MEDICAL",
-      date: "10 Jan 2023",
-      status: "pending",
-    },
-    {
-      id: 4,
-      imageSrc: imgSrc,
-      title: "PANGKABUHAYAN QC",
-      details:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, ",
-      typeofservice: "MEDICAL",
-      date: "10 Jan 2023",
-      status: "approved",
-    },
-    {
-      id: 5,
-      imageSrc: imgSrc,
-      title: "PANGKABUHAYAN QC",
-      details:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, ",
-      typeofservice: "MEDICAL",
-      date: "10 Jan 2023",
-      status: "pending",
-    },
-    {
-      id: 6,
-      imageSrc: imgSrc,
-      title: "PANGKABUHAYAN QC",
-      details:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, ",
-      typeofservice: "MEDICAL",
-      date: "10 Jan 2023",
-      status: "rejected",
-    },
-  ];
-
   const tableHeader = [
     "SERVICE NAME",
-    "DETAILS",
     "TYPE OF SERVICE",
     "DATE",
+    "PURPOSE",
     "STATUS",
     "ACTIONS",
   ];
+
+  const handleView = (item) => {
+    setRequest(item);
+  };
 
   useEffect(() => {
     document.title = "Service Requests | Barangay E-Services Management";
   }, []);
 
+  console.log("req parent", request);
+
   return (
-    <div className="mx-4 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_305px)] xxxl:w-[calc(100vw_-_310px)]">
+    <div className="mx-4 ">
       {/* Body */}
       <div>
         {/* Header */}
@@ -268,8 +231,8 @@ const Requests = () => {
         </div>
 
         {/* Table */}
-        <div className="overflow-auto sm:overflow-x-auto h-[calc(100vh_-_270px)] xxxl:h-[calc(100vh_-_286px)]">
-          <table className="w-full ">
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_280px)] xxxl:h-[calc(100vh_-_300px)]">
+          <table className="relative table-auto w-full">
             <thead className="bg-[#253a7a] sticky top-0">
               <tr className="">
                 <th scope="col" className="px-6 py-4">
@@ -294,63 +257,93 @@ const Requests = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {tableData.map((item, index) => (
+              {requests.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <input
                         type="checkbox"
-                        checked={selectedItems.includes(item.id)}
-                        value={item.id}
+                        checked={selectedItems.includes(item._id)}
+                        value={item._id}
                         onChange={checkboxHandler}
                       />
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {item.title}
+                      {item.service_name}
                     </span>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.details}
+                        {item.type}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.typeofservice}
+                        {new Date(item.createdAt).toISOString().split("T")[0]}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.date}
+                        {item.purpose}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
-                    {item.status === "approved" && (
+                    {item.status === "Completed" && (
                       <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                         <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                          APPROVED
+                          COMPLETED
                         </span>
                       </div>
                     )}
-                    {item.status === "rejected" && (
+                    {item.status === "Rejected" && (
                       <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
                         <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
                           REJECTED
                         </span>
                       </div>
                     )}
-                    {item.status === "pending" && (
+                    {item.status === "Pending" && (
                       <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
                         <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
                           PENDING
+                        </span>
+                      </div>
+                    )}
+                    {item.status === "Not Responded" && (
+                      <div className="flex items-center justify-center bg-pink-700 m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          NOT RESPONDED
+                        </span>
+                      </div>
+                    )}
+                    {item.status === "Paid" && (
+                      <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          PAID
+                        </span>
+                      </div>
+                    )}
+
+                    {item.status === "Processing" && (
+                      <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          PROCESSING
+                        </span>
+                      </div>
+                    )}
+
+                    {item.status === "Cancelled" && (
+                      <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          CANCELLED
                         </span>
                       </div>
                     )}
@@ -361,6 +354,7 @@ const Requests = () => {
                         <button
                           type="button"
                           data-hs-overlay="#hs-view-request-modal"
+                          onClick={() => handleView({ ...item })}
                           className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                         >
                           <AiOutlineEye
@@ -377,14 +371,18 @@ const Requests = () => {
                       </div>
 
                       <div className="hs-tooltip inline-block">
-                      <button
-                        type="button"
-                        data-hs-overlay="#hs-reply-modal"
-                        className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                      >
-                        <AiOutlineSend size={24} style={{ color: "#ffffff" }} />
-                      </button>
-                      <span
+                        <button
+                          type="button"
+                          data-hs-overlay="#hs-reply-modal"
+                          onClick={() => handleView({ ...item })}
+                          className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                        >
+                          <AiOutlineSend
+                            size={24}
+                            style={{ color: "#ffffff" }}
+                          />
+                        </button>
+                        <span
                           className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                           role="tooltip"
                         >
@@ -416,8 +414,10 @@ const Requests = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <ViewRequestModal />
-      <ReplyServiceModal />
+      {Object.hasOwn(request, "service_id") ? (
+        <ViewRequestModal request={request} />
+      ) : null}
+      <ReplyServiceModal request={request} setRequest={setRequest} />
       <ArchiveRequestsModal />
       <RequestsReportsModal />
     </div>

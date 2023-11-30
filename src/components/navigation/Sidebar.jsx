@@ -89,7 +89,7 @@ const Sidebar = () => {
                 </div>
               </div>
             </div>
-            <nav className="px-6 pt-6 pb-10 flex flex-col relative overflow-y-auto">
+            <nav className="px-6 pt-6 pb-10 flex flex-col relative overflow-y-auto scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb ">
               <ul className="space-y-1.5 text-white font-bold uppercase">
                 <li>
                   <Link
@@ -255,104 +255,104 @@ const Sidebar = () => {
                     </Link>
                   </div>
                 </li>
-                {userData.type === "Brgy Admin" ? 
+                {userData.type === "Brgy Admin" ? (
                   <li>
-                  <button
-                    id="hs-unstyled-collapse"
-                    data-hs-collapse="#hs-info-collapse-heading"
-                    className="hs-collapse-toggle justify-between flex items-center w-full  gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#213469] to-[#2c489e]"
-                  >
-                    <div className="flex items-center gap-x-3">
-                      <HiMiniInformationCircle size={15} />
-                      INFORMATION
-                    </div>
-                    <div className="flex">
-                      <svg
-                        className="hs-collapse-open:rotate-180  w-2.5 h-2.5"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 16 16"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
+                    <button
+                      id="hs-unstyled-collapse"
+                      data-hs-collapse="#hs-info-collapse-heading"
+                      className="hs-collapse-toggle justify-between flex items-center w-full  gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#213469] to-[#2c489e]"
+                    >
+                      <div className="flex items-center gap-x-3">
+                        <HiMiniInformationCircle size={15} />
+                        INFORMATION
+                      </div>
+                      <div className="flex">
+                        <svg
+                          className="hs-collapse-open:rotate-180  w-2.5 h-2.5"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                      </div>
+                    </button>
+                    <div
+                      id="hs-info-collapse-heading"
+                      className="hs-collapse hidden w-full overflow-hidden transition-[height] duration-300"
+                      aria-labelledby="hs-unstyled-collapse"
+                    >
+                      <Link
+                        to={`/officials/?id=${id}&brgy=${brgy}`}
+                        onClick={() => {
+                          window.innerWidth >= 320 && window.innerWidth <= 1023
+                            ? document
+                                .getQuerySelector(
+                                  "[data-hs-overlay-backdrop-template]"
+                                )
+                                .remove()
+                            : null;
+                        }}
+                        className={`${
+                          currentPath === "/officials"
+                            ? "bg-gradient-to-r from-[#213469] to-[#2c489e] text-[#EFC586]"
+                            : null
+                        } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#213469] to-[#2c489e]`}
                       >
-                        <path
-                          d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                    </div>
-                  </button>
-                  <div
-                    id="hs-info-collapse-heading"
-                    className="hs-collapse hidden w-full overflow-hidden transition-[height] duration-300"
-                    aria-labelledby="hs-unstyled-collapse"
-                  >
-                    <Link
-                      to={`/officials/?id=${id}&brgy=${brgy}`}
-                      onClick={() => {
-                        window.innerWidth >= 320 && window.innerWidth <= 1023
-                          ? document
-                              .getQuerySelector(
-                                "[data-hs-overlay-backdrop-template]"
-                              )
-                              .remove()
-                          : null;
-                      }}
-                      className={`${
-                        currentPath === "/officials"
-                          ? "bg-gradient-to-r from-[#213469] to-[#2c489e] text-[#EFC586]"
-                          : null
-                      } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#213469] to-[#2c489e]`}
-                    >
-                      <FaPeopleGroup size={15} />
-                      Barangay Officials
-                    </Link>
-                    <Link
-                      to={`/staff_management/?id=${id}&brgy=${brgy}`}
-                      onClick={() => {
-                        window.innerWidth >= 320 && window.innerWidth <= 1023
-                          ? document
-                              .getQuerySelector(
-                                "[data-hs-overlay-backdrop-template]"
-                              )
-                              .remove()
-                          : null;
-                      }}
-                      className={`${
-                        currentPath === "/staff_management"
-                          ? "bg-gradient-to-r from-[#213469] to-[#2c489e] text-[#EFC586]"
-                          : null
-                      } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#213469] to-[#2c489e]`}
-                    >
-                      <MdManageAccounts size={15} />
-                      Staff Management
-                    </Link>
+                        <FaPeopleGroup size={15} />
+                        Barangay Officials
+                      </Link>
+                      <Link
+                        to={`/staff_management/?id=${id}&brgy=${brgy}`}
+                        onClick={() => {
+                          window.innerWidth >= 320 && window.innerWidth <= 1023
+                            ? document
+                                .getQuerySelector(
+                                  "[data-hs-overlay-backdrop-template]"
+                                )
+                                .remove()
+                            : null;
+                        }}
+                        className={`${
+                          currentPath === "/staff_management"
+                            ? "bg-gradient-to-r from-[#213469] to-[#2c489e] text-[#EFC586]"
+                            : null
+                        } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#213469] to-[#2c489e]`}
+                      >
+                        <MdManageAccounts size={15} />
+                        Staff Management
+                      </Link>
 
-                    <Link
-                      to={`/info/?id=${id}&brgy=${brgy}`}
-                      onClick={() => {
-                        window.innerWidth >= 320 && window.innerWidth <= 1023
-                          ? document
-                              .getQuerySelector(
-                                "[data-hs-overlay-backdrop-template]"
-                              )
-                              .remove()
-                          : null;
-                      }}
-                      className={`${
-                        currentPath === "/info"
-                          ? "bg-gradient-to-r from-[#213469] to-[#2c489e] text-[#EFC586]"
-                          : null
-                      } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#213469] to-[#2c489e]`}
-                    >
-                      <FaChalkboardTeacher size={15} />
-                      Barangay Information
-                    </Link>
-                  </div>
-                </li>
-                : null} 
+                      <Link
+                        to={`/info/?id=${id}&brgy=${brgy}`}
+                        onClick={() => {
+                          window.innerWidth >= 320 && window.innerWidth <= 1023
+                            ? document
+                                .getQuerySelector(
+                                  "[data-hs-overlay-backdrop-template]"
+                                )
+                                .remove()
+                            : null;
+                        }}
+                        className={`${
+                          currentPath === "/info"
+                            ? "bg-gradient-to-r from-[#213469] to-[#2c489e] text-[#EFC586]"
+                            : null
+                        } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#213469] to-[#2c489e]`}
+                      >
+                        <FaChalkboardTeacher size={15} />
+                        Barangay Information
+                      </Link>
+                    </div>
+                  </li>
+                ) : null}
                 <li>
                   <Link
                     to={`/settings/?id=${id}&brgy=${brgy}`}
@@ -375,7 +375,7 @@ const Sidebar = () => {
                     Profile Settings
                   </Link>
                 </li>
-                
+
                 <li>
                   <Link
                     to="/"

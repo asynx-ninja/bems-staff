@@ -5,7 +5,6 @@ import { MdRestartAlt } from "react-icons/md";
 import { BsPrinter } from "react-icons/bs";
 import RestoreModal from "../components/inquiries/RestoreInquiries";
 import imgSrc from "/imgs/bg-header.png";
-import ReplyModal from "../components/inquiries/ReplyInquiries";
 import { useState, useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import Breadcrumbs from "../components/archivedInquiries/Breadcrumbs";
@@ -128,7 +127,7 @@ const Inquiries = () => {
 
 
   return (
-    <div className="mx-4 mt-8 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_300px)] xxxl:w-[calc(100vw_-_305px)]">
+    <div className="mx-4 mt-8">
       <div>
         <Breadcrumbs />
         <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
@@ -245,8 +244,8 @@ const Inquiries = () => {
           </div>
         </div>
 
-        <div className="overflow-auto sm:overflow-x-auto h-[calc(100vh_-_315px)] xxxl:h-[calc(100vh_-_330px)]">
-          <table className="w-full ">
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_320px)] xxxl:h-[calc(100vh_-_340px)]">
+          <table className="w-full relative table-auto">
             <thead className="bg-[#253a7a] sticky top-0">
               <tr className="">
                 <th scope="col" className="px-6 py-4">
@@ -381,7 +380,6 @@ const Inquiries = () => {
           />
         </div>
         <RestoreModal selectedItems={selectedItems}/>
-        <ReplyModal />
         <ViewArchivedModal inquiry={inquiry} setInquiry={setInquiry} />
       </div>
     </div>

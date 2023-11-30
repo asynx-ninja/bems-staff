@@ -74,7 +74,6 @@ const StaffManagement = () => {
     "AGE",
     "GENDER",
     "CONTACT",
-    "CIVIL STATUS",
     "STATUS",
     "ACTIONS",
   ];
@@ -105,7 +104,7 @@ const StaffManagement = () => {
     setUsers(sortedData);
   };
   return (
-    <div className="mx-4 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_305px)] xxxl:w-[calc(100vw_-_310px)]">
+    <div className="mx-4">
       {/* Body */}
       <div>
         {/* Header */}
@@ -115,7 +114,7 @@ const StaffManagement = () => {
               className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-2xl xxxl:text-2xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
-              BARANGAY STAFF MANAGEMENT
+              STAFF MANAGEMENT
             </h1>
           </div>
           <div className="lg:w-3/5 flex flex-row justify-end items-center ">
@@ -296,8 +295,8 @@ const StaffManagement = () => {
         </div>
 
         {/* Table */}
-        <div className="overflow-auto sm:overflow-x-auto h-[calc(100vh_-_270px)] xxxl:h-[calc(100vh_-_286px)]">
-          <table className="w-full ">
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_280px)] xxxl:h-[calc(100vh_-_300px)]">
+          <table className="relative table-auto w-full">
             <thead className="bg-[#253a7a] sticky top-0">
               <tr className="">
                 <th scope="col" className="px-6 py-4">
@@ -367,13 +366,6 @@ const StaffManagement = () => {
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {item.contact}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.civil_status}
                       </span>
                     </div>
                   </td>

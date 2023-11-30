@@ -223,7 +223,10 @@ const Settings = () => {
       var formData = new FormData();
       formData.append("users", JSON.stringify(obj));
       formData.append("file", pfp);
-      const response = await axios.patch(`${API_LINK}/users/?doc_id=${id}`, formData);
+      const response = await axios.patch(
+        `${API_LINK}/users/?doc_id=${id}`,
+        formData
+      );
 
       // CHANGE USER CREDENTIALS
 
@@ -351,7 +354,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="mx-4 overflow-y-auto lg:h-[calc(100vh_-_80px)]">
+    <div className="mx-4 overflow-y-auto scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb  lg:h-[calc(100vh_-_80px)]">
       <div className="flex flex-col w-full justify-center items-center">
         <div className="w-full relative">
           <img

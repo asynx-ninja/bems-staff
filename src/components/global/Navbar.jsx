@@ -4,7 +4,7 @@ import TopHeader from "../navigation/TopHeader";
 
 const Navbar = ({ comp }) => {
   return (
-    <div className="  flex flex-row w-full">
+    <div className="flex flex-row w-full">
       <div>
         <Sidebar />
       </div>

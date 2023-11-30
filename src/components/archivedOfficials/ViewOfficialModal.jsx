@@ -32,7 +32,7 @@ function ViewOfficialModal({
               </h3>
             </div>
 
-            <div className="flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
+            <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
               <div className="flex flex-col">
                 <div className="flex flex-col mb-1">
                   {/* Service Description */}

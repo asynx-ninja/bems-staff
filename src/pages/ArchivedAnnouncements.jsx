@@ -105,13 +105,13 @@ const Announcement = () => {
   };
 
   return (
-    <div className="mx-4 mt-8 lg:w-[calc(100vw_-_305px)] xxl:w-[calc(100vw_-_300px)] xxxl:w-[calc(100vw_-_305px)]">
+    <div className="mx-4 mt-8">
       <div>
         <Breadcrumbs />
-        <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
+        <div className="flex flex-row lg:mt-4 sm:flex-col-reverse lg:flex-row w-full">
           <div className="flex justify-center items-center sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#253a7a] to-[#2645a6] py-4 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
-              className="mx-auto font-bold text-xs md:text-xl lg:text-[13px] xl:text-[15px] xxl:text-[1.3rem] xxxl:text-2xl xxxl:mt-1 text-white"
+              className="mx-auto font-bold text-xs md:text-xl xxl:text-[1.3rem] xxxl:text-2xl xxxl:mt-1 text-white text-center"
               style={{ letterSpacing: "0.2em" }}
             >
               ARCHIVED ANNOUNCEMENT
@@ -249,8 +249,8 @@ const Announcement = () => {
           </div>
         </div>
 
-        <div className="overflow-auto sm:overflow-x-auto h-[calc(100vh_-_315px)] xxxl:h-[calc(100vh_-_330px)]">
-          <table className="w-full ">
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_320px)] xxxl:h-[calc(100vh_-_340px)]">
+          <table className="relative table-auto w-full">
             <thead className="bg-[#253a7a] sticky top-0">
               <tr className="">
                 <th scope="col" className="px-6 py-4">
@@ -323,22 +323,25 @@ const Announcement = () => {
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center space-x-1 sm:space-x-none">
-                    <div className="hs-tooltip inline-block w-full">
-                      <button
-                        type="button"
-                        data-hs-overlay="#hs-modal-viewArchivedAnnouncement"
-                        onClick={() => handleView({ ...item })}
-                        className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                      >
-                        <AiOutlineEye size={24} style={{ color: "#ffffff" }} />
-                      </button>
-                      <span
-                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                            role="tooltip"
-                          >
-                            View Announcement
-                          </span>
-                    </div>
+                      <div className="hs-tooltip inline-block w-full">
+                        <button
+                          type="button"
+                          data-hs-overlay="#hs-modal-viewArchivedAnnouncement"
+                          onClick={() => handleView({ ...item })}
+                          className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                        >
+                          <AiOutlineEye
+                            size={24}
+                            style={{ color: "#ffffff" }}
+                          />
+                        </button>
+                        <span
+                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                          role="tooltip"
+                        >
+                          View Announcement
+                        </span>
+                      </div>
                     </div>
                   </td>
                 </tr>

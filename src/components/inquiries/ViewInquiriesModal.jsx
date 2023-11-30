@@ -3,14 +3,13 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import API_LINK from "../../config/API";
 import { useSearchParams } from "react-router-dom";
-import EditDropbox from "./EditDropbox";
 import { IoIosAttach } from "react-icons/io";
 import { IoSend } from "react-icons/io5";
 import Dropbox from "./Dropbox";
 import ViewDropbox from "./ViewDropbox";
+import EditDropbox from "./EditDropbox";
 
 function ViewInquiriesModal({ inquiry, setInquiry }) {
-  console.log(inquiry.folder_id);
   const [reply, setReply] = useState(false);
   const [upload, setUpload] = useState(false);
   const [expandedIndexes, setExpandedIndexes] = useState([]);
@@ -105,28 +104,28 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
     e.preventDefault();
     console.log(newMessage);
 
-    try {
-      const obj = {
-        sender: newMessage.sender,
-        message: newMessage.message,
-        date: newMessage.date,
-        folder_id: inquiry.folder_id,
-      };
-      var formData = new FormData();
-      formData.append("response", JSON.stringify(obj));
-      for (let i = 0; i < createFiles.length; i++) {
-        formData.append("files", createFiles[i]);
-      }
+    // try {
+    //   const obj = {
+    //     sender: newMessage.sender,
+    //     message: newMessage.message,
+    //     date: newMessage.date,
+    //     folder_id: inquiry.folder_id,
+    //   };
+    //   var formData = new FormData();
+    //   formData.append("response", JSON.stringify(obj));
+    //   for (let i = 0; i < createFiles.length; i++) {
+    //     formData.append("files", createFiles[i]);
+    //   }
 
-      const response = await axios.patch(
-        `${API_LINK}/inquiries/?inq_id=${inquiry._id}`,
-        formData
-      );
+    //   const response = await axios.patch(
+    //     `${API_LINK}/inquiries/?inq_id=${inquiry._id}`,
+    //     formData
+    //   );
 
-      window.location.reload();
-    } catch (error) {
-      console.log(error);
-    }
+    //   window.location.reload();
+    // } catch (error) {
+    //   console.log(error);
+    // }
   };
 
   return (
@@ -149,7 +148,7 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
                 </h3>
               </div>
 
-              <div className="flex flex-col mx-auto w-full pt-5 px-5 overflow-y-auto relative max-h-[470px]">
+              <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full pt-5 px-5 overflow-y-auto relative max-h-[470px]">
                 <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg mb-4">
                   Inquiry Details
                 </b>
@@ -335,7 +334,7 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
                                   {DateFormat(responseItem.date) || ""}
                                 </p>
                               </div>
-                              <p className="text-[10px] md:text-xs">
+                              <p className="text-[10px] md:text-xs overflow-hidden line-clamp-3">
                                 {responseItem.message}
                               </p>
                             </div>
