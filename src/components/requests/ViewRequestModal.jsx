@@ -89,27 +89,7 @@ function ViewRequestModal({ request }) {
                 )}
                 <PersonalDetails detail={detail} />
                 <OtherDetails detail={detail} returnFile={returnFile} />
-                <fieldset className="flex-col border-[1px] border-black rounded-md">
-                  <legend className="ml-2 px-2 text-sm font-medium">
-                    Other Requirements
-                  </legend>
-                  <div className="w-full px-6 py-3">
-                    <label
-                      for="message"
-                      className="block mb-2 text-sm font-medium text-gray-900 "
-                    >
-                      Purpose of this Request
-                    </label>
-                    <textarea
-                      readOnly
-                      defaultValue={detail.purpose}
-                      id="message"
-                      rows="4"
-                      className="resize-none block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border-gray-400 border focus:ring-green-500 focus:border-green-500"
-                      placeholder="Write your thoughts here..."
-                    ></textarea>
-                  </div>
-                </fieldset>
+                
               </form>
             </div>
             {/* END OF BODY */}
