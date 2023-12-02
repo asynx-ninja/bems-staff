@@ -70,7 +70,6 @@ const Requests = () => {
     "SERVICE NAME",
     "TYPE OF SERVICE",
     "DATE",
-    "PURPOSE",
     "STATUS",
     "ACTIONS",
   ];
@@ -285,13 +284,6 @@ const Requests = () => {
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {new Date(item.createdAt).toISOString().split("T")[0]}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.purpose}
                       </span>
                     </div>
                   </td>

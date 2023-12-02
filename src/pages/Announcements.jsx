@@ -340,26 +340,26 @@ const Announcement = () => {
                       />
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-6 py-3 w-4/12">
                     <span className="text-xs sm:text-sm text-black line-clamp-2 ">
                       {item.event_id}
                     </span>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-6 py-3 w-4/12">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                         {item.title}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-6 py-3 ">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                         {item.details}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-6 py-3 w-4/12">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {dateFormat(item.date) || ""}
