@@ -1,22 +1,48 @@
 import React from "react";
 import ReactPaginate from "react-paginate";
-import { useState, useEffect } from "react";
+import { useState, useEffect } from "react"
+import { useSearchParams } from "react-router-dom";
+import API_LINK from "../config/API";
+import axios from "axios";;
 import { BsPrinter } from "react-icons/bs";
-import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
+import { AiOutlineEye } from "react-icons/ai";
+import { AiOutlineSend } from "react-icons/ai";
 import { MdRestartAlt } from "react-icons/md";
 import ArchiveRequestsModal from "../components/requests/ArchiveRequestsModal";
 import RequestsReportsModal from "../components/requests/RequestsReportsModal";
-import imgSrc from "/imgs/bg-header.png";
 import ViewRequestModal from "../components/requests/ViewRequestModal";
 import Breadcrumbs from "../components/archivedRequests/Breadcrumbs";
 import RestoreRequestsModal from "../components/archivedRequests/RestoreRequestsModal";
 
 const ArchivedRequests = () => {
+  const [requests, setRequests] = useState([]);
+  const [request, setRequest] = useState({ response: [{ file: [] }] });
   const [selectedItems, setSelectedItems] = useState([]);
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
+  const brgy = searchParams.get("brgy");
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortColumn, setSortColumn] = useState(null);
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/requests/?brgy=${brgy}&archived=true`
+        );
+
+        if (response.status === 200) setRequests(response.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetch();
+  }, []);
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
-    let value = parseInt(e.target.value);
+    let value = e.target.value;
 
     if (isSelected) {
       setSelectedItems([...selectedItems, value]);
@@ -30,92 +56,61 @@ const ArchivedRequests = () => {
   };
 
   const checkAllHandler = () => {
-    if (tableData.length === selectedItems.length) {
+    if (requests.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const postIds = tableData.map((item) => {
-        return item.id;
+      const postIds = requests.map((item) => {
+        return item.req_id;
       });
 
       setSelectedItems(postIds);
     }
   };
 
-  const tableData = [
-    {
-      id: 1,
-      imageSrc: imgSrc,
-      title: "PANGKABUHAYAN QC",
-      details:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, ",
-      typeofservice: "MEDICAL",
-      date: "10 Jan 2023",
-      status: "approved",
-    },
-    {
-      id: 2,
-      imageSrc: imgSrc,
-      title: "PANGKABUHAYAN QC",
-      details:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, ",
-      typeofservice: "MEDICAL",
-      date: "10 Jan 2023",
-      status: "approved",
-    },
-    {
-      id: 3,
-      imageSrc: imgSrc,
-      title: "PANGKABUHAYAN QC",
-      details:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, ",
-      typeofservice: "MEDICAL",
-      date: "10 Jan 2023",
-      status: "approved",
-    },
-    {
-      id: 4,
-      imageSrc: imgSrc,
-      title: "PANGKABUHAYAN QC",
-      details:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, ",
-      typeofservice: "MEDICAL",
-      date: "10 Jan 2023",
-      status: "approved",
-    },
-    {
-      id: 5,
-      imageSrc: imgSrc,
-      title: "PANGKABUHAYAN QC",
-      details:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, ",
-      typeofservice: "MEDICAL",
-      date: "10 Jan 2023",
-      status: "approved",
-    },
-    {
-      id: 6,
-      imageSrc: imgSrc,
-      title: "PANGKABUHAYAN QC",
-      details:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Felis bibendum ut tristique et egestas quis ipsum suspendisse. Lorem ipsum dolor sit amet, ",
-      typeofservice: "MEDICAL",
-      date: "10 Jan 2023",
-      status: "approved",
-    },
-  ];
-
   const tableHeader = [
     "SERVICE NAME",
-    "DETAILS",
     "TYPE OF SERVICE",
     "DATE",
     "STATUS",
     "ACTIONS",
   ];
 
+  const handleView = (item) => {
+    setRequest(item);
+  };
+
+  const handleSort = (sortBy) => {
+    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newSortOrder);
+    setSortColumn(sortBy);
+
+    const sortedData = requests.slice().sort((a, b) => {
+      if (sortBy === "request_id") {
+        return newSortOrder === "asc"
+          ? a.request_id.localeCompare(b.request_id)
+          : b.request_id.localeCompare(a.request_id);
+      } else if (sortBy === "service_name") {
+        return newSortOrder === "asc"
+          ? a.service_name.localeCompare(b.service_name)
+          : b.service_name.localeCompare(a.service_name);
+      } else if (sortBy === "status") {
+        const order = { Completed: 1, " Not Responded": 2, Pending: 3, Paid: 4, Processing: 5,  Cancelled: 6, Rejected: 7 };
+        return newSortOrder === "asc"
+          ? order[a.status] - order[b.status]
+          : order[b.status] - order[a.status];
+      }
+
+      return 0;
+    });
+
+    setRequests(sortedData);
+  };
+
   useEffect(() => {
     document.title = "Service Requests | Barangay E-Services Management";
   }, []);
+
+  console.log("req parent", request);
 
   return (
     <div className="mx-4 mt-8">
@@ -163,11 +158,50 @@ const ArchivedRequests = () => {
                 className="bg-[#253a7a] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
                 aria-labelledby="hs-dropdown"
               >
-                <li className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ">
-                  TITLE
+                <li
+                  onClick={() => handleSort("request_id")}
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                >
+                  SERVICE REQUEST ID
+                  {sortColumn === "request_id" && (
+                    <span className="ml-auto">
+                      {sortOrder === "asc" ? (
+                        <span>DESC &darr;</span>
+                      ) : (
+                        <span>ASC &uarr;</span>
+                      )}
+                    </span>
+                  )}
                 </li>
-                <li className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ">
-                  DATE
+                <li
+                  onClick={() => handleSort("service_name")}
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                >
+                  SERVICE REQUEST NAME
+                  {sortColumn === "service_name" && (
+                    <span className="ml-auto">
+                      {sortOrder === "asc" ? (
+                        <span>DESC &darr;</span>
+                      ) : (
+                        <span>ASC &uarr;</span>
+                      )}
+                    </span>
+                  )}
+                </li>
+                <li
+                  onClick={() => handleSort("status")}
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                >
+                  STATUS
+                  {sortColumn === "status" && (
+                    <span className="ml-auto">
+                      {sortOrder === "asc" ? (
+                        <span>DESC &darr;</span>
+                      ) : (
+                        <span>ASC &uarr;</span>
+                      )}
+                    </span>
+                  )}
                 </li>
               </ul>
             </div>
@@ -264,66 +298,129 @@ const ArchivedRequests = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {tableData.map((item, index) => (
+              {requests.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <input
                         type="checkbox"
-                        checked={selectedItems.includes(item.id)}
-                        value={item.id}
+                        checked={selectedItems.includes(item.req_id)}
+                        value={item.req_id}
                         onChange={checkboxHandler}
                       />
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {item.title}
+                      {item.service_name}
                     </span>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.details}
+                        {item.type}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.typeofservice}
+                        {new Date(item.createdAt).toISOString().split("T")[0]}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.date}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex items-center justify-center bg-custom-green-button3 m-2">
-                      <span className="text-xs sm:text-sm text-white p-3 mx-5">
-                        APPROVED
-                      </span>
-                    </div>
+                    {item.status === "Completed" && (
+                      <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          COMPLETED
+                        </span>
+                      </div>
+                    )}
+                    {item.status === "Rejected" && (
+                      <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          REJECTED
+                        </span>
+                      </div>
+                    )}
+                    {item.status === "Pending" && (
+                      <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          PENDING
+                        </span>
+                      </div>
+                    )}
+                    {item.status === "Not Responded" && (
+                      <div className="flex items-center justify-center bg-pink-700 m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          NOT RESPONDED
+                        </span>
+                      </div>
+                    )}
+                    {item.status === "Paid" && (
+                      <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          PAID
+                        </span>
+                      </div>
+                    )}
+
+                    {item.status === "Processing" && (
+                      <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          PROCESSING
+                        </span>
+                      </div>
+                    )}
+
+                    {item.status === "Cancelled" && (
+                      <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          CANCELLED
+                        </span>
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center space-x-1 sm:space-x-none">
-                    <div className="hs-tooltip inline-block">
-                      <button
-                        type="button"
-                        data-hs-overlay="#hs-view-request-modal"
-                        className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                      >
-                        <AiOutlineEye size={24} style={{ color: "#ffffff" }} />
-                      </button>
-                      <span
+                      <div className="hs-tooltip inline-block">
+                        <button
+                          type="button"
+                          data-hs-overlay="#hs-view-request-modal"
+                          onClick={() => handleView({ ...item })}
+                          className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                        >
+                          <AiOutlineEye
+                            size={24}
+                            style={{ color: "#ffffff" }}
+                          />
+                        </button>
+                        <span
                           className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                           role="tooltip"
                         >
                           View Request
+                        </span>
+                      </div>
+
+                      <div className="hs-tooltip inline-block">
+                        <button
+                          type="button"
+                          data-hs-overlay="#hs-reply-modal"
+                          onClick={() => handleView({ ...item })}
+                          className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                        >
+                          <AiOutlineSend
+                            size={24}
+                            style={{ color: "#ffffff" }}
+                          />
+                        </button>
+                        <span
+                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                          role="tooltip"
+                        >
+                          Reply to Request
                         </span>
                       </div>
                     </div>
@@ -351,7 +448,9 @@ const ArchivedRequests = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <ViewRequestModal />
+      {Object.hasOwn(request, "service_id") ? (
+        <ViewRequestModal request={request} />
+      ) : null}
       <ArchiveRequestsModal />
       <RequestsReportsModal />
       <RestoreRequestsModal />
