@@ -60,7 +60,7 @@ const ArchivedRequests = () => {
       setSelectedItems([]);
     } else {
       const postIds = requests.map((item) => {
-        return item.req_id;
+        return item._id;
       });
 
       setSelectedItems(postIds);
@@ -304,8 +304,8 @@ const ArchivedRequests = () => {
                     <div className="flex justify-center items-center">
                       <input
                         type="checkbox"
-                        checked={selectedItems.includes(item.req_id)}
-                        value={item.req_id}
+                        checked={selectedItems.includes(item._id)}
+                        value={item._id}
                         onChange={checkboxHandler}
                       />
                     </div>
@@ -453,7 +453,7 @@ const ArchivedRequests = () => {
       ) : null}
       <ArchiveRequestsModal />
       <RequestsReportsModal />
-      <RestoreRequestsModal />
+      <RestoreRequestsModal selectedItems={selectedItems}/>
     </div>
   );
 };
