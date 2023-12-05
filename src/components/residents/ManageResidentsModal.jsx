@@ -70,7 +70,7 @@ function ManageResidentModal({ user, setUser }) {
 
       if (response.status === 200) {
         console.log("Update successful:", response.data);
-        // window.location.reload();
+        window.location.reload();
       } else {
         console.error("Update failed. Status:", response.status);
       }
