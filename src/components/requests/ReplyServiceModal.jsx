@@ -353,7 +353,7 @@ function ReplyServiceModal({ request, setRequest }) {
                       <div
                         key={index}
                         className={`flex flex-col lg:flex-row h-16 mb-2 border-b ${
-                          expandedIndexes.includes(index)
+                          expandedIndexes.includes(index) 
                             ? "h-auto border-b"
                             : ""
                         }`}

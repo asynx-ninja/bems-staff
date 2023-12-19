@@ -24,6 +24,8 @@ const StatisticsDashboard = () => {
   const [archivedOfficials, setArchivedOfficials] = useState([]);
   const [inquiries, setInquiries] = useState([]);
   const [archivedInquiries, setArchivedInquiries] = useState([]);
+  const [requests, setRequests] = useState([]);
+  const [archivedRequests, setArchivedRequests] = useState([]);
   const [userData, setUserData] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
@@ -84,9 +86,30 @@ const StatisticsDashboard = () => {
           const officialsResponse = await axios.get(
             `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
           );
-          console.log("officials", officialsResponse);
           setOfficials(
             officialsResponse.status === 200 ? officialsResponse.data : []
+          );
+        } catch (err) {
+          console.log("err", err.message);
+        }
+
+        try {
+          const requestsResponse = await axios.get(
+            `${API_LINK}/requests/?brgy=${brgy}&archived=false`
+          );
+          setRequests(
+            requestsResponse.status === 200 ? requestsResponse.data : []
+          );
+        } catch (err) {
+          console.log("err", err.message);
+        }
+
+        try {
+          const archivedRequestsResponse = await axios.get(
+            `${API_LINK}/requests/?brgy=${brgy}&archived=true`
+          );
+          setArchivedRequests(
+            archivedRequestsResponse.status === 200 ? archivedRequestsResponse.data : []
           );
         } catch (err) {
           console.log("err", err.message);
@@ -216,8 +239,8 @@ const StatisticsDashboard = () => {
     },
     {
       title: "Service Requests",
-      active: "n/a",
-      archived: "n/a",
+      active: requests.length,
+      archived: archivedRequests.length,
       activeLink: `/requests/?id=${id}&brgy=${brgy}`,
       archivedLink: `/archivedrequests/?id=${id}&brgy=${brgy}`,
       icon: <GoGitPullRequest size={15} className="sm:block md:hidden" />,

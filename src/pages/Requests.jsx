@@ -22,6 +22,8 @@ const Requests = () => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortColumn, setSortColumn] = useState(null);
 
   useEffect(() => {
     const fetch = async () => {
@@ -39,9 +41,13 @@ const Requests = () => {
     fetch();
   }, []);
 
+  useEffect(() => {
+    document.title = "Service Requests | Barangay E-Services Management";
+  }, []);
+
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
-    let value = parseInt(e.target.value);
+    let value = e.target.value;
 
     if (isSelected) {
       setSelectedItems([...selectedItems, value]);
@@ -55,11 +61,11 @@ const Requests = () => {
   };
 
   const checkAllHandler = () => {
-    if (tableData.length === selectedItems.length) {
+    if (requests.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const postIds = tableData.map((item) => {
-        return item.id;
+      const postIds = requests.map((item) => {
+        return item._id;
       });
 
       setSelectedItems(postIds);
@@ -78,11 +84,34 @@ const Requests = () => {
     setRequest(item);
   };
 
-  useEffect(() => {
-    document.title = "Service Requests | Barangay E-Services Management";
-  }, []);
+  const handleSort = (sortBy) => {
+    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newSortOrder);
+    setSortColumn(sortBy);
 
-  console.log("req parent", request);
+    const sortedData = requests.slice().sort((a, b) => {
+      if (sortBy === "request_id") {
+        return newSortOrder === "asc"
+          ? a.request_id.localeCompare(b.request_id)
+          : b.request_id.localeCompare(a.request_id);
+      } else if (sortBy === "service_name") {
+        return newSortOrder === "asc"
+          ? a.service_name.localeCompare(b.service_name)
+          : b.service_name.localeCompare(a.service_name);
+      } else if (sortBy === "status") {
+        const order = { Completed: 1, " Not Responded": 2, Pending: 3, Paid: 4, Processing: 5,  Cancelled: 6, Rejected: 7 };
+        return newSortOrder === "asc"
+          ? order[a.status] - order[b.status]
+          : order[b.status] - order[a.status];
+      }
+
+      return 0;
+    });
+
+    setRequests(sortedData);
+  };
+
+  console.log("req parent", requests);
 
   return (
     <div className="mx-4 ">
@@ -155,11 +184,50 @@ const Requests = () => {
                 className="bg-[#253a7a] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
                 aria-labelledby="hs-dropdown"
               >
-                <li className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ">
-                  TITLE
+                <li
+                  onClick={() => handleSort("request_id")}
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                >
+                  SERVICE REQUEST ID
+                  {sortColumn === "request_id" && (
+                    <span className="ml-auto">
+                      {sortOrder === "asc" ? (
+                        <span>DESC &darr;</span>
+                      ) : (
+                        <span>ASC &uarr;</span>
+                      )}
+                    </span>
+                  )}
                 </li>
-                <li className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ">
-                  DATE
+                <li
+                  onClick={() => handleSort("service_name")}
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                >
+                  SERVICE REQUEST NAME
+                  {sortColumn === "service_name" && (
+                    <span className="ml-auto">
+                      {sortOrder === "asc" ? (
+                        <span>DESC &darr;</span>
+                      ) : (
+                        <span>ASC &uarr;</span>
+                      )}
+                    </span>
+                  )}
+                </li>
+                <li
+                  onClick={() => handleSort("status")}
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                >
+                  STATUS
+                  {sortColumn === "status" && (
+                    <span className="ml-auto">
+                      {sortOrder === "asc" ? (
+                        <span>DESC &darr;</span>
+                      ) : (
+                        <span>ASC &uarr;</span>
+                      )}
+                    </span>
+                  )}
                 </li>
               </ul>
             </div>
@@ -260,7 +328,7 @@ const Requests = () => {
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
-                      <input
+                    <input
                         type="checkbox"
                         checked={selectedItems.includes(item._id)}
                         value={item._id}
@@ -410,7 +478,7 @@ const Requests = () => {
         <ViewRequestModal request={request} />
       ) : null}
       <ReplyServiceModal request={request} setRequest={setRequest} />
-      <ArchiveRequestsModal />
+      <ArchiveRequestsModal selectedItems={selectedItems}/>
       <RequestsReportsModal />
     </div>
   );

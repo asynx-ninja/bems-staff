@@ -20,9 +20,9 @@ const ForgotPassword = () => {
     }
 
     try {
-      const resetResponse = await axios.patch(`${API_LINK}/auth/send_pin/${email}`);
+      const resetResponse = await axios.patch(`${API_LINK}/auth/send_pin/${email}`, {type: "Staff"});
       const encodedEmail = btoa(email);
-      console.log(resetResponse)
+
       if (resetResponse.status === 200) {
         setSuccessMessage("Password reset initiated. Check your email for instructions.");
         console.log(email)

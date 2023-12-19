@@ -370,9 +370,9 @@ const Residents = () => {
                   <span className="text-xs sm:text-sm text-black line-clamp-2 ">
                     {item.lastName +
                       ", " +
-                      item.middleName +
+                      item.firstName +
                       " " +
-                      item.firstName}
+                      item.middleName}
                   </span>
                 </td>
                 <td className="px-6 py-3">
