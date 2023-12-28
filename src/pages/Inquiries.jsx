@@ -19,10 +19,15 @@ const Inquiries = () => {
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
   const [inquiries, setInquiries] = useState([]);
-  const [inquiry, setInquiry] = useState({compose: {file: []}, response: [{file: []}]});
+  const [inquiry, setInquiry] = useState({ compose: { file: [] }, response: [{ file: [] }] });
   const [status, setStatus] = useState({});
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState(null);
+  const [statusMenuOpen, setStatusMenuOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState('All');
+
 
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
@@ -34,12 +39,12 @@ const Inquiries = () => {
         return newSortOrder === "asc"
           ? a.inquiries_id.localeCompare(b.inquiries_id)
           : b.inquiries_id.localeCompare(a.inquiries_id);
-      } else if (sortBy === "lastName") {
+      } else if (sortBy === "date") {
         return newSortOrder === "asc"
-          ? a.lastName.localeCompare(b.lastName)
-          : b.lastName.localeCompare(a.lastName);
+          ? new Date(a.compose.date) - new Date(b.compose.date)
+          : new Date(b.compose.date) - new Date(a.compose.date);
       } else if (sortBy === "isApproved") {
-        const order = { Completed: 1, "In Progress": 2, "Not Responded": 3 };
+        const order = { Completed: 1, Pending: 2, "In Progress": 3 };
         return newSortOrder === "asc"
           ? order[a.isApproved] - order[b.isApproved]
           : order[b.isApproved] - order[a.isApproved];
@@ -51,17 +56,26 @@ const Inquiries = () => {
     setInquiries(sortedData);
   };
 
+
   useEffect(() => {
-    const fetch = async () => {
+    document.title = "Inquiries | Barangay E-Services Management";
+
+    const fetchInquiries = async () => {
       const response = await axios.get(
-        `${API_LINK}/inquiries/?brgy=${brgy}&archived=false`
-      );
-      if (response.status === 200) setInquiries(response.data);
-      else setInquiries([]);
+        `${API_LINK}/inquiries/?id=${id}&brgy=${brgy}&archived=false&status=${statusFilter}&date=${dateFilter}`
+      ); console.log('API URL:',);
+
+      if (response.status === 200) {
+        setInquiries(response.data);
+      } else {
+        setInquiries([]);
+      }
     };
 
-    fetch();
-  }, []);
+
+    fetchInquiries();
+  }, [id, brgy, statusFilter, dateFilter]);
+
 
   console.log('inquiries', inquiries);
 
@@ -114,9 +128,12 @@ const Inquiries = () => {
     setInquiry(item);
   };
 
-  const handleStatus = (status) => {
-    setStatus(status);
+
+  const handleStatusFilter = (status) => {
+    setStatusFilter(status);
+    setStatusMenuOpen(false);
   };
+
 
   return (
     <div className="mx-4 ">
@@ -167,9 +184,8 @@ const Inquiries = () => {
               >
                 SORT BY
                 <svg
-                  className={`hs-dropdown-open:rotate-${
-                    sortOrder === "asc" ? "180" : "0"
-                  } w-2.5 h-2.5 text-white`}
+                  className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                   width="16"
                   height="16"
                   viewBox="0 0 16 16"
@@ -205,7 +221,7 @@ const Inquiries = () => {
                 </li>
                 <li
                   onClick={() => handleSort("date")}
-                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-custom-green-button to-custom-green-header hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
                 >
                   Date
                   {sortColumn === "date" && (
@@ -218,21 +234,35 @@ const Inquiries = () => {
                     </span>
                   )}
                 </li>
-                <li
-                  onClick={() => handleSort("isApproved")}
-                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
-                >
-                  STATUS
-                  {sortColumn === "isApproved" && (
-                    <span className="ml-auto">
-                      {sortOrder === "asc" ? (
-                        <span>DESC &darr;</span>
-                      ) : (
-                        <span>ASC &uarr;</span>
-                      )}
-                    </span>
-                  )}
-                </li>
+                <div className="hs-dropdown relative inline-flex [--placement:right-top]">
+                  <button type="button" class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-custom-green-button to-custom-green-header hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500">
+                    <span className="text-sm font-medium mr-2">Status: {selectedStatus}</span>
+                  </button>
+                  <div class="hs-dropdown relative inline-flex">
+                    <button id="hs-split-dropright" type="button" class="text-white hs-dropdown-toggle relative -ms-[.3125rem] py-3 px-4 inline-flex items-center gap-x-2 text-sm font-bold rounded-e-md disabled:opacity-50 disabled:pointer-events-none hover:bg-gradient-to-r from-custom-green-button to-custom-green-header hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500">
+                      <span class="sr-only">Toggle Dropdown</span>
+                      <svg class="flex-shrink-0 w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+                    </button>
+
+                    <div class="hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10 bg-custom-green-table-header shadow-md rounded-lg p-2 mt-2 dark:bg-gray-800 dark:border dark:border-gray-700 dark:divide-gray-700" aria-labelledby="hs-split-dropright">
+                      <a
+                        onClick={() => handleStatusFilter('Pending')}
+                        class="flex items-center font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-custom-green-button to-custom-green-header hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500" href="#">
+                        PENDING
+                      </a>
+                      <a
+                        onClick={() => handleStatusFilter('In Progress')}
+                        class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-custom-green-button to-custom-green-header hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500" href="#">
+                        IN PROGRESS
+                      </a>
+                      <a
+                        onClick={() => handleStatusFilter('Completed')}
+                        class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-custom-green-button to-custom-green-header hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500" href="#">
+                        COMPLETED
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </ul>
             </div>
             <div className="sm:flex-col md:flex-row flex sm:w-full md:w-7/12">
@@ -331,7 +361,7 @@ const Inquiries = () => {
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
-                    <input
+                      <input
                         type="checkbox"
                         checked={selectedItems.includes(item._id)}
                         value={item._id}
@@ -449,7 +479,7 @@ const Inquiries = () => {
           <ReactPaginate
             breakLabel="..."
             nextLabel=">>"
-            onPageChange={() => {}}
+            onPageChange={() => { }}
             pageRangeDisplayed={3}
             pageCount={15}
             previousLabel="<<"
