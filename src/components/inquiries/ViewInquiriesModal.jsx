@@ -8,6 +8,7 @@ import { IoSend } from "react-icons/io5";
 import Dropbox from "./Dropbox";
 import ViewDropbox from "./ViewDropbox";
 import EditDropbox from "./EditDropbox";
+import ReplyLoader from "./loaders/ReplyLoader";
 
 function ViewInquiriesModal({ inquiry, setInquiry }) {
   const [reply, setReply] = useState(false);
@@ -16,6 +17,9 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
   const [files, setFiles] = useState([]);
   const [createFiles, setCreateFiles] = useState([]);
   const [viewFiles, setViewFiles] = useState([]);
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [replyStatus, setReplyStatus] = useState(null);
+  const [error, setError] = useState(null);
   const [newMessage, setNewMessage] = useState({
     sender: "Staff",
     message: "",
@@ -102,30 +106,38 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
 
   const handleOnSend = async (e) => {
     e.preventDefault();
+    setSubmitClicked(true);
     console.log(newMessage);
 
-    // try {
-    //   const obj = {
-    //     sender: newMessage.sender,
-    //     message: newMessage.message,
-    //     date: newMessage.date,
-    //     folder_id: inquiry.folder_id,
-    //   };
-    //   var formData = new FormData();
-    //   formData.append("response", JSON.stringify(obj));
-    //   for (let i = 0; i < createFiles.length; i++) {
-    //     formData.append("files", createFiles[i]);
-    //   }
+    try {
+      const obj = {
+        sender: newMessage.sender,
+        message: newMessage.message,
+        date: newMessage.date,
+        folder_id: inquiry.folder_id,
+      };
+      var formData = new FormData();
+      formData.append("response", JSON.stringify(obj));
+      for (let i = 0; i < createFiles.length; i++) {
+        formData.append("files", createFiles[i]);
+      }
 
-    //   const response = await axios.patch(
-    //     `${API_LINK}/inquiries/?inq_id=${inquiry._id}`,
-    //     formData
-    //   );
+      const response = await axios.patch(
+        `${API_LINK}/inquiries/?inq_id=${inquiry._id}`,
+        formData
+      );
 
-    //   window.location.reload();
-    // } catch (error) {
-    //   console.log(error);
-    // }
+      setSubmitClicked(false);
+      setReplyStatus("success");
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+    } catch (error) {
+      console.log(error);
+      setSubmitClicked(false);
+      setReplyStatus(null);
+      setError("An error occurred while creating the announcement.");
+    }
   };
 
   return (
@@ -472,6 +484,11 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
               </div>
             </div>
           </div>
+          {/* <ReplyLoader /> */}
+          {submitClicked && <ReplyLoader replyStatus="replying" />}
+          {replyStatus && (
+            <ReplyLoader replyStatus={replyStatus} error={error} />
+          )}
         </div>
       </div>
     </div>

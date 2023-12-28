@@ -6,9 +6,13 @@ import OccupationList from "./OccupationList";
 import { LiaRandomSolid } from "react-icons/lia";
 import { FaFacebookSquare, FaInstagram } from "react-icons/fa";
 import { FaSquareXTwitter } from "react-icons/fa6";
+import EditLoader from "./loaders/EditLoader";
 
 function ManageResidentModal({ user, setUser }) {
   const [edit, setEdit] = useState(false);
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleOnEdit = () => {
     setEdit(!edit);
@@ -59,6 +63,7 @@ function ManageResidentModal({ user, setUser }) {
   const handleSave = async (e) => {
     try {
       e.preventDefault();
+      setSubmitClicked(true);
 
       var formData = new FormData();
       formData.append("users", JSON.stringify(user));
@@ -70,12 +75,21 @@ function ManageResidentModal({ user, setUser }) {
 
       if (response.status === 200) {
         console.log("Update successful:", response.data);
-        window.location.reload();
+        setTimeout(() => {
+          setSubmitClicked(false);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        }, 1000);
       } else {
         console.error("Update failed. Status:", response.status);
       }
     } catch (err) {
       console.log(err);
+      setSubmitClicked(false);
+      setUpdatingStatus(null);
+      setError("An error occurred while creating the announcement.");
     }
   };
 
@@ -669,7 +683,7 @@ function ManageResidentModal({ user, setUser }) {
                             type="text"
                             id="facebook_name"
                             className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                            value={user.socials?.facebook?.name ?? ''}
+                            value={user.socials?.facebook?.name ?? ""}
                             placeholder=""
                             disabled
                           />
@@ -681,7 +695,7 @@ function ManageResidentModal({ user, setUser }) {
                               type="text"
                               id="facebook_link"
                               className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                              value={user.socials?.facebook?.link ?? ''}
+                              value={user.socials?.facebook?.link ?? ""}
                               placeholder=""
                               disabled
                             />
@@ -718,7 +732,7 @@ function ManageResidentModal({ user, setUser }) {
                             type="text"
                             id="facebook_name"
                             className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                            value={user.socials?.twitter?.name ?? ''}
+                            value={user.socials?.twitter?.name ?? ""}
                             placeholder=""
                             disabled
                           />
@@ -730,7 +744,7 @@ function ManageResidentModal({ user, setUser }) {
                               type="text"
                               id="facebook_link"
                               className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                              value={user.socials?.twitter?.link ?? ''}
+                              value={user.socials?.twitter?.link ?? ""}
                               placeholder=""
                               disabled
                             />
@@ -767,7 +781,7 @@ function ManageResidentModal({ user, setUser }) {
                             type="text"
                             id="facebook_name"
                             className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                            value={user.socials?.instagram?.name ?? ''}
+                            value={user.socials?.instagram?.name ?? ""}
                             placeholder=""
                             disabled
                           />
@@ -779,7 +793,7 @@ function ManageResidentModal({ user, setUser }) {
                               type="text"
                               id="facebook_link"
                               className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                              value={user.socials?.instagram?.link ?? ''}
+                              value={user.socials?.instagram?.link ?? ""}
                               placeholder=""
                               disabled
                             />
@@ -830,6 +844,10 @@ function ManageResidentModal({ user, setUser }) {
               </div>
             </div>
           </div>
+          {submitClicked && <EditLoader updatingStatus="updating" />}
+          {updatingStatus && (
+            <EditLoader updatingStatus={updatingStatus} error={error} />
+          )}
         </div>
       </div>
     </div>

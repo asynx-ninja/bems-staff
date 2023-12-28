@@ -24,6 +24,7 @@ import ArchivedOfficials from "../pages/ArchivedOfficials";
 import StaffManagement from "../pages/StaffsManagement";
 import ArchivedStaffsManagement from "../pages/ArchivedStaffsManagement";
 import PrintForm from "../components/requests/form/PrintForm";
+import Reports from "../pages/Reports";
 
 const pages = [
   {
@@ -105,6 +106,10 @@ const pages = [
   {
     path: "/info",
     element: <Navbar comp={<Information />} />,
+  },
+  {
+    path: "/reports",
+    element: <Navbar comp={<Reports />} />,
   },
   {
     path: "/settings",

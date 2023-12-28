@@ -10,6 +10,7 @@ import Dropbox from "./Dropbox";
 import ViewDropbox from "./ViewDropbox";
 import EditDropbox from "./EditDropbox";
 import { useSearchParams } from "react-router-dom";
+import ReplyLoader from "./loaders/ReplyLoader";
 
 function ReplyServiceModal({ request, setRequest }) {
   const [reply, setReply] = useState(false);
@@ -26,6 +27,9 @@ function ReplyServiceModal({ request, setRequest }) {
   const [userData, setUserData] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [replyingStatus, setReplyingStatus] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     setFiles(request.length === 0 ? [] : request.file);
@@ -127,6 +131,7 @@ function ReplyServiceModal({ request, setRequest }) {
   const handleOnSend = async (e) => {
     try {
       e.preventDefault();
+      setSubmitClicked(true);
 
       const obj = {
         sender: `${userData.firstName} ${userData.lastName} (STAFF)`,
@@ -149,11 +154,20 @@ function ReplyServiceModal({ request, setRequest }) {
         formData
       );
 
-      console.log(response);
+      setTimeout(() => {
+        setSubmitClicked(false);
+        setReplyingStatus("success");
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      }, 1000);
 
       // window.location.reload();
     } catch (error) {
       console.log(error);
+      setSubmitClicked(false);
+      setReplyingStatus(null);
+      setError("An error occurred while replying to the service request.");
     }
   };
 
@@ -278,9 +292,6 @@ function ReplyServiceModal({ request, setRequest }) {
                                         value={request.status}
                                         hidden={!statusChanger}
                                       >
-                                        <option value="Not Responded">
-                                          NOT RESPONDED
-                                        </option>
                                         <option value="Pending">PENDING</option>
                                         <option value="Paid">PAID</option>
                                         <option value="Processing">
@@ -289,8 +300,8 @@ function ReplyServiceModal({ request, setRequest }) {
                                         <option value="Cancelled">
                                           CANCELLED
                                         </option>
-                                        <option value="Completed">
-                                          COMPLETED
+                                        <option value="Transaction Completed">
+                                          TRANSACTION COMPLETED
                                         </option>
                                         <option value="Rejected">
                                           REJECTED
@@ -353,7 +364,7 @@ function ReplyServiceModal({ request, setRequest }) {
                       <div
                         key={index}
                         className={`flex flex-col lg:flex-row h-16 mb-2 border-b ${
-                          expandedIndexes.includes(index) 
+                          expandedIndexes.includes(index)
                             ? "h-auto border-b"
                             : ""
                         }`}
@@ -520,9 +531,6 @@ function ReplyServiceModal({ request, setRequest }) {
                                                     value={request.status}
                                                     hidden={!statusChanger}
                                                   >
-                                                    <option value="Not Responded">
-                                                      NOT RESPONDED
-                                                    </option>
                                                     <option value="Pending">
                                                       PENDING
                                                     </option>
@@ -535,8 +543,8 @@ function ReplyServiceModal({ request, setRequest }) {
                                                     <option value="Cancelled">
                                                       CANCELLED
                                                     </option>
-                                                    <option value="Completed">
-                                                      COMPLETED
+                                                    <option value="Transaction Completed">
+                                                      TRANSACTION COMPLETED
                                                     </option>
                                                     <option value="Rejected">
                                                       REJECTED
@@ -619,6 +627,10 @@ function ReplyServiceModal({ request, setRequest }) {
             </div>
           </div>
         </div>
+        {submitClicked && <ReplyLoader replyingStatus="replying" />}
+        {replyingStatus && (
+          <ReplyLoader replyingStatus={replyingStatus} error={error} />
+        )}
       </div>
     </div>
   );

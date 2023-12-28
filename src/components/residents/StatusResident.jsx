@@ -1,11 +1,18 @@
 import React from "react";
 import axios from "axios";
 import API_LINK from "../../config/API";
+import StatusLoader from "./loaders/StatusLoader";
+import { useState } from "react";
 
 function StatusResident({ status, setStatus }) {
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
+  const [error, setError] = useState(null);
+
   const handleSave = async (e) => {
     try {
       e.preventDefault();
+      setSubmitClicked(true);
 
       const response = await axios.patch(
         `${API_LINK}/users/status/${status.id}`,
@@ -16,10 +23,19 @@ function StatusResident({ status, setStatus }) {
       );
 
       if (response.status === 200) {
-        window.location.reload();
+        setTimeout(() => {
+          setSubmitClicked(false);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        }, 1000);
       } else;
     } catch (err) {
       console.log(err);
+      setSubmitClicked(false);
+      setUpdatingStatus(null);
+      setError("An error occurred while updating the inquiry.");
     }
   };
 
@@ -84,7 +100,6 @@ function StatusResident({ status, setStatus }) {
                     type="button"
                     onClick={handleSave}
                     className="h-[2.5rem] w-full md:w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm align-middle"
-                    data-hs-overlay="#hs-modal-statusResident"
                   >
                     SAVE CHANGES
                   </button>
@@ -99,6 +114,10 @@ function StatusResident({ status, setStatus }) {
               </div>
             </div>
           </div>
+          {submitClicked && <StatusLoader updatingStatus="updating" />}
+          {updatingStatus && (
+            <StatusLoader updatingStatus={updatingStatus} error={error} />
+          )}
         </div>
       </div>
     </div>

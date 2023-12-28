@@ -6,6 +6,7 @@ import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import API_LINK from "../config/API";
 import { useState } from "react";
+import EditLoader from "../components/information/loaders/EditLoader";
 
 const Information = () => {
   const [information, setInformation] = useState({});
@@ -15,6 +16,9 @@ const Information = () => {
   const [isEditingMode, setisEditingMode] = useState(false);
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
+  const [error, setError] = useState(null);
   const renameFile = (file, newName) => {
     const newFile = new File([file], newName, { type: file.type });
     return newFile;
@@ -51,6 +55,8 @@ const Information = () => {
 
   const handleSaveChanges = async (e) => {
     e.preventDefault();
+    setSubmitClicked(true);
+
     try {
       const formData = new FormData();
       if (logo) formData.append("files", logo);
@@ -68,10 +74,19 @@ const Information = () => {
       // }
 
       console.log(result);
-      window.location.reload();
+      setTimeout(() => {
+        setSubmitClicked(false);
+        setUpdatingStatus("success");
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      }, 1000);
       // setBrgyInformation({});
     } catch (error) {
       console.error(error);
+      setSubmitClicked(false);
+      setUpdatingStatus(null);
+      setError("An error occurred while creating the announcement.");
     }
   };
 
@@ -146,7 +161,7 @@ const Information = () => {
         <div className="flex justify-center sm:-mt-[260px] md:-mt-[220px] lg:-mt-[140px] xl:-mt-[60px]  h-auto md:mx-4 lg:mx-5">
           <div className="w-full md:w-96 h-full lg:my-0 lg:mx-5 relative rounded-[28px] mx-auto bg-white shadow-2xl md:w-full flex flex-col">
             <div className="h-auto rounded-lg">
-              <div className="bg-gradient-to-r from-[#3e5fc2] to-[#1f2f5e] rounded-t-[28px]">
+              <div className="bg-gradient-to-r from-[#2e65ac] to-[#0d4b75] rounded-t-[28px]">
                 <div
                   className="relative h-32 md:h-60 mx-auto justify-center items-center rounded-t-lg"
                   style={{
@@ -192,7 +207,7 @@ const Information = () => {
               </div>
 
               <div className="flex flex-col md:flex-row mx-8 my-8 xxxl:mx-36 xxxl:my-10">
-                <div className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center bg-gradient-to-r from-[#3e5fc2] to-[#1f2f5e] rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]">
+                <div className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center bg-gradient-to-r from-[#2e65ac] to-[#0d4b75] rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]">
                   <h1
                     className="text-center text-white text-2xl font-bold"
                     style={{ letterSpacing: "0.2em" }}
@@ -210,23 +225,12 @@ const Information = () => {
                     onChange={handleChange}
                   />
 
-                  <div className="self-end">
-                    {/* <button
-                      type="button"
-                      className="text-white w-36 bg-custom-green-button3 font-medium rounded-full text-sm m-2 py-2 px-10 text-center"
-                      data-hs-overlay="#hs-edit-story-modal"
-                      onClick={() =>
-                        setBrgyInformation({ ...information, brgy: brgy })
-                      }
-                    >
-                      EDIT
-                    </button> */}
-                  </div>
+                  <div className="self-end"></div>
                 </div>
               </div>
 
               <div className="flex flex-col md:flex-row mx-8 my-8 xxxl:mx-36 xxxl:my-10">
-                <div className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center bg-gradient-to-r from-[#3e5fc2] to-[#1f2f5e] rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]">
+                <div className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center bg-gradient-to-r from-[#2e65ac] to-[#0d4b75] rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]">
                   <h1
                     className="text-center text-white text-2xl font-bold"
                     style={{ letterSpacing: "0.2em" }}
@@ -244,21 +248,12 @@ const Information = () => {
                     onChange={handleChange}
                   />
 
-                  <div className="self-end">
-                    {/* <button
-                      type="button"
-                      className="text-white w-36 bg-custom-green-button3 font-medium rounded-full text-sm m-2 py-2 px-10 text-center"
-                      data-hs-overlay="#hs-edit-mission-modal"
-                      onClick={() => setBrgyInformation({ ...information })}
-                    >
-                      EDIT
-                    </button> */}
-                  </div>
+                  <div className="self-end"></div>
                 </div>
               </div>
 
               <div className="flex flex-col md:flex-row mx-8 my-8 xxxl:mx-36 xxxl:my-10">
-                <div className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center bg-gradient-to-r from-[#3e5fc2] to-[#1f2f5e] rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]">
+                <div className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center bg-gradient-to-r from-[#2e65ac] to-[#0d4b75] rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]">
                   <h1
                     className="text-center text-white text-2xl font-bold"
                     style={{ letterSpacing: "0.2em" }}
@@ -282,15 +277,15 @@ const Information = () => {
                   <>
                     <button
                       onClick={handleSaveChanges}
-                      className="bg-green-800 px-7 py-2 rounded-xl mr-2"
+                      className="bg-custom-green-button3  px-7 py-2 rounded-xl mr-2"
                     >
-                      Save changes
+                      SAVE CHANGES
                     </button>
                     <button
-                      className="bg-red-800 px-7 py-2 rounded-xl mr-2"
+                      className="bg-pink-700 px-7 py-2 rounded-xl mr-2"
                       onClick={() => setisEditingMode(false)}
                     >
-                      Cancel
+                      CANCEL
                     </button>
                   </>
                 ) : (
@@ -298,7 +293,7 @@ const Information = () => {
                     className="text-white w-36 bg-custom-green-button3 font-medium rounded-full text-sm m-2 py-2 px-10 text-center"
                     onClick={() => setisEditingMode(true)}
                   >
-                    Edit
+                    EDIT
                   </button>
                 )}
               </div>
@@ -306,23 +301,10 @@ const Information = () => {
           </div>
         </div>
       </div>
-      {/* <EditMissionModal
-        brgyInformation={brgyInformation}
-        setBrgyInformation={setBrgyInformation}
-        updateInfo={handleSaveChanges}
-      />
-      <EditStoryModal
-        brgyInformation={brgyInformation}
-        setBrgyInformation={setBrgyInformation}
-        updateInfo={handleSaveChanges}
-        information={information}
-        brgy={brgy}
-      />
-      <EditVisionModal
-        brgyInformation={brgyInformation}
-        setBrgyInformation={setBrgyInformation}
-        updateInfo={handleSaveChanges}
-      /> */}
+      {submitClicked && <EditLoader updatingStatus="updating" />}
+      {updatingStatus && (
+        <EditLoader updatingStatus={updatingStatus} error={error} />
+      )}
     </div>
   );
 };

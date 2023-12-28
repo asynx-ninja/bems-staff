@@ -24,6 +24,7 @@ const Requests = () => {
   const brgy = searchParams.get("brgy");
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetch = async () => {
@@ -40,6 +41,11 @@ const Requests = () => {
 
     fetch();
   }, []);
+
+  const Requests = requests.filter(
+    (item) =>
+      item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   useEffect(() => {
     document.title = "Service Requests | Barangay E-Services Management";
@@ -61,10 +67,12 @@ const Requests = () => {
   };
 
   const checkAllHandler = () => {
-    if (requests.length === selectedItems.length) {
+    const requestsToCheck = Requests.length > 0 ? Requests : requests;
+
+    if (requestsToCheck.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const postIds = requests.map((item) => {
+      const postIds = requestsToCheck.map((item) => {
         return item._id;
       });
 
@@ -99,7 +107,7 @@ const Requests = () => {
           ? a.service_name.localeCompare(b.service_name)
           : b.service_name.localeCompare(a.service_name);
       } else if (sortBy === "status") {
-        const order = { Completed: 1, " Not Responded": 2, Pending: 3, Paid: 4, Processing: 5,  Cancelled: 6, Rejected: 7 };
+        const order = { "Transaction Completed": 1, Pending: 2, Paid: 3, Processing: 4,  Cancelled: 5, Rejected: 6 };
         return newSortOrder === "asc"
           ? order[a.status] - order[b.status]
           : order[b.status] - order[a.status];
@@ -119,7 +127,7 @@ const Requests = () => {
       <div>
         {/* Header */}
         <div className="flex flex-row mt-5 sm:flex-col-reverse lg:flex-row w-full">
-          <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#3e5fc2] to-[#1f2f5e] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
+          <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#2e65ac] to-[#0d4b75] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
               className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-3xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
@@ -135,7 +143,7 @@ const Requests = () => {
                     <button
                       type="button"
                       data-hs-overlay="#hs-modal-add"
-                      className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#3e5fc2] to-[#1f2f5e] w-full text-white font-medium text-sm text-center inline-flex items-center"
+                      className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#2e65ac] to-[#0d4b75] w-full text-white font-medium text-sm text-center inline-flex items-center"
                     >
                       <FaArchive size={24} style={{ color: "#ffffff" }} />
                       <span className="sm:block md:hidden sm:pl-5">
@@ -161,7 +169,7 @@ const Requests = () => {
               <button
                 id="hs-dropdown"
                 type="button"
-                className="bg-[#253a7a] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                className="bg-[#0d4b75] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
               >
                 SORT BY
                 <svg
@@ -181,12 +189,12 @@ const Requests = () => {
                 </svg>
               </button>
               <ul
-                className="bg-[#253a7a] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                className="bg-[#0d4b75] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
                 aria-labelledby="hs-dropdown"
               >
                 <li
                   onClick={() => handleSort("request_id")}
-                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#2e65ac] to-[#0d4b75] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
                 >
                   SERVICE REQUEST ID
                   {sortColumn === "request_id" && (
@@ -201,7 +209,7 @@ const Requests = () => {
                 </li>
                 <li
                   onClick={() => handleSort("service_name")}
-                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#2e65ac] to-[#0d4b75] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
                 >
                   SERVICE REQUEST NAME
                   {sortColumn === "service_name" && (
@@ -216,7 +224,7 @@ const Requests = () => {
                 </li>
                 <li
                   onClick={() => handleSort("status")}
-                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#2e65ac] to-[#0d4b75] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
                 >
                   STATUS
                   {sortColumn === "status" && (
@@ -233,7 +241,7 @@ const Requests = () => {
             </div>
             <div className="sm:flex-col md:flex-row flex sm:w-full md:w-7/12">
               <div className="flex flex-row w-full md:mr-2">
-                <button className=" bg-[#253a7a] p-3 rounded-l-md">
+                <button className=" bg-[#0d4b75] p-3 rounded-l-md">
                   <div className="w-full overflow-hidden">
                     <svg
                       className="h-3.5 w-3.5 text-white"
@@ -257,8 +265,10 @@ const Requests = () => {
                   type="text"
                   name="hs-table-with-pagination-search"
                   id="hs-table-with-pagination-search"
-                  className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500 "
+                  className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full items-center justify-center space-x-2">
@@ -300,7 +310,7 @@ const Requests = () => {
         {/* Table */}
         <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_280px)] xxxl:h-[calc(100vh_-_300px)]">
           <table className="relative table-auto w-full">
-            <thead className="bg-[#253a7a] sticky top-0">
+            <thead className="bg-[#0d4b75] sticky top-0">
               <tr className="">
                 <th scope="col" className="px-6 py-4">
                   <div className="flex justify-center items-center">
@@ -324,7 +334,7 @@ const Requests = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {requests.map((item, index) => (
+              {Requests.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
@@ -356,10 +366,10 @@ const Requests = () => {
                     </div>
                   </td>
                   <td className="px-6 py-3">
-                    {item.status === "Completed" && (
+                    {item.status === "Transaction Completed" && (
                       <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                         <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                          COMPLETED
+                          TRANSACTION COMPLETED
                         </span>
                       </div>
                     )}
@@ -374,13 +384,6 @@ const Requests = () => {
                       <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
                         <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
                           PENDING
-                        </span>
-                      </div>
-                    )}
-                    {item.status === "Not Responded" && (
-                      <div className="flex items-center justify-center bg-pink-700 m-2 rounded-lg">
-                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                          NOT RESPONDED
                         </span>
                       </div>
                     )}
@@ -457,7 +460,7 @@ const Requests = () => {
           </table>
         </div>
       </div>
-      <div className="md:py-4 md:px-4 bg-[#253a7a] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
+      <div className="md:py-4 md:px-4 bg-[#0d4b75] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
         <span className="font-medium text-white sm:text-xs text-sm">
           Showing 1 out of 15 pages
         </span>

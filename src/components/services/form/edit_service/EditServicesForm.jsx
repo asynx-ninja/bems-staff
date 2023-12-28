@@ -5,10 +5,14 @@ import axios from "axios";
 import { useEffect } from "react";
 import API_LINK from "../../../../config/API";
 import EditSectionForm from "./EditSectionForm";
+import EditFormLoader from "../../loaders/EditFormLoader";
 
 const EditServicesForm = ({ service_id, brgy }) => {
   const [details, setDetails] = useState([]);
   const [detail, setDetail] = useState({});
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     // function to filter
@@ -42,6 +46,8 @@ const EditServicesForm = ({ service_id, brgy }) => {
 
   const handleSubmit = async (e) => {
     try {
+      setSubmitClicked(true);
+
       const response = await axios.patch(
         `http://localhost:8800/api/forms/`,
         {
@@ -55,10 +61,17 @@ const EditServicesForm = ({ service_id, brgy }) => {
       );
 
       console.log(response);
-
-      // window.location.reload();
+      setTimeout(() => {
+        setSubmitClicked(false);
+        setUpdatingStatus("success");
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      }, 1000);
     } catch (err) {
-      console.log(err.message);
+      setSubmitClicked(false);
+      setUpdatingStatus(null);
+      setError("An error occurred while creating the announcement.");
     }
   };
 
@@ -189,6 +202,10 @@ const EditServicesForm = ({ service_id, brgy }) => {
             </div>
           </div>
         </div>
+        {submitClicked && <EditFormLoader updatingStatus="updating" />}
+        {updatingStatus && (
+          <EditFormLoader updatingStatus={updatingStatus} error={error} />
+        )}
       </div>
     </div>
   );

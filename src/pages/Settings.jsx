@@ -14,11 +14,16 @@ import axios from "axios";
 import API_LINK from "../config/API";
 import banner from "../assets/image/1.png";
 import OccupationList from "../components/occupations/OccupationList";
+import EditLoader from "../components/settings/loaders/EditLoader";
 
 const Settings = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
   const fileInputRef = useRef();
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
+  const [error, setError] = useState(null);
+
   const handleAdd = (e) => {
     e.preventDefault();
 
@@ -188,6 +193,8 @@ const Settings = () => {
   // console.log(userSocials)
 
   const saveChanges = async (e) => {
+    setSubmitClicked(true);
+
     const obj = {
       firstName: userData.firstName,
       middleName: userData.middleName,
@@ -264,11 +271,21 @@ const Settings = () => {
           twitter: response.data.socials.twitter,
         });
         setEditButton(true);
+        setTimeout(() => {
+          setSubmitClicked(false);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        }, 1000);
       } else {
         console.error("Update failed. Status:", response.status);
       }
     } catch (error) {
       console.error("Error saving changes:", error);
+      setSubmitClicked(false);
+      setUpdatingStatus(null);
+      setError("An error occurred while creating the announcement.");
     }
   };
 
@@ -1230,6 +1247,10 @@ const Settings = () => {
           </div>
         )}
       </div>
+      {submitClicked && <EditLoader updatingStatus="updating" />}
+      {updatingStatus && (
+        <EditLoader updatingStatus={updatingStatus} error={error} />
+      )}
     </div>
   );
 };
