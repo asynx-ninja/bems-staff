@@ -20,8 +20,11 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [replyStatus, setReplyStatus] = useState(null);
   const [error, setError] = useState(null);
+  const [userData, setUserData] = useState({});
+  const [searchParams, setSearchParams] = useSearchParams();
+  const id = searchParams.get("id");
   const [newMessage, setNewMessage] = useState({
-    sender: "Staff",
+    type: "Staff",
     message: "",
     date: new Date(),
   });
@@ -49,6 +52,21 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
     const lastIndex = inquiry.response ? inquiry.response.length - 1 : 0;
     setExpandedIndexes([lastIndex]);
   }, [inquiry.response]);
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const res = await axios.get(`${API_LINK}/users/specific/${id}`);
+
+        if (res.status === 200) {
+          setUserData(res.data[0]);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetch();
+  }, [id]);
 
   const fileInputRef = useRef();
 
@@ -111,7 +129,8 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
 
     try {
       const obj = {
-        sender: newMessage.sender,
+        sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
+        type: newMessage.type,
         message: newMessage.message,
         date: newMessage.date,
         folder_id: inquiry.folder_id,
@@ -127,11 +146,13 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
         formData
       );
 
-      setSubmitClicked(false);
-      setReplyStatus("success");
       setTimeout(() => {
-        window.location.reload();
-      }, 3000);
+        setSubmitClicked(false);
+        setReplyStatus("success");
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      }, 1000);
     } catch (error) {
       console.log(error);
       setSubmitClicked(false);

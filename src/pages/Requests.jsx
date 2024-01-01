@@ -82,6 +82,7 @@ const Requests = () => {
 
   const tableHeader = [
     "SERVICE NAME",
+    "SENDER",
     "TYPE OF SERVICE",
     "DATE",
     "STATUS",
@@ -345,6 +346,11 @@ const Requests = () => {
                         onChange={checkboxHandler}
                       />
                     </div>
+                  </td>
+                  <td className="px-6 py-3">
+                    <span className="text-xs sm:text-sm text-black line-clamp-2">
+                      {item.service_name}
+                    </span>
                   </td>
                   <td className="px-6 py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2">
