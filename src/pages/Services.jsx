@@ -28,7 +28,7 @@ const Services = () => {
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [statusFilter, setStatusFilter] = useState("all"); // Default is "all"
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
     setSortOrder(newSortOrder);
@@ -59,20 +59,23 @@ const Services = () => {
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/services/?brgy=${brgy}&archived=false`
+        `${API_LINK}/services/?brgy=${brgy}&archived=false&status=${statusFilter}`
       );
       if (response.status === 200) setServices(response.data);
       else setServices([]);
     };
 
     fetch();
-  }, []);
+  }, [brgy, statusFilter]);
 
   const Services = services.filter(
     (item) =>
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.service_id.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  const handleStatusFilter = (selectedStatus) => {
+    setStatusFilter(selectedStatus);
+  };
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;

@@ -38,28 +38,26 @@ const Inquiries = () => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
     setSortOrder(newSortOrder);
     setSortColumn(sortBy);
-
+  
     const sortedData = inquiries.slice().sort((a, b) => {
       if (sortBy === "inquiries_id") {
         return newSortOrder === "asc"
           ? a.inquiries_id.localeCompare(b.inquiries_id)
           : b.inquiries_id.localeCompare(a.inquiries_id);
-      } else if (sortBy === "date") {
-        return newSortOrder === "asc"
-          ? new Date(a.compose.date) - new Date(b.compose.date)
-          : new Date(b.compose.date) - new Date(a.compose.date);
-      } else if (sortBy === "isApproved") {
+      }  else if (sortBy === "isApproved") {
         const order = { Completed: 1, Pending: 2, "In Progress": 3 };
         return newSortOrder === "asc"
           ? order[a.isApproved] - order[b.isApproved]
           : order[b.isApproved] - order[a.isApproved];
       }
-
+  
       return 0;
     });
-
+  
     setInquiries(sortedData);
   };
+  
+  
 
   useEffect(() => {
     document.title = "Inquiries | Barangay E-Services Management";
@@ -203,9 +201,8 @@ const Inquiries = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -265,9 +262,8 @@ const Inquiries = () => {
                 >
                   DATE
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -345,6 +341,7 @@ const Inquiries = () => {
                     </div>
                     <button
                       type="submit"
+                      onClick={() => handleSort("date")}
                       className="bg-[#0d4b75] uppercase text-white mt-2 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 hover:bg-[#0d4675]"
                     >
                       APPLY
@@ -570,7 +567,7 @@ const Inquiries = () => {
           <ReactPaginate
             breakLabel="..."
             nextLabel=">>"
-            onPageChange={() => {}}
+            onPageChange={() => { }}
             pageRangeDisplayed={3}
             pageCount={15}
             previousLabel="<<"
