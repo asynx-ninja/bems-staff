@@ -330,27 +330,12 @@ const ArchivedServices = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <div className="sm:mt-2 md:mt-0 flex w-full items-center justify-center space-x-2">
-                <div className="hs-tooltip inline-block w-full">
-                  <button
-                    type="button"
-                    data-hs-overlay="#hs-generate-reports-modal"
-                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md bg-blue-800 font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
-                  >
-                    <BsPrinter size={24} style={{ color: "#ffffff" }} />
-                    <span
-                      className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                      role="tooltip"
-                    >
-                      Generate Report
-                    </span>
-                  </button>
-                </div>
+              <div className="sm:mt-2 md:mt-0 flex w-64 items-center justify-center">
                 <div className="hs-tooltip inline-block w-full">
                   <button
                     type="button"
                     data-hs-overlay="#hs-restore-services-modal"
-                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md bg-[#0d4b75] font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
+                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md  bg-[#0d4b75] font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
                   >
                     <MdRestartAlt size={24} style={{ color: "#ffffff" }} />
                     <span
