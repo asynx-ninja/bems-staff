@@ -27,7 +27,7 @@ const Residents = () => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
     setSortOrder(newSortOrder);
     setSortColumn(sortBy);
-  
+
     const sortedData = users.slice().sort((a, b) => {
       if (sortBy === "user_id") {
         return newSortOrder === "asc"
@@ -43,10 +43,10 @@ const Residents = () => {
           ? order[a.isApproved] - order[b.isApproved]
           : order[b.isApproved] - order[a.isApproved];
       }
-  
+
       return 0;
     });
-  
+
     setUsers(sortedData);
   };
 
@@ -66,8 +66,11 @@ const Residents = () => {
   }, [brgy]);
 
   const Users = users.filter((item) => {
-    const fullName = `${item.lastName} ${item.firstName} ${item.middleName}`.toLowerCase();
-    const userIdMatches = item.user_id.toLowerCase().includes(searchQuery.toLowerCase());
+    const fullName =
+      `${item.lastName} ${item.firstName} ${item.middleName}`.toLowerCase();
+    const userIdMatches = item.user_id
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
     const nameMatches = fullName.includes(searchQuery.toLowerCase());
 
     return userIdMatches || nameMatches;
@@ -140,82 +143,79 @@ const Residents = () => {
 
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse md:flex-row flex justify-between w-full">
-            <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
-              <button
-                id="hs-dropdown"
-                type="button"
-                className="bg-[#0d4b75] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
-              >
-                SORT BY
-                <svg
-                  className={`hs-dropdown-open:rotate-${
-                    sortOrder === "asc" ? "180" : "0"
-                  } w-2.5 h-2.5 text-white`}
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </button>
-              <ul
-                className="bg-[#0d4b75] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10 shadow-md rounded-lg p-2"
-                aria-labelledby="hs-dropdown"
-              >
-                <li
-                  onClick={() => handleSort("user_id")}
-                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
-                >
-                  USER ID
-                  {sortColumn === "user_id" && (
-                    <span className="ml-auto">
-                      {sortOrder === "asc" ? (
-                        <span>DESC &darr;</span>
-                      ) : (
-                        <span>ASC &uarr;</span>
-                      )}
-                    </span>
-                  )}
-                </li>
-                <li
-                  onClick={() => handleSort("lastName")}
-                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
-                >
-                  LAST NAME
-                  {sortColumn === "lastName" && (
-                    <span className="ml-auto">
-                      {sortOrder === "asc" ? (
-                        <span>DESC &darr;</span>
-                      ) : (
-                        <span>ASC &uarr;</span>
-                      )}
-                    </span>
-                  )}
-                </li>
-                <li
-                  onClick={() => handleSort("isApproved")}
-                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+            <div className="flex space-x-2">
+              <span className="font-medium text-[#292929]  justify-center flex text-center my-auto mx-2">
+                SORT BY:{" "}
+              </span>
+
+              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+                <button
+                  id="hs-dropdown"
+                  type="button"
+                  className="bg-[#0d4b75] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
                 >
                   STATUS
-                  {sortColumn === "isApproved" && (
-                    <span className="ml-auto">
-                      {sortOrder === "asc" ? (
-                        <span>DESC &darr;</span>
-                      ) : (
-                        <span>ASC &uarr;</span>
-                      )}
-                    </span>
-                  )}
-                </li>
-              </ul>
+                  <svg
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+                <ul
+                  className="bg-[#0d4b75] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10 shadow-md rounded-lg p-2"
+                  aria-labelledby="hs-dropdown"
+                >
+                  <a
+                    // onClick={handleResetFilter}
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    RESET FILTERS
+                  </a>
+                  <hr className="border-[#ffffff] my-1" />
+                  <li
+                  // onClick={() => handleStatusFilter("Registered")}
+                  // className={`flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ${
+                  //   statusFilter === "Registered" &&
+                  //   "bg-gradient-to-r from-[#0d4b75] to-[#2645a6]"
+                  // }`}
+                  >
+                    REGISTERED
+                  </li>
+                  <li
+                  // onClick={() => handleStatusFilter("Pending")}
+                  // className={`flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ${
+                  //   statusFilter === "Pending" &&
+                  //   "bg-gradient-to-r from-[#0d4b75] to-[#2645a6]"
+                  // }`}
+                  >
+                    PENDING
+                  </li>
+                  <li
+                  // onClick={() => handleStatusFilter("Denied")}
+                  // className={`flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ${
+                  //   statusFilter === "Denied" &&
+                  //   "bg-gradient-to-r from-[#0d4b75] to-[#2645a6]"
+                  // }`}
+                  >
+                    DENIED
+                  </li>
+                </ul>
+              </div>
             </div>
+
             <div className="sm:flex-col md:flex-row flex sm:w-full md:w-7/12">
               <div className="flex flex-row w-full md:mr-2">
                 <button className=" bg-[#0d4b75] p-3 rounded-l-md">
@@ -376,16 +376,19 @@ const Residents = () => {
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center space-x-1 sm:space-x-none">
-                    <div className="hs-tooltip inline-block">
-                      <button
-                        type="button"
-                        data-hs-overlay="#hs-modal-viewResident"
-                        onClick={() => handleView({ ...item })}
-                        className="hs-tooltip-toggle text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                      >
-                        <AiOutlineEye size={24} style={{ color: "#ffffff" }} />
-                      </button>
-                      <span
+                      <div className="hs-tooltip inline-block">
+                        <button
+                          type="button"
+                          data-hs-overlay="#hs-modal-viewResident"
+                          onClick={() => handleView({ ...item })}
+                          className="hs-tooltip-toggle text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                        >
+                          <AiOutlineEye
+                            size={24}
+                            style={{ color: "#ffffff" }}
+                          />
+                        </button>
+                        <span
                           className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                           role="tooltip"
                         >

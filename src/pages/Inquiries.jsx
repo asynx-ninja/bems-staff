@@ -44,10 +44,6 @@ const Inquiries = () => {
         return newSortOrder === "asc"
           ? a.inquiries_id.localeCompare(b.inquiries_id)
           : b.inquiries_id.localeCompare(a.inquiries_id);
-      } else if (sortBy === "date") {
-        return newSortOrder === "asc"
-          ? new Date(a.compose.date) - new Date(b.compose.date)
-          : new Date(b.compose.date) - new Date(a.compose.date);
       } else if (sortBy === "isApproved") {
         const order = { Completed: 1, Pending: 2, "In Progress": 3 };
         return newSortOrder === "asc"
@@ -118,8 +114,8 @@ const Inquiries = () => {
   };
 
   const tableHeader = [
-    "Sender",
-    "Message",
+    "Inquiry id",
+    "name",
     "e-mail",
     "date",
     "status",
@@ -192,7 +188,9 @@ const Inquiries = () => {
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse md:flex-row flex justify-between w-full">
             <div className="flex space-x-2">
-              <span className="font-medium text-[#292929]  justify-center flex text-center my-auto mx-2">SORT BY: </span>
+              <span className="font-medium text-[#292929]  justify-center flex text-center my-auto mx-2">
+                SORT BY:{" "}
+              </span>
 
               {/* Status Sort */}
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
@@ -345,6 +343,7 @@ const Inquiries = () => {
                     </div>
                     <button
                       type="submit"
+                      onClick={() => handleSort("date")}
                       className="bg-[#0d4b75] uppercase text-white mt-2 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 hover:bg-[#0d4675]"
                     >
                       APPLY
@@ -447,16 +446,16 @@ const Inquiries = () => {
                     </div>
                   </td>
                   <td className="px-6 py-3">
+                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
+                      {item.inq_id}
+                    </span>
+                  </td>
+                  <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                         {item.name}
                       </span>
                     </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                    {item.compose.message}
-                    </span>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
