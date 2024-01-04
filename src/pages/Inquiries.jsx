@@ -114,9 +114,9 @@ const Inquiries = () => {
   };
 
   const tableHeader = [
-    "Inquiry id",
     "name",
     "e-mail",
+    "message",
     "date",
     "status",
     "actions",
@@ -446,11 +446,6 @@ const Inquiries = () => {
                     </div>
                   </td>
                   <td className="px-6 py-3">
-                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                      {item.inq_id}
-                    </span>
-                  </td>
-                  <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                         {item.name}
@@ -463,6 +458,11 @@ const Inquiries = () => {
                         {item.email}
                       </span>
                     </div>
+                  </td>
+                  <td className="px-6 py-3">
+                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
+                    {item.compose.message}
+                    </span>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
