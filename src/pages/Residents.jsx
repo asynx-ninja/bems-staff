@@ -107,8 +107,8 @@ const Residents = () => {
   };
 
   const tableHeader = [
-    "USER_ID",
     "NAME",
+    "EMAIL",
     "AGE",
     "GENDER",
     "CONTACT",
@@ -363,16 +363,16 @@ const Residents = () => {
                 </td>
                 <td className="px-6 py-3">
                   <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                    {item.user_id}
-                  </span>
-                </td>
-                <td className="px-6 py-3">
-                  <span className="text-xs sm:text-sm text-black line-clamp-2 ">
                     {item.lastName +
                       ", " +
                       item.firstName +
                       " " +
                       item.middleName}
+                  </span>
+                </td>
+                <td className="px-6 py-3">
+                  <span className="text-xs sm:text-sm text-black line-clamp-2 ">
+                    {item.email}
                   </span>
                 </td>
                 <td className="px-6 py-3">
