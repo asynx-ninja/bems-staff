@@ -18,7 +18,7 @@ const UpcomingEvents = () => {
       const response = await axios.get(
         `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
       );
-      if (response.status === 200) setAnnouncements(response.data);
+      if (response.status === 200) setAnnouncements(response.data.result);
       else setAnnouncements([]);
     };
     fetch();

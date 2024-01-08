@@ -29,31 +29,31 @@ const Reports = () => {
           `${API_LINK}/requests/?brgy=${brgy}&archived=false`
         );
 
-        if (servicesResponse.status === 200) setServices(servicesResponse.data);
+        if (servicesResponse.status === 200) setServices(servicesResponse.data.result);
         else setServices([]);
 
-        if (requestsResponse.status === 200) setRequests(requestsResponse.data);
+        if (requestsResponse.status === 200) setRequests(requestsResponse.data.result);
 
         // Fetch archived requests
         const archivedRequestsResponse = await axios.get(
           `${API_LINK}/requests/?brgy=${brgy}&archived=true`
         );
         if (archivedRequestsResponse.status === 200)
-          setArchivedRequests(archivedRequestsResponse.data);
+          setArchivedRequests(archivedRequestsResponse.data.result);
 
         // Fetch archived services
         const archivedServicesResponse = await axios.get(
           `${API_LINK}/services/?brgy=${brgy}&archived=true`
         );
         if (archivedServicesResponse.status === 200)
-          setArchivedServices(archivedServicesResponse.data);
+          setArchivedServices(archivedServicesResponse.data.result);
 
         // Fetch users
         const usersResponse = await axios.get(
           `${API_LINK}/users/?brgy=${brgy}&type=Resident`
         );
         if (usersResponse.status === 200) {
-          setUsers(usersResponse.data);
+          setUsers(usersResponse.data.result);
         } else {
           setUsers([]);
         }
