@@ -25,12 +25,13 @@ const Requests = () => {
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/requests/?brgy=${brgy}&archived=false`
+          `${API_LINK}/requests/?brgy=${brgy}&archived=false&status=${statusFilter}`
         );
 
         if (response.status === 200) setRequests(response.data);
@@ -40,8 +41,17 @@ const Requests = () => {
     };
 
     fetch();
-  }, []);
+  }, [brgy, statusFilter]);
 
+  const handleStatusFilter = (selectedStatus) => {
+    setStatusFilter(selectedStatus);
+  };
+  
+  const handleResetFilter = () => {
+    setStatusFilter("all");
+    setDateFilter(null);
+    setSearchQuery("");
+  };
   const Requests = requests.filter((item) =>
     item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -208,7 +218,7 @@ const Requests = () => {
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    // onClick={handleResetFilter}
+                    onClick={handleResetFilter}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -216,42 +226,42 @@ const Requests = () => {
                   </a>
                   <hr className="border-[#ffffff] my-1" />
                   <a
-                    // onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handleStatusFilter("Pending")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PENDING
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("In Progress")}
+                    onClick={() => handleStatusFilter("Paid")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                    PAID
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
+                    onClick={() => handleStatusFilter("Processing")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PROCESSING
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
+                    onClick={() => handleStatusFilter("Cancelled")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     CANCELLED
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
+                    onClick={() => handleStatusFilter("Transaction Completed")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     TRANSACTION COMPLETED
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
+                    onClick={() => handleStatusFilter("Rejected")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >

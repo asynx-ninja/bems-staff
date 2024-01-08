@@ -28,6 +28,7 @@ const Services = () => {
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
@@ -59,14 +60,14 @@ const Services = () => {
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/services/?brgy=${brgy}&archived=false`
+        `${API_LINK}/services/?brgy=${brgy}&archived=false&status=${statusFilter}`
       );
       if (response.status === 200) setServices(response.data);
       else setServices([]);
     };
-
+  
     fetch();
-  }, []);
+  }, [brgy, statusFilter]);
 
   const Services = services.filter(
     (item) =>
@@ -74,6 +75,10 @@ const Services = () => {
       item.service_id.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleStatusFilter = (selectedStatus) => {
+    setStatusFilter(selectedStatus);
+  };
+  
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
     let value = e.target.value;
@@ -88,7 +93,11 @@ const Services = () => {
       });
     }
   };
-
+  const handleResetFilter = () => {
+    setStatusFilter("all");
+    setDateFilter(null);
+    setSearchQuery("");
+  };
   const checkAllHandler = () => {
     const servicesToCheck = Services.length > 0 ? Services : services;
 
@@ -223,11 +232,12 @@ const Services = () => {
                   </svg>
                 </button>
                 <ul
+                
                   className="bg-[#0d4b75] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    // onClick={handleResetFilter}
+                    onClick={handleResetFilter}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -235,25 +245,25 @@ const Services = () => {
                   </a>
                   <hr className="border-[#ffffff] my-1" />
                   <a
-                    // onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handleStatusFilter("Pending")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PENDING
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("In Progress")}
+                    onClick={() => handleStatusFilter("Approved")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    IN PROGRESS
+                    APPROVED
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
+                    onClick={() => handleStatusFilter("Disapproved")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    COMPLETED
+                    DISAPPROVED
                   </a>
                 </ul>
               </div>

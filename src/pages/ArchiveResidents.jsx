@@ -22,6 +22,7 @@ const Residents = () => {
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
@@ -53,17 +54,20 @@ const Residents = () => {
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/users/showArchived/?brgy=${brgy}&type=Resident`
+        `${API_LINK}/users/showArchived/?brgy=${brgy}&type=Resident&status=${statusFilter}`
       );
+  
       if (response.status === 200) {
         setUsers(response.data);
+        console.log("Users data:", response.data);
       } else {
         setUsers([]);
       }
     };
-
+  
     fetch();
-  }, [brgy]);
+  }, [brgy, statusFilter]);  // Include statusFilter in the dependency array
+  
 
   const Users = users.filter((item) => {
     const fullName =
@@ -75,6 +79,16 @@ const Residents = () => {
 
     return userIdMatches || nameMatches;
   });
+
+  const handleResetFilter = () => {
+    setStatusFilter("all");
+    setDateFilter(null);
+    setSearchQuery("");
+  };
+
+  const handleStatusFilter = (selectedStatus) => {
+    setStatusFilter(selectedStatus);
+  };
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -178,7 +192,7 @@ const Residents = () => {
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    // onClick={handleResetFilter}
+                    onClick={handleResetFilter}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -186,29 +200,29 @@ const Residents = () => {
                   </a>
                   <hr className="border-[#ffffff] my-1" />
                   <li
-                  // onClick={() => handleStatusFilter("Registered")}
-                  // className={`flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ${
-                  //   statusFilter === "Registered" &&
-                  //   "bg-gradient-to-r from-[#0d4b75] to-[#2645a6]"
-                  // }`}
+                  onClick={() => handleStatusFilter("Registered")}
+                  className={`flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ${
+                    statusFilter === "Registered" &&
+                    "bg-gradient-to-r from-[#0d4b75] to-[#2645a6]"
+                  }`}
                   >
                     REGISTERED
                   </li>
                   <li
-                  // onClick={() => handleStatusFilter("Pending")}
-                  // className={`flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ${
-                  //   statusFilter === "Pending" &&
-                  //   "bg-gradient-to-r from-[#0d4b75] to-[#2645a6]"
-                  // }`}
+                  onClick={() => handleStatusFilter("Pending")}
+                  className={`flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ${
+                    statusFilter === "Pending" &&
+                    "bg-gradient-to-r from-[#0d4b75] to-[#2645a6]"
+                  }`}
                   >
                     PENDING
                   </li>
                   <li
-                  // onClick={() => handleStatusFilter("Denied")}
-                  // className={`flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ${
-                  //   statusFilter === "Denied" &&
-                  //   "bg-gradient-to-r from-[#0d4b75] to-[#2645a6]"
-                  // }`}
+                  onClick={() => handleStatusFilter("Denied")}
+                  className={`flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 ${
+                    statusFilter === "Denied" &&
+                    "bg-gradient-to-r from-[#0d4b75] to-[#2645a6]"
+                  }`}
                   >
                     DENIED
                   </li>
