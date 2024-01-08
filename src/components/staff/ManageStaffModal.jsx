@@ -6,8 +6,12 @@ import OccupationList from "./OccupationList";
 import { LiaRandomSolid } from "react-icons/lia";
 import { FaFacebookSquare, FaInstagram } from "react-icons/fa";
 import { FaSquareXTwitter } from "react-icons/fa6";
+import EditLoader from "./loaders/EditLoader";
 
 function ManageStaffModal({ user, setUser }) {
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
+  const [error, setError] = useState(null);
   const [edit, setEdit] = useState(false);
 
   const handleOnEdit = () => {
@@ -59,6 +63,7 @@ function ManageStaffModal({ user, setUser }) {
   const handleSave = async (e) => {
     try {
       e.preventDefault();
+      setSubmitClicked(true);
 
       var formData = new FormData();
       formData.append("users", JSON.stringify(user));
@@ -70,12 +75,21 @@ function ManageStaffModal({ user, setUser }) {
 
       if (response.status === 200) {
         console.log("Update successful:", response.data);
-        window.location.reload();
+        setTimeout(() => {
+          setSubmitClicked(false);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        }, 1000);
       } else {
         console.error("Update failed. Status:", response.status);
       }
     } catch (err) {
       console.log(err);
+      setSubmitClicked(false);
+      setCreationStatus(null);
+      setError("An error occurred while creating the announcement.");
     }
   };
 
@@ -680,6 +694,10 @@ function ManageStaffModal({ user, setUser }) {
               </div>
             </div>
           </div>
+          {submitClicked && <EditLoader updatingStatus="updating" />}
+          {updatingStatus && (
+            <EditLoader updatingStatus={updatingStatus} error={error} />
+          )}
         </div>
       </div>
     </div>

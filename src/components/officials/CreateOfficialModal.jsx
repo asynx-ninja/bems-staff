@@ -3,8 +3,12 @@ import { useState, useEffect } from "react";
 import { CiImageOn } from "react-icons/ci";
 import API_LINK from "../../config/API";
 import axios from "axios";
+import AddLoader from "./loaders/AddLoader";
 
 function CreateOfficialModal({ brgy }) {
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [creationStatus, setCreationStatus] = useState(null);
+  const [error, setError] = useState(null);
   const [official, setOfficial] = useState({
     firstName: "",
     middleName: "",
@@ -21,6 +25,7 @@ function CreateOfficialModal({ brgy }) {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+      setSubmitClicked(true);
 
       const formData = new FormData();
       formData.append("file", pfp);
@@ -55,10 +60,17 @@ function CreateOfficialModal({ brgy }) {
           brgy: "",
         });
         setPfp(null);
-        window.location.reload();
+        setSubmitClicked(false);
+        setCreationStatus("success");
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
       }
     } catch (err) {
       console.error("Error adding official:", err);
+      setSubmitClicked(false);
+      setCreationStatus(null);
+      setError("An error occurred while creating the announcement.");
     }
   };
 
@@ -299,7 +311,6 @@ function CreateOfficialModal({ brgy }) {
                 <button
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                  data-hs-overlay="#hs-create-official-modal"
                   onClick={handleSubmit}
                 >
                   SAVE CHANGES
@@ -315,6 +326,10 @@ function CreateOfficialModal({ brgy }) {
             </div>
           </div>
         </div>
+        {submitClicked && <AddLoader creationStatus="creating" />}
+        {creationStatus && (
+          <AddLoader creationStatus={creationStatus} error={error} />
+        )}
       </div>
       <script src="../path/to/flowbite/dist/flowbite.min.js"></script>
     </div>

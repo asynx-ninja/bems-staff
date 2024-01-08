@@ -3,11 +3,15 @@ import API_LINK from "../../config/API";
 import axios from "axios";
 import { useEffect } from "react";
 import { useState } from "react";
+import EditLoader from "./loaders/EditLoader";
 
 function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
   console.log(selectedOfficial);
 
   const [edit, setEdit] = useState(false);
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleOnEdit = () => {
     setEdit(!edit);
@@ -43,6 +47,8 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
 
   const handleSaveChanges = async (e) => {
     e.preventDefault();
+    setSubmitClicked(true);
+
     try {
       const formData = new FormData();
       if (pfp) formData.append("file", pfp);
@@ -53,9 +59,18 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
         formData
       );
 
-      console.log(result);
+      setTimeout(() => {
+        setSubmitClicked(false);
+        setUpdatingStatus("success");
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      }, 1000);
     } catch (error) {
       console.error(error);
+      setSubmitClicked(false);
+      setUpdatingStatus(null);
+      setError("An error occurred while creating the announcement.");
     }
   };
 
@@ -95,7 +110,7 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
                     </div>
 
                     <input
-                      class="block p-2 mb-2 w-[250px] md:w-full lg:max-w-[450px] mx-auto text-sm text-black rounded-b-xl cursor-pointer bg-gray-100 "
+                      class="block p-2 mb-2 w-[250px] md:w-full lg:max-w-[450px] mx-auto text-sm text-black rounded-b-xl cursor-pointer bg-gray-100"
                       id="file_input"
                       type="file"
                       onChange={handlePfpChange}
@@ -313,6 +328,10 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
             </div>
           </div>
         </div>
+        {submitClicked && <EditLoader updatingStatus="updating" />}
+        {updatingStatus && (
+          <EditLoader updatingStatus={updatingStatus} error={error} />
+        )}
       </div>
       <script src="../path/to/flowbite/dist/flowbite.min.js"></script>
     </div>

@@ -4,8 +4,12 @@ import axios from "axios";
 import Dropbox from "./Dropbox";
 import API_LINK from "../../config/API";
 import { CiImageOn } from "react-icons/ci";
+import AddLoader from "./loaders/AddLoader";
 
 function CreateServiceModal({ brgy }) {
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [creationStatus, setCreationStatus] = useState(null);
+  const [error, setError] = useState(null);
   const [service, setService] = useState({
     name: "",
     type: "",
@@ -17,16 +21,6 @@ function CreateServiceModal({ brgy }) {
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
   const [files, setFiles] = useState([]);
-
-  // useEffect(() => {
-  //   var logoSrc = document.getElementById("logo");
-  //   logoSrc.src =
-  //     "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
-
-  //   var bannerSrc = document.getElementById("banner");
-  //   bannerSrc.src =
-  //     "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
-  // }, []);
 
   const handleLogoChange = (e) => {
     setLogo(e.target.files[0]);
@@ -64,6 +58,7 @@ function CreateServiceModal({ brgy }) {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+      setSubmitClicked(true);
 
       var formData = new FormData();
 
@@ -88,10 +83,12 @@ function CreateServiceModal({ brgy }) {
 
       if (result.status === 200) {
         var logoSrc = document.getElementById("logo");
-        logoSrc.src = "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";;
+        logoSrc.src =
+          "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
 
         var bannerSrc = document.getElementById("banner");
-        bannerSrc.src = "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";;
+        bannerSrc.src =
+          "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
         setService({
           name: "",
           type: "",
@@ -102,10 +99,17 @@ function CreateServiceModal({ brgy }) {
         setLogo();
         setBanner();
         setFiles([]);
-        window.location.reload();
+        setSubmitClicked(false);
+        setCreationStatus("success");
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
       }
     } catch (err) {
       console.log(err);
+      setSubmitClicked(false);
+      setCreationStatus(null);
+      setError("An error occurred while creating the announcement.");
     }
   };
 
@@ -308,6 +312,10 @@ function CreateServiceModal({ brgy }) {
               </div>
             </div>
           </div>
+          {submitClicked && <AddLoader creationStatus="creating" />}
+          {creationStatus && (
+            <AddLoader creationStatus={creationStatus} error={error} />
+          )}
         </div>
       </div>
     </div>

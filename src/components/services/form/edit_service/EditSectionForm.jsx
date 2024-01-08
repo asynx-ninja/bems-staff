@@ -292,6 +292,7 @@ const EditSectionForm = ({ detail, setDetail }) => {
                               <option value="radio">Radio</option>
                               <option value="checkbox">Checkbox</option>
                               <option value="file">File</option>
+                              <option value="date">Date</option>
                             </select>
                             {form.type === "file" && (
                               <select

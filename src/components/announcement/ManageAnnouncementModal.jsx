@@ -4,12 +4,16 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import EditDropbox from "./EditDropbox";
 import API_LINK from "../../config/API";
+import EditLoader from "./loaders/EditLoader";
 
 function ManageAnnouncementModal({ announcement, setAnnouncement }) {
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
   const [files, setFiles] = useState([]);
   const [edit, setEdit] = useState(false);
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const dateFormat = (date) => {
@@ -82,6 +86,7 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+      setSubmitClicked(true);
 
       var formData = new FormData();
 
@@ -124,19 +129,21 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
         var bannerSrc = document.getElementById("banner");
         bannerSrc.src =
           "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
-        // setService({});
-        // setLogo();
-        // setBanner();
-        // setFiles([]);
-        // navigate("/");
 
         setTimeout(() => {
-          HSOverlay.close(document.getElementById("hs-modal-editAnnouncement"));
-          window.location.reload();
+          // HSOverlay.close(document.getElementById("hs-modal-editAnnouncement"));
+          setSubmitClicked(false);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
         }, 1000);
       }
     } catch (err) {
       console.log(err);
+      setSubmitClicked(false);
+      setUpdatingStatus(null);
+      setError("An error occurred while creating the announcement.");
     }
   };
 
@@ -145,7 +152,7 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
       <div className="">
         <div
           id="hs-modal-editAnnouncement"
-          className="hs-overlay hidden fixed top-0 bottom-0 left-0 z-[60] w-full h-full flex items-center justify-center"
+          className="hs-overlay hidden fixed top-0 left-0 z-[80] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center r"
         >
           {/* Modal */}
           <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
@@ -339,6 +346,10 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
             </div>
           </div>
         </div>
+        {submitClicked && <EditLoader updatingStatus="updating" />}
+        {updatingStatus && (
+          <EditLoader updatingStatus={updatingStatus} error={error} />
+        )}
       </div>
     </div>
   );

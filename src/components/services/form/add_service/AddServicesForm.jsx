@@ -2,8 +2,12 @@ import React from "react";
 import { useState } from "react";
 import axios from "axios";
 import AddSectionForm from "./AddSectionForm";
+import AddFormLoader from "../../loaders/AddFormLoader";
 
 const AddServicesForm = ({ service_id, brgy }) => {
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [creationStatus, setCreationStatus] = useState(null);
+  const [error, setError] = useState(null);
   const [form, setForm] = useState({
     user_id: { display: "user id", checked: true, type: "text", value: "" },
     firstName: {
@@ -91,6 +95,8 @@ const AddServicesForm = ({ service_id, brgy }) => {
 
   const handleSubmit = async (e) => {
     try {
+      setSubmitClicked(true);
+
       const response = await axios.post(
         `http://localhost:8800/api/forms/?brgy=${brgy}&service_id=${service_id}&checked=${checked}`,
         {
@@ -104,13 +110,20 @@ const AddServicesForm = ({ service_id, brgy }) => {
         }
       );
 
-      window.location.reload();
+      setSubmitClicked(false);
+      setCreationStatus("success");
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
     } catch (err) {
       console.log(err.message);
+      setSubmitClicked(false);
+      setCreationStatus(null);
+      setError("An error occurred while creating the announcement.");
     }
   };
 
-  console.log('Section in Add Service', section)
+  console.log("Section in Add Service", section);
 
   return (
     <div>
@@ -207,6 +220,10 @@ const AddServicesForm = ({ service_id, brgy }) => {
             </div>
           </div>
         </div>
+        {submitClicked && <AddFormLoader creationStatus="creating" />}
+        {creationStatus && (
+          <AddFormLoader creationStatus={creationStatus} error={error} />
+        )}
       </div>
     </div>
   );

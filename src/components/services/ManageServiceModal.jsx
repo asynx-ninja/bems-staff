@@ -4,12 +4,16 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import EditDropbox from "./EditDropbox";
 import API_LINK from "../../config/API";
+import EditLoader from "./loaders/EditLoader";
 
 function ManageServiceModal({ service, setService }) {
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
   const [files, setFiles] = useState([]);
   const [edit, setEdit] = useState(false);
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const handleOnEdit = () => {
@@ -73,6 +77,7 @@ function ManageServiceModal({ service, setService }) {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+      setSubmitClicked(true);
 
       var formData = new FormData();
 
@@ -113,19 +118,20 @@ function ManageServiceModal({ service, setService }) {
         var bannerSrc = document.getElementById("banner");
         bannerSrc.src =
           "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
-        // setService({});
-        // setLogo();
-        // setBanner();
-        // setFiles([]);
-        // navigate("/");
 
         setTimeout(() => {
-          HSOverlay.close(document.getElementById("hs-modal-editServices"));
-          window.location.reload();
+          setSubmitClicked(false);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
         }, 1000);
       }
     } catch (err) {
       console.log(err);
+      setSubmitClicked(false);
+      setUpdatingStatus(null);
+      setError("An error occurred while updating the service.");
     }
   };
 
@@ -235,7 +241,7 @@ function ManageServiceModal({ service, setService }) {
                   Service ID
                 </label>
                 <input
-                 className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                  className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                   id="username"
                   type="text"
                   placeholder="Username"
@@ -381,6 +387,10 @@ function ManageServiceModal({ service, setService }) {
             </div>
           </div>
         </div>
+        {submitClicked && <EditLoader updatingStatus="updating" />}
+        {updatingStatus && (
+          <EditLoader updatingStatus={updatingStatus} error={error} />
+        )}
       </div>
     </div>
   );

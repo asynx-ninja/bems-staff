@@ -4,8 +4,12 @@ import { useState, useEffect } from "react";
 import API_LINK from "../../config/API";
 import { LiaRandomSolid } from "react-icons/lia";
 import CreateOccupationList from "./CreateOccupationList";
+import AddLoader from "./loaders/AddLoader";
 
 function AddResidentModal({ brgy }) {
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [creationStatus, setCreationStatus] = useState(null);
+  const [error, setError] = useState(null);
   const [user, setUser] = useState({
     user_id: "",
     firstName: "",
@@ -57,6 +61,7 @@ function AddResidentModal({ brgy }) {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+      setSubmitClicked(true);
 
       const calculatedAge = calculateAge(user.birthday);
 
@@ -110,10 +115,17 @@ function AddResidentModal({ brgy }) {
           city: "Rodriguez, Rizal",
           brgy: brgy,
         });
-        window.location.reload();
+        setSubmitClicked(false);
+        setCreationStatus("success");
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
       }
     } catch (err) {
       console.log(err);
+      setSubmitClicked(false);
+      setCreationStatus(null);
+      setError("An error occurred while creating resident.");
     }
   };
 
@@ -656,12 +668,11 @@ function AddResidentModal({ brgy }) {
               </div>
               {/* Buttons */}
               <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
-               <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
+                <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
                   <button
                     type="button"
                     onClick={handleSubmit}
                     className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                    data-hs-overlay="#hs-modal-addResident"
                   >
                     ADD
                   </button>
@@ -676,6 +687,10 @@ function AddResidentModal({ brgy }) {
               </div>
             </div>
           </div>
+          {submitClicked && <AddLoader creationStatus="creating" />}
+          {creationStatus && (
+            <AddLoader creationStatus={creationStatus} error={error} />
+          )}
         </div>
       </div>
     </div>

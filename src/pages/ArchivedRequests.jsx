@@ -23,12 +23,14 @@ const ArchivedRequests = () => {
   const brgy = searchParams.get("brgy");
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all"); // Default is "all"
 
   useEffect(() => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/requests/?brgy=${brgy}&archived=true`
+          `${API_LINK}/requests/?brgy=${brgy}&archived=true&status=${statusFilter}`
         );
 
         if (response.status === 200) setRequests(response.data);
@@ -38,8 +40,23 @@ const ArchivedRequests = () => {
     };
 
     fetch();
-  }, []);
+  }, [brgy, statusFilter]);
 
+  const Requests = requests.filter(
+    (item) =>
+      item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleStatusFilter = (selectedStatus) => {
+    setStatusFilter(selectedStatus);
+  };
+
+  const handleResetFilter = () => {
+    setStatusFilter("all");
+    setDateFilter(null);
+    setSearchQuery("");
+  };
+  
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
     let value = e.target.value;
@@ -56,10 +73,12 @@ const ArchivedRequests = () => {
   };
 
   const checkAllHandler = () => {
-    if (requests.length === selectedItems.length) {
+    const requestsToCheck = Requests.length > 0 ? Requests : requests;
+
+    if (requestsToCheck.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const postIds = requests.map((item) => {
+      const postIds = requestsToCheck.map((item) => {
         return item._id;
       });
 
@@ -94,7 +113,7 @@ const ArchivedRequests = () => {
           ? a.service_name.localeCompare(b.service_name)
           : b.service_name.localeCompare(a.service_name);
       } else if (sortBy === "status") {
-        const order = { Completed: 1, " Not Responded": 2, Pending: 3, Paid: 4, Processing: 5,  Cancelled: 6, Rejected: 7 };
+        const order = { "Transaction Completed": 1, Pending: 2, Paid: 3, Processing: 4,  Cancelled: 5, Rejected: 6 };
         return newSortOrder === "asc"
           ? order[a.status] - order[b.status]
           : order[b.status] - order[a.status];
@@ -119,7 +138,7 @@ const ArchivedRequests = () => {
       <div>
         {/* Header */}
         <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
-          <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#253a7a] to-[#2645a6] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
+          <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#2e65ac] to-[#0d4b75] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
               className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-[1.5rem] xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
@@ -131,83 +150,293 @@ const ArchivedRequests = () => {
 
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse md:flex-row flex justify-between w-full">
-            <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
-              <button
-                id="hs-dropdown"
-                type="button"
-                className="bg-[#253a7a] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
-              >
-                SORT BY
-                <svg
-                  className="hs-dropdown-open:rotate-180 w-2.5 h-2.5 text-white"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </button>
-              <ul
-                className="bg-[#253a7a] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
-                aria-labelledby="hs-dropdown"
-              >
-                <li
-                  onClick={() => handleSort("request_id")}
-                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
-                >
-                  SERVICE REQUEST ID
-                  {sortColumn === "request_id" && (
-                    <span className="ml-auto">
-                      {sortOrder === "asc" ? (
-                        <span>DESC &darr;</span>
-                      ) : (
-                        <span>ASC &uarr;</span>
-                      )}
-                    </span>
-                  )}
-                </li>
-                <li
-                  onClick={() => handleSort("service_name")}
-                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
-                >
-                  SERVICE REQUEST NAME
-                  {sortColumn === "service_name" && (
-                    <span className="ml-auto">
-                      {sortOrder === "asc" ? (
-                        <span>DESC &darr;</span>
-                      ) : (
-                        <span>ASC &uarr;</span>
-                      )}
-                    </span>
-                  )}
-                </li>
-                <li
-                  onClick={() => handleSort("status")}
-                  className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#253a7a] to-[#2645a6] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500 "
+          <div className="flex space-x-2">
+              <span className="font-medium text-[#292929]  justify-center flex text-center my-auto mx-2">
+                SORT BY:{" "}
+              </span>
+
+              {/* Status Sort */}
+              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+                <button
+                  id="hs-dropdown"
+                  type="button"
+                  className="bg-[#0d4b75] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
                 >
                   STATUS
-                  {sortColumn === "status" && (
-                    <span className="ml-auto">
-                      {sortOrder === "asc" ? (
-                        <span>DESC &darr;</span>
-                      ) : (
-                        <span>ASC &uarr;</span>
+                  <svg
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+                <ul
+                  className="bg-[#0d4b75] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                  aria-labelledby="hs-dropdown"
+                >
+                  <a
+                    onClick={handleResetFilter}
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    RESET FILTERS
+                  </a>
+                  <hr className="border-[#ffffff] my-1" />
+                  <a
+                    onClick={() => handleStatusFilter("Pending")}
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    PENDING
+                  </a>
+                  <a
+                    onClick={() => handleStatusFilter("Paid")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                   PAID
+                  </a>
+                  <a
+                    onClick={() => handleStatusFilter("Processing")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    PROCESSING
+                  </a>
+                  <a
+                    onClick={() => handleStatusFilter("Cancelled")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    CANCELLED
+                  </a>
+                  <a
+                    onClick={() => handleStatusFilter("Transaction Completed")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    TRANSACTION COMPLETED
+                  </a>
+                  <a
+                    onClick={() => handleStatusFilter("Rejected")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    REJECTED
+                  </a>
+                </ul>
+              </div>
+
+              {/* Date Sort */}
+              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+                <button
+                  id="hs-dropdown"
+                  type="button"
+                  className="bg-[#0d4b75] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                >
+                  DATE
+                  <svg
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+                <ul
+                  className="bg-[#0d4b75] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                  aria-labelledby="hs-dropdown"
+                >
+                  <a
+                    // onClick={handleResetFilter}
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    RESET FILTERS
+                  </a>
+                  <hr className="border-[#ffffff] my-1" />
+                  <div class="hs-dropdown relative inline-flex flex-col w-full space-y-1 px-2">
+                    <label className="text-white font-medium">DATE RANGE</label>
+                    <div className="flex gap-2">
+                      <select
+                        className="bg-[#0d4b75] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
+                        // value={dateType}
+                        // onChange={handleDateTypeChange}
+                      >
+                        <option value="specific">Specific Date</option>
+                        <option value="week">Week</option>
+                        <option value="month">Month</option>
+                        <option value="year">Year</option>
+                      </select>
+                      {/* {dateType === "specific" && (
+                        <input
+                          className="bg-[#0d4b75] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
+                          type="date"
+                          id="specificDate"
+                          name="specificDate"
+                        />
                       )}
-                    </span>
-                  )}
-                </li>
-              </ul>
+                      {dateType === "week" && (
+                        <input
+                          className="bg-[#0d4b75] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
+                          type="week"
+                          id="week"
+                          name="week"
+                        />
+                      )}
+                      {dateType === "month" && (
+                        <input
+                          className="bg-[#0d4b75] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
+                          type="month"
+                          id="month"
+                          name="month"
+                        />
+                      )}
+                      {dateType === "year" && (
+                        <input
+                          className="bg-[#0d4b75] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
+                          type="number"
+                          id="year"
+                          name="year"
+                          placeholder="YEAR"
+                          min="1900"
+                          max="2100"
+                        />
+                      )} */}
+                    </div>
+                    <button
+                      type="submit"
+                      // onClick={() => handleSort("date")}
+                      className="bg-[#0d4b75] uppercase text-white mt-2 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 hover:bg-[#0d4675]"
+                    >
+                      APPLY
+                    </button>
+                  </div>
+                </ul>
+              </div>
+
+              {/* Service Type Sort */}
+              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+                <button
+                  id="hs-dropdown"
+                  type="button"
+                  className="bg-[#0d4b75] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                >
+                  SERVICE TYPE
+                  <svg
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+                <ul
+                  className="bg-[#0d4b75] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                  aria-labelledby="hs-dropdown"
+                >
+                  <a
+                    // onClick={handleResetFilter}
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    RESET FILTERS
+                  </a>
+                  <hr className="border-[#ffffff] my-1" />
+                  <a
+                    // onClick={() => handleStatusFilter("Pending")}
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    HEALTHCARE
+                  </a>
+                  <a
+                    // onClick={() => handleStatusFilter("In Progress")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    EDUCATION
+                  </a>
+                  <a
+                    // onClick={() => handleStatusFilter("Completed")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    SOCIAL WELFARE
+                  </a>
+                  <a
+                    // onClick={() => handleStatusFilter("Completed")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    SECURITY AND SAFETY
+                  </a>
+                  <a
+                    // onClick={() => handleStatusFilter("Completed")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    INFRASTRUCTURE
+                  </a>
+                  <a
+                    // onClick={() => handleStatusFilter("Completed")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    COMMUNITY
+                  </a>
+                  <a
+                    // onClick={() => handleStatusFilter("Completed")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    ADMINISTRATIVE
+                  </a>
+                  <a
+                    // onClick={() => handleStatusFilter("Completed")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    ENVIRONMENTAL
+                  </a>
+                </ul>
+              </div>
             </div>
+
             <div className="sm:flex-col md:flex-row flex sm:w-full md:w-7/12">
               <div className="flex flex-row w-full md:mr-2">
-                <button className=" bg-[#253a7a] p-3 rounded-l-md">
+                <button className=" bg-[#0d4b75] p-3 rounded-l-md">
                   <div className="w-full overflow-hidden">
                     <svg
                       className="h-3.5 w-3.5 text-white"
@@ -231,8 +460,10 @@ const ArchivedRequests = () => {
                   type="text"
                   name="hs-table-with-pagination-search"
                   id="hs-table-with-pagination-search"
-                  className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500 "
+                  className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full items-center justify-center space-x-2">
@@ -255,7 +486,7 @@ const ArchivedRequests = () => {
                   <button
                     type="button"
                     data-hs-overlay="#hs-restore-requests-modal"
-                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md  bg-[#253a7a] font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
+                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md  bg-[#0d4b75] font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
                   >
                     <MdRestartAlt size={24} style={{ color: "#ffffff" }} />
                     <span
@@ -274,7 +505,7 @@ const ArchivedRequests = () => {
         {/* Table */}
         <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_325px)] xxxl:h-[calc(100vh_-_345px)]">
           <table className="relative table-auto w-full">
-            <thead className="bg-[#253a7a] sticky top-0">
+            <thead className="bg-[#0d4b75] sticky top-0">
               <tr className="">
                 <th scope="col" className="px-6 py-4">
                   <div className="flex justify-center items-center">
@@ -298,7 +529,7 @@ const ArchivedRequests = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {requests.map((item, index) => (
+              {Requests.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
@@ -330,13 +561,14 @@ const ArchivedRequests = () => {
                     </div>
                   </td>
                   <td className="px-6 py-3">
-                    {item.status === "Completed" && (
+                    {item.status === "Transaction Completed" && (
                       <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                         <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                          COMPLETED
+                          TRANSACTION COMPLETED
                         </span>
                       </div>
                     )}
+
                     {item.status === "Rejected" && (
                       <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
                         <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
@@ -344,17 +576,11 @@ const ArchivedRequests = () => {
                         </span>
                       </div>
                     )}
+
                     {item.status === "Pending" && (
                       <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
                         <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
                           PENDING
-                        </span>
-                      </div>
-                    )}
-                    {item.status === "Not Responded" && (
-                      <div className="flex items-center justify-center bg-pink-700 m-2 rounded-lg">
-                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                          NOT RESPONDED
                         </span>
                       </div>
                     )}
@@ -431,7 +657,7 @@ const ArchivedRequests = () => {
           </table>
         </div>
       </div>
-      <div className="md:py-4 md:px-4 bg-[#253a7a] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
+      <div className="md:py-4 md:px-4 bg-[#0d4b75] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
         <span className="font-medium text-white sm:text-xs text-sm">
           Showing 1 out of 15 pages
         </span>

@@ -1,11 +1,18 @@
 import React from "react";
 import axios from "axios";
 import API_LINK from "../../config/API";
+import StatusLoader from "./loaders/StatusLoader";
+import { useState } from "react";
 
 function InquiryStatus({ status, setStatus }) {
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
+  const [error, setError] = useState(null);
+
   const handleSave = async (e) => {
     try {
       e.preventDefault();
+      setSubmitClicked(true);
 
       const response = await axios.patch(
         `${API_LINK}/inquiries/status/${status.id}`,
@@ -16,10 +23,17 @@ function InquiryStatus({ status, setStatus }) {
       );
 
       if (response.status === 200) {
-        window.location.reload();
+        setSubmitClicked(false);
+        setUpdatingStatus("success");
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
       } else;
     } catch (err) {
       console.log(err);
+      setSubmitClicked(false);
+      setUpdatingStatus(null);
+      setError("An error occurred while updating the inquiry.");
     }
   };
 
@@ -67,7 +81,7 @@ function InquiryStatus({ status, setStatus }) {
                           value={status.status}
                         >
                           <option value="Completed">COMPLETED</option>
-                          <option value="Not Responded">NOT RESPONDED</option>
+                          <option value="Pending">PENDING</option>
                           <option value="In Progress">IN PROGRESS</option>
                         </select>
                       </div>
@@ -81,7 +95,6 @@ function InquiryStatus({ status, setStatus }) {
                   type="button"
                   onClick={handleSave}
                   className="h-[2.5rem] w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm align-middle"
-                  data-hs-overlay="#hs-modal-status"
                 >
                   SAVE CHANGES
                 </button>
@@ -95,6 +108,10 @@ function InquiryStatus({ status, setStatus }) {
               </div>
             </div>
           </div>
+          {submitClicked && <StatusLoader updatingStatus="updating" />}
+          {updatingStatus && (
+            <StatusLoader updatingStatus={updatingStatus} error={error} />
+          )}
         </div>
       </div>
     </div>

@@ -29,7 +29,7 @@ const TopHeader = () => {
   });
 
   return (
-    <div className="flex flex-col-reverse md:flex-row justify-between items-center sm:px-2 lg:pr-3 bg-[url('/imgs/header-bg.png')] font-medium py-2 z-50 bg-[#253a7a] uppercase text-white text-sm  md:text-sm lg:text-base 2xl:text-xl">
+    <div className="flex flex-col-reverse md:flex-row justify-between items-center sm:px-2 lg:pr-3 bg-[url('/imgs/header-bg.png')] font-medium py-2 z-50 bg-[#0d4b75] uppercase text-white text-sm  md:text-sm lg:text-base 2xl:text-xl">
       <div className="flex flex-row sm:justify-between md:justify-center items-center space-x-3">
         <button
           type="button"

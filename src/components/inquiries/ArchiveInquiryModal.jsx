@@ -4,7 +4,6 @@ import axios from "axios";
 import API_LINK from "../../config/API";
 
 function ArchiveInquiryModal({ selectedItems }) {
-
   const handleSave = async (e) => {
     try {
       e.preventDefault();

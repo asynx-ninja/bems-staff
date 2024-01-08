@@ -5,6 +5,7 @@ import axios from "axios";
 import Dropbox from "./Dropbox";
 import API_LINK from "../../config/API";
 import { CiImageOn } from "react-icons/ci";
+import AddLoader from "./loaders/AddLoader";
 
 function CreateAnnouncementModal({ brgy }) {
   const [announcement, setAnnouncement] = useState({
@@ -18,17 +19,19 @@ function CreateAnnouncementModal({ brgy }) {
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
   const [files, setFiles] = useState([]);
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [creationStatus, setCreationStatus] = useState(null);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   var logoSrc = document.getElementById("logo");
-  //   logoSrc.src =
-  //     "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
-
-  //   var bannerSrc = document.getElementById("banner");
-  //   bannerSrc.src =
-  //     "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
-  // }, []);
+  const isFormValid = () => {
+    // Check if all required fields have valid values
+    return (
+      announcement.title.trim() !== "" &&
+      announcement.details.trim() !== "" &&
+      announcement.date !== ""
+    );
+  };
 
   const handleLogoChange = (e) => {
     setLogo(e.target.files[0]);
@@ -64,17 +67,28 @@ function CreateAnnouncementModal({ brgy }) {
     setFiles([...files, ...e.target.files]);
   };
 
+  const clearForm = () => {
+    setAnnouncement({
+      title: "",
+      details: "",
+      date: "",
+      brgy: "",
+    });
+    setLogo(null);
+    setBanner(null);
+    setFiles([]);
+  };
+
   const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitClicked(true);
+
     try {
-      e.preventDefault();
+      const formData = new FormData();
+      const newFiles = [banner, logo, ...files].filter((file) => file);
 
-      var formData = new FormData();
-
-      const arr1 = [banner, logo];
-      const newFiles = arr1.concat(files);
-
-      for (let f = 0; f < newFiles.length; f += 1) {
-        formData.append("files", newFiles[f]);
+      for (const file of newFiles) {
+        formData.append("files", file);
       }
 
       const obj = {
@@ -90,26 +104,18 @@ function CreateAnnouncementModal({ brgy }) {
       const result = await axios.post(`${API_LINK}/announcement/`, formData);
 
       if (result.status === 200) {
-        var logoSrc = document.getElementById("logo");
-        logoSrc.src =
-          "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
-
-        var bannerSrc = document.getElementById("banner");
-        bannerSrc.src =
-          "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
-        setAnnouncement({
-          title: "",
-          details: "",
-          date: "",
-          brgy: "",
-        });
-        setLogo();
-        setBanner();
-        setFiles([]);
-        window.location.reload();
+        clearForm();
+        setSubmitClicked(false);
+        setCreationStatus("success");
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      setSubmitClicked(false);
+      setCreationStatus(null);
+      setError("An error occurred while creating the announcement.");
     }
   };
 
@@ -266,6 +272,7 @@ function CreateAnnouncementModal({ brgy }) {
                   type="date"
                   value={announcement.date}
                   onChange={handleChange}
+                  required
                 />
               </div>
               <Dropbox
@@ -281,6 +288,7 @@ function CreateAnnouncementModal({ brgy }) {
                   type="submit"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
                   onClick={handleSubmit}
+                  disabled={!isFormValid()}
                 >
                   CREATE
                 </button>
@@ -295,6 +303,11 @@ function CreateAnnouncementModal({ brgy }) {
             </div>
           </div>
         </div>
+        {/* <AddLoader /> */}
+        {submitClicked && <AddLoader creationStatus="creating" />}
+        {creationStatus && (
+          <AddLoader creationStatus={creationStatus} error={error} />
+        )}
       </div>
     </div>
   );
