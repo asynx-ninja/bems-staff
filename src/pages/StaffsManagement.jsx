@@ -27,17 +27,24 @@ const StaffManagement = () => {
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
   useEffect(() => {
     const fetch = async () => {
-      const response = await axios.get(`${API_LINK}/staffs/${brgy}`);
-      if (response.status === 200) setUsers(response.data);
-      else setUsers([]);
+      const response = await axios.get(
+        `${API_LINK}/staffs/${brgy}/?page=${currentPage}`
+      );
+      if (response.status === 200) {
+        setUsers(response.data.result);
+        setPageCount(response.data.pageCount);
+      } else setUsers([]);
     };
 
     fetch();
-  }, []);
-
+  }, [currentPage]);
+  const handlePageChange = ({ selected }) => {
+    setCurrentPage(selected);
+  };
   const Users = users.filter((item) => {
     const fullName =
       `${item.lastName} ${item.firstName} ${item.middleName}`.toLowerCase();
@@ -485,16 +492,16 @@ const StaffManagement = () => {
       </div>
       <div className="md:py-4 md:px-4 bg-[#0d4b75] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
         <span className="font-medium text-white sm:text-xs text-sm">
-          Showing 1 out of 15 pages
+          Showing {currentPage + 1} out of {pageCount} pages
         </span>
         <ReactPaginate
           breakLabel="..."
           nextLabel=">>"
-          onPageChange={() => {}}
+          onPageChange={handlePageChange}
           pageRangeDisplayed={3}
-          pageCount={15}
+          pageCount={pageCount}
           previousLabel="<<"
-          className="flex space-x-3 text-white font-bold "
+          className="flex space-x-3 text-white font-bold"
           activeClassName="text-yellow-500"
           disabledLinkClassName="text-gray-300"
           renderOnZeroPageCount={null}

@@ -20,7 +20,7 @@ const SubPendingRequest = () => {
           `${API_LINK}/requests/?brgy=${brgy}&archived=false`
         );
 
-        if (response.status === 200) setRequests(response.data);
+        if (response.status === 200) setRequests(response.data.result);
       } catch (err) {
         console.log(err);
       }
