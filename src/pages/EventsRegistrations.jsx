@@ -1,71 +1,54 @@
 import React from "react";
-
+import ReactPaginate from "react-paginate";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-
-import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
-import { FaArchive, FaPlus } from "react-icons/fa";
 import { BsPrinter } from "react-icons/bs";
-
-import ReactPaginate from "react-paginate";
-import axios from "axios";
+import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
+import { AiOutlineSend } from "react-icons/ai";
+import { FaArchive } from "react-icons/fa";
+import ReplyServiceModal from "../components/requests/ReplyServiceModal";
+import ArchiveRequestsModal from "../components/requests/ArchiveRequestsModal";
+import RequestsReportsModal from "../components/requests/RequestsReportsModal";
+import imgSrc from "/imgs/bg-header.png";
+import ViewRequestModal from "../components/requests/ViewRequestModal";
+import { useSearchParams } from "react-router-dom";
 import API_LINK from "../config/API";
+import axios from "axios";
 
-import ArchiveModal from "../components/announcement/ArchiveAnnouncementModal";
-import AddModal from "../components/announcement/AddAnnouncementModal";
-import ManageAnnouncementModal from "../components/announcement/ManageAnnouncementModal";
-
-const Announcement = () => {
+const EventsRegistrations = () => {
+  const [requests, setRequests] = useState([]);
+  const [request, setRequest] = useState({ response: [{ file: [] }] });
   const [selectedItems, setSelectedItems] = useState([]);
-  const [announcements, setAnnouncements] = useState([]);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
-  const [announcement, setAnnouncement] = useState([]);
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const handleSort = (sortBy) => {
-    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
-    setSortOrder(newSortOrder);
-    setSortColumn(sortBy);
-
-    const sortedData = announcements.slice().sort((a, b) => {
-      if (sortBy === "title") {
-        return newSortOrder === "asc"
-          ? a.title.localeCompare(b.title)
-          : b.title.localeCompare(a.title);
-      } else if (sortBy === "date") {
-        const dateA = new Date(a.date).getTime();
-        const dateB = new Date(b.date).getTime();
-        return newSortOrder === "asc" ? dateA - dateB : dateB - dateA;
-      }
-
-      return 0;
-    });
-
-    setAnnouncements(sortedData);
-  };
-
   useEffect(() => {
     const fetch = async () => {
-      const response = await axios.get(
-        `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
-      );
-      if (response.status === 200) setAnnouncements(response.data);
-      else setAnnouncements([]);
+      try {
+        const response = await axios.get(
+          `${API_LINK}/requests/?brgy=${brgy}&archived=false`
+        );
+
+        if (response.status === 200) setRequests(response.data);
+      } catch (err) {
+        console.log(err);
+      }
     };
 
     fetch();
   }, []);
 
-  const Announcements = announcements.filter(
-    (item) =>
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.event_id.toLowerCase().includes(searchQuery.toLowerCase())
+  const Requests = requests.filter((item) =>
+    item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  useEffect(() => {
+    document.title = "Service Requests | Barangay E-Services Management";
+  }, []);
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -83,13 +66,12 @@ const Announcement = () => {
   };
 
   const checkAllHandler = () => {
-    const announcementsToCheck =
-      Announcements.length > 0 ? Announcements : announcements;
+    const requestsToCheck = Requests.length > 0 ? Requests : requests;
 
-    if (announcementsToCheck.length === selectedItems.length) {
+    if (requestsToCheck.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const postIds = announcementsToCheck.map((item) => {
+      const postIds = requestsToCheck.map((item) => {
         return item._id;
       });
 
@@ -98,81 +80,87 @@ const Announcement = () => {
   };
 
   const tableHeader = [
-    "event id",
-    "title",
-    "details",
-    "date",
-    "# of attendees",
-    "actions",
+    "SERVICE NAME",
+    "SENDER",
+    "TYPE OF SERVICE",
+    "DATE",
+    "STATUS",
+    "ACTIONS",
   ];
 
-  useEffect(() => {
-    document.title = "Announcement | Barangay E-Services Management";
-  }, []);
-
   const handleView = (item) => {
-    setAnnouncement(item);
+    setRequest(item);
   };
 
-  const dateFormat = (date) => {
-    const eventdate = date === undefined ? "" : date.substr(0, 10);
-    return eventdate;
+  const handleSort = (sortBy) => {
+    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newSortOrder);
+    setSortColumn(sortBy);
+
+    const sortedData = requests.slice().sort((a, b) => {
+      if (sortBy === "request_id") {
+        return newSortOrder === "asc"
+          ? a.request_id.localeCompare(b.request_id)
+          : b.request_id.localeCompare(a.request_id);
+      } else if (sortBy === "service_name") {
+        return newSortOrder === "asc"
+          ? a.service_name.localeCompare(b.service_name)
+          : b.service_name.localeCompare(a.service_name);
+      } else if (sortBy === "status") {
+        const order = {
+          "Transaction Completed": 1,
+          Pending: 2,
+          Paid: 3,
+          Processing: 4,
+          Cancelled: 5,
+          Rejected: 6,
+        };
+        return newSortOrder === "asc"
+          ? order[a.status] - order[b.status]
+          : order[b.status] - order[a.status];
+      }
+
+      return 0;
+    });
+
+    setRequests(sortedData);
   };
 
-  console.log(selectedItems);
+  console.log("req parent", requests);
 
   return (
-    <div className="mx-4 mt-4">
-      <div className="flex flex-col ">
-        <div className="flex flex-row sm:flex-col-reverse lg:flex-row w-full ">
+    <div className="mx-4 ">
+      {/* Body */}
+      <div>
+        {/* Header */}
+        <div className="flex flex-row mt-5 sm:flex-col-reverse lg:flex-row w-full">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#2e65ac] to-[#0d4b75] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
-              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[1.2rem] xl:text-[1.5rem] xxl:text-[2.1rem] xxxl:text-4xl xxxl:mt-1 text-white"
+              className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-3xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
-              ANNOUNCEMENT
+              EVENTS REGISTRATIONS
             </h1>
           </div>
           <div className="lg:w-3/5 flex flex-row justify-end items-center ">
             <div className="sm:w-full md:w-full lg:w-2/5 flex sm:flex-col md:flex-row md:justify-center md:items-center sm:space-y-2 md:space-y-0 md:space-x-2 ">
-              <div className="w-full rounded-lg flex justify-center">
-                <div className="hs-tooltip inline-block w-full">
-                  <button
-                    type="button"
-                    data-hs-overlay="#hs-modal-add "
-                    className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#2e65ac] to-[#0d4b75] w-full text-white font-medium text-sm  text-center inline-flex items-center "
-                  >
-                    <FaPlus size={24} style={{ color: "#ffffff" }} />
-                    <span className="sm:block md:hidden sm:pl-5">
-                      Add Announcement
-                    </span>
-                    <span
-                      className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                      role="tooltip"
-                    >
-                      Add Announcement
-                    </span>
-                  </button>
-                </div>
-              </div>
               <div className="w-full rounded-lg ">
-                <Link
-                  to={`/archivedannoucements/?id=${id}&brgy=${brgy}&archived=true`}
-                >
+                <Link to={`/archivedrequests/?id=${id}&brgy=${brgy}`}>
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"
+                      data-hs-overlay="#hs-modal-add"
                       className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#2e65ac] to-[#0d4b75] w-full text-white font-medium text-sm text-center inline-flex items-center"
                     >
                       <FaArchive size={24} style={{ color: "#ffffff" }} />
                       <span className="sm:block md:hidden sm:pl-5">
-                        Archived Announcement
+                        Archived Requests
                       </span>
                       <span
                         className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                         role="tooltip"
                       >
-                        Archived Announcement
+                        Archived Requests
                       </span>
                     </button>
                   </div>
@@ -182,7 +170,7 @@ const Announcement = () => {
           </div>
         </div>
 
-        <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white shrink-0">
+        <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse md:flex-row flex justify-between w-full">
             <div className="flex space-x-2">
               <span className="font-medium text-[#292929]  justify-center flex text-center my-auto mx-2">
@@ -239,14 +227,35 @@ const Announcement = () => {
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    IN PROGRESS
+                   PAID
                   </a>
                   <a
                     // onClick={() => handleStatusFilter("Completed")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    COMPLETED
+                    PROCESSING
+                  </a>
+                  <a
+                    // onClick={() => handleStatusFilter("Completed")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    CANCELLED
+                  </a>
+                  <a
+                    // onClick={() => handleStatusFilter("Completed")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    TRANSACTION COMPLETED
+                  </a>
+                  <a
+                    // onClick={() => handleStatusFilter("Completed")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    REJECTED
                   </a>
                 </ul>
               </div>
@@ -348,6 +357,103 @@ const Announcement = () => {
                   </div>
                 </ul>
               </div>
+
+              {/* Service Type Sort */}
+              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+                <button
+                  id="hs-dropdown"
+                  type="button"
+                  className="bg-[#0d4b75] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                >
+                  SERVICE TYPE
+                  <svg
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+                <ul
+                  className="bg-[#0d4b75] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                  aria-labelledby="hs-dropdown"
+                >
+                  <a
+                    // onClick={handleResetFilter}
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    RESET FILTERS
+                  </a>
+                  <hr className="border-[#ffffff] my-1" />
+                  <a
+                    // onClick={() => handleStatusFilter("Pending")}
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    HEALTHCARE
+                  </a>
+                  <a
+                    // onClick={() => handleStatusFilter("In Progress")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    EDUCATION
+                  </a>
+                  <a
+                    // onClick={() => handleStatusFilter("Completed")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    SOCIAL WELFARE
+                  </a>
+                  <a
+                    // onClick={() => handleStatusFilter("Completed")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    SECURITY AND SAFETY
+                  </a>
+                  <a
+                    // onClick={() => handleStatusFilter("Completed")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    INFRASTRUCTURE
+                  </a>
+                  <a
+                    // onClick={() => handleStatusFilter("Completed")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    COMMUNITY
+                  </a>
+                  <a
+                    // onClick={() => handleStatusFilter("Completed")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    ADMINISTRATIVE
+                  </a>
+                  <a
+                    // onClick={() => handleStatusFilter("Completed")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    ENVIRONMENTAL
+                  </a>
+                </ul>
+              </div>
             </div>
 
             <div className="sm:flex-col md:flex-row flex sm:w-full md:w-7/12">
@@ -394,7 +500,7 @@ const Announcement = () => {
                       className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                       role="tooltip"
                     >
-                      Archive Selected Announcement
+                      Archive Selected Requests
                     </span>
                   </button>
                 </div>
@@ -403,7 +509,8 @@ const Announcement = () => {
           </div>
         </div>
 
-        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_275px)] xxl:h-[calc(100vh_-_275px)] xxxl:h-[calc(100vh_-_300px)]">
+        {/* Table */}
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_280px)] xxxl:h-[calc(100vh_-_300px)]">
           <table className="relative table-auto w-full">
             <thead className="bg-[#0d4b75] sticky top-0">
               <tr className="">
@@ -428,8 +535,8 @@ const Announcement = () => {
                 ))}
               </tr>
             </thead>
-            <tbody className="odd:bg-slate-100 ">
-              {Announcements.map((item, index) => (
+            <tbody className="odd:bg-slate-100">
+              {Requests.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
@@ -438,49 +545,89 @@ const Announcement = () => {
                         checked={selectedItems.includes(item._id)}
                         value={item._id}
                         onChange={checkboxHandler}
-                        id=""
                       />
                     </div>
                   </td>
-                  <td className="px-6 py-3 w-4/12">
-                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                      {item.event_id}
+                  <td className="px-6 py-3">
+                    <span className="text-xs sm:text-sm text-black line-clamp-2">
+                      {item.service_name}
                     </span>
                   </td>
-                  <td className="px-3 py-3 w-4/12">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                        {item.title}
-                      </span>
-                    </div>
+                  <td className="px-6 py-3">
+                    <span className="text-xs sm:text-sm text-black line-clamp-2">
+                      {item.form[0].lastName.value +
+                        ", " +
+                        item.form[0].firstName.value +
+                        " " +
+                        item.form[0].middleName.value}
+                    </span>
                   </td>
-                  <td className="px-6 py-3 w-4/12">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2 text-left">
-                        {item.details}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="py-3 w-4/12">
+                  <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {dateFormat(item.date) || ""}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3 ">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.attendees.length}
+                        {item.type}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-3">
+                    <div className="flex justify-center items-center">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {new Date(item.createdAt).toISOString().split("T")[0]}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-3 xxl:w-3/12">
+                    {item.status === "Transaction Completed" && (
+                      <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          TRANSACTION COMPLETED
+                        </span>
+                      </div>
+                    )}
+                    {item.status === "Rejected" && (
+                      <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          REJECTED
+                        </span>
+                      </div>
+                    )}
+                    {item.status === "Pending" && (
+                      <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          PENDING
+                        </span>
+                      </div>
+                    )}
+                    {item.status === "Paid" && (
+                      <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          PAID
+                        </span>
+                      </div>
+                    )}
+
+                    {item.status === "Processing" && (
+                      <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          PROCESSING
+                        </span>
+                      </div>
+                    )}
+
+                    {item.status === "Cancelled" && (
+                      <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
+                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          CANCELLED
+                        </span>
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-6 py-3">
                     <div className="flex justify-center space-x-1 sm:space-x-none">
-                      <div className="hs-tooltip inline-block w-full">
+                      <div className="hs-tooltip inline-block">
                         <button
                           type="button"
-                          data-hs-overlay="#hs-modal-editAnnouncement"
+                          data-hs-overlay="#hs-view-request-modal"
                           onClick={() => handleView({ ...item })}
                           className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                         >
@@ -488,13 +635,33 @@ const Announcement = () => {
                             size={24}
                             style={{ color: "#ffffff" }}
                           />
-                          <span
-                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                            role="tooltip"
-                          >
-                            View Announcement
-                          </span>
                         </button>
+                        <span
+                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                          role="tooltip"
+                        >
+                          View Request
+                        </span>
+                      </div>
+
+                      <div className="hs-tooltip inline-block">
+                        <button
+                          type="button"
+                          data-hs-overlay="#hs-reply-modal"
+                          onClick={() => handleView({ ...item })}
+                          className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                        >
+                          <AiOutlineSend
+                            size={24}
+                            style={{ color: "#ffffff" }}
+                          />
+                        </button>
+                        <span
+                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                          role="tooltip"
+                        >
+                          Reply to Request
+                        </span>
                       </div>
                     </div>
                   </td>
@@ -503,33 +670,32 @@ const Announcement = () => {
             </tbody>
           </table>
         </div>
-
-        <div className="md:py-4 md:px-4 bg-[#0d4b75] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
-          <span className="font-medium text-white sm:text-xs text-sm">
-            Showing 1 out of 15 pages
-          </span>
-          <ReactPaginate
-            breakLabel="..."
-            nextLabel=">>"
-            onPageChange={() => {}}
-            pageRangeDisplayed={3}
-            pageCount={15}
-            previousLabel="<<"
-            className="flex space-x-3 text-white font-bold "
-            activeClassName="text-yellow-500"
-            disabledLinkClassName="text-gray-300"
-            renderOnZeroPageCount={null}
-          />
-        </div>
-        <AddModal brgy={brgy} />
-        <ArchiveModal selectedItems={selectedItems} />
-        <ManageAnnouncementModal
-          announcement={announcement}
-          setAnnouncement={setAnnouncement}
+      </div>
+      <div className="md:py-4 md:px-4 bg-[#0d4b75] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
+        <span className="font-medium text-white sm:text-xs text-sm">
+          Showing 1 out of 15 pages
+        </span>
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel=">>"
+          onPageChange={() => {}}
+          pageRangeDisplayed={3}
+          pageCount={15}
+          previousLabel="<<"
+          className="flex space-x-3 text-white font-bold "
+          activeClassName="text-yellow-500"
+          disabledLinkClassName="text-gray-300"
+          renderOnZeroPageCount={null}
         />
       </div>
+      {Object.hasOwn(request, "service_id") ? (
+        <ViewRequestModal request={request} />
+      ) : null}
+      <ReplyServiceModal request={request} setRequest={setRequest} />
+      <ArchiveRequestsModal selectedItems={selectedItems} />
+      <RequestsReportsModal />
     </div>
   );
 };
 
-export default Announcement;
+export default EventsRegistrations;

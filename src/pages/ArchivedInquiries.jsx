@@ -436,7 +436,7 @@ const Inquiries = () => {
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3 xxl:w-4/12">
+                  <td className="px-6 py-3 xxl:w-2/12">
                     <div className="flex justify-center items-center">
                       {item.isApproved === "Completed" && (
                         <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">

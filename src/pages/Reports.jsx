@@ -17,6 +17,7 @@ const Reports = () => {
   const [isWeeklySelected, setIsWeeklySelected] = useState(false);
   const [isMonthlySelected, setIsMonthlySelected] = useState(false);
   const [isAnnualSelected, setIsAnnualSelected] = useState(false);
+  const [dateType, setDateType] = useState("specific");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -409,6 +410,10 @@ const Reports = () => {
     },
   };
 
+  const handleDateTypeChange = (e) => {
+    setDateType(e.target.value);
+  };
+
   return (
     <div className="mx-4 mt-4 ">
       <div className="flex flex-col scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_95px)]">
@@ -572,7 +577,7 @@ const Reports = () => {
         <div className="flex flex-col lg:flex-row lg:space-x-2 w-full">
           <div className="bg-slate-800 w-full lg:w-1/2 rounded-xl mt-5">
             <h1 className="mt-5 ml-5 font-medium text-white">
-              OVERALL AVAILED SERVICES
+              REQUESTED SERVICES
             </h1>
             <div className="flex rounded-xl">
               <Chart
@@ -618,7 +623,56 @@ const Reports = () => {
           </div>
 
           <div className="bg-slate-800 w-full lg:w-1/2 rounded-xl mt-5">
-            <h1 className="mt-5 ml-5 font-medium text-white">FILL LATER</h1>
+            <h1 className="mt-5 ml-5 font-medium text-white">
+              SERVICE REQUESTED PERCENTAGE
+            </h1>
+            <div className="flex rounded-xl">
+              <Chart
+                type="pie"
+                width={600}
+                height={600}
+                className="flex w-full rounded-xl justify-center"
+                series={chartDataResidentStatus.series}
+                options={chartDataResidentStatus.options}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* CHARTS 3 */}
+        <div className="flex flex-col lg:flex-row lg:space-x-2 w-full">
+          <div className="bg-slate-800 w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-white">
+              MOBILE APP RATING
+            </h1>
+            <div className="flex rounded-xl">
+            <Chart
+                type="line"
+                className="flex w-full rounded-xl "
+                series={[
+                  {
+                    name: "Company1",
+                    data: [100, 200, 232, 132, 422, 132],
+                  },
+                ]}
+                options={{
+                  theme: {
+                    mode: "dark",
+                  },
+                  colors: ["#ff0000"], // Corrected color code
+                  chart: {
+                    background: "transparent",
+                  },
+                  // Add other chart options as needed
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="bg-slate-800 w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-white">
+              MOBILE APP USAGE
+            </h1>
             <div className="flex rounded-xl">
               <Chart
                 type="line"

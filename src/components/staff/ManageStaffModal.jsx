@@ -4,8 +4,6 @@ import axios from "axios";
 import API_LINK from "../../config/API";
 import OccupationList from "./OccupationList";
 import { LiaRandomSolid } from "react-icons/lia";
-import { FaFacebookSquare, FaInstagram } from "react-icons/fa";
-import { FaSquareXTwitter } from "react-icons/fa6";
 import EditLoader from "./loaders/EditLoader";
 
 function ManageStaffModal({ user, setUser }) {

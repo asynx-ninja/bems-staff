@@ -1,7 +1,6 @@
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import Error404 from "../config/Error404";
 import Dashboard from "../pages/Dashboard";
-import Announcements from "../pages/Announcements";
 //import AnimationLayout from "../components/global/AnimationLayout";
 import Navbar from "../components/global/Navbar";
 import Inquiries from "../pages/Inquiries";
@@ -25,6 +24,8 @@ import StaffManagement from "../pages/StaffsManagement";
 import ArchivedStaffsManagement from "../pages/ArchivedStaffsManagement";
 import PrintForm from "../components/requests/form/PrintForm";
 import Reports from "../pages/Reports";
+import EventsManagement from "../pages/EventsManagement";
+import EventsRegistrations from "../pages/EventsRegistrations";
 
 const pages = [
   {
@@ -48,8 +49,12 @@ const pages = [
     element: <Navbar comp={<Dashboard />} />,
   },
   {
-    path: "/announcements",
-    element: <Navbar comp={<Announcements />} />,
+    path: "/events_management",
+    element: <Navbar comp={<EventsManagement />} />,
+  },
+  {
+    path: "/events_registrations",
+    element: <Navbar comp={<EventsRegistrations />} />,
   },
   {
     path: "/archivedannoucements",

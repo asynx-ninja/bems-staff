@@ -40,7 +40,9 @@ const Sidebar = () => {
           setLogo(res1.data[0]);
           var pfpSrc = document.getElementById("sidebarPFP");
           pfpSrc.src =
-            res.data[0].profile.link !== "" ? res.data[0].profile.link : default_pfp;
+            res.data[0].profile.link !== ""
+              ? res.data[0].profile.link
+              : default_pfp;
           var logoSidebar = document.getElementById("logoSidebar");
           logoSidebar.src =
             res1.data[0].logo.link !== "" ? res1.data[0].logo.link : null;
@@ -52,6 +54,22 @@ const Sidebar = () => {
     };
     fetch();
   }, [id]);
+
+  const [isClicked, setIsClicked] = useState(false);
+  const [isClickedServices, setIsClickedServices] = useState(false);
+  const [isClickedInformation, setIsClickedInformation] = useState(false);
+
+  const handleCollapseToggle = () => {
+    setIsClicked(!isClicked);
+  };
+
+  const handleCollapseToggleServices = () => {
+    setIsClickedServices(!isClickedServices);
+  };
+
+  const handleCollapseToggleInformations = () => {
+    setIsClickedInformation(!isClickedInformation);
+  };
 
   return (
     <>
@@ -115,27 +133,84 @@ const Sidebar = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    to={`/announcements/?id=${id}&brgy=${brgy}`}
-                    onClick={() => {
-                      window.innerWidth >= 320 && window.innerWidth <= 1023
-                        ? document
-                            .getQuerySelector(
-                              "[data-hs-overlay-backdrop-template]"
-                            )
-                            .remove()
-                        : null;
-                    }}
-                    className={`${
-                      currentPath === "/announcements"
-                        ? "bg-gradient-to-r from-[#0d4b75] to-[#305da0] text-[#EFC586]"
-                        : null
-                    } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0]`}
+                  <button
+                    id="hs-events-collapse"
+                    data-hs-collapse="#hs-events-collapse-heading"
+                    className={`hs-collapse-toggle justify-between flex items-center w-full gap-x-3 py-2 px-2.5 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] ${
+                      isClicked ? "text-[#EFC586]" : ""
+                    }`}
+                    onClick={handleCollapseToggle}
                   >
-                    <ImBullhorn size={15} />
-                    Announcements
-                  </Link>
+                    <div className="flex items-center gap-x-3">
+                      <MdOutlineMiscellaneousServices size={15} />
+                      EVENTS
+                    </div>
+                    <div className="flex">
+                      <svg
+                        className="hs-collapse-open:rotate-180  w-2.5 h-2.5"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 16 16"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    </div>
+                  </button>
+                  <div
+                    id="hs-events-collapse-heading"
+                    className="hs-collapse hidden w-full overflow-hidden transition-[height] duration-300"
+                    aria-labelledby="hs-events-collapse"
+                  >
+                    <Link
+                      to={`/events_management/?id=${id}&brgy=${brgy}`}
+                      onClick={() => {
+                        window.innerWidth >= 320 && window.innerWidth <= 1023
+                          ? document
+                              .getQuerySelector(
+                                "[data-hs-overlay-backdrop-template]"
+                              )
+                              .remove()
+                          : null;
+                      }}
+                      className={`${
+                        currentPath === "/services"
+                          ? "bg-gradient-to-r from-[#0d4b75] to-[#305da0] text-[#EFC586]"
+                          : null
+                      } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0]`}
+                    >
+                      <FaServicestack size={15} />
+                      Events Management
+                    </Link>
+                    <Link
+                      to={`/events_registrations/?id=${id}&brgy=${brgy}`}
+                      onClick={() => {
+                        window.innerWidth >= 320 && window.innerWidth <= 1023
+                          ? document
+                              .getQuerySelector(
+                                "[data-hs-overlay-backdrop-template]"
+                              )
+                              .remove()
+                          : null;
+                      }}
+                      className={`${
+                        currentPath === "/requests"
+                          ? "bg-gradient-to-r from-[#0d4b75] to-[#305da0] text-[#EFC586]"
+                          : null
+                      } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0]`}
+                    >
+                      <GoGitPullRequest size={15} />
+                      Events Registration
+                    </Link>
+                  </div>
                 </li>
+
                 <li>
                   <Link
                     to={`/inquiries/?id=${id}&brgy=${brgy}`}
@@ -185,7 +260,10 @@ const Sidebar = () => {
                   <button
                     id="hs-unstyled-collapse"
                     data-hs-collapse="#hs-unstyled-collapse-heading"
-                    className="hs-collapse-toggle justify-between flex items-center w-full  gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0]"
+                    className={`hs-collapse-toggle justify-between flex items-center w-full gap-x-3 py-2 px-2.5 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] ${
+                      isClickedServices ? "text-[#EFC586]" : ""
+                    }`}
+                    onClick={handleCollapseToggleServices}
                   >
                     <div className="flex items-center gap-x-3">
                       <MdOutlineMiscellaneousServices size={15} />
@@ -229,7 +307,7 @@ const Sidebar = () => {
                         currentPath === "/services"
                           ? "bg-gradient-to-r from-[#0d4b75] to-[#305da0] text-[#EFC586]"
                           : null
-                      } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0]`}
+                      } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0]`}
                     >
                       <FaServicestack size={15} />
                       Manage Services
@@ -249,19 +327,23 @@ const Sidebar = () => {
                         currentPath === "/requests"
                           ? "bg-gradient-to-r from-[#0d4b75] to-[#305da0] text-[#EFC586]"
                           : null
-                      } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0]`}
+                      } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0]`}
                     >
                       <GoGitPullRequest size={15} />
                       Service Requests
                     </Link>
                   </div>
                 </li>
+
                 {userData.type === "Brgy Admin" ? (
                   <li>
                     <button
                       id="hs-unstyled-collapse"
                       data-hs-collapse="#hs-info-collapse-heading"
-                      className="hs-collapse-toggle justify-between flex items-center w-full  gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0]"
+                      className={`hs-collapse-toggle justify-between flex items-center w-full gap-x-3 py-2 px-2.5 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] ${
+                        isClickedInformation ? "text-[#EFC586]" : ""
+                      }`}
+                      onClick={handleCollapseToggleInformations}
                     >
                       <div className="flex items-center gap-x-3">
                         <HiMiniInformationCircle size={15} />
@@ -305,7 +387,7 @@ const Sidebar = () => {
                           currentPath === "/info"
                             ? "bg-gradient-to-r from-[#0d4b75] to-[#305da0] text-[#EFC586]"
                             : null
-                        } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0]`}
+                        } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0]`}
                       >
                         <ImStatsBars size={15} />
                         Reports
@@ -325,7 +407,7 @@ const Sidebar = () => {
                           currentPath === "/officials"
                             ? "bg-gradient-to-r from-[#0d4b75] to-[#305da0] text-[#EFC586]"
                             : null
-                        } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0]`}
+                        } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0]`}
                       >
                         <FaPeopleGroup size={15} />
                         Barangay Officials
@@ -345,7 +427,7 @@ const Sidebar = () => {
                           currentPath === "/staff_management"
                             ? "bg-gradient-to-r from-[#0d4b75] to-[#305da0] text-[#EFC586]"
                             : null
-                        } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0]`}
+                        } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0]`}
                       >
                         <MdManageAccounts size={15} />
                         Staff Management
@@ -366,7 +448,7 @@ const Sidebar = () => {
                           currentPath === "/info"
                             ? "bg-gradient-to-r from-[#0d4b75] to-[#305da0] text-[#EFC586]"
                             : null
-                        } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0]`}
+                        } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0]`}
                       >
                         <FaChalkboardTeacher size={15} />
                         Barangay Information

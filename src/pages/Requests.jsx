@@ -576,7 +576,7 @@ const Requests = () => {
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-6 py-3 xxl:w-3/12">
                     {item.status === "Transaction Completed" && (
                       <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                         <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">

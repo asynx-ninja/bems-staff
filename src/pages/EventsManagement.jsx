@@ -1,88 +1,71 @@
 import React from "react";
+
 import { Link } from "react-router-dom";
-import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
-import { FaArchive } from "react-icons/fa";
-import { FiEdit } from "react-icons/fi";
-import { BsPrinter } from "react-icons/bs";
-import { FaCircle } from "react-icons/fa6";
-import ArchiveModal from "../components/inquiries/ArchiveInquiryModal";
-import Status from "../components/inquiries/Status";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+
+import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
+import { FaArchive, FaPlus } from "react-icons/fa";
+import { BsPrinter } from "react-icons/bs";
+
 import ReactPaginate from "react-paginate";
 import axios from "axios";
 import API_LINK from "../config/API";
-import { useSearchParams } from "react-router-dom";
-import ViewInquiriesModal from "../components/inquiries/ViewInquiriesModal";
 
-const Inquiries = () => {
+import ArchiveModal from "../components/announcement/ArchiveAnnouncementModal";
+import AddModal from "../components/announcement/AddAnnouncementModal";
+import ManageAnnouncementModal from "../components/announcement/ManageAnnouncementModal";
+
+const EventsManagement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
-  const [inquiries, setInquiries] = useState([]);
-  const [inquiry, setInquiry] = useState({
-    compose: { file: [] },
-    response: [{ file: [] }],
-  });
-  const [status, setStatus] = useState({});
+  const [announcement, setAnnouncement] = useState([]);
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [dateFilter, setDateFilter] = useState(null);
-  const [statusMenuOpen, setStatusMenuOpen] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [dateType, setDateType] = useState("specific");
 
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
     setSortOrder(newSortOrder);
     setSortColumn(sortBy);
 
-    const sortedData = inquiries.slice().sort((a, b) => {
-      if (sortBy === "inquiries_id") {
+    const sortedData = announcements.slice().sort((a, b) => {
+      if (sortBy === "title") {
         return newSortOrder === "asc"
-          ? a.inquiries_id.localeCompare(b.inquiries_id)
-          : b.inquiries_id.localeCompare(a.inquiries_id);
-      } else if (sortBy === "isApproved") {
-        const order = { Completed: 1, Pending: 2, "In Progress": 3 };
-        return newSortOrder === "asc"
-          ? order[a.isApproved] - order[b.isApproved]
-          : order[b.isApproved] - order[a.isApproved];
+          ? a.title.localeCompare(b.title)
+          : b.title.localeCompare(a.title);
+      } else if (sortBy === "date") {
+        const dateA = new Date(a.date).getTime();
+        const dateB = new Date(b.date).getTime();
+        return newSortOrder === "asc" ? dateA - dateB : dateB - dateA;
       }
 
       return 0;
     });
 
-    setInquiries(sortedData);
+    setAnnouncements(sortedData);
   };
 
   useEffect(() => {
-    document.title = "Inquiries | Barangay E-Services Management";
-
-    const fetchInquiries = async () => {
+    const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/inquiries/?id=${id}&brgy=${brgy}&archived=false&status=${statusFilter}&date=${dateFilter}`
+        `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
       );
-      console.log("API URL:");
-
-      if (response.status === 200) {
-        setInquiries(response.data);
-      } else {
-        setInquiries([]);
-      }
+      if (response.status === 200) setAnnouncements(response.data);
+      else setAnnouncements([]);
     };
 
-    fetchInquiries();
-  }, [id, brgy, statusFilter, dateFilter]);
+    fetch();
+  }, []);
 
-  const Inquiries = inquiries.filter(
+  const Announcements = announcements.filter(
     (item) =>
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.inq_id.toLowerCase().includes(searchQuery.toLowerCase())
+      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.event_id.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  console.log("inquiries", inquiries);
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -100,12 +83,13 @@ const Inquiries = () => {
   };
 
   const checkAllHandler = () => {
-    const inquiriesToCheck = Inquiries.length > 0 ? Inquiries : inquiries;
+    const announcementsToCheck =
+      Announcements.length > 0 ? Announcements : announcements;
 
-    if (inquiriesToCheck.length === selectedItems.length) {
+    if (announcementsToCheck.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const postIds = inquiriesToCheck.map((item) => {
+      const postIds = announcementsToCheck.map((item) => {
         return item._id;
       });
 
@@ -114,54 +98,67 @@ const Inquiries = () => {
   };
 
   const tableHeader = [
-    "name",
-    "e-mail",
-    "message",
+    "event id",
+    "title",
+    "details",
     "date",
-    "status",
+    "# of attendees",
     "actions",
   ];
 
-  const DateFormat = (date) => {
-    const dateFormat = date === undefined ? "" : date.substr(0, 10);
-    return dateFormat;
-  };
+  useEffect(() => {
+    document.title = "Announcement | Barangay E-Services Management";
+  }, []);
 
   const handleView = (item) => {
-    setInquiry(item);
+    setAnnouncement(item);
   };
 
-  const handleStatusFilter = (status) => {
-    setStatusFilter(status);
-    setStatusMenuOpen(false);
+  const dateFormat = (date) => {
+    const eventdate = date === undefined ? "" : date.substr(0, 10);
+    return eventdate;
   };
 
-  const handleResetFilter = () => {
-    setStatusFilter("all");
-    setDateFilter(null);
-    setSearchQuery("");
-  };
-
-  const handleDateTypeChange = (e) => {
-    setDateType(e.target.value);
-  };
+  console.log(selectedItems);
 
   return (
-    <div className="mx-4 ">
-      <div>
-        <div className="flex flex-row mt-5 sm:flex-col-reverse lg:flex-row w-full">
+    <div className="mx-4 mt-4">
+      <div className="flex flex-col ">
+        <div className="flex flex-row sm:flex-col-reverse lg:flex-row w-full ">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#2e65ac] to-[#0d4b75] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
               className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[1.2rem] xl:text-[1.5rem] xxl:text-[2.1rem] xxxl:text-4xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
-              INQUIRIES
+             EVENTS MANAGEMENT
             </h1>
           </div>
           <div className="lg:w-3/5 flex flex-row justify-end items-center ">
             <div className="sm:w-full md:w-full lg:w-2/5 flex sm:flex-col md:flex-row md:justify-center md:items-center sm:space-y-2 md:space-y-0 md:space-x-2 ">
+              <div className="w-full rounded-lg flex justify-center">
+                <div className="hs-tooltip inline-block w-full">
+                  <button
+                    type="button"
+                    data-hs-overlay="#hs-modal-add "
+                    className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#2e65ac] to-[#0d4b75] w-full text-white font-medium text-sm  text-center inline-flex items-center "
+                  >
+                    <FaPlus size={24} style={{ color: "#ffffff" }} />
+                    <span className="sm:block md:hidden sm:pl-5">
+                      Add Announcement
+                    </span>
+                    <span
+                      className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                      role="tooltip"
+                    >
+                      Add Announcement
+                    </span>
+                  </button>
+                </div>
+              </div>
               <div className="w-full rounded-lg ">
-                <Link to={`/archivedinquiries/?id=${id}&brgy=${brgy}`}>
+                <Link
+                  to={`/archivedannoucements/?id=${id}&brgy=${brgy}&archived=true`}
+                >
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"
@@ -169,13 +166,13 @@ const Inquiries = () => {
                     >
                       <FaArchive size={24} style={{ color: "#ffffff" }} />
                       <span className="sm:block md:hidden sm:pl-5">
-                        Archived Inquiries
+                        Archived Announcement
                       </span>
                       <span
                         className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                         role="tooltip"
                       >
-                        Archived Inquiries
+                        Archived Announcement
                       </span>
                     </button>
                   </div>
@@ -185,7 +182,7 @@ const Inquiries = () => {
           </div>
         </div>
 
-        <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
+        <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white shrink-0">
           <div className="sm:flex-col-reverse md:flex-row flex justify-between w-full">
             <div className="flex space-x-2">
               <span className="font-medium text-[#292929]  justify-center flex text-center my-auto mx-2">
@@ -223,7 +220,7 @@ const Inquiries = () => {
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    onClick={handleResetFilter}
+                    // onClick={handleResetFilter}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -231,21 +228,21 @@ const Inquiries = () => {
                   </a>
                   <hr className="border-[#ffffff] my-1" />
                   <a
-                    onClick={() => handleStatusFilter("Pending")}
+                    // onClick={() => handleStatusFilter("Pending")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PENDING
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("In Progress")}
+                    // onClick={() => handleStatusFilter("In Progress")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     IN PROGRESS
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Completed")}
+                    // onClick={() => handleStatusFilter("Completed")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -285,7 +282,7 @@ const Inquiries = () => {
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    onClick={handleResetFilter}
+                    // onClick={handleResetFilter}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -297,15 +294,15 @@ const Inquiries = () => {
                     <div className="flex gap-2">
                       <select
                         className="bg-[#0d4b75] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
-                        value={dateType}
-                        onChange={handleDateTypeChange}
+                        // value={dateType}
+                        // onChange={handleDateTypeChange}
                       >
                         <option value="specific">Specific Date</option>
                         <option value="week">Week</option>
                         <option value="month">Month</option>
                         <option value="year">Year</option>
                       </select>
-                      {dateType === "specific" && (
+                      {/* {dateType === "specific" && (
                         <input
                           className="bg-[#0d4b75] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
                           type="date"
@@ -339,11 +336,11 @@ const Inquiries = () => {
                           min="1900"
                           max="2100"
                         />
-                      )}
+                      )} */}
                     </div>
                     <button
                       type="submit"
-                      onClick={() => handleSort("date")}
+                      // onClick={() => handleSort("date")}
                       className="bg-[#0d4b75] uppercase text-white mt-2 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 hover:bg-[#0d4675]"
                     >
                       APPLY
@@ -397,7 +394,7 @@ const Inquiries = () => {
                       className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                       role="tooltip"
                     >
-                      Archived Selected Inquiries
+                      Archive Selected Announcement
                     </span>
                   </button>
                 </div>
@@ -406,7 +403,7 @@ const Inquiries = () => {
           </div>
         </div>
 
-        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_280px)] xxxl:h-[calc(100vh_-_300px)]">
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_275px)] xxl:h-[calc(100vh_-_275px)] xxxl:h-[calc(100vh_-_300px)]">
           <table className="relative table-auto w-full">
             <thead className="bg-[#0d4b75] sticky top-0">
               <tr className="">
@@ -431,8 +428,8 @@ const Inquiries = () => {
                 ))}
               </tr>
             </thead>
-            <tbody className="odd:bg-slate-100">
-              {Inquiries.map((item, index) => (
+            <tbody className="odd:bg-slate-100 ">
+              {Announcements.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
@@ -445,100 +442,59 @@ const Inquiries = () => {
                       />
                     </div>
                   </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                        {item.name}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                        {item.email}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
+                  <td className="px-6 py-3 w-4/12">
                     <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                      {item.compose.message}
+                      {item.event_id}
                     </span>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-3 py-3 w-4/12">
                     <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {DateFormat(item.compose.date) || ""}
+                      <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
+                        {item.title}
                       </span>
                     </div>
                   </td>
-
-                  <td className="px-6 py-3 xxl:w-2/12">
+                  <td className="px-6 py-3 w-4/12">
                     <div className="flex justify-center items-center">
-                      {item.isApproved === "Completed" && (
-                        <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
-                            COMPLETED
-                          </span>
-                        </div>
-                      )}
-                      {item.isApproved === "Pending" && (
-                        <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
-                            PENDING
-                          </span>
-                        </div>
-                      )}
-                      {item.isApproved === "In Progress" && (
-                        <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
-                            IN PROGRESS
-                          </span>
-                        </div>
-                      )}
+                      <span className="text-xs sm:text-sm text-black line-clamp-2 text-left">
+                        {item.details}
+                      </span>
                     </div>
                   </td>
-
+                  <td className="py-3 w-4/12">
+                    <div className="flex justify-center items-center">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {dateFormat(item.date) || ""}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-3 ">
+                    <div className="flex justify-center items-center">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {item.attendees.length}
+                      </span>
+                    </div>
+                  </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center space-x-1 sm:space-x-none">
-                      <div className="hs-tooltip inline-block">
+                      <div className="hs-tooltip inline-block w-full">
                         <button
                           type="button"
-                          data-hs-overlay="#hs-modal-viewInquiries"
+                          data-hs-overlay="#hs-modal-editAnnouncement"
                           onClick={() => handleView({ ...item })}
-                          className="hs-tooltip-toggle text-white bg-teal-800  font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                          className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                         >
                           <AiOutlineEye
                             size={24}
                             style={{ color: "#ffffff" }}
                           />
+                          <span
+                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                            role="tooltip"
+                          >
+                            View Announcement
+                          </span>
                         </button>
-                        <span
-                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                          role="tooltip"
-                        >
-                          View Inquiry
-                        </span>
-                      </div>
-                      <div className="hs-tooltip inline-block">
-                        <button
-                          type="button"
-                          data-hs-overlay="#hs-modal-status"
-                          onClick={() =>
-                            handleStatus({
-                              id: item._id,
-                              status: item.isApproved,
-                            })
-                          }
-                          className="hs-tooltip-toggle text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                        >
-                          <FiEdit size={24} style={{ color: "#ffffff" }} />
-                        </button>
-                        <span
-                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                          role="tooltip"
-                        >
-                          Edit Status
-                        </span>
                       </div>
                     </div>
                   </td>
@@ -547,6 +503,7 @@ const Inquiries = () => {
             </tbody>
           </table>
         </div>
+
         <div className="md:py-4 md:px-4 bg-[#0d4b75] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
           <span className="font-medium text-white sm:text-xs text-sm">
             Showing 1 out of 15 pages
@@ -564,12 +521,15 @@ const Inquiries = () => {
             renderOnZeroPageCount={null}
           />
         </div>
+        <AddModal brgy={brgy} />
         <ArchiveModal selectedItems={selectedItems} />
-        <ViewInquiriesModal inquiry={inquiry} setInquiry={setInquiry} />
-        <Status status={status} setStatus={setStatus} />
+        <ManageAnnouncementModal
+          announcement={announcement}
+          setAnnouncement={setAnnouncement}
+        />
       </div>
     </div>
   );
 };
 
-export default Inquiries;
+export default EventsManagement;

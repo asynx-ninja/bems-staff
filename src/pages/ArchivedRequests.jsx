@@ -77,6 +77,7 @@ const ArchivedRequests = () => {
 
   const tableHeader = [
     "SERVICE NAME",
+    "SENDER",
     "TYPE OF SERVICE",
     "DATE",
     "STATUS",
@@ -536,6 +537,15 @@ const ArchivedRequests = () => {
                     </span>
                   </td>
                   <td className="px-6 py-3">
+                    <span className="text-xs sm:text-sm text-black line-clamp-2">
+                      {item.form[0].lastName.value +
+                        ", " +
+                        item.form[0].firstName.value +
+                        " " +
+                        item.form[0].middleName.value}
+                    </span>
+                  </td>
+                  <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {item.type}
@@ -549,7 +559,7 @@ const ArchivedRequests = () => {
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-6 py-3 xxl:w-3/12">
                     {item.status === "Transaction Completed" && (
                       <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                         <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
