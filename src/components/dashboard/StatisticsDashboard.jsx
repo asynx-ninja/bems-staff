@@ -206,11 +206,11 @@ const StatisticsDashboard = () => {
 
   const titles = [
     {
-      title: "Announcement",
+      title: "Events",
       active: announcements.length,
       archived: archivedAnnouncements.length,
-      activeLink: `/announcements/?id=${id}&brgy=${brgy}`,
-      archivedLink: `/archivedannoucements/?id=${id}&brgy=${brgy}&archived=true`,
+      activeLink: `/events_management/?id=${id}&brgy=${brgy}`,
+      archivedLink: `/archived_events/?id=${id}&brgy=${brgy}&archived=true`,
       icon: <BsMegaphone size={15} className="sm:block md:hidden" />,
     },
     {
@@ -259,6 +259,10 @@ const StatisticsDashboard = () => {
       title: "Profits",
       active: services.length,
       archived: archivedServices.length,
+      today: "",
+      week: "",
+      month: "",
+      year: "",
       activeLink: ``,
       archivedLink: ``,
       icon: (

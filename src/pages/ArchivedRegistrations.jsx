@@ -8,13 +8,13 @@ import { BsPrinter } from "react-icons/bs";
 import { AiOutlineEye } from "react-icons/ai";
 import { AiOutlineSend } from "react-icons/ai";
 import { MdRestartAlt } from "react-icons/md";
-import ArchiveRequestsModal from "../components/requests/ArchiveRequestsModal";
-import RequestsReportsModal from "../components/requests/RequestsReportsModal";
-import ViewRequestModal from "../components/requests/ViewRequestModal";
-import Breadcrumbs from "../components/archivedRequests/Breadcrumbs";
-import RestoreRequestsModal from "../components/archivedRequests/RestoreRequestsModal";
+import ArchiveRegistrationModal from "../components/eventRegistrations/ArchiveRegistrationModal";
+import RequestsReportsModal from "../components/eventRegistrations/RequestsReportsModal";
+import ViewRegistrationModal from "../components/eventRegistrations/ViewRegistrationModal";
+import Breadcrumbs from "../components/archivedRegistrations/Breadcrumbs";
+import RestoreRegistrationModal from "../components/archivedRegistrations/RestoreRegistrationModal";
 
-const ArchivedRequests = () => {
+const ArchivedRegistrations = () => {
   const [requests, setRequests] = useState([]);
   const [request, setRequest] = useState({ response: [{ file: [] }] });
   const [selectedItems, setSelectedItems] = useState([]);
@@ -139,17 +139,17 @@ const ArchivedRequests = () => {
 
   return (
     <div className="mx-4 mt-8">
-      <Breadcrumbs />
+      <Breadcrumbs/>
       {/* Body */}
       <div>
         {/* Header */}
         <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
-              className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-[1.5rem] xxxl:text-3xl xxxl:mt-1 text-white"
+              className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
-              ARCHIVED REQUESTS
+              ARCHIVED EVENTS REGISTRATIONS
             </h1>
           </div>
         </div>
@@ -626,11 +626,11 @@ const ArchivedRequests = () => {
                           className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                           role="tooltip"
                         >
-                          View Request
+                          View Event Registration
                         </span>
                       </div>
 
-                      <div className="hs-tooltip inline-block">
+                      {/* <div className="hs-tooltip inline-block">
                         <button
                           type="button"
                           data-hs-overlay="#hs-reply-modal"
@@ -648,7 +648,7 @@ const ArchivedRequests = () => {
                         >
                           Reply to Request
                         </span>
-                      </div>
+                      </div> */}
                     </div>
                   </td>
                 </tr>
@@ -675,13 +675,13 @@ const ArchivedRequests = () => {
           />
         </div>
       {Object.hasOwn(request, "service_id") ? (
-        <ViewRequestModal request={request} />
+        <ViewRegistrationModal request={request} />
       ) : null}
-      <ArchiveRequestsModal />
+      <ArchiveRegistrationModal />
       <RequestsReportsModal />
-      <RestoreRequestsModal selectedItems={selectedItems}/>
+      <RestoreRegistrationModal selectedItems={selectedItems}/>
     </div>
   );
 };
 
-export default ArchivedRequests;
+export default ArchivedRegistrations;

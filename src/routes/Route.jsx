@@ -14,7 +14,6 @@ import Login from "../pages/login/Login";
 import ForgotPassword from "../pages/login/ForgotPassword";
 import SecurityPin from "../pages/login/SecurityPin";
 import ChangePassword from "../pages/login/ChangePassword";
-import ArchivedAnnouncements from "../pages/ArchivedAnnouncements";
 import ArchivedInquiries from "../pages/ArchivedInquiries";
 import ArchivedResidents from "../pages/ArchiveResidents";
 import ArchivedService from "../pages/ArchivedServices";
@@ -26,6 +25,8 @@ import PrintForm from "../components/requests/form/PrintForm";
 import Reports from "../pages/Reports";
 import EventsManagement from "../pages/EventsManagement";
 import EventsRegistrations from "../pages/EventsRegistrations";
+import ArchivedEvents from "../pages/ArchivedEvents";
+import ArchivedRegistrations from "../pages/ArchivedRegistrations";
 
 const pages = [
   {
@@ -57,8 +58,12 @@ const pages = [
     element: <Navbar comp={<EventsRegistrations />} />,
   },
   {
-    path: "/archivedannoucements",
-    element: <Navbar comp={<ArchivedAnnouncements />} />,
+    path: "/archived_events",
+    element: <Navbar comp={<ArchivedEvents />} />,
+  },
+  {
+    path: "/archived_registrations",
+    element: <Navbar comp={<ArchivedRegistrations />} />,
   },
   {
     path: "/archivedinquiries",

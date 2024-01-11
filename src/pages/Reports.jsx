@@ -30,10 +30,12 @@ const Reports = () => {
           `${API_LINK}/requests/?brgy=${brgy}&archived=false`
         );
 
-        if (servicesResponse.status === 200) setServices(servicesResponse.data.result);
+        if (servicesResponse.status === 200)
+          setServices(servicesResponse.data.result);
         else setServices([]);
 
-        if (requestsResponse.status === 200) setRequests(requestsResponse.data.result);
+        if (requestsResponse.status === 200)
+          setRequests(requestsResponse.data.result);
 
         // Fetch archived requests
         const archivedRequestsResponse = await axios.get(
@@ -63,7 +65,11 @@ const Reports = () => {
       }
     };
 
-    fetchData();
+    const intervalId = setInterval(() => {
+      fetchData();
+    }, 3000);
+
+    return () => clearInterval(intervalId);
   }, [brgy]);
 
   const startOfWeek = (date) => {
@@ -300,10 +306,7 @@ const Reports = () => {
       },
     ],
     options: {
-      theme: {
-        mode: "dark",
-      },
-      colors: ["#ff0000"],
+      colors: ["#4b7c80"],
       chart: {
         background: "transparent",
       },
@@ -337,10 +340,7 @@ const Reports = () => {
   const chartDataResidentStatus = {
     series: [registeredCount, pendingCount, deniedCount],
     options: {
-      theme: {
-        mode: "dark",
-      },
-      colors: ["#4caf50", "#ff9800", "#f44336"], // Colors for Registered, Pending, Denied
+      colors: ["#4caf50", "#ff9800", "#ac4646"], // Colors for Registered, Pending, Denied
       chart: {
         background: "transparent",
       },
@@ -384,10 +384,7 @@ const Reports = () => {
       },
     ],
     options: {
-      theme: {
-        mode: "dark",
-      },
-      colors: ["#ff0000"],
+      colors: ["#4b7c80"],
       chart: {
         background: "transparent",
       },
@@ -412,6 +409,46 @@ const Reports = () => {
 
   const handleDateTypeChange = (e) => {
     setDateType(e.target.value);
+  };
+
+  const getStatusPercentages = () => {
+    const totalCount = requests.length;
+    const statusCounts = {};
+  
+    // Initialize counts
+    ["Transaction Completed", "Rejected", "Pending", "Paid", "Processing", "Cancelled"].forEach(
+      (status) => {
+        statusCounts[status] = 0;
+      }
+    );
+  
+    // Count occurrences of each status
+    requests.forEach((request) => {
+      statusCounts[request.status]++;
+    });
+  
+    // Calculate percentages
+    const percentages = Object.fromEntries(
+      Object.entries(statusCounts).map(([status, count]) => [
+        status,
+        (count / totalCount) * 100,
+      ])
+    );
+  
+    return percentages;
+  };
+  
+  const statusPercentages = getStatusPercentages();
+
+  const chartDataStatusPercentage = {
+    series: Object.values(statusPercentages),
+    options: {
+      colors: ["#4caf50", "#ff9800", "#ac4646", "#2196f3", "#ffeb3b", "#9e9e9e"], // Add more colors if needed
+      chart: {
+        background: "transparent",
+      },
+      labels: ["Transaction Completed", "Rejected", "Pending", "Paid", "Processing", "Cancelled"],
+    },
   };
 
   return (
@@ -505,7 +542,7 @@ const Reports = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 lg:items-center border border-gray-200 rounded-xl bg-slate-800">
+        <div className="grid grid-cols-1 md:grid-cols-4 lg:items-center border border-gray-200 bg-[#2c606d] shadow-sm rounded-xl">
           <div className="flex flex-col p-4">
             <h4 className="text-white mb-1 text-sm lg:text-md">
               TOTAL SERVICES TAKEN
@@ -513,7 +550,7 @@ const Reports = () => {
             <div className="flex gap-x-1">
               <p
                 data-hs-toggle-count='{"target": "#toggle-count", "min": 19, "max": 29}'
-                className="text-gray-800 font-semibold text-3xl dark:text-gray-200"
+                className="text-white font-semibold text-3xl "
               >
                 {filteredTotalServices}
               </p>
@@ -575,8 +612,8 @@ const Reports = () => {
 
         {/* CHARTS */}
         <div className="flex flex-col lg:flex-row lg:space-x-2 w-full">
-          <div className="bg-slate-800 w-full lg:w-1/2 rounded-xl mt-5">
-            <h1 className="mt-5 ml-5 font-medium text-white">
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
               REQUESTED SERVICES
             </h1>
             <div className="flex rounded-xl">
@@ -589,8 +626,8 @@ const Reports = () => {
             </div>
           </div>
 
-          <div className="bg-slate-800 w-full lg:w-1/2 rounded-xl mt-5">
-            <h1 className="mt-5 ml-5 font-medium text-white">
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
               REVENUE FOR THE PAST 6 MONTHS
             </h1>
             <div className="flex rounded-xl">
@@ -606,8 +643,8 @@ const Reports = () => {
 
         {/* CHARTS 2 */}
         <div className="flex flex-col lg:flex-row lg:space-x-2 w-full">
-          <div className="bg-slate-800 w-full lg:w-1/2 rounded-xl mt-5">
-            <h1 className="mt-5 ml-5 font-medium text-white">
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
               RESIDENT STATUS CHART
             </h1>
             <div className="flex rounded-xl">
@@ -622,8 +659,8 @@ const Reports = () => {
             </div>
           </div>
 
-          <div className="bg-slate-800 w-full lg:w-1/2 rounded-xl mt-5">
-            <h1 className="mt-5 ml-5 font-medium text-white">
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
               SERVICE REQUESTED PERCENTAGE
             </h1>
             <div className="flex rounded-xl">
@@ -632,8 +669,8 @@ const Reports = () => {
                 width={600}
                 height={600}
                 className="flex w-full rounded-xl justify-center"
-                series={chartDataResidentStatus.series}
-                options={chartDataResidentStatus.options}
+                series={chartDataStatusPercentage.series}
+                options={chartDataStatusPercentage.options}
               />
             </div>
           </div>
@@ -641,12 +678,12 @@ const Reports = () => {
 
         {/* CHARTS 3 */}
         <div className="flex flex-col lg:flex-row lg:space-x-2 w-full">
-          <div className="bg-slate-800 w-full lg:w-1/2 rounded-xl mt-5">
-            <h1 className="mt-5 ml-5 font-medium text-white">
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
               MOBILE APP RATING
             </h1>
             <div className="flex rounded-xl">
-            <Chart
+              <Chart
                 type="line"
                 className="flex w-full rounded-xl "
                 series={[
@@ -656,10 +693,7 @@ const Reports = () => {
                   },
                 ]}
                 options={{
-                  theme: {
-                    mode: "dark",
-                  },
-                  colors: ["#ff0000"], // Corrected color code
+                  colors: ["#4b7c80"], // Corrected color code
                   chart: {
                     background: "transparent",
                   },
@@ -669,8 +703,8 @@ const Reports = () => {
             </div>
           </div>
 
-          <div className="bg-slate-800 w-full lg:w-1/2 rounded-xl mt-5">
-            <h1 className="mt-5 ml-5 font-medium text-white">
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
               MOBILE APP USAGE
             </h1>
             <div className="flex rounded-xl">
@@ -684,10 +718,7 @@ const Reports = () => {
                   },
                 ]}
                 options={{
-                  theme: {
-                    mode: "dark",
-                  },
-                  colors: ["#ff0000"], // Corrected color code
+                  colors: ["#4b7c80"], // Corrected color code
                   chart: {
                     background: "transparent",
                   },
