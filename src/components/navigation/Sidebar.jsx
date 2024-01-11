@@ -1,7 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { BiSolidDashboard } from "react-icons/bi";
-import { ImBullhorn } from "react-icons/im";
+import { TfiAnnouncement } from "react-icons/tfi";
+import { SiGoogleforms } from "react-icons/si";
+import { BsCalendar2Event } from "react-icons/bs";
 import { FaRegNoteSticky } from "react-icons/fa6";
 import { BsPeopleFill } from "react-icons/bs";
 import { MdOutlineMiscellaneousServices } from "react-icons/md";
@@ -142,7 +144,7 @@ const Sidebar = () => {
                     onClick={handleCollapseToggle}
                   >
                     <div className="flex items-center gap-x-3">
-                      <MdOutlineMiscellaneousServices size={15} />
+                      <TfiAnnouncement size={15} />
                       EVENTS
                     </div>
                     <div className="flex">
@@ -185,7 +187,7 @@ const Sidebar = () => {
                           : null
                       } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
                     >
-                      <FaServicestack size={15} />
+                      <BsCalendar2Event size={15} />
                       Events Management
                     </Link>
                     <Link
@@ -205,7 +207,7 @@ const Sidebar = () => {
                           : null
                       } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
                     >
-                      <GoGitPullRequest size={15} />
+                      <SiGoogleforms  size={15} />
                       Events Registration
                     </Link>
                   </div>
