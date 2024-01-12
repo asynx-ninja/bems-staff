@@ -11,6 +11,7 @@ const Reports = () => {
   const [users, setUsers] = useState([]);
   const [archivedServices, setArchivedServices] = useState([]);
   const [archivedRequests, setArchivedRequests] = useState([]);
+  const [archivedUsers, setArchivedUsers] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
   const [isTodaySelected, setIsTodaySelected] = useState(false);
@@ -52,13 +53,23 @@ const Reports = () => {
           setArchivedServices(archivedServicesResponse.data.result);
 
         // Fetch users
-        const usersResponse = await axios.get(
+        const activeUsersResponse = await axios.get(
           `${API_LINK}/users/?brgy=${brgy}&type=Resident`
         );
-        if (usersResponse.status === 200) {
-          setUsers(usersResponse.data.result);
+        if (activeUsersResponse.status === 200) {
+          setUsers(activeUsersResponse.data.result);
         } else {
           setUsers([]);
+        }
+
+        // Fetch archived users
+        const archivedUsersResponse = await axios.get(
+          `${API_LINK}/users/showArchived/?brgy=${brgy}&type=Resident`
+        );
+        if (archivedUsersResponse.status === 200) {
+          setArchivedUsers(archivedUsersResponse.data.result);
+        } else {
+          setArchivedUsers([]);
         }
       } catch (err) {
         console.log(err);
@@ -412,7 +423,6 @@ const Reports = () => {
   };
 
   const getStatusPercentages = () => {
-    const totalCount = requests.length;
     const statusCounts = {};
   
     // Initialize counts
@@ -428,6 +438,7 @@ const Reports = () => {
     });
   
     // Calculate percentages
+    const totalCount = requests.length;
     const percentages = Object.fromEntries(
       Object.entries(statusCounts).map(([status, count]) => [
         status,
@@ -439,7 +450,7 @@ const Reports = () => {
   };
   
   const statusPercentages = getStatusPercentages();
-
+  
   const chartDataStatusPercentage = {
     series: Object.values(statusPercentages),
     options: {
@@ -450,6 +461,114 @@ const Reports = () => {
       labels: ["Transaction Completed", "Rejected", "Pending", "Paid", "Processing", "Cancelled"],
     },
   };
+
+  const getPopulationGrowthData = () => {
+    const currentDate = new Date();
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(currentDate.getMonth() - 6);
+
+    const activePopulationData = Array.from({ length: 6 }, (_, index) => {
+      const startOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - index,
+        1
+      );
+      const endOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - index + 1,
+        0
+      );
+
+      const activePopulationCount = users.filter(
+        (user) => new Date(user.createdAt) <= endOfMonth
+      ).length;
+
+      return activePopulationCount;
+    }).reverse();
+
+    const archivedPopulationData = Array.from({ length: 6 }, (_, index) => {
+      const startOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - index,
+        1
+      );
+      const endOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - index + 1,
+        0
+      );
+
+      const archivedPopulationCount = archivedUsers.filter(
+        (user) => new Date(user.createdAt) <= endOfMonth
+      ).length;
+
+      return archivedPopulationCount;
+    }).reverse();
+
+    const totalResidentsData = Array.from({ length: 6 }, (_, index) => {
+      const startOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - index,
+        1
+      );
+      const endOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - index + 1,
+        0
+      );
+
+      const totalResidentsCount = users.filter(
+        (user) => new Date(user.createdAt) <= endOfMonth
+      ).length +
+        archivedUsers.filter(
+          (user) => new Date(user.createdAt) <= endOfMonth
+        ).length;
+
+      return totalResidentsCount;
+    }).reverse();
+
+    return {
+      series: [
+        {
+          name: "Active Residents",
+          data: activePopulationData,
+        },
+        {
+          name: "Archived Residents",
+          data: archivedPopulationData,
+        },
+        {
+          name: "Total Residents",
+          data: totalResidentsData,
+        },
+      ],
+      options: {
+        colors: ["#4b7c80", "#ff0000", "#0000ff"], // Adjust colors as needed
+        chart: {
+          background: "transparent",
+        },
+        xaxis: {
+          categories: Array.from({ length: 6 }, (_, index) =>
+            new Date(
+              currentDate.getFullYear(),
+              currentDate.getMonth() - index,
+              1
+            ).toLocaleString("en-us", {
+              month: "short",
+            })
+          ).reverse(),
+          labels: {
+            style: {
+              fontSize: "9px",
+            },
+          },
+        },
+      },
+    };
+  };
+
+
+  const chartDataPopulationGrowth = getPopulationGrowthData();
 
   return (
     <div className="mx-4 mt-4 ">
@@ -661,6 +780,25 @@ const Reports = () => {
 
           <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
             <h1 className="mt-5 ml-5 font-medium text-black">
+              POPULATION GROWTH
+            </h1>
+            <div className="flex rounded-xl">
+            <Chart
+              type="line"
+              className="flex w-full rounded-xl"
+              series={chartDataPopulationGrowth.series}
+              options={chartDataPopulationGrowth.options}
+            />
+            </div>
+          </div>
+
+          
+        </div>
+
+        {/* CHARTS 3 */}
+        <div className="flex flex-col lg:flex-row lg:space-x-2 w-full">
+        <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
               SERVICE REQUESTED PERCENTAGE
             </h1>
             <div className="flex rounded-xl">
@@ -671,34 +809,6 @@ const Reports = () => {
                 className="flex w-full rounded-xl justify-center"
                 series={chartDataStatusPercentage.series}
                 options={chartDataStatusPercentage.options}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* CHARTS 3 */}
-        <div className="flex flex-col lg:flex-row lg:space-x-2 w-full">
-          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
-            <h1 className="mt-5 ml-5 font-medium text-black">
-              MOBILE APP RATING
-            </h1>
-            <div className="flex rounded-xl">
-              <Chart
-                type="line"
-                className="flex w-full rounded-xl "
-                series={[
-                  {
-                    name: "Company1",
-                    data: [100, 200, 232, 132, 422, 132],
-                  },
-                ]}
-                options={{
-                  colors: ["#4b7c80"], // Corrected color code
-                  chart: {
-                    background: "transparent",
-                  },
-                  // Add other chart options as needed
-                }}
               />
             </div>
           </div>
