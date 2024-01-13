@@ -22,6 +22,7 @@ const ArchivedServices = () => {
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [serviceFilter, setServiceFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const handleSort = (sortBy) => {
@@ -54,7 +55,7 @@ const ArchivedServices = () => {
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/services/?brgy=${brgy}&archived=true&status=${statusFilter}&page=${currentPage}`
+        `${API_LINK}/services/?brgy=${brgy}&archived=true&status=${statusFilter}&type=${serviceFilter}&page=${currentPage}`
       );
       if (response.status === 200) {
         setServices(response.data.result);
@@ -64,7 +65,7 @@ const ArchivedServices = () => {
     };
 
     fetch();
-  }, [brgy, statusFilter,currentPage]);
+  }, [brgy, statusFilter, serviceFilter, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -73,9 +74,12 @@ const ArchivedServices = () => {
   const handleStatusFilter = (selectedStatus) => {
     setStatusFilter(selectedStatus);
   };
-
+  const handleServiceFilter = (selectedStatus) => {
+    setServiceFilter(selectedStatus);
+  };
   const handleResetFilter = () => {
     setStatusFilter("all");
+    setServiceFilter("all");
     setDateFilter(null);
     setSearchQuery("");
   };
@@ -250,7 +254,7 @@ const ArchivedServices = () => {
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    // onClick={handleResetFilter}
+                    onClick={handleResetFilter}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -258,56 +262,56 @@ const ArchivedServices = () => {
                   </a>
                   <hr className="border-[#ffffff] my-1" />
                   <a
-                    // onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handleServiceFilter("Healthcare")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     HEALTHCARE
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("In Progress")}
+                    onClick={() => handleServiceFilter("Education")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     EDUCATION
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
+                    onClick={() => handleServiceFilter("Social Welfare")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     SOCIAL WELFARE
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
+                    onClick={() => handleServiceFilter("Security and Safety")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     SECURITY AND SAFETY
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
+                    onClick={() => handleServiceFilter("Infrastructure")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     INFRASTRUCTURE
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
+                    onClick={() => handleServiceFilter("Community")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     COMMUNITY
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
+                   onClick={() => handleServiceFilter("Administrative")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     ADMINISTRATIVE
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
+                   onClick={() => handleServiceFilter("Environmental")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >

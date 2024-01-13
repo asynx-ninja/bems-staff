@@ -25,45 +25,19 @@ const Inquiries = () => {
     response: [{ file: [] }],
   });
   const [status, setStatus] = useState({});
-  const [sortOrder, setSortOrder] = useState("desc");
-  const [sortColumn, setSortColumn] = useState(null);
   const [statusFilter, setStatusFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState(null);
-  const [statusMenuOpen, setStatusMenuOpen] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [dateType, setDateType] = useState("specific");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
-  const handleSort = (sortBy) => {
-    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
-    setSortOrder(newSortOrder);
-    setSortColumn(sortBy);
-
-    const sortedData = inquiries.slice().sort((a, b) => {
-      if (sortBy === "inquiries_id") {
-        return newSortOrder === "asc"
-          ? a.inquiries_id.localeCompare(b.inquiries_id)
-          : b.inquiries_id.localeCompare(a.inquiries_id);
-      } else if (sortBy === "isApproved") {
-        const order = { Completed: 1, Pending: 2, "In Progress": 3 };
-        return newSortOrder === "asc"
-          ? order[a.isApproved] - order[b.isApproved]
-          : order[b.isApproved] - order[a.isApproved];
-      }
-
-      return 0;
-    });
-
-    setInquiries(sortedData);
-  };
-
+ 
   useEffect(() => {
-    document.title = "Inquiries | Barangay E-Services Management";
-
     const fetchInquiries = async () => {
       const response = await axios.get(
-        `${API_LINK}/inquiries/?id=${id}&brgy=${brgy}&archived=false&status=${statusFilter}&date=${dateFilter}&page=${currentPage}`
+        `${API_LINK}/inquiries/?id=${id}&brgy=${brgy}&archived=false&status=${statusFilter}&startDate=${startDate}&endDate=${endDate}&page=${currentPage}`
       );
       console.log("API URL:");
 
@@ -76,7 +50,7 @@ const Inquiries = () => {
     };
 
     fetchInquiries();
-  }, [id, brgy, statusFilter, dateFilter, currentPage]);
+  }, [id, brgy, statusFilter, startDate, endDate, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -128,7 +102,7 @@ const Inquiries = () => {
   ];
 
   const DateFormat = (date) => {
-    const dateFormat = date === undefined ? "" : date.substr(0, 10);
+    const dateFormat = date ? new Date(date).toISOString().substr(0, 10) : "";
     return dateFormat;
   };
 
@@ -138,7 +112,7 @@ const Inquiries = () => {
 
   const handleStatusFilter = (status) => {
     setStatusFilter(status);
-    setStatusMenuOpen(false);
+
   };
 
   const handleResetFilter = () => {
@@ -148,7 +122,45 @@ const Inquiries = () => {
   };
 
   const handleDateTypeChange = (e) => {
-    setDateType(e.target.value);
+    const selectedDateType = e.target.value;
+    setDateType(selectedDateType);
+
+    // Reset date values based on the selected date type
+    if (selectedDateType === "specific") {
+        setStartDate("");
+        setEndDate("");
+    } else if (selectedDateType === "week") {
+        const currentDate = new Date();
+        const startOfWeek = new Date(currentDate);
+        startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
+        const endOfWeek = new Date(currentDate);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+        setStartDate(formatDate(startOfWeek));
+        setEndDate(formatDate(endOfWeek));
+    } else if (selectedDateType === "month") {
+        const currentDate = new Date();
+        const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+
+        setStartDate(formatDate(startOfMonth));
+        setEndDate(formatDate(endOfMonth));
+    } else if (selectedDateType === "year") {
+        const currentDate = new Date();
+        const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
+        const endOfYear = new Date(currentDate.getFullYear(), 11, 31);
+
+        setStartDate(formatDate(startOfYear));
+        setEndDate(formatDate(endOfYear));
+    }
+};
+
+
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   return (
@@ -206,9 +218,8 @@ const Inquiries = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-"180" : "0"
+                    w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -268,9 +279,8 @@ const Inquiries = () => {
                 >
                   DATE
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-"180" : "0"
+                    w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -304,6 +314,7 @@ const Inquiries = () => {
                         className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
                         value={dateType}
                         onChange={handleDateTypeChange}
+
                       >
                         <option value="specific">Specific Date</option>
                         <option value="week">Week</option>
@@ -316,14 +327,19 @@ const Inquiries = () => {
                           type="date"
                           id="specificDate"
                           name="specificDate"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
                         />
                       )}
+
                       {dateType === "week" && (
                         <input
                           className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
                           type="week"
                           id="week"
                           name="week"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
                         />
                       )}
                       {dateType === "month" && (
@@ -332,6 +348,8 @@ const Inquiries = () => {
                           type="month"
                           id="month"
                           name="month"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
                         />
                       )}
                       {dateType === "year" && (
@@ -340,9 +358,10 @@ const Inquiries = () => {
                           type="number"
                           id="year"
                           name="year"
-                          placeholder="YEAR"
                           min="1900"
                           max="2100"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
                         />
                       )}
                     </div>
