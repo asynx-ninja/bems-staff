@@ -31,7 +31,7 @@ const StatisticsDashboard = () => {
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
 
-  console.log(userData);
+  // console.log(userData);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -109,7 +109,9 @@ const StatisticsDashboard = () => {
             `${API_LINK}/requests/?brgy=${brgy}&archived=true`
           );
           setArchivedRequests(
-            archivedRequestsResponse.status === 200 ? archivedRequestsResponse.data : []
+            archivedRequestsResponse.status === 200
+              ? archivedRequestsResponse.data
+              : []
           );
         } catch (err) {
           console.log("err", err.message);
@@ -204,43 +206,45 @@ const StatisticsDashboard = () => {
     { gradient1: "from-[#C33764]", gradient2: "to-[#1D2671]" },
   ];
 
+  // console.log("requests: ", requests);
+
   const titles = [
     {
-      title: "Announcement",
-      active: announcements.length,
-      archived: archivedAnnouncements.length,
-      activeLink: `/announcements/?id=${id}&brgy=${brgy}`,
-      archivedLink: `/archivedannoucements/?id=${id}&brgy=${brgy}&archived=true`,
+      title: "Events",
+      active: announcements?.result?.length,
+      archived: archivedAnnouncements?.result?.length,
+      activeLink: `/events_management/?id=${id}&brgy=${brgy}`,
+      archivedLink: `/archived_events/?id=${id}&brgy=${brgy}&archived=true`,
       icon: <BsMegaphone size={15} className="sm:block md:hidden" />,
     },
     {
       title: "Inquiries",
-      active: inquiries.length,
-      archived: archivedInquiries.length,
+      active: inquiries?.result?.length,
+      archived: archivedInquiries?.result?.length,
       activeLink: `/inquiries/?id=${id}&brgy=${brgy}`,
       archivedLink: `/archivedinquiries/?id=${id}&brgy=${brgy}`,
       icon: <FaRegNoteSticky size={15} className="sm:block md:hidden" />,
     },
     {
       title: "Residents",
-      active: users.length,
-      archived: archivedUsers.length,
+      active: users?.result?.length,
+      archived: archivedUsers?.result?.length,
       activeLink: `/residents/?id=${id}&brgy=${brgy}`,
       archivedLink: `/archivedresidents/?id=${id}&brgy=${brgy}`,
       icon: <BsPeopleFill size={15} className="sm:block md:hidden" />,
     },
     {
       title: "Services",
-      active: services.length,
-      archived: archivedServices.length,
+      active: services?.result?.length,
+      archived: archivedServices?.result?.length,
       activeLink: `/services/?id=${id}&brgy=${brgy}`,
       archivedLink: `/archivedservices/?id=${id}&brgy=${brgy}&archived=true`,
       icon: <FaServicestack size={15} className="sm:block md:hidden" />,
     },
     {
       title: "Service Requests",
-      active: requests.length,
-      archived: archivedRequests.length,
+      active: requests?.result?.length,
+      archived: archivedRequests?.result?.length,
       activeLink: `/requests/?id=${id}&brgy=${brgy}`,
       archivedLink: `/archivedrequests/?id=${id}&brgy=${brgy}`,
       icon: <GoGitPullRequest size={15} className="sm:block md:hidden" />,
@@ -248,29 +252,30 @@ const StatisticsDashboard = () => {
     userData.type === "Brgy Admin"
       ? {
           title: "Barangay Officials",
-          active: officials.length,
-          archived: archivedOfficials.length,
+          active: officials?.result?.length,
+          archived: archivedOfficials?.result?.length,
           activeLink: `/officials/?id=${id}&brgy=${brgy}`,
           archivedLink: `/archived_officials/?id=${id}&brgy=${brgy}`,
           icon: <FaPeopleGroup size={15} className="sm:block md:hidden" />,
         }
       : null,
-    {
+      userData.type === "Brgy Admin"
+      ? {
       title: "Profits",
-      active: services.length,
-      archived: archivedServices.length,
-      activeLink: ``,
-      archivedLink: ``,
+      revenue: "Redirect to the Reports Page", // Place totalFees here
+      activeLink: `/reports/?id=${id}&brgy=${brgy}`,
       icon: (
         <AiOutlineFundProjectionScreen
           size={15}
           className="sm:block md:hidden"
         />
       ),
-    },
+    }
+    : null,
   ];
 
-  console.log("titles: ", titles);
+  // console.log("titles: ", titles);
+
   return (
     <div className="flex flex-col w-full">
       <b className="border-solid border-0 border-black border-b-2 pb-2 uppercase font-heavy text-lg md:text-xl">
@@ -326,22 +331,26 @@ const StatisticsDashboard = () => {
                     <a
                       className={`flex items-center p-1 gap-x-3.5 rounded-lg font-heavy text-[12px] xl:text-[14px] text-white hover:bg-gradient-to-r ${item.gradient1} hover:border hover:border-gray-300`}
                     >
-                      Active:
+                      {titleItem.title === "Profits" ? "Revenue:" : "Active:"}
                       <strong className="ml-auto">
-                        {titleItem ? titleItem.active : ""}
+                        {titleItem.title === "Profits"
+                          ? titleItem.revenue
+                          : titleItem.active}
                       </strong>
                     </a>
                   </Link>
-                  <Link to={titleItem ? titleItem.archivedLink : ""}>
-                    <a
-                      className={`flex items-center p-1 gap-x-3.5 rounded-lg font-heavy text-[12px] xl:text-[14px] text-white hover:bg-gradient-to-r ${item.gradient1} hover:border hover:border-gray-300`}
-                    >
-                      Archived:
-                      <strong className="ml-auto">
-                        {titleItem ? titleItem.archived : ""}
-                      </strong>
-                    </a>
-                  </Link>
+                  {titleItem.title !== "Profits" && (
+                    <Link to={titleItem ? titleItem.archivedLink : ""}>
+                      <a
+                        className={`flex items-center p-1 gap-x-3.5 rounded-lg font-heavy text-[12px] xl:text-[14px] text-white hover:bg-gradient-to-r ${item.gradient1} hover:border hover:border-gray-300`}
+                      >
+                        Archived:
+                        <strong className="ml-auto">
+                          {titleItem.archived}
+                        </strong>
+                      </a>
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>

@@ -11,12 +11,14 @@ const Reports = () => {
   const [users, setUsers] = useState([]);
   const [archivedServices, setArchivedServices] = useState([]);
   const [archivedRequests, setArchivedRequests] = useState([]);
+  const [archivedUsers, setArchivedUsers] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
   const [isTodaySelected, setIsTodaySelected] = useState(false);
   const [isWeeklySelected, setIsWeeklySelected] = useState(false);
   const [isMonthlySelected, setIsMonthlySelected] = useState(false);
   const [isAnnualSelected, setIsAnnualSelected] = useState(false);
+  const [dateType, setDateType] = useState("specific");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,40 +31,56 @@ const Reports = () => {
           `${API_LINK}/requests/?brgy=${brgy}&archived=false`
         );
 
-        if (servicesResponse.status === 200) setServices(servicesResponse.data);
+        if (servicesResponse.status === 200)
+          setServices(servicesResponse.data.result);
         else setServices([]);
 
-        if (requestsResponse.status === 200) setRequests(requestsResponse.data);
+        if (requestsResponse.status === 200)
+          setRequests(requestsResponse.data.result);
 
         // Fetch archived requests
         const archivedRequestsResponse = await axios.get(
           `${API_LINK}/requests/?brgy=${brgy}&archived=true`
         );
         if (archivedRequestsResponse.status === 200)
-          setArchivedRequests(archivedRequestsResponse.data);
+          setArchivedRequests(archivedRequestsResponse.data.result);
 
         // Fetch archived services
         const archivedServicesResponse = await axios.get(
           `${API_LINK}/services/?brgy=${brgy}&archived=true`
         );
         if (archivedServicesResponse.status === 200)
-          setArchivedServices(archivedServicesResponse.data);
+          setArchivedServices(archivedServicesResponse.data.result);
 
         // Fetch users
-        const usersResponse = await axios.get(
+        const activeUsersResponse = await axios.get(
           `${API_LINK}/users/?brgy=${brgy}&type=Resident`
         );
-        if (usersResponse.status === 200) {
-          setUsers(usersResponse.data);
+        if (activeUsersResponse.status === 200) {
+          setUsers(activeUsersResponse.data.result);
         } else {
           setUsers([]);
+        }
+
+        // Fetch archived users
+        const archivedUsersResponse = await axios.get(
+          `${API_LINK}/users/showArchived/?brgy=${brgy}&type=Resident`
+        );
+        if (archivedUsersResponse.status === 200) {
+          setArchivedUsers(archivedUsersResponse.data.result);
+        } else {
+          setArchivedUsers([]);
         }
       } catch (err) {
         console.log(err);
       }
     };
 
-    fetchData();
+    const intervalId = setInterval(() => {
+      fetchData();
+    }, 3000);
+
+    return () => clearInterval(intervalId);
   }, [brgy]);
 
   const startOfWeek = (date) => {
@@ -299,10 +317,7 @@ const Reports = () => {
       },
     ],
     options: {
-      theme: {
-        mode: "dark",
-      },
-      colors: ["#ff0000"],
+      colors: ["#4b7c80"],
       chart: {
         background: "transparent",
       },
@@ -336,10 +351,7 @@ const Reports = () => {
   const chartDataResidentStatus = {
     series: [registeredCount, pendingCount, deniedCount],
     options: {
-      theme: {
-        mode: "dark",
-      },
-      colors: ["#4caf50", "#ff9800", "#f44336"], // Colors for Registered, Pending, Denied
+      colors: ["#4caf50", "#ff9800", "#ac4646"], // Colors for Registered, Pending, Denied
       chart: {
         background: "transparent",
       },
@@ -383,10 +395,239 @@ const Reports = () => {
       },
     ],
     options: {
-      theme: {
-        mode: "dark",
+      colors: ["#4b7c80"],
+      chart: {
+        background: "transparent",
       },
-      colors: ["#ff0000"],
+      xaxis: {
+        categories: Array.from({ length: 6 }, (_, index) =>
+          new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth() - index,
+            1
+          ).toLocaleString("en-us", {
+            month: "short",
+          })
+        ).reverse(),
+        labels: {
+          style: {
+            fontSize: "9px",
+          },
+        },
+      },
+    },
+  };
+
+  const handleDateTypeChange = (e) => {
+    setDateType(e.target.value);
+  };
+
+  const getStatusPercentages = () => {
+    const statusCounts = {};
+
+    // Initialize counts
+    [
+      "Transaction Completed",
+      "Rejected",
+      "Pending",
+      "Paid",
+      "Processing",
+      "Cancelled",
+    ].forEach((status) => {
+      statusCounts[status] = 0;
+    });
+
+    // Count occurrences of each status
+    requests.forEach((request) => {
+      statusCounts[request.status]++;
+    });
+
+    // Calculate percentages
+    const totalCount = requests.length;
+    const percentages = Object.fromEntries(
+      Object.entries(statusCounts).map(([status, count]) => [
+        status,
+        (count / totalCount) * 100,
+      ])
+    );
+
+    return percentages;
+  };
+
+  const statusPercentages = getStatusPercentages();
+
+  const chartDataStatusPercentage = {
+    series: Object.values(statusPercentages),
+    options: {
+      colors: [
+        "#4caf50",
+        "#ff9800",
+        "#ac4646",
+        "#2196f3",
+        "#ffeb3b",
+        "#9e9e9e",
+      ], // Add more colors if needed
+      chart: {
+        background: "transparent",
+      },
+      labels: [
+        "Transaction Completed",
+        "Rejected",
+        "Pending",
+        "Paid",
+        "Processing",
+        "Cancelled",
+      ],
+    },
+  };
+
+  const getPopulationGrowthData = () => {
+    const currentDate = new Date();
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(currentDate.getMonth() - 6);
+
+    const activePopulationData = Array.from({ length: 6 }, (_, index) => {
+      const startOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - index,
+        1
+      );
+      const endOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - index + 1,
+        0
+      );
+
+      const activePopulationCount = users.filter(
+        (user) => new Date(user.createdAt) <= endOfMonth
+      ).length;
+
+      return activePopulationCount;
+    }).reverse();
+
+    const archivedPopulationData = Array.from({ length: 6 }, (_, index) => {
+      const startOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - index,
+        1
+      );
+      const endOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - index + 1,
+        0
+      );
+
+      const archivedPopulationCount = archivedUsers.filter(
+        (user) => new Date(user.createdAt) <= endOfMonth
+      ).length;
+
+      return archivedPopulationCount;
+    }).reverse();
+
+    const totalResidentsData = Array.from({ length: 6 }, (_, index) => {
+      const startOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - index,
+        1
+      );
+      const endOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - index + 1,
+        0
+      );
+
+      const totalResidentsCount =
+        users.filter((user) => new Date(user.createdAt) <= endOfMonth).length +
+        archivedUsers.filter((user) => new Date(user.createdAt) <= endOfMonth)
+          .length;
+
+      return totalResidentsCount;
+    }).reverse();
+
+    return {
+      series: [
+        {
+          name: "Active Residents",
+          data: activePopulationData,
+        },
+        {
+          name: "Archived Residents",
+          data: archivedPopulationData,
+        },
+        {
+          name: "Total Residents",
+          data: totalResidentsData,
+        },
+      ],
+      options: {
+        colors: ["#4b7c80", "#ff0000", "#0000ff"], // Adjust colors as needed
+        chart: {
+          background: "transparent",
+        },
+        xaxis: {
+          categories: Array.from({ length: 6 }, (_, index) =>
+            new Date(
+              currentDate.getFullYear(),
+              currentDate.getMonth() - index,
+              1
+            ).toLocaleString("en-us", {
+              month: "short",
+            })
+          ).reverse(),
+          labels: {
+            style: {
+              fontSize: "9px",
+            },
+          },
+        },
+      },
+    };
+  };
+
+  const chartDataPopulationGrowth = getPopulationGrowthData();
+
+  const getCompletedRequestsLastSixMonths = () => {
+    const startDate = sixMonthsAgo.toISOString();
+    const endDate = currentDate.toISOString();
+    return requests.filter(
+      (request) =>
+        request.status === "Transaction Completed" &&
+        new Date(request.updatedAt) >= new Date(startDate) &&
+        new Date(request.updatedAt) <= new Date(endDate)
+    );
+  };
+
+  const completedRequestsLastSixMonths = getCompletedRequestsLastSixMonths();
+  const completionRateData = Array.from({ length: 6 }, (_, index) => {
+    const startOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() - index,
+      1
+    );
+    const endOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() - index + 1,
+      0
+    );
+
+    const completedCount = completedRequestsLastSixMonths.filter(
+      (request) =>
+        new Date(request.updatedAt) >= startOfMonth &&
+        new Date(request.updatedAt) <= endOfMonth
+    ).length;
+
+    return completedCount;
+  }).reverse();
+
+  const chartDataCompletionRate = {
+    series: [
+      {
+        name: "Completed Requests",
+        data: completionRateData,
+      },
+    ],
+    options: {
+      colors: ["#4b7c80"],
       chart: {
         background: "transparent",
       },
@@ -440,7 +681,7 @@ const Reports = () => {
             </label>
             <label
               htmlFor="toggle-count-weekly"
-              className="relative inline-block py-2 px-3 w-full lg:w-auto flex items-center justify-center"
+              className="relative inline-block py-2 px-1 lg:px-3 w-full lg:w-auto flex items-center justify-center"
             >
               <span
                 className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
@@ -500,7 +741,7 @@ const Reports = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 lg:items-center border border-gray-200 rounded-xl bg-slate-800">
+        <div className="grid grid-cols-1 md:grid-cols-4 lg:items-center border border-gray-200 bg-[#2c606d] shadow-sm rounded-xl">
           <div className="flex flex-col p-4">
             <h4 className="text-white mb-1 text-sm lg:text-md">
               TOTAL SERVICES TAKEN
@@ -508,7 +749,7 @@ const Reports = () => {
             <div className="flex gap-x-1">
               <p
                 data-hs-toggle-count='{"target": "#toggle-count", "min": 19, "max": 29}'
-                className="text-gray-800 font-semibold text-3xl dark:text-gray-200"
+                className="text-white font-semibold text-3xl "
               >
                 {filteredTotalServices}
               </p>
@@ -570,9 +811,9 @@ const Reports = () => {
 
         {/* CHARTS */}
         <div className="flex flex-col lg:flex-row lg:space-x-2 w-full">
-          <div className="bg-slate-800 w-full lg:w-1/2 rounded-xl mt-5">
-            <h1 className="mt-5 ml-5 font-medium text-white">
-              OVERALL AVAILED SERVICES
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
+              REQUESTED SERVICES
             </h1>
             <div className="flex rounded-xl">
               <Chart
@@ -584,8 +825,8 @@ const Reports = () => {
             </div>
           </div>
 
-          <div className="bg-slate-800 w-full lg:w-1/2 rounded-xl mt-5">
-            <h1 className="mt-5 ml-5 font-medium text-white">
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
               REVENUE FOR THE PAST 6 MONTHS
             </h1>
             <div className="flex rounded-xl">
@@ -601,44 +842,61 @@ const Reports = () => {
 
         {/* CHARTS 2 */}
         <div className="flex flex-col lg:flex-row lg:space-x-2 w-full">
-          <div className="bg-slate-800 w-full lg:w-1/2 rounded-xl mt-5">
-            <h1 className="mt-5 ml-5 font-medium text-white">
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
               RESIDENT STATUS CHART
             </h1>
-            <div className="flex rounded-xl">
+            <div className="flex rounded-xl justify-center items-center">
               <Chart
                 type="pie"
-                width={600}
-                height={600}
-                className="flex w-full rounded-xl justify-center"
+                className="flex rounded-xl justify-center w-full lg:w-[600px]"
                 series={chartDataResidentStatus.series}
                 options={chartDataResidentStatus.options}
               />
             </div>
           </div>
 
-          <div className="bg-slate-800 w-full lg:w-1/2 rounded-xl mt-5">
-            <h1 className="mt-5 ml-5 font-medium text-white">FILL LATER</h1>
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
+              POPULATION GROWTH
+            </h1>
+            <div className="flex rounded-xl">
+              <Chart
+                type="line"
+                className="flex w-full rounded-xl"
+                series={chartDataPopulationGrowth.series}
+                options={chartDataPopulationGrowth.options}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* CHARTS 3 */}
+        <div className="flex flex-col lg:flex-row lg:space-x-2 w-full">
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
+              SERVICE REQUESTED PERCENTAGE
+            </h1>
+            <div className="flex justify-center items-center rounded-xl">
+              <Chart
+                type="pie"
+                className="w-[full] lg:w-[650px]"
+                series={chartDataStatusPercentage.series}
+                options={chartDataStatusPercentage.options}
+              />
+            </div>
+          </div>
+
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
+              SERVICE REQUEST COMPLETION RATE
+            </h1>
             <div className="flex rounded-xl">
               <Chart
                 type="line"
                 className="flex w-full rounded-xl "
-                series={[
-                  {
-                    name: "Company1",
-                    data: [100, 200, 232, 132, 422, 132],
-                  },
-                ]}
-                options={{
-                  theme: {
-                    mode: "dark",
-                  },
-                  colors: ["#ff0000"], // Corrected color code
-                  chart: {
-                    background: "transparent",
-                  },
-                  // Add other chart options as needed
-                }}
+                series={chartDataCompletionRate.series}
+                options={chartDataCompletionRate.options}
               />
             </div>
           </div>

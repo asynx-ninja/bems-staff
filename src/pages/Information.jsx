@@ -161,7 +161,7 @@ const Information = () => {
         <div className="flex justify-center sm:-mt-[260px] md:-mt-[220px] lg:-mt-[140px] xl:-mt-[60px]  h-auto md:mx-4 lg:mx-5">
           <div className="w-full md:w-96 h-full lg:my-0 lg:mx-5 relative rounded-[28px] mx-auto bg-white shadow-2xl md:w-full flex flex-col">
             <div className="h-auto rounded-lg">
-              <div className="bg-gradient-to-r from-[#2e65ac] to-[#0d4b75] rounded-t-[28px]">
+              <div className="bg-gradient-to-r from-[#4b7c80] to-[#21556d] rounded-t-[28px]">
                 <div
                   className="relative h-32 md:h-60 mx-auto justify-center items-center rounded-t-lg"
                   style={{
@@ -170,7 +170,7 @@ const Information = () => {
                 >
                   <img
                     id="edit_logo"
-                    className="w-[120px] bg-white object-cover md:h-56 bg-cover md:w-56 rounded-full border-4 border-white mx-auto absolute left-0 right-0 sm:-top-[73px] md:-top-[6rem]"
+                    className="w-[120px] bg-white object-cover h-[120px] md:h-56 bg-cover md:w-56 rounded-full border-4 border-white mx-auto absolute left-0 right-0 sm:-top-[73px] md:-top-[6rem]"
                   />
 
                   {isEditingMode && (
@@ -207,7 +207,7 @@ const Information = () => {
               </div>
 
               <div className="flex flex-col md:flex-row mx-8 my-8 xxxl:mx-36 xxxl:my-10">
-                <div className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center bg-gradient-to-r from-[#2e65ac] to-[#0d4b75] rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]">
+                <div className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center bg-gradient-to-r from-[#4b7c80] to-[#21556d] rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]">
                   <h1
                     className="text-center text-white text-2xl font-bold"
                     style={{ letterSpacing: "0.2em" }}
@@ -230,7 +230,7 @@ const Information = () => {
               </div>
 
               <div className="flex flex-col md:flex-row mx-8 my-8 xxxl:mx-36 xxxl:my-10">
-                <div className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center bg-gradient-to-r from-[#2e65ac] to-[#0d4b75] rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]">
+                <div className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center bg-gradient-to-r from-[#4b7c80] to-[#21556d] rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]">
                   <h1
                     className="text-center text-white text-2xl font-bold"
                     style={{ letterSpacing: "0.2em" }}
@@ -253,7 +253,7 @@ const Information = () => {
               </div>
 
               <div className="flex flex-col md:flex-row mx-8 my-8 xxxl:mx-36 xxxl:my-10">
-                <div className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center bg-gradient-to-r from-[#2e65ac] to-[#0d4b75] rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]">
+                <div className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center bg-gradient-to-r from-[#4b7c80] to-[#21556d] rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]">
                   <h1
                     className="text-center text-white text-2xl font-bold"
                     style={{ letterSpacing: "0.2em" }}

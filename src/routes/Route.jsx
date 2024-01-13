@@ -1,7 +1,6 @@
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import Error404 from "../config/Error404";
 import Dashboard from "../pages/Dashboard";
-import Announcements from "../pages/Announcements";
 //import AnimationLayout from "../components/global/AnimationLayout";
 import Navbar from "../components/global/Navbar";
 import Inquiries from "../pages/Inquiries";
@@ -15,7 +14,6 @@ import Login from "../pages/login/Login";
 import ForgotPassword from "../pages/login/ForgotPassword";
 import SecurityPin from "../pages/login/SecurityPin";
 import ChangePassword from "../pages/login/ChangePassword";
-import ArchivedAnnouncements from "../pages/ArchivedAnnouncements";
 import ArchivedInquiries from "../pages/ArchivedInquiries";
 import ArchivedResidents from "../pages/ArchiveResidents";
 import ArchivedService from "../pages/ArchivedServices";
@@ -25,6 +23,10 @@ import StaffManagement from "../pages/StaffsManagement";
 import ArchivedStaffsManagement from "../pages/ArchivedStaffsManagement";
 import PrintForm from "../components/requests/form/PrintForm";
 import Reports from "../pages/Reports";
+import EventsManagement from "../pages/EventsManagement";
+import EventsRegistrations from "../pages/EventsRegistrations";
+import ArchivedEvents from "../pages/ArchivedEvents";
+import ArchivedRegistrations from "../pages/ArchivedRegistrations";
 
 const pages = [
   {
@@ -48,12 +50,20 @@ const pages = [
     element: <Navbar comp={<Dashboard />} />,
   },
   {
-    path: "/announcements",
-    element: <Navbar comp={<Announcements />} />,
+    path: "/events_management",
+    element: <Navbar comp={<EventsManagement />} />,
   },
   {
-    path: "/archivedannoucements",
-    element: <Navbar comp={<ArchivedAnnouncements />} />,
+    path: "/events_registrations",
+    element: <Navbar comp={<EventsRegistrations />} />,
+  },
+  {
+    path: "/archived_events",
+    element: <Navbar comp={<ArchivedEvents />} />,
+  },
+  {
+    path: "/archived_registrations",
+    element: <Navbar comp={<ArchivedRegistrations />} />,
   },
   {
     path: "/archivedinquiries",
