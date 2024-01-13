@@ -26,13 +26,14 @@ const Requests = () => {
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [requestFilter, setRequestFilter] = useState("all"); // Default is "all"
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   useEffect(() => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/requests/?brgy=${brgy}&archived=false&status=${statusFilter}&page=${currentPage}`
+          `${API_LINK}/requests/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${requestFilter}&page=${currentPage}`
         );
 
         if (response.status === 200) {
@@ -45,7 +46,7 @@ const Requests = () => {
     };
 
     fetch();
-  }, [brgy, statusFilter, currentPage]);
+  }, [brgy, statusFilter, requestFilter, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -54,9 +55,12 @@ const Requests = () => {
   const handleStatusFilter = (selectedStatus) => {
     setStatusFilter(selectedStatus);
   };
-
+  const handleRequestFilter = (selectedStatus) => {
+    setRequestFilter(selectedStatus);
+  };
   const handleResetFilter = () => {
     setStatusFilter("all");
+    setRequestFilter("all");
     setDateFilter(null);
     setSearchQuery("");
   };
@@ -407,7 +411,7 @@ const Requests = () => {
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    // onClick={handleResetFilter}
+                    onClick={handleResetFilter}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -415,56 +419,56 @@ const Requests = () => {
                   </a>
                   <hr className="border-[#ffffff] my-1" />
                   <a
-                    // onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handleRequestFilter("Healthcare")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     HEALTHCARE
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("In Progress")}
+                    onClick={() => handleRequestFilter("Education")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     EDUCATION
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
+                    onClick={() => handleRequestFilter("Social Welfare")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     SOCIAL WELFARE
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
+                    onClick={() => handleRequestFilter("Security and Safety")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     SECURITY AND SAFETY
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
+                    onClick={() => handleRequestFilter("Infrastructure")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     INFRASTRUCTURE
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
+                   onClick={() => handleRequestFilter("Community")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     COMMUNITY
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
+                    onClick={() => handleRequestFilter("Administrative")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     ADMINISTRATIVE
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
+                   onClick={() => handleRequestFilter("Environmental")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -510,7 +514,7 @@ const Requests = () => {
                 <div className="hs-tooltip inline-block w-full">
                   <button
                     type="button"
-                    data-hs-overlay="#hs-modal-archive"
+                    data-hs-overlay="hs-archive-requests-modal"
                     className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md  bg-pink-800 font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
                   >
                     <AiOutlineStop size={24} style={{ color: "#ffffff" }} />

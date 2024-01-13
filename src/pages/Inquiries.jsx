@@ -29,35 +29,15 @@ const Inquiries = () => {
   const [dateFilter, setDateFilter] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [dateType, setDateType] = useState("specific");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
-  const handleSort = (sortBy) => {
-    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
-    setSortOrder(newSortOrder);
-    setSortColumn(sortBy);
-
-    const sortedData = inquiries.slice().sort((a, b) => {
-      if (sortBy === "inquiries_id") {
-        return newSortOrder === "asc"
-          ? a.inquiries_id.localeCompare(b.inquiries_id)
-          : b.inquiries_id.localeCompare(a.inquiries_id);
-      } else if (sortBy === "isApproved") {
-        const order = { Completed: 1, Pending: 2, "In Progress": 3 };
-        return newSortOrder === "asc"
-          ? order[a.isApproved] - order[b.isApproved]
-          : order[b.isApproved] - order[a.isApproved];
-      }
-
-      return 0;
-    });
-
-    setInquiries(sortedData);
-  };
-
+ 
   useEffect(() => {
     const fetchInquiries = async () => {
       const response = await axios.get(
-        `${API_LINK}/inquiries/?id=${id}&brgy=${brgy}&archived=false&status=${statusFilter}&date=${dateFilter}&page=${currentPage}`
+        `${API_LINK}/inquiries/?id=${id}&brgy=${brgy}&archived=false&status=${statusFilter}&startDate=${startDate}&endDate=${endDate}&page=${currentPage}`
       );
       console.log("API URL:");
 
@@ -70,7 +50,7 @@ const Inquiries = () => {
     };
 
     fetchInquiries();
-  }, [id, brgy, statusFilter, dateFilter, currentPage]);
+  }, [id, brgy, statusFilter, startDate, endDate, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
