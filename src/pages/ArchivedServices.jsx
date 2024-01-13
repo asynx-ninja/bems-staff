@@ -410,40 +410,38 @@ const ArchivedServices = () => {
                       />
                     </div>
                   </td>
-                  <td className="px-6 py-3 w-4/12">
+                  <td className="px-2 xl:px-6 py-3 w-4/12">
                     <span className="text-xs sm:text-sm text-black line-clamp-2 ">
                       {item.service_id}
                     </span>
                   </td>
-                  <td className="px-6 py-3 w-4/12">
+                  <td className="px-2 xl:px-6 py-3 w-4/12">
+                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
+                      {item.name}
+                    </span>
+                  </td>
+                  <td className="px-2 xl:px-6 py-3 w-4/12">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                        {item.name}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3 w-4/12">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {item.details}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3 w-4/12">
+                  <td className="px-2 xl:px-6 py-3 w-4/12">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {item.type}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3 w-4/12">
+                  <td className="px-2 xl:px-6 py-3 w-4/12">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.fee}
+                        PHP {item.fee}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3 w-4/12">
+                  <td className="px-2 xl:px-6 py-3 w-4/12">
                     {item.isApproved === "Approved" && (
                       <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                         <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
@@ -467,7 +465,7 @@ const ArchivedServices = () => {
                     )}
                   </td>
 
-                  <td className="px-6 py-3">
+                  <td className="px-2 xl:px-6 py-3">
                     <div className="flex justify-center space-x-1 sm:space-x-none">
                     <div className="hs-tooltip inline-block">
                       <button

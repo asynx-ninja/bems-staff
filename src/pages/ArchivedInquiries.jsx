@@ -388,7 +388,7 @@ const Inquiries = () => {
           <table className="w-full relative table-auto">
             <thead className="bg-[#21556d] sticky top-0">
               <tr className="">
-                <th scope="col" className="px-6 py-4">
+                <th scope="col" className="px-2 xl:px-6 py-4">
                   <div className="flex justify-center items-center">
                     <input
                       type="checkbox"
@@ -402,7 +402,7 @@ const Inquiries = () => {
                   <th
                     scope="col"
                     key={idx}
-                    className="px-6 py-3 text-center text-xs font-bold text-white uppercase"
+                    className="px-2 xl:px-6 py-3 text-center text-xs font-bold text-white uppercase"
                   >
                     {item}
                   </th>
@@ -423,33 +423,33 @@ const Inquiries = () => {
                       />
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-2 xl:px-6 py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2 ">
                       {item.inq_id}
                     </span>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-2 xl:px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                         {item.name}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-2 xl:px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                         {item.email}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-2 xl:px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {DateFormat(item.compose.date) || ""}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3 xxl:w-2/12">
+                  <td className="px-2 xl:px-6 py-3 xxl:w-2/12">
                     <div className="flex justify-center items-center">
                       {item.isApproved === "Completed" && (
                         <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
@@ -474,7 +474,7 @@ const Inquiries = () => {
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-2 xl:px-6 py-3">
                     <div className="flex justify-center space-x-1 sm:space-x-none">
                       <div className="hs-tooltip inline-block w-full">
                         <button

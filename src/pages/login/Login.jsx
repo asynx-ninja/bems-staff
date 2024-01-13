@@ -205,7 +205,7 @@ const Login = () => {
               </Link>
               <button
                 onClick={handleLogin}
-                className="w-full rounded-[12px] bg-gradient-to-r from-[#3e5fc2] to-[#1f2f5e] sm:py-1.5 lg:py-2.5 text-white font-medium text-base"
+                className="w-full rounded-[12px] bg-gradient-to-r from-[#4b7c80] to-[#21556d] sm:py-1.5 lg:py-2.5 text-white font-medium text-base"
               >
                 Login
               </button>
@@ -214,7 +214,7 @@ const Login = () => {
           <div className="hs-tooltip sm:hidden md:inline-block">
             <button
               type="button"
-              class="hs-tooltip-toggle w-10 h-10 absolute md:bottom-3 right-[1rem] bg-gradient-to-r from-[#3e5fc2] to-[#1f2f5e] inline-flex justify-center items-center gap-2 rounded-full border border-gray-200 text-white font-bold "
+              class="hs-tooltip-toggle w-10 h-10 absolute md:bottom-3 right-[1rem] bg-gradient-to-r from-[#4b7c80] to-[#21556d] inline-flex justify-center items-center gap-2 rounded-full border border-gray-200 text-white font-bold "
             >
               ?
               <span

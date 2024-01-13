@@ -125,12 +125,11 @@ const Residents = () => {
   };
 
   const tableHeader = [
-    "USER_ID",
     "NAME",
+    "EMAIL",
     "AGE",
     "GENDER",
     "CONTACT",
-    "CIVIL STATUS",
     "STATUS",
     "ACTIONS",
   ];
@@ -328,18 +327,18 @@ const Residents = () => {
                       />
                     </div>
                   </td>
-                  <td className="px-6 py-3">
-                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                      {item.user_id}
-                    </span>
-                  </td>
-                  <td className="px-6 py-3">
+                  <td className="py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2 ">
                       {item.lastName +
                         ", " +
                         item.firstName +
                         " " +
                         item.middleName}
+                    </span>
+                  </td>
+                  <td className="py-3">
+                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
+                      {item.email}
                     </span>
                   </td>
                   <td className="px-6 py-3">
@@ -349,28 +348,21 @@ const Residents = () => {
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {item.sex}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {item.contact}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.civil_status}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
+                  <td className="py-3">
                     {item.isApproved === "Registered" && (
                       <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                         <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">

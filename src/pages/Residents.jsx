@@ -150,11 +150,10 @@ const Residents = () => {
   };
 
   return (
-    <div className="mx-4 ">
-      <div className="flex flex-col ">
-        {/* Header */}
-        <div className="flex flex-row mt-4 sm:flex-col-reverse lg:flex-row ">
-          <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
+    <div className="mx-4 mt-4">
+    <div className="flex flex-col ">
+      <div className="flex flex-row sm:flex-col-reverse lg:flex-row w-full ">
+        <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
               className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-3xl xxxl:text-4xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
@@ -340,7 +339,7 @@ const Residents = () => {
         </div>
 
         {/* Table */}
-        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_273px)] xxxl:h-[calc(100vh_-_300px)]">
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_275px)] xxl:h-[calc(100vh_-_275px)] xxxl:h-[calc(100vh_-_300px)]">
           <table className="relative table-auto w-full">
             <thead className="bg-[#21556d] sticky top-0">
               <tr className="">
@@ -379,7 +378,7 @@ const Residents = () => {
                       />
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2 ">
                       {item.lastName +
                         ", " +
@@ -388,7 +387,7 @@ const Residents = () => {
                         item.middleName}
                     </span>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2 ">
                       {item.email}
                     </span>
@@ -400,21 +399,21 @@ const Residents = () => {
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {item.sex}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {item.contact}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="py-3">
                     {item.isApproved === "Registered" && (
                       <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                         <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">

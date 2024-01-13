@@ -33,6 +33,8 @@ const UpcomingEvents = () => {
     setAnnouncement(item);
   };
 
+  console.log("announcements: ", announcement);
+
   return (
     <div className="relative w-full lg:w-6/12 flex flex-col overflow-y-auto h-full">
       <b className="border-solid border-0 border-black border-b-2 pb-2 uppercase font-heavy text-lg md:text-xl mb-4">

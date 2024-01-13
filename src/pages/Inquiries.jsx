@@ -152,9 +152,9 @@ const Inquiries = () => {
   };
 
   return (
-    <div className="mx-4 ">
-      <div>
-        <div className="flex flex-row mt-5 sm:flex-col-reverse lg:flex-row w-full">
+    <div className="mx-4 mt-4">
+      <div className="flex flex-col ">
+        <div className="flex flex-row sm:flex-col-reverse lg:flex-row w-full ">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
               className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[1.2rem] xl:text-[1.5rem] xxl:text-[2.1rem] xxxl:text-4xl xxxl:mt-1 text-white"
@@ -411,11 +411,11 @@ const Inquiries = () => {
           </div>
         </div>
 
-        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_280px)] xxxl:h-[calc(100vh_-_300px)]">
+       <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_275px)] xxl:h-[calc(100vh_-_275px)] xxxl:h-[calc(100vh_-_300px)]">
           <table className="relative table-auto w-full">
             <thead className="bg-[#21556d] sticky top-0">
               <tr className="">
-                <th scope="col" className="px-6 py-4">
+                <th scope="col" className="px-2 xl:px-6 py-4">
                   <div className="flex justify-center items-center">
                     <input
                       type="checkbox"
@@ -429,7 +429,7 @@ const Inquiries = () => {
                   <th
                     scope="col"
                     key={idx}
-                    className="px-6 py-3 text-center text-xs font-bold text-white uppercase"
+                    className="px-2 xl:px-6 py-3 text-center text-xs font-bold text-white uppercase"
                   >
                     {item}
                   </th>
@@ -439,7 +439,7 @@ const Inquiries = () => {
             <tbody className="odd:bg-slate-100">
               {Inquiries.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
-                  <td className="px-6 py-3">
+                  <td className="px-2 xl:px-6 py-3">
                     <div className="flex justify-center items-center">
                       <input
                         type="checkbox"
@@ -450,26 +450,26 @@ const Inquiries = () => {
                       />
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-2 xl:px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                         {item.name}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-2 xl:px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                         {item.email}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3">
-                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
+                  <td className="px-2 xl:px-6 py-3 w-full xxl:w-80 xxxl:w-96">
+                    <span className="text-xs sm:text-sm text-black line-clamp-2">
                       {item.compose.message}
                     </span>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-2 xl:px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {DateFormat(item.compose.date) || ""}
@@ -477,7 +477,7 @@ const Inquiries = () => {
                     </div>
                   </td>
 
-                  <td className="px-6 py-3 xxl:w-2/12">
+                  <td className="px-2 xl:px-6 py-3 xxl:w-2/12">
                     <div className="flex justify-center items-center">
                       {item.isApproved === "Completed" && (
                         <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
@@ -503,7 +503,7 @@ const Inquiries = () => {
                     </div>
                   </td>
 
-                  <td className="px-6 py-3">
+                  <td className="px-2 xl:px-6 py-3">
                     <div className="flex justify-center space-x-1 sm:space-x-none">
                       <div className="hs-tooltip inline-block">
                         <button

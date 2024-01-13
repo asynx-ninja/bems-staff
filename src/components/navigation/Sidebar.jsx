@@ -29,6 +29,8 @@ const Sidebar = () => {
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
 
+  console.log("User: ", userData);
+
   useEffect(() => {
     const fetch = async () => {
       try {

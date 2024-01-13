@@ -424,19 +424,24 @@ const Reports = () => {
 
   const getStatusPercentages = () => {
     const statusCounts = {};
-  
+
     // Initialize counts
-    ["Transaction Completed", "Rejected", "Pending", "Paid", "Processing", "Cancelled"].forEach(
-      (status) => {
-        statusCounts[status] = 0;
-      }
-    );
-  
+    [
+      "Transaction Completed",
+      "Rejected",
+      "Pending",
+      "Paid",
+      "Processing",
+      "Cancelled",
+    ].forEach((status) => {
+      statusCounts[status] = 0;
+    });
+
     // Count occurrences of each status
     requests.forEach((request) => {
       statusCounts[request.status]++;
     });
-  
+
     // Calculate percentages
     const totalCount = requests.length;
     const percentages = Object.fromEntries(
@@ -445,20 +450,34 @@ const Reports = () => {
         (count / totalCount) * 100,
       ])
     );
-  
+
     return percentages;
   };
-  
+
   const statusPercentages = getStatusPercentages();
-  
+
   const chartDataStatusPercentage = {
     series: Object.values(statusPercentages),
     options: {
-      colors: ["#4caf50", "#ff9800", "#ac4646", "#2196f3", "#ffeb3b", "#9e9e9e"], // Add more colors if needed
+      colors: [
+        "#4caf50",
+        "#ff9800",
+        "#ac4646",
+        "#2196f3",
+        "#ffeb3b",
+        "#9e9e9e",
+      ], // Add more colors if needed
       chart: {
         background: "transparent",
       },
-      labels: ["Transaction Completed", "Rejected", "Pending", "Paid", "Processing", "Cancelled"],
+      labels: [
+        "Transaction Completed",
+        "Rejected",
+        "Pending",
+        "Paid",
+        "Processing",
+        "Cancelled",
+      ],
     },
   };
 
@@ -517,12 +536,10 @@ const Reports = () => {
         0
       );
 
-      const totalResidentsCount = users.filter(
-        (user) => new Date(user.createdAt) <= endOfMonth
-      ).length +
-        archivedUsers.filter(
-          (user) => new Date(user.createdAt) <= endOfMonth
-        ).length;
+      const totalResidentsCount =
+        users.filter((user) => new Date(user.createdAt) <= endOfMonth).length +
+        archivedUsers.filter((user) => new Date(user.createdAt) <= endOfMonth)
+          .length;
 
       return totalResidentsCount;
     }).reverse();
@@ -567,8 +584,71 @@ const Reports = () => {
     };
   };
 
-
   const chartDataPopulationGrowth = getPopulationGrowthData();
+
+  const getCompletedRequestsLastSixMonths = () => {
+    const startDate = sixMonthsAgo.toISOString();
+    const endDate = currentDate.toISOString();
+    return requests.filter(
+      (request) =>
+        request.status === "Transaction Completed" &&
+        new Date(request.updatedAt) >= new Date(startDate) &&
+        new Date(request.updatedAt) <= new Date(endDate)
+    );
+  };
+
+  const completedRequestsLastSixMonths = getCompletedRequestsLastSixMonths();
+  const completionRateData = Array.from({ length: 6 }, (_, index) => {
+    const startOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() - index,
+      1
+    );
+    const endOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() - index + 1,
+      0
+    );
+
+    const completedCount = completedRequestsLastSixMonths.filter(
+      (request) =>
+        new Date(request.updatedAt) >= startOfMonth &&
+        new Date(request.updatedAt) <= endOfMonth
+    ).length;
+
+    return completedCount;
+  }).reverse();
+
+  const chartDataCompletionRate = {
+    series: [
+      {
+        name: "Completed Requests",
+        data: completionRateData,
+      },
+    ],
+    options: {
+      colors: ["#4b7c80"],
+      chart: {
+        background: "transparent",
+      },
+      xaxis: {
+        categories: Array.from({ length: 6 }, (_, index) =>
+          new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth() - index,
+            1
+          ).toLocaleString("en-us", {
+            month: "short",
+          })
+        ).reverse(),
+        labels: {
+          style: {
+            fontSize: "9px",
+          },
+        },
+      },
+    },
+  };
 
   return (
     <div className="mx-4 mt-4 ">
@@ -601,7 +681,7 @@ const Reports = () => {
             </label>
             <label
               htmlFor="toggle-count-weekly"
-              className="relative inline-block py-2 px-3 w-full lg:w-auto flex items-center justify-center"
+              className="relative inline-block py-2 px-1 lg:px-3 w-full lg:w-auto flex items-center justify-center"
             >
               <span
                 className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
@@ -766,12 +846,10 @@ const Reports = () => {
             <h1 className="mt-5 ml-5 font-medium text-black">
               RESIDENT STATUS CHART
             </h1>
-            <div className="flex rounded-xl">
+            <div className="flex rounded-xl justify-center items-center">
               <Chart
                 type="pie"
-                width={600}
-                height={600}
-                className="flex w-full rounded-xl justify-center"
+                className="flex rounded-xl justify-center w-full lg:w-[600px]"
                 series={chartDataResidentStatus.series}
                 options={chartDataResidentStatus.options}
               />
@@ -783,30 +861,26 @@ const Reports = () => {
               POPULATION GROWTH
             </h1>
             <div className="flex rounded-xl">
-            <Chart
-              type="line"
-              className="flex w-full rounded-xl"
-              series={chartDataPopulationGrowth.series}
-              options={chartDataPopulationGrowth.options}
-            />
+              <Chart
+                type="line"
+                className="flex w-full rounded-xl"
+                series={chartDataPopulationGrowth.series}
+                options={chartDataPopulationGrowth.options}
+              />
             </div>
           </div>
-
-          
         </div>
 
         {/* CHARTS 3 */}
         <div className="flex flex-col lg:flex-row lg:space-x-2 w-full">
-        <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
             <h1 className="mt-5 ml-5 font-medium text-black">
               SERVICE REQUESTED PERCENTAGE
             </h1>
-            <div className="flex rounded-xl">
+            <div className="flex justify-center items-center rounded-xl">
               <Chart
                 type="pie"
-                width={600}
-                height={600}
-                className="flex w-full rounded-xl justify-center"
+                className="w-[full] lg:w-[650px]"
                 series={chartDataStatusPercentage.series}
                 options={chartDataStatusPercentage.options}
               />
@@ -815,25 +889,14 @@ const Reports = () => {
 
           <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
             <h1 className="mt-5 ml-5 font-medium text-black">
-              MOBILE APP USAGE
+              SERVICE REQUEST COMPLETION RATE
             </h1>
             <div className="flex rounded-xl">
               <Chart
                 type="line"
                 className="flex w-full rounded-xl "
-                series={[
-                  {
-                    name: "Company1",
-                    data: [100, 200, 232, 132, 422, 132],
-                  },
-                ]}
-                options={{
-                  colors: ["#4b7c80"], // Corrected color code
-                  chart: {
-                    background: "transparent",
-                  },
-                  // Add other chart options as needed
-                }}
+                series={chartDataCompletionRate.series}
+                options={chartDataCompletionRate.options}
               />
             </div>
           </div>

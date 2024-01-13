@@ -380,7 +380,7 @@ const StaffManagement = () => {
                   <th
                     scope="col"
                     key={idx}
-                    className="px-6 py-3 text-center text-xs font-bold text-white uppercase"
+                    className="px-2 xl:px-6 py-3 text-center text-xs font-bold text-white uppercase"
                   >
                     {item}
                   </th>
@@ -390,7 +390,7 @@ const StaffManagement = () => {
             <tbody className="odd:bg-slate-100">
               {Users.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
-                  <td className="px-6 py-3">
+                  <td className="px-2 xl:px-6 py-3">
                     <div className="flex justify-center items-center">
                       <input
                         type="checkbox"
@@ -401,7 +401,7 @@ const StaffManagement = () => {
                       />
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-2 xl:px-6 py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2 ">
                       {item.lastName +
                         ", " +
@@ -410,35 +410,35 @@ const StaffManagement = () => {
                         item.firstName}
                     </span>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-2 xl:px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                         {item.email}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-2 xl:px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                         {item.age}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-2 xl:px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {item.sex}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-2 xl:px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {item.contact}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-2 xl:px-6 py-3">
                     {item.isApproved === "Registered" && (
                       <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                         <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
@@ -461,7 +461,7 @@ const StaffManagement = () => {
                       </div>
                     )}
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-2 xl:px-6 py-3">
                     <div className="flex justify-center space-x-1 sm:space-x-none">
                       <div className="hs-tooltip inline-block">
                         <button
