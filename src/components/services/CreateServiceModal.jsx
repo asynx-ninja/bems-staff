@@ -243,7 +243,7 @@ function CreateServiceModal({ brgy }) {
                   <option value="Infrastructure">
                     Infrastructure Services
                   </option>
-                  <option value="Community Services">Community Services</option>
+                  <option value="Community">Community Services</option>
                   <option value="Administrative">
                     Administrative Services
                   </option>

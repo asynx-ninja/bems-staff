@@ -4,7 +4,7 @@ import axios from "axios";
 import AddSectionForm from "./AddSectionForm";
 import AddFormLoader from "../../loaders/AddFormLoader";
 
-const AddEventsForm = ({ service_id, brgy }) => {
+const AddEventsForm = ({ announcement_id, brgy }) => {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -98,7 +98,7 @@ const AddEventsForm = ({ service_id, brgy }) => {
       setSubmitClicked(true);
 
       const response = await axios.post(
-        `http://localhost:8800/api/forms/?brgy=${brgy}&service_id=${service_id}&checked=${checked}`,
+        `http://localhost:8800/api/forms/?brgy=${brgy}&announcement_id=${announcement_id}&checked=${checked}`,
         {
           form: form,
           section: section,
@@ -123,7 +123,7 @@ const AddEventsForm = ({ service_id, brgy }) => {
     }
   };
 
-  console.log("Section in Add Service", section);
+  console.log("Section in Add Events", section);
 
   return (
     <div>
@@ -135,7 +135,7 @@ const AddEventsForm = ({ service_id, brgy }) => {
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
             {/* Header */}
-            <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#3e5fc2] to-[#1f2f5e] overflow-hidden rounded-t-2xl">
+            <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] overflow-hidden rounded-t-2xl">
               <h3
                 className="font-bold text-white mx-auto md:text-xl text-center"
                 style={{ letterSpacing: "0.3em" }}
