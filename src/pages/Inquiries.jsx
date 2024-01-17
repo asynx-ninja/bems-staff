@@ -35,6 +35,8 @@ const Inquiries = () => {
   const [dateType, setDateType] = useState("specific");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
+
+  
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
     setSortOrder(newSortOrder);
