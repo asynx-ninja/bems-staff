@@ -31,7 +31,7 @@ const EventsRegistrations = () => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/requests/?brgy=${brgy}&archived=false&status=${statusFilter}&page=${currentPage}`
+          `${API_LINK}/applications/?brgy=${brgy}&archived=false&status=${statusFilter}&page=${currentPage}`
         );
 
         if (response.status === 200) {

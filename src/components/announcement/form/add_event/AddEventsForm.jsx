@@ -98,7 +98,7 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
       setSubmitClicked(true);
 
       const response = await axios.post(
-        `http://localhost:8800/api/forms/?brgy=${brgy}&announcement_id=${announcement_id}&checked=${checked}`,
+        `http://localhost:8800/api/event_form/?brgy=${brgy}&event_id=${announcement_id}&checked=${checked}`,
         {
           form: form,
           section: section,

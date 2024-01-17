@@ -481,7 +481,7 @@ const EventsManagement = () => {
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-3 ">
+                  <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {item.attendees.length}
@@ -591,8 +591,8 @@ const EventsManagement = () => {
           announcement={announcement}
           setAnnouncement={setAnnouncement}
         />
-        <AddEventsForm announcement_id={announcement.announcement_id} brgy={brgy}/>
-        <EditEventsForm announcement_id={announcement.announcement_id} brgy={brgy}/>
+        <AddEventsForm announcement_id={announcement.event_id} brgy={brgy}/>
+        <EditEventsForm announcement_id={announcement.event_id} brgy={brgy}/>
       </div>
     </div>
   );

@@ -19,7 +19,7 @@ const EditEventsForm = ({ announcement_id, brgy }) => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/forms/?brgy=${brgy}&announcement_id=${announcement_id}`
+          `${API_LINK}/event_form/?brgy=${brgy}&event_id=${announcement_id}`
         );
 
         // filter
@@ -49,7 +49,7 @@ const EditEventsForm = ({ announcement_id, brgy }) => {
       setSubmitClicked(true);
 
       const response = await axios.patch(
-        `http://localhost:8800/api/forms/`,
+        `http://localhost:8800/api/event_form/`,
         {
           detail: detail,
         },
