@@ -38,6 +38,9 @@ const Inquiries = () => {
   //date filtering
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [selected, setSelected] = useState("date");
+  const [selectedWeek, setSelectedWeek] = useState("week");
+  const [selectedMonth, setSelectedMonth] = useState("month");
+  const [selectedYear, setSelectedYear] = useState("year");
 
 
   useEffect(() => {
@@ -126,6 +129,7 @@ const Inquiries = () => {
   const handleResetFilter = () => {
     setStatusFilter("all");
     setSearchQuery("");
+    setInquiries();
   };
 
    
@@ -186,21 +190,21 @@ const Inquiries = () => {
   const onChangeWeek = (e) => {
     const date = moment(e.target.value).toDate();
     console.log("selected week converted date", date);
-    console.log("specified week", filters(selected, date));
+    console.log("specified week", filters(selectedWeek, date));
   };
 
   const onChangeMonth = (e) => {
     const date = moment(e.target.value).toDate();
 
     console.log("selected month converted date", date);
-    console.log("specified month", filters(selected, date));
+    console.log("specified month", filters(selectedMonth, date));
   };
 
   const onChangeYear = (e) => {
     const date = new Date(e.target.value, 0, 1);
 
     console.log("selected year converted date", date);
-    console.log("specified year", filters(selected, date));
+    console.log("specified year", filters(selectedYear, date));
   };
 
   return (
