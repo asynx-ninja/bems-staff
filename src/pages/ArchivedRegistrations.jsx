@@ -31,7 +31,7 @@ const ArchivedRegistrations = () => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/requests/?brgy=${brgy}&archived=true&status=${statusFilter}&page=${currentPage}`
+          `${API_LINK}/application/?brgy=${brgy}&archived=true&status=${statusFilter}&page=${currentPage}`
         );
 
         if (response.status === 200) {setRequests(response.data.result);  setPageCount(response.data.pageCount);}
@@ -49,7 +49,7 @@ const ArchivedRegistrations = () => {
 
   const Requests = requests.filter(
     (item) =>
-      item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
+      item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleStatusFilter = (selectedStatus) => {
@@ -339,103 +339,6 @@ const ArchivedRegistrations = () => {
                       APPLY
                     </button>
                   </div>
-                </ul>
-              </div>
-
-              {/* Service Type Sort */}
-              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
-                <button
-                  id="hs-dropdown"
-                  type="button"
-                  className="bg-[#21556d] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
-                >
-                  SERVICE TYPE
-                  <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </button>
-                <ul
-                  className="bg-[#21556d] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
-                  aria-labelledby="hs-dropdown"
-                >
-                  <a
-                    // onClick={handleResetFilter}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    RESET FILTERS
-                  </a>
-                  <hr className="border-[#ffffff] my-1" />
-                  <a
-                    // onClick={() => handleStatusFilter("Pending")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    HEALTHCARE
-                  </a>
-                  <a
-                    // onClick={() => handleStatusFilter("In Progress")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    EDUCATION
-                  </a>
-                  <a
-                    // onClick={() => handleStatusFilter("Completed")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    SOCIAL WELFARE
-                  </a>
-                  <a
-                    // onClick={() => handleStatusFilter("Completed")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    SECURITY AND SAFETY
-                  </a>
-                  <a
-                    // onClick={() => handleStatusFilter("Completed")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    INFRASTRUCTURE
-                  </a>
-                  <a
-                    // onClick={() => handleStatusFilter("Completed")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    COMMUNITY
-                  </a>
-                  <a
-                    // onClick={() => handleStatusFilter("Completed")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    ADMINISTRATIVE
-                  </a>
-                  <a
-                    // onClick={() => handleStatusFilter("Completed")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    ENVIRONMENTAL
-                  </a>
                 </ul>
               </div>
             </div>
