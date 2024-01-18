@@ -10,6 +10,8 @@ function AddResidentModal({ brgy }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
+  const [emptyFields, setEmptyFields] = useState([]);
+  const [empty, setEmpty] = useState(false);
   const [user, setUser] = useState({
     user_id: "",
     firstName: "",
@@ -22,7 +24,7 @@ function AddResidentModal({ brgy }) {
     age: "",
     contact: "",
     sex: "",
-    address: "",
+    street: "",
     occupation: "",
     civil_status: "",
     type: "",
@@ -36,6 +38,18 @@ function AddResidentModal({ brgy }) {
     brgy: brgy,
   });
 
+  const checkEmptyFields = () => {
+    let arr = [];
+    const keysToCheck = ["firstName", "lastName", "age", "email", "birthday", "contact", "username", "password", "street"]
+    for (const key of keysToCheck) {
+      if (user[key] === "") {
+        arr.push(key)
+      }
+    }
+    setEmptyFields(arr);
+    return arr;
+  };
+
   const handleButtonClick = (e) => {
     e.preventDefault();
     setUser((prev) => ({
@@ -45,10 +59,15 @@ function AddResidentModal({ brgy }) {
   };
 
   const handleChange = (e) => {
-    setUser((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+    setUser((prev) => {
+      const createUser = { ...prev, [e.target.name]: e.target.value };
+  
+      if (e.target.name === 'birthday') {
+        createUser.age = calculateAge(createUser.birthday);
+      }
+  
+      return createUser;
+    });
   };
 
   const handleChange2 = (field, value) => {
@@ -63,63 +82,73 @@ function AddResidentModal({ brgy }) {
       e.preventDefault();
       setSubmitClicked(true);
 
-      const calculatedAge = calculateAge(user.birthday);
+      const emptyFieldsArr = checkEmptyFields();
 
-      const obj = {
-        firstName: user.firstName,
-        middleName: user.middleName,
-        lastName: user.lastName,
-        suffix: user.suffix,
-        religion: user.religion,
-        email: user.email,
-        birthday: user.birthday,
-        age: calculatedAge,
-        contact: user.contact,
-        sex: user.sex,
-        address: { street: user.street, brgy: user.brgy, city: user.city },
-        occupation: user.occupation,
-        civil_status: user.civil_status,
-        type: user.type === "" ? "Resident" : user.type,
-        isVoter: user.isVoter,
-        isHead: user.isHead,
-        isArchived: user.isArchived,
-        isApproved: user.isApproved,
-        username: user.username,
-        password: user.password,
-      };
-      const result = await axios.post(`${API_LINK}/users/`, obj);
+      if (emptyFieldsArr.length > 0) {
+        console.log(emptyFieldsArr);
+        setEmpty(true);
+        setSubmitClicked(false); 
+      } else {
+        const calculatedAge = calculateAge(user.birthday);
 
-      if (result.status === 200) {
-        setUser({
-          user_id: "",
-          firstName: "",
-          middleName: "",
-          lastName: "",
-          suffix: "",
-          religion: "",
-          email: "",
-          birthday: "",
-          age: "",
-          contact: "",
-          sex: "",
-          address: "",
-          occupation: "",
-          civil_status: "",
-          type: "",
-          isVoter: "",
-          isHead: "",
-          username: "",
-          password: "",
-          isArchived: "",
-          isApproved: "",
-          city: "Rodriguez, Rizal",
-          brgy: brgy,
-        });
-        setSubmitClicked(false);
-        setCreationStatus("success");
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
+        const obj = {
+          firstName: user.firstName,
+          middleName: user.middleName,
+          lastName: user.lastName,
+          suffix: user.suffix,
+          religion: user.religion,
+          email: user.email,
+          birthday: user.birthday,
+          age: calculatedAge,
+          contact: user.contact,
+          sex: user.sex,
+          address: { street: user.street, brgy: user.brgy, city: user.city },
+          occupation: user.occupation,
+          civil_status: user.civil_status,
+          type: user.type === "" ? "Resident" : user.type,
+          isVoter: user.isVoter,
+          isHead: user.isHead,
+          isArchived: user.isArchived,
+          isApproved: user.isApproved,
+          username: user.username,
+          password: user.password,
+        };
+
+        const result = await axios.post(`${API_LINK}/users/`, obj);
+
+        if (result.status === 200) {
+          setUser({
+            user_id: "",
+            firstName: "",
+            middleName: "",
+            lastName: "",
+            suffix: "",
+            religion: "",
+            email: "",
+            birthday: "",
+            age: "",
+            contact: "",
+            sex: "",
+            address: "",
+            occupation: "",
+            civil_status: "",
+            type: "",
+            isVoter: "",
+            isHead: "",
+            username: "",
+            password: "",
+            isArchived: "",
+            isApproved: "",
+            city: "Rodriguez, Rizal",
+            brgy: brgy,
+          });
+
+          setSubmitClicked(false);
+          setCreationStatus("success");
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        }
       }
     } catch (err) {
       console.log(err);
@@ -186,6 +215,11 @@ function AddResidentModal({ brgy }) {
 
               <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
                 <form>
+                  {empty && (
+                    <p className="text-red-500 mt-2 mb-4">
+                      Please fill in the required fields.
+                    </p>
+                  )}
                   <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                     <div className="flex flex-col mb-1 w-full">
                       {/* Service Description */}
@@ -208,7 +242,8 @@ function AddResidentModal({ brgy }) {
                               id="firstName"
                               name="firstName"
                               onChange={handleChange}
-                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("firstName") && "border-red-500"
+                                }`}
                               placeholder=""
                             />
                           </div>
@@ -242,7 +277,8 @@ function AddResidentModal({ brgy }) {
                               id="lastName"
                               name="lastName"
                               onChange={handleChange}
-                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("lastName") && "border-red-500"
+                                }`}
                               placeholder=""
                             />
                           </div>
@@ -262,7 +298,7 @@ function AddResidentModal({ brgy }) {
                               name="suffix"
                               onChange={handleChange}
                               className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                              placeholder=""
+                              placeholder="--Optional--"
                             />
                           </div>
 
@@ -278,7 +314,8 @@ function AddResidentModal({ brgy }) {
                               id="birthday"
                               name="birthday"
                               onChange={handleChange}
-                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("birthday") && "border-red-500"
+                                }`}
                               placeholder="mm/dd/yyyy"
                               value={birthdayFormat(user.birthday) || ""}
                             />
@@ -296,7 +333,8 @@ function AddResidentModal({ brgy }) {
                               id="age"
                               name="age"
                               onChange={handleChange}
-                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("age") && "border-red-500"
+                                }`}
                               placeholder=""
                               value={calculateAge(user.birthday) || ""}
                             />
@@ -315,9 +353,11 @@ function AddResidentModal({ brgy }) {
                               id="email"
                               name="email"
                               onChange={handleChange}
-                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("email") && "border-red-500"
+                                }`}
                               placeholder=""
                             />
+
                           </div>
 
                           <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full md:w-[27%] lg:w-[32%]">
@@ -332,9 +372,11 @@ function AddResidentModal({ brgy }) {
                               id="contact"
                               name="contact"
                               onChange={handleChange}
-                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("contact") && "border-red-500"
+                                }`}
                               placeholder=""
                             />
+
                           </div>
 
                           <div className="w-full md:ml-4 md:w-[20%]">
@@ -446,7 +488,8 @@ function AddResidentModal({ brgy }) {
                               id="street"
                               name="street"
                               onChange={handleChange}
-                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("street") && "border-red-500"
+                                }`}
                               placeholder=""
                             />
                           </div>
@@ -624,9 +667,11 @@ function AddResidentModal({ brgy }) {
                             id="username"
                             name="username"
                             onChange={handleChange}
-                            className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                            className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("username") && "border-red-500"
+                              }`}
                             placeholder=""
                           />
+
                         </div>
 
                         <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full">
@@ -651,14 +696,17 @@ function AddResidentModal({ brgy }) {
                             <label htmlFor="password" className="sr-only">
                               password
                             </label>
+
                             <input
                               type="text"
-                              name="password"
                               id="password"
+                              name="password"
                               onChange={handleChange}
-                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-r-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("password") && "border-red-500"
+                                }`}
                               value={user.password}
                             />
+
                           </div>
                         </div>
                       </div>
