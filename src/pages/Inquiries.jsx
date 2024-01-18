@@ -244,9 +244,7 @@ const Inquiries = () => {
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse md:flex-row flex justify-between w-full">
             <div className="flex space-x-2">
-              <span className="font-medium text-[#292929]  justify-center flex text-center my-auto mx-2">
-                SORT BY:{" "}
-              </span>
+  
 
               {/* Status Sort */}
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
