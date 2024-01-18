@@ -1,4 +1,5 @@
 import React from "react";
+import moment from "moment";
 import ReactPaginate from "react-paginate";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -25,10 +26,20 @@ const Requests = () => {
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+
+  //status filter
   const [statusFilter, setStatusFilter] = useState("all");
+  //request filter
   const [requestFilter, setRequestFilter] = useState("all"); // Default is "all"
+  //pagination
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
+
+  //date filtering
+  const [specifiedDate, setSpecifiedDate] = useState(new Date());
+  const [filteredRequests, setFilteredRequests] = useState([]);
+  const [selected, setSelected] = useState("date");
+
   useEffect(() => {
     const fetch = async () => {
       try {
@@ -37,9 +48,11 @@ const Requests = () => {
         );
 
         if (response.status === 200) {
-          setRequests(response.data.result);
+         setRequests(response.data.result);
           setPageCount(response.data.pageCount);
+          setFilteredRequests(response.data.result)
         }
+        else setRequests([]);
       } catch (err) {
         console.log(err);
       }
@@ -61,9 +74,10 @@ const Requests = () => {
   const handleResetFilter = () => {
     setStatusFilter("all");
     setRequestFilter("all");
-    setDateFilter(null);
+    setRequest();
     setSearchQuery("");
   };
+
   const Requests = requests.filter((item) =>
     item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -114,41 +128,87 @@ const Requests = () => {
     setRequest(item);
   };
 
-  const handleSort = (sortBy) => {
-    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
-    setSortOrder(newSortOrder);
-    setSortColumn(sortBy);
-
-    const sortedData = requests.slice().sort((a, b) => {
-      if (sortBy === "request_id") {
-        return newSortOrder === "asc"
-          ? a.request_id.localeCompare(b.request_id)
-          : b.request_id.localeCompare(a.request_id);
-      } else if (sortBy === "service_name") {
-        return newSortOrder === "asc"
-          ? a.service_name.localeCompare(b.service_name)
-          : b.service_name.localeCompare(a.service_name);
-      } else if (sortBy === "status") {
-        const order = {
-          "Transaction Completed": 1,
-          Pending: 2,
-          Paid: 3,
-          Processing: 4,
-          Cancelled: 5,
-          Rejected: 6,
-        };
-        return newSortOrder === "asc"
-          ? order[a.status] - order[b.status]
-          : order[b.status] - order[a.status];
-      }
-
-      return 0;
-    });
-
-    setRequests(sortedData);
+  const DateFormat = (date) => {
+    const dateFormat = date === undefined ? "" : date.substr(0, 10);
+    return dateFormat;
   };
 
-  console.log("req parent", requests);
+
+  const filters = (choice, selectedDate) => {
+    switch (choice) {
+      case "date":
+        return requests.filter((item) => {
+          console.log(typeof new Date(item.createdAt), selectedDate);
+          return (
+            new Date(item.createdAt).getFullYear() === selectedDate.getFullYear() &&
+            new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
+            new Date(item.createdAt).getDate() === selectedDate.getDate()
+          );
+        });
+      case "week":
+        const startDate = selectedDate;
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 6);
+
+        console.log("start and end", startDate, endDate);
+
+        return requests.filter(
+          (item) =>
+            new Date(item.createdAt).getFullYear() === startDate.getFullYear() &&
+            new Date(item.createdAt).getMonth() === startDate.getMonth() &&
+            new Date(item.createdAt).getDate() >= startDate.getDate() &&
+            new Date(item.createdAt).getDate() <= endDate.getDate()
+        );
+      case "month":
+        return requests.filter(
+          (item) =>
+            new Date(item.createdAt).getFullYear() === selectedDate.getFullYear() &&
+            new Date(item.createdAt).getMonth() === selectedDate.getMonth()
+        );
+      case "year":
+        return requests.filter(
+          (item) => new Date(item.createdAt).getFullYear() === selectedDate.getFullYear()
+        );
+    }
+  };
+
+  const onSelect = (e) => {
+    console.log("select", e.target.value);
+
+    setSelected(e.target.value);
+
+    console.log("specified select", filters(e.target.value, specifiedDate));
+  };
+
+  const onChangeDate = (e) => {
+    const date = new Date(e.target.value);
+    setSpecifiedDate(date);
+    setFilteredRequests(filters(selected, date))
+  };
+
+  const onChangeWeek = (e) => {
+    const date = moment(e.target.value).toDate();
+    setSpecifiedDate(date);
+    setFilteredRequests(filters(selected, date))
+  };
+
+  const onChangeMonth = (e) => {
+    const date = moment(e.target.value).toDate();
+    setSpecifiedDate(date);
+    setFilteredRequests(filters(selected, date))
+  };
+
+  const onChangeYear = (e) => {
+    if (e.target.value === "") {
+      setFilteredRequests(requests)
+    } else {
+      const date = new Date(e.target.value, 0, 1);
+      setSpecifiedDate(date);
+      console.log("selected year converted date", date);
+      console.log("specified year", filters(selected, date));
+      setFilteredRequests(filters(selected, date))
+    }
+  };
 
   return (
     <div className="mx-4 ">
@@ -282,7 +342,6 @@ const Requests = () => {
                 </ul>
               </div>
 
-              {/* Date Sort */}
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button
                   id="hs-dropdown"
@@ -291,9 +350,7 @@ const Requests = () => {
                 >
                   DATE
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -313,8 +370,8 @@ const Requests = () => {
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    // onClick={handleResetFilter}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    onClick={handleResetFilter}
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     RESET FILTERS
@@ -325,57 +382,55 @@ const Requests = () => {
                     <div className="flex gap-2">
                       <select
                         className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
-                        // value={dateType}
-                        // onChange={handleDateTypeChange}
+
+                        onChange={onSelect}
+                        defaultValue={selected}
                       >
-                        <option value="specific">Specific Date</option>
+                        <option value="date">Specific Date</option>
                         <option value="week">Week</option>
                         <option value="month">Month</option>
                         <option value="year">Year</option>
                       </select>
-                      {/* {dateType === "specific" && (
+                      {selected === "date" && (
                         <input
                           className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
                           type="date"
-                          id="specificDate"
-                          name="specificDate"
+                          id="date"
+                          name="date"
+                          onChange={onChangeDate}
                         />
                       )}
-                      {dateType === "week" && (
+                      {selected === "week" && (
                         <input
                           className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
                           type="week"
                           id="week"
                           name="week"
+                          onChange={onChangeWeek}
                         />
                       )}
-                      {dateType === "month" && (
+                      {selected === "month" && (
                         <input
                           className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
                           type="month"
                           id="month"
                           name="month"
+                          onChange={onChangeMonth}
                         />
                       )}
-                      {dateType === "year" && (
+                      {selected === "year" && (
                         <input
                           className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
                           type="number"
                           id="year"
                           name="year"
                           placeholder="YEAR"
-                          min="1900"
-                          max="2100"
+                          onChange={onChangeYear}
+                          min={1990}
+                          max={new Date().getFullYear() + 10}
                         />
-                      )} */}
+                      )}
                     </div>
-                    <button
-                      type="submit"
-                      // onClick={() => handleSort("date")}
-                      className="bg-[#21556d] uppercase text-white mt-2 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 hover:bg-[#0d4675]"
-                    >
-                      APPLY
-                    </button>
                   </div>
                 </ul>
               </div>
@@ -558,7 +613,7 @@ const Requests = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {Requests.map((item, index) => (
+              {filteredRequests.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
@@ -594,7 +649,7 @@ const Requests = () => {
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {new Date(item.createdAt).toISOString().split("T")[0]}
+                      {DateFormat(item.createdAt) || ""}
                       </span>
                     </div>
                   </td>

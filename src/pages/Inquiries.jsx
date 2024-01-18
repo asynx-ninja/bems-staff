@@ -248,9 +248,7 @@ const Inquiries = () => {
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse md:flex-row flex justify-between w-full">
             <div className="flex space-x-2">
-              <span className="font-medium text-[#292929]  justify-center flex text-center my-auto mx-2">
-                SORT BY:{" "}
-              </span>
+  
 
               {/* Status Sort */}
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
@@ -443,7 +441,7 @@ const Inquiries = () => {
                 <div className="hs-tooltip inline-block w-full">
                   <button
                     type="button"
-                    data-hs-overlay="#hs-modal-archive"
+                    data-hs-overlay="#hs-modal-archiveInquiry"
                     className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md  bg-pink-800 font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
                   >
                     <AiOutlineStop size={24} style={{ color: "#ffffff" }} />
