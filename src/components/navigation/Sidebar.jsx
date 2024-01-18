@@ -27,8 +27,9 @@ const Sidebar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
   const id = searchParams.get("id");
+  const [openDropdown, setOpenDropdown] = useState("");
   const brgy = searchParams.get("brgy");
-
+  const [selectedOption, setSelectedOption] = useState("");
   console.log("User: ", userData);
 
   useEffect(() => {
@@ -59,20 +60,27 @@ const Sidebar = () => {
     fetch();
   }, [id]);
 
+
   const [isClicked, setIsClicked] = useState(false);
   const [isClickedServices, setIsClickedServices] = useState(false);
   const [isClickedInformation, setIsClickedInformation] = useState(false);
 
   const handleCollapseToggle = () => {
     setIsClicked(!isClicked);
+    setIsClickedServices(false);
+    setIsClickedInformation(false);
   };
 
   const handleCollapseToggleServices = () => {
     setIsClickedServices(!isClickedServices);
+    setIsClicked(false);
+    setIsClickedInformation(false);
   };
 
   const handleCollapseToggleInformations = () => {
     setIsClickedInformation(!isClickedInformation);
+    setIsClicked(false);
+    setIsClickedServices(false);
   };
 
   return (
@@ -118,19 +126,10 @@ const Sidebar = () => {
                   <Link
                     to={`/dashboard/?id=${id}&brgy=${brgy}`}
                     onClick={() => {
-                      window.innerWidth >= 320 && window.innerWidth <= 1023
-                        ? document
-                            .getQuerySelector(
-                              "[data-hs-overlay-backdrop-template]"
-                            )
-                            .remove()
-                        : null;
+                      setSelectedOption("dashboard");
                     }}
-                    className={`${
-                      currentPath === "/dashboard"
-                        ? "bg-gradient-to-r from-[#0d4b75] to-[#3e5fc2] text-[#EFC586]"
-                        : null
-                    } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                    className={`${selectedOption === "dashboard" ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]" : ""
+                      } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
                   >
                     <BiSolidDashboard size={15} />
                     Dashboard
@@ -140,9 +139,8 @@ const Sidebar = () => {
                   <button
                     id="hs-events-collapse"
                     data-hs-collapse="#hs-events-collapse-heading"
-                    className={`hs-collapse-toggle justify-between flex items-center w-full gap-x-3 py-2 px-2.5 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0] ${
-                      isClicked ? "text-[#EFC586]" : ""
-                    }`}
+                    className={`hs-collapse-toggle justify-between flex items-center w-full gap-x-3 py-2 px-2.5 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0] ${isClicked ? "text-[#EFC586]" : ""
+                      }`}
                     onClick={handleCollapseToggle}
                   >
                     <div className="flex items-center gap-x-3">
@@ -175,43 +173,42 @@ const Sidebar = () => {
                     <Link
                       to={`/events_management/?id=${id}&brgy=${brgy}`}
                       onClick={() => {
+                        setSelectedOption("eventsManagement");
+
                         window.innerWidth >= 320 && window.innerWidth <= 1023
                           ? document
-                              .getQuerySelector(
-                                "[data-hs-overlay-backdrop-template]"
-                              )
-                              .remove()
+                            .querySelector("[data-hs-overlay-backdrop-template]")
+                            .remove()
                           : null;
                       }}
-                      className={`${
-                        currentPath === "/services"
-                          ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                          : null
-                      } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                      className={`${selectedOption === "eventsManagement"
+                        ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
+                        : ""
+                        } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
                     >
                       <BsCalendar2Event size={15} />
                       Events Management
                     </Link>
+
                     <Link
                       to={`/events_registrations/?id=${id}&brgy=${brgy}`}
                       onClick={() => {
+                        setSelectedOption("eventsRegistration");
                         window.innerWidth >= 320 && window.innerWidth <= 1023
                           ? document
-                              .getQuerySelector(
-                                "[data-hs-overlay-backdrop-template]"
-                              )
-                              .remove()
+                            .querySelector("[data-hs-overlay-backdrop-template]")
+                            .remove()
                           : null;
                       }}
-                      className={`${
-                        currentPath === "/requests"
-                          ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                          : null
-                      } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                      className={`${selectedOption === "eventsRegistration"
+                        ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
+                        : ""
+                        } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
                     >
-                      <SiGoogleforms  size={15} />
+                      <SiGoogleforms size={15} />
                       Events Registration
                     </Link>
+
                   </div>
                 </li>
 
@@ -219,54 +216,53 @@ const Sidebar = () => {
                   <Link
                     to={`/inquiries/?id=${id}&brgy=${brgy}`}
                     onClick={() => {
+                      setSelectedOption("inquiries");
+                      // Additional logic if needed
                       window.innerWidth >= 320 && window.innerWidth <= 1023
                         ? document
-                            .getQuerySelector(
-                              "[data-hs-overlay-backdrop-template]"
-                            )
-                            .remove()
+                          .querySelector("[data-hs-overlay-backdrop-template]")
+                          .remove()
                         : null;
                     }}
-                    className={`${
-                      currentPath === "/inquiries"
-                        ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                        : null
-                    } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                    className={`${selectedOption === "inquiries"
+                      ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
+                      : ""
+                      } flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
                   >
                     <FaRegNoteSticky size={15} />
                     Inquiries
                   </Link>
+
                 </li>
                 <li>
                   <Link
                     to={`/residents/?id=${id}&brgy=${brgy}`}
                     onClick={() => {
+                      setSelectedOption("residents");
+                      // Additional logic if needed
                       window.innerWidth >= 320 && window.innerWidth <= 1023
                         ? document
-                            .getQuerySelector(
-                              "[data-hs-overlay-backdrop-template]"
-                            )
-                            .remove()
+                          .querySelector("[data-hs-overlay-backdrop-template]")
+                          .remove()
                         : null;
                     }}
-                    className={`${
-                      currentPath === "/residents"
-                        ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                        : null
-                    } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                    className={`${selectedOption === "residents"
+                      ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
+                      : ""
+                      } flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
                   >
                     <BsPeopleFill size={15} />
                     Residents
                   </Link>
+
                 </li>
 
                 <li>
                   <button
                     id="hs-unstyled-collapse"
                     data-hs-collapse="#hs-unstyled-collapse-heading"
-                    className={`hs-collapse-toggle justify-between flex items-center w-full gap-x-3 py-2 px-2.5 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0] ${
-                      isClickedServices ? "text-[#EFC586]" : ""
-                    }`}
+                    className={`hs-collapse-toggle justify-between flex items-center w-full gap-x-3 py-2 px-2.5 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0] ${isClickedServices ? "text-[#EFC586]" : ""
+                      }`}
                     onClick={handleCollapseToggleServices}
                   >
                     <div className="flex items-center gap-x-3">
@@ -299,43 +295,43 @@ const Sidebar = () => {
                     <Link
                       to={`/services/?id=${id}&brgy=${brgy}`}
                       onClick={() => {
+                        setSelectedOption("manageServices");
+                        // Additional logic if needed
                         window.innerWidth >= 320 && window.innerWidth <= 1023
                           ? document
-                              .getQuerySelector(
-                                "[data-hs-overlay-backdrop-template]"
-                              )
-                              .remove()
+                            .querySelector("[data-hs-overlay-backdrop-template]")
+                            .remove()
                           : null;
                       }}
-                      className={`${
-                        currentPath === "/services"
-                          ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                          : null
-                      } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                      className={`${selectedOption === "manageServices"
+                        ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
+                        : ""
+                        } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
                     >
                       <FaServicestack size={15} />
                       Manage Services
                     </Link>
+
                     <Link
                       to={`/requests/?id=${id}&brgy=${brgy}`}
                       onClick={() => {
+                        setSelectedOption("serviceRequests");
+                        // Additional logic if needed
                         window.innerWidth >= 320 && window.innerWidth <= 1023
                           ? document
-                              .getQuerySelector(
-                                "[data-hs-overlay-backdrop-template]"
-                              )
-                              .remove()
+                            .querySelector("[data-hs-overlay-backdrop-template]")
+                            .remove()
                           : null;
                       }}
-                      className={`${
-                        currentPath === "/requests"
-                          ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                          : null
-                      } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                      className={`${selectedOption === "serviceRequests"
+                        ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
+                        : ""
+                        } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
                     >
                       <GoGitPullRequest size={15} />
                       Service Requests
                     </Link>
+
                   </div>
                 </li>
 
@@ -344,9 +340,8 @@ const Sidebar = () => {
                     <button
                       id="hs-unstyled-collapse"
                       data-hs-collapse="#hs-info-collapse-heading"
-                      className={`hs-collapse-toggle justify-between flex items-center w-full gap-x-3 py-2 px-2.5 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0] ${
-                        isClickedInformation ? "text-[#EFC586]" : ""
-                      }`}
+                      className={`hs-collapse-toggle justify-between flex items-center w-full gap-x-3 py-2 px-2.5 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0] ${isClickedInformation ? "text-[#EFC586]" : ""
+                        }`}
                       onClick={handleCollapseToggleInformations}
                     >
                       <div className="flex items-center gap-x-3">
@@ -379,84 +374,84 @@ const Sidebar = () => {
                       <Link
                         to={`/reports/?id=${id}&brgy=${brgy}`}
                         onClick={() => {
+                          setSelectedOption("reports");
+                          // Additional logic if needed
                           window.innerWidth >= 320 && window.innerWidth <= 1023
                             ? document
-                                .getQuerySelector(
-                                  "[data-hs-overlay-backdrop-template]"
-                                )
-                                .remove()
+                              .querySelector("[data-hs-overlay-backdrop-template]")
+                              .remove()
                             : null;
                         }}
-                        className={`${
-                          currentPath === "/info"
-                            ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                            : null
-                        } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                        className={`${selectedOption === "reports"
+                          ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
+                          : ""
+                          } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
                       >
                         <ImStatsBars size={15} />
                         Reports
                       </Link>
+
                       <Link
                         to={`/officials/?id=${id}&brgy=${brgy}`}
                         onClick={() => {
+                          setSelectedOption("barangayOfficials");
+                          // Additional logic if needed
                           window.innerWidth >= 320 && window.innerWidth <= 1023
                             ? document
-                                .getQuerySelector(
-                                  "[data-hs-overlay-backdrop-template]"
-                                )
-                                .remove()
+                              .querySelector("[data-hs-overlay-backdrop-template]")
+                              .remove()
                             : null;
                         }}
-                        className={`${
-                          currentPath === "/officials"
-                            ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                            : null
-                        } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                        className={`${selectedOption === "barangayOfficials"
+                          ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
+                          : ""
+                          } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
                       >
                         <FaPeopleGroup size={15} />
                         Barangay Officials
                       </Link>
+
                       <Link
                         to={`/staff_management/?id=${id}&brgy=${brgy}`}
                         onClick={() => {
+                          setSelectedOption("staffManagement");
+                          // Additional logic if needed
                           window.innerWidth >= 320 && window.innerWidth <= 1023
                             ? document
-                                .getQuerySelector(
-                                  "[data-hs-overlay-backdrop-template]"
-                                )
-                                .remove()
+                              .querySelector("[data-hs-overlay-backdrop-template]")
+                              .remove()
                             : null;
                         }}
-                        className={`${
-                          currentPath === "/staff_management"
-                            ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                            : null
-                        } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                        className={`${selectedOption === "staffManagement"
+                          ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
+                          : ""
+                          } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
                       >
                         <MdManageAccounts size={15} />
                         Staff Management
                       </Link>
 
+
                       <Link
                         to={`/info/?id=${id}&brgy=${brgy}`}
                         onClick={() => {
+                          setSelectedOption("barangayInformation");
+                          // Additional logic if needed
                           window.innerWidth >= 320 && window.innerWidth <= 1023
                             ? document
-                                .getQuerySelector(
-                                  "[data-hs-overlay-backdrop-template]"
-                                )
-                                .remove()
+                              .querySelector("[data-hs-overlay-backdrop-template]")
+                              .remove()
                             : null;
                         }}
-                        className={`${
-                          currentPath === "/info"
-                            ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                            : null
-                        } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                        className={`${selectedOption === "barangayInformation"
+                          ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
+                          : ""
+                          } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
                       >
                         <FaChalkboardTeacher size={15} />
                         Barangay Information
                       </Link>
+
                     </div>
                   </li>
                 ) : null}
@@ -464,23 +459,23 @@ const Sidebar = () => {
                   <Link
                     to={`/settings/?id=${id}&brgy=${brgy}`}
                     onClick={() => {
+                      setSelectedOption("profileSettings");
+                      // Additional logic if needed
                       window.innerWidth >= 320 && window.innerWidth <= 1023
                         ? document
-                            .getQuerySelector(
-                              "[data-hs-overlay-backdrop-template]"
-                            )
-                            .remove()
+                          .querySelector("[data-hs-overlay-backdrop-template]")
+                          .remove()
                         : null;
                     }}
-                    className={`${
-                      currentPath === "/settings"
-                        ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                        : null
-                    } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                    className={`${selectedOption === "profileSettings"
+                      ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
+                      : ""
+                      } flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
                   >
                     <MdOutlineMiscellaneousServices size={15} />
                     Profile Settings
                   </Link>
+
                 </li>
 
                 <li>
@@ -490,17 +485,16 @@ const Sidebar = () => {
                     onClick={() => {
                       window.innerWidth >= 320 && window.innerWidth <= 1023
                         ? document
-                            .getQuerySelector(
-                              "[data-hs-overlay-backdrop-template]"
-                            )
-                            .remove()
+                          .getQuerySelector(
+                            "[data-hs-overlay-backdrop-template]"
+                          )
+                          .remove()
                         : null;
                     }}
-                    className={`${
-                      currentPath === "/"
-                        ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                        : null
-                    } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                    className={`${currentPath === "/"
+                      ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
+                      : null
+                      } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
                   >
                     <HiMiniInformationCircle size={15} />
                     Sign-Out

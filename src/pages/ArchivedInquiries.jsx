@@ -56,11 +56,7 @@ const Inquiries = () => {
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
-  const Inquiries = inquiries.filter(
-    (item) =>
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.inq_id.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -416,7 +412,14 @@ const Inquiries = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {setSearchQuery(e.target.value)
+                    const Inquiries = inquiries.filter(
+                      (item) =>
+                        item.name.toLowerCase().includes(e.target.value.toLowerCase()) ||
+                        item.inq_id.toLowerCase().includes(e.target.value.toLowerCase())
+                    );
+                    setFilteredInquiries (Inquiries)
+                  }}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
