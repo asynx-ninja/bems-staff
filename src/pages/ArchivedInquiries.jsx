@@ -29,7 +29,7 @@ const Inquiries = () => {
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/inquiries/?brgy=${brgy}&archived=true&status=${statusFilter}&page=${currentPage}`
+        `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=true&status=${statusFilter}&page=${currentPage}`
       );
       if (response.status === 200) {
         setInquiries(response.data.result);

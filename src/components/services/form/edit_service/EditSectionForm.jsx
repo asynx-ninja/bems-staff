@@ -301,7 +301,7 @@ const EditSectionForm = ({ detail, setDetail }) => {
                                 onChange={(e) =>
                                   handleInputChange(e, sectionIndex, formIndex)
                                 }
-                                defaultValue={""}
+                                value={form.accept}
                               >
                                 <option value="" disabled>
                                   Select File Type

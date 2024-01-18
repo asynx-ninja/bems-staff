@@ -11,6 +11,8 @@ function ViewRequestModal({ request }) {
   const [detail, ] = useState(request);
   const [empty, ] = useState(false);
 
+  console.log("detail", detail);
+
   const returnFile = (string) => {
     for (const item of detail.file) {
       if (item.name.includes(string)) {
