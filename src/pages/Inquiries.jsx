@@ -30,7 +30,7 @@ const Inquiries = () => {
 
   //query
   const [searchQuery, setSearchQuery] = useState("");
-  
+
   //pagination
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
@@ -38,10 +38,7 @@ const Inquiries = () => {
   //date filtering
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [selected, setSelected] = useState("date");
-  const [selectedWeek, setSelectedWeek] = useState("week");
-  const [selectedMonth, setSelectedMonth] = useState("month");
-  const [selectedYear, setSelectedYear] = useState("year");
-
+  const [filteredInquiries, setFilteredInquiries] = useState([]);
 
   useEffect(() => {
     document.title = "Inquiries | Barangay E-Services Management";
@@ -54,7 +51,7 @@ const Inquiries = () => {
 
       if (response.status === 200) {
         setInquiries(response.data.result);
-        
+        setFilteredInquiries(response.data.result);
         setPageCount(response.data.pageCount);
       } else {
         setInquiries([]);
@@ -132,16 +129,16 @@ const Inquiries = () => {
     setInquiries();
   };
 
-   
+
   const filters = (choice, selectedDate) => {
     switch (choice) {
       case "date":
         return inquiries.filter((item) => {
           console.log(typeof new Date(item.compose.date), selectedDate);
           return (
-           new Date(item.compose.date).getFullYear() === selectedDate.getFullYear() &&
-           new Date(item.compose.date).getMonth() === selectedDate.getMonth() &&
-           new Date(item.compose.date).getDate() === selectedDate.getDate()
+            new Date(item.compose.date).getFullYear() === selectedDate.getFullYear() &&
+            new Date(item.compose.date).getMonth() === selectedDate.getMonth() &&
+            new Date(item.compose.date).getDate() === selectedDate.getDate()
           );
         });
       case "week":
@@ -153,16 +150,16 @@ const Inquiries = () => {
 
         return inquiries.filter(
           (item) =>
-          new Date(item.compose.date).getFullYear() === startDate.getFullYear() &&
-          new Date(item.compose.date).getMonth() === startDate.getMonth() &&
-          new Date(item.compose.date).getDate() >= startDate.getDate() &&
-          new Date(item.compose.date).getDate() <= endDate.getDate()
+            new Date(item.compose.date).getFullYear() === startDate.getFullYear() &&
+            new Date(item.compose.date).getMonth() === startDate.getMonth() &&
+            new Date(item.compose.date).getDate() >= startDate.getDate() &&
+            new Date(item.compose.date).getDate() <= endDate.getDate()
         );
       case "month":
         return inquiries.filter(
           (item) =>
-          new Date(item.compose.date).getFullYear() === selectedDate.getFullYear() &&
-          new Date(item.compose.date).getMonth() === selectedDate.getMonth()
+            new Date(item.compose.date).getFullYear() === selectedDate.getFullYear() &&
+            new Date(item.compose.date).getMonth() === selectedDate.getMonth()
         );
       case "year":
         return inquiries.filter(
@@ -181,30 +178,32 @@ const Inquiries = () => {
 
   const onChangeDate = (e) => {
     const date = new Date(e.target.value);
-
     setSpecifiedDate(date);
-
-    console.log("specified day", filters(selected, date));
+    setFilteredInquiries(filters(selected, date))
   };
 
   const onChangeWeek = (e) => {
     const date = moment(e.target.value).toDate();
-    console.log("selected week converted date", date);
-    console.log("specified week", filters(selectedWeek, date));
+    setSpecifiedDate(date);
+    setFilteredInquiries(filters(selected, date))
   };
 
   const onChangeMonth = (e) => {
     const date = moment(e.target.value).toDate();
-
-    console.log("selected month converted date", date);
-    console.log("specified month", filters(selectedMonth, date));
+    setSpecifiedDate(date);
+    setFilteredInquiries(filters(selected, date))
   };
 
   const onChangeYear = (e) => {
-    const date = new Date(e.target.value, 0, 1);
-
-    console.log("selected year converted date", date);
-    console.log("specified year", filters(selectedYear, date));
+    if (e.target.value === "") {
+      setFilteredInquiries(inquiries)
+    } else {
+      const date = new Date(e.target.value, 0, 1);
+      setSpecifiedDate(date);
+      console.log("selected year converted date", date);
+      console.log("specified year", filters(selected, date));
+      setFilteredInquiries(filters(selected, date))
+    }
   };
 
   return (
@@ -354,7 +353,7 @@ const Inquiries = () => {
                     <div className="flex gap-2">
                       <select
                         className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
-                        
+
                         onChange={onSelect}
                         defaultValue={selected}
                       >
@@ -487,7 +486,7 @@ const Inquiries = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {Inquiries.map((item, index) => (
+              {filteredInquiries.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
