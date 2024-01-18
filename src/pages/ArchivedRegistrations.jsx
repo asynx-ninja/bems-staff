@@ -1,9 +1,9 @@
 import React from "react";
 import ReactPaginate from "react-paginate";
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import API_LINK from "../config/API";
-import axios from "axios";;
+import axios from "axios";
 import { BsPrinter } from "react-icons/bs";
 import { AiOutlineEye } from "react-icons/ai";
 import { AiOutlineSend } from "react-icons/ai";
@@ -15,8 +15,8 @@ import Breadcrumbs from "../components/archivedRegistrations/Breadcrumbs";
 import RestoreRegistrationModal from "../components/archivedRegistrations/RestoreRegistrationModal";
 
 const ArchivedRegistrations = () => {
-  const [requests, setRequests] = useState([]);
-  const [request, setRequest] = useState({ response: [{ file: [] }] });
+  const [applications, setApplications] = useState([]);
+  const [application, setApplication] = useState({ response: [{ file: [] }] });
   const [selectedItems, setSelectedItems] = useState([]);
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
@@ -34,7 +34,10 @@ const ArchivedRegistrations = () => {
           `${API_LINK}/application/?brgy=${brgy}&archived=true&status=${statusFilter}&page=${currentPage}`
         );
 
-        if (response.status === 200) {setRequests(response.data.result);  setPageCount(response.data.pageCount);}
+        if (response.status === 200) {
+          setApplications(response.data.result);
+          setPageCount(response.data.pageCount);
+        }
       } catch (err) {
         console.log(err);
       }
@@ -47,9 +50,8 @@ const ArchivedRegistrations = () => {
     setCurrentPage(selected);
   };
 
-  const Requests = requests.filter(
-    (item) =>
-      item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
+  const Applications = applications.filter((item) =>
+    item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleStatusFilter = (selectedStatus) => {
@@ -61,7 +63,7 @@ const ArchivedRegistrations = () => {
     setDateFilter(null);
     setSearchQuery("");
   };
-  
+
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
     let value = e.target.value;
@@ -78,12 +80,13 @@ const ArchivedRegistrations = () => {
   };
 
   const checkAllHandler = () => {
-    const requestsToCheck = Requests.length > 0 ? Requests : requests;
+    const applicationsToCheck =
+      Applications.length > 0 ? Applications : applications;
 
-    if (requestsToCheck.length === selectedItems.length) {
+    if (applicationsToCheck.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const postIds = requestsToCheck.map((item) => {
+      const postIds = applicationsToCheck.map((item) => {
         return item._id;
       });
 
@@ -92,16 +95,15 @@ const ArchivedRegistrations = () => {
   };
 
   const tableHeader = [
-    "SERVICE NAME",
+    "EVENT NAME",
     "SENDER",
-    "TYPE OF SERVICE",
     "DATE",
     "STATUS",
     "ACTIONS",
   ];
 
   const handleView = (item) => {
-    setRequest(item);
+    setApplication(item);
   };
 
   const handleSort = (sortBy) => {
@@ -109,17 +111,24 @@ const ArchivedRegistrations = () => {
     setSortOrder(newSortOrder);
     setSortColumn(sortBy);
 
-    const sortedData = requests.slice().sort((a, b) => {
-      if (sortBy === "request_id") {
+    const sortedData = applications.slice().sort((a, b) => {
+      if (sortBy === "event_id") {
         return newSortOrder === "asc"
-          ? a.request_id.localeCompare(b.request_id)
-          : b.request_id.localeCompare(a.request_id);
+          ? a.event_id.localeCompare(b.event_id)
+          : b.event_id.localeCompare(a.event_id);
       } else if (sortBy === "service_name") {
         return newSortOrder === "asc"
           ? a.service_name.localeCompare(b.service_name)
           : b.service_name.localeCompare(a.service_name);
       } else if (sortBy === "status") {
-        const order = { "Transaction Completed": 1, Pending: 2, Paid: 3, Processing: 4,  Cancelled: 5, Rejected: 6 };
+        const order = {
+          "Transaction Completed": 1,
+          Pending: 2,
+          Paid: 3,
+          Processing: 4,
+          Cancelled: 5,
+          Rejected: 6,
+        };
         return newSortOrder === "asc"
           ? order[a.status] - order[b.status]
           : order[b.status] - order[a.status];
@@ -128,18 +137,18 @@ const ArchivedRegistrations = () => {
       return 0;
     });
 
-    setRequests(sortedData);
+    setApplications(sortedData);
   };
 
   useEffect(() => {
-    document.title = "Service Requests | Barangay E-Services Management";
+    document.title = "Archived Applications | Barangay E-Services Management";
   }, []);
 
-  console.log("req parent", request);
+  console.log("req parent", application);
 
   return (
     <div className="mx-4 mt-8">
-      <Breadcrumbs/>
+      <Breadcrumbs />
       {/* Body */}
       <div>
         {/* Header */}
@@ -149,13 +158,13 @@ const ArchivedRegistrations = () => {
               className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
-              ARCHIVED EVENTS REGISTRATIONS
+              ARCHIVED EVENTS APPLICATIONS
             </h1>
           </div>
         </div>
 
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
-        <div className="sm:flex-col-reverse lg:flex-row flex justify-between w-full">
+          <div className="sm:flex-col-reverse lg:flex-row flex justify-between w-full">
             <div className="flex flex-col lg:flex-row lg:space-x-2 md:mt-2 lg:mt-0 md:space-y-2 lg:space-y-0">
               {/* <span className="font-medium text-[#292929]  justify-center flex text-center my-auto mx-2">
                 SORT BY:{" "}
@@ -211,7 +220,7 @@ const ArchivedRegistrations = () => {
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                   PAID
+                    PAID
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Processing")}
@@ -387,7 +396,7 @@ const ArchivedRegistrations = () => {
                       className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                       role="tooltip"
                     >
-                      Restore Selected Requests
+                      Restore Selected Event Applications
                     </span>
                   </button>
                 </div>
@@ -423,7 +432,7 @@ const ArchivedRegistrations = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {Requests.map((item, index) => (
+              {Applications.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
@@ -437,7 +446,7 @@ const ArchivedRegistrations = () => {
                   </td>
                   <td className="px-6 py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {item.service_name}
+                      {item.event_name}
                     </span>
                   </td>
                   <td className="px-6 py-3">
@@ -448,13 +457,6 @@ const ArchivedRegistrations = () => {
                         " " +
                         item.form[0].middleName.value}
                     </span>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.type}
-                      </span>
-                    </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
@@ -516,7 +518,7 @@ const ArchivedRegistrations = () => {
                       <div className="hs-tooltip inline-block">
                         <button
                           type="button"
-                          data-hs-overlay="#hs-view-request-modal"
+                          data-hs-overlay="#hs-view-application-modal"
                           onClick={() => handleView({ ...item })}
                           className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                         >
@@ -532,26 +534,6 @@ const ArchivedRegistrations = () => {
                           View Event Registration
                         </span>
                       </div>
-
-                      {/* <div className="hs-tooltip inline-block">
-                        <button
-                          type="button"
-                          data-hs-overlay="#hs-reply-modal"
-                          onClick={() => handleView({ ...item })}
-                          className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                        >
-                          <AiOutlineSend
-                            size={24}
-                            style={{ color: "#ffffff" }}
-                          />
-                        </button>
-                        <span
-                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                          role="tooltip"
-                        >
-                          Reply to Request
-                        </span>
-                      </div> */}
                     </div>
                   </td>
                 </tr>
@@ -561,28 +543,28 @@ const ArchivedRegistrations = () => {
         </div>
       </div>
       <div className="md:py-4 md:px-4 bg-[#21556d] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
-          <span className="font-medium text-white sm:text-xs text-sm">
-            Showing {currentPage + 1} out of {pageCount} pages
-          </span>
-          <ReactPaginate
-            breakLabel="..."
-            nextLabel=">>"
-            onPageChange={handlePageChange}
-            pageRangeDisplayed={3}
-            pageCount={pageCount}
-            previousLabel="<<"
-            className="flex space-x-3 text-white font-bold"
-            activeClassName="text-yellow-500"
-            disabledLinkClassName="text-gray-300"
-            renderOnZeroPageCount={null}
-          />
-        </div>
-      {Object.hasOwn(request, "service_id") ? (
-        <ViewRegistrationModal request={request} />
+        <span className="font-medium text-white sm:text-xs text-sm">
+          Showing {currentPage + 1} out of {pageCount} pages
+        </span>
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel=">>"
+          onPageChange={handlePageChange}
+          pageRangeDisplayed={3}
+          pageCount={pageCount}
+          previousLabel="<<"
+          className="flex space-x-3 text-white font-bold"
+          activeClassName="text-yellow-500"
+          disabledLinkClassName="text-gray-300"
+          renderOnZeroPageCount={null}
+        />
+      </div>
+      {Object.hasOwn(application, "event_id") ? (
+        <ViewRegistrationModal application={application} />
       ) : null}
       <ArchiveRegistrationModal />
       <RequestsReportsModal />
-      <RestoreRegistrationModal selectedItems={selectedItems}/>
+      <RestoreRegistrationModal selectedItems={selectedItems} />
     </div>
   );
 };

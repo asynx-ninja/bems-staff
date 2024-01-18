@@ -120,7 +120,6 @@ const ArchivedServices = () => {
   };
 
   const tableHeader = [
-    "SERVICE_ID",
     "SERVICE NAME",
     "DETAILS",
     "TYPE OF SERVICE",
@@ -413,11 +412,6 @@ const ArchivedServices = () => {
                         id=""
                       />
                     </div>
-                  </td>
-                  <td className="px-2 xl:px-6 py-3 w-4/12">
-                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                      {item.service_id}
-                    </span>
                   </td>
                   <td className="px-2 xl:px-6 py-3 w-4/12">
                     <span className="text-xs sm:text-sm text-black line-clamp-2 ">

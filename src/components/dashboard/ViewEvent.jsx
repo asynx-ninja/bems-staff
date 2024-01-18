@@ -146,7 +146,7 @@ function ViewEvent({ announcement, setAnnouncement, id, brgy }) {
               {/* Buttons */}
               <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
                 <Link
-                  to={`/announcements/?id=${id}&brgy=${brgy}`}
+                  to={`/events_management/?id=${id}&brgy=${brgy}`}
                   className="w-full"
                   onClick={() => {
                     window.innerWidth >= 300 && window.innerWidth <= 1920
@@ -160,7 +160,7 @@ function ViewEvent({ announcement, setAnnouncement, id, brgy }) {
                     type="button"
                     className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-md borde text-sm font-base bg-teal-700 text-white shadow-sm"
                   >
-                    CHECK ANNOUNCEMENT PAGE
+                    CHECK EVENTS MANAGEMENT PAGE
                   </button>
                 </Link>
                 <button

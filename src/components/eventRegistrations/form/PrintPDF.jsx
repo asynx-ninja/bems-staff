@@ -323,8 +323,8 @@ const PrintPDF = ({ detail }) => {
 
   const Title = () => (
     <View style={styles.title.view1}>
-      <Text style={styles.title.req}>{detail.service_name.toUpperCase()} REQUEST FORM</Text>
-      <Text style={styles.title.id}>{detail.service_id}</Text>
+      <Text style={styles.title.req}>{detail.event_name.toUpperCase()} REQUEST FORM</Text>
+      <Text style={styles.title.id}>{detail.event_id}</Text>
     </View>
   );
 

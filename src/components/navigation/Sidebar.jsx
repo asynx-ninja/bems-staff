@@ -210,7 +210,7 @@ const Sidebar = () => {
                       } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
                     >
                       <SiGoogleforms  size={15} />
-                      Events Registration
+                      Events Applications
                     </Link>
                   </div>
                 </li>

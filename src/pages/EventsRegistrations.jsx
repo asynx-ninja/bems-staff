@@ -3,21 +3,19 @@ import ReactPaginate from "react-paginate";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { BsPrinter } from "react-icons/bs";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { AiOutlineSend } from "react-icons/ai";
 import { FaArchive } from "react-icons/fa";
 import ReplyRegistrationModal from "../components/eventRegistrations/ReplyRegistrationModal";
 import ArchiveRegistrationModal from "../components/eventRegistrations/ArchiveRegistrationModal";
-import RequestsReportsModal from "../components/eventRegistrations/RequestsReportsModal";
 import ViewRegistrationModal from "../components/eventRegistrations/ViewRegistrationModal";
 import { useSearchParams } from "react-router-dom";
 import API_LINK from "../config/API";
 import axios from "axios";
 
 const EventsRegistrations = () => {
-  const [requests, setRequests] = useState([]);
-  const [request, setRequest] = useState({ response: [{ file: [] }] });
+  const [applications, setApplications] = useState([]);
+  const [application, setApplication] = useState({ response: [{ file: [] }] });
   const [selectedItems, setSelectedItems] = useState([]);
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
@@ -32,7 +30,7 @@ const EventsRegistrations = () => {
 
   //date filtering
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
-  const [filteredRequests, setFilteredRequests] = useState([]);
+  const [filteredApplications, setFilteredApplications] = useState([]);
   const [selected, setSelected] = useState("date");
 
 
@@ -44,11 +42,11 @@ const EventsRegistrations = () => {
         );
 
         if (response.status === 200) {
-          setRequests(response.data.result);
+          setApplications(response.data.result);
           setPageCount(response.data.pageCount);
-          setFilteredRequests(response.data.result)
+          setFilteredApplications(response.data.result)
         }
-        else setRequests([]);
+        else setApplications([]);
       } catch (err) {
         console.log(err);
       }
@@ -67,16 +65,16 @@ const EventsRegistrations = () => {
 
   const handleResetFilter = () => {
     setStatusFilter("all");
-    setRequests();
+    setApplications();
     setSearchQuery("");
   };
 
-  const Requests = requests.filter((item) =>
+  const Applications = applications.filter((item) =>
     item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   useEffect(() => {
-    document.title = "Service Requests | Barangay E-Services Management";
+    document.title = "Events Applications | Barangay E-Services Management";
   }, []);
 
   const checkboxHandler = (e) => {
@@ -95,12 +93,12 @@ const EventsRegistrations = () => {
   };
 
   const checkAllHandler = () => {
-    const requestsToCheck = Requests.length > 0 ? Requests : requests;
+    const applicationsToCheck = Applications.length > 0 ? Applications : applications;
 
-    if (requestsToCheck.length === selectedItems.length) {
+    if (applicationsToCheck.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const postIds = requestsToCheck.map((item) => {
+      const postIds = applicationsToCheck.map((item) => {
         return item._id;
       });
 
@@ -109,16 +107,15 @@ const EventsRegistrations = () => {
   };
 
   const tableHeader = [
-    "SERVICE NAME",
+    "EVENT NAME",
     "SENDER",
-    "TYPE OF SERVICE",
     "DATE",
     "STATUS",
     "ACTIONS",
   ];
 
   const handleView = (item) => {
-    setRequest(item);
+    setApplication(item);
   };
 
   const DateFormat = (date) => {
@@ -130,7 +127,7 @@ const EventsRegistrations = () => {
   const filters = (choice, selectedDate) => {
     switch (choice) {
       case "date":
-        return requests.filter((item) => {
+        return applications.filter((item) => {
           console.log(typeof new Date(item.createdAt), selectedDate);
           return (
             new Date(item.createdAt).getFullYear() === selectedDate.getFullYear() &&
@@ -145,7 +142,7 @@ const EventsRegistrations = () => {
 
         console.log("start and end", startDate, endDate);
 
-        return requests.filter(
+        return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() === startDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === startDate.getMonth() &&
@@ -153,13 +150,13 @@ const EventsRegistrations = () => {
             new Date(item.createdAt).getDate() <= endDate.getDate()
         );
       case "month":
-        return requests.filter(
+        return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() === selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
-        return requests.filter(
+        return applications.filter(
           (item) => new Date(item.createdAt).getFullYear() === selectedDate.getFullYear()
         );
     }
@@ -176,30 +173,30 @@ const EventsRegistrations = () => {
   const onChangeDate = (e) => {
     const date = new Date(e.target.value);
     setSpecifiedDate(date);
-    setFilteredRequests(filters(selected, date))
+    setFilteredApplications(filters(selected, date))
   };
 
   const onChangeWeek = (e) => {
     const date = moment(e.target.value).toDate();
     setSpecifiedDate(date);
-    setFilteredRequests(filters(selected, date))
+    setFilteredApplications(filters(selected, date))
   };
 
   const onChangeMonth = (e) => {
     const date = moment(e.target.value).toDate();
     setSpecifiedDate(date);
-    setFilteredRequests(filters(selected, date))
+    setFilteredApplications(filters(selected, date))
   };
 
   const onChangeYear = (e) => {
     if (e.target.value === "") {
-      setFilteredRequests(requests)
+      setFilteredApplications(applications)
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
       console.log("selected year converted date", date);
       console.log("specified year", filters(selected, date));
-      setFilteredRequests(filters(selected, date))
+      setFilteredApplications(filters(selected, date))
     }
   };
 
@@ -214,7 +211,7 @@ const EventsRegistrations = () => {
               className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
-              EVENTS REGISTRATIONS
+              EVENTS APPLICATIONS
             </h1>
           </div>
           <div className="lg:w-3/5 flex flex-row justify-end items-center ">
@@ -229,13 +226,13 @@ const EventsRegistrations = () => {
                     >
                       <FaArchive size={24} style={{ color: "#ffffff" }} />
                       <span className="sm:block md:hidden sm:pl-5">
-                        Archived Requests
+                        Archived Event Applications
                       </span>
                       <span
                         className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                         role="tooltip"
                       >
-                        Archived Requests
+                        Archived Event Applications
                       </span>
                     </button>
                   </div>
@@ -510,7 +507,7 @@ const EventsRegistrations = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {filteredRequests.map((item, index) => (
+              {filteredApplications.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
@@ -524,7 +521,7 @@ const EventsRegistrations = () => {
                   </td>
                   <td className="px-6 py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {item.service_name}
+                      {item.event_name}
                     </span>
                   </td>
                   <td className="px-6 py-3">
@@ -535,13 +532,6 @@ const EventsRegistrations = () => {
                         " " +
                         item.form[0].middleName.value}
                     </span>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.type}
-                      </span>
-                    </div>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
@@ -601,7 +591,7 @@ const EventsRegistrations = () => {
                       <div className="hs-tooltip inline-block">
                         <button
                           type="button"
-                          data-hs-overlay="#hs-view-request-modal"
+                          data-hs-overlay="#hs-view-application-modal"
                           onClick={() => handleView({ ...item })}
                           className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                         >
@@ -614,7 +604,7 @@ const EventsRegistrations = () => {
                           className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                           role="tooltip"
                         >
-                          View Request
+                          View Application
                         </span>
                       </div>
 
@@ -634,7 +624,7 @@ const EventsRegistrations = () => {
                           className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                           role="tooltip"
                         >
-                          Reply to Request
+                          Reply to Application
                         </span>
                       </div>
                     </div>
@@ -662,12 +652,11 @@ const EventsRegistrations = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      {Object.hasOwn(request, "service_id") ? (
-        <ViewRegistrationModal request={request} />
+      {Object.hasOwn(application, "event_id") ? (
+        <ViewRegistrationModal application={application} />
       ) : null}
-      <ReplyRegistrationModal request={request} setRequest={setRequest} />
+      <ReplyRegistrationModal application={application} setApplication={setApplication} />
       <ArchiveRegistrationModal selectedItems={selectedItems} />
-      <RequestsReportsModal />
     </div>
   );
 };

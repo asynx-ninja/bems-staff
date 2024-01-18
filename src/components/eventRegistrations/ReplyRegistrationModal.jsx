@@ -12,7 +12,7 @@ import EditDropbox from "./EditDropbox";
 import { useSearchParams } from "react-router-dom";
 import ReplyLoader from "./loaders/ReplyLoader";
 
-function ReplyRegistrationModal({ request, setRequest }) {
+function ReplyRegistrationModal({ application, setApplication }) {
   const [reply, setReply] = useState(false);
   const [statusChanger, setStatusChanger] = useState(false);
   const [upload, setUpload] = useState(false);
@@ -32,8 +32,8 @@ function ReplyRegistrationModal({ request, setRequest }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    setFiles(request.length === 0 ? [] : request.file);
-  }, [request]);
+    setFiles(application.length === 0 ? [] : application.file);
+  }, [application]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -51,8 +51,9 @@ function ReplyRegistrationModal({ request, setRequest }) {
   }, [id]);
 
   useEffect(() => {
-    if (request && request.response.length !== 0) {
-      const lastResponse = request.response[request.response.length - 1];
+    if (application && application.response.length !== 0) {
+      const lastResponse =
+        application.response[application.response.length - 1];
 
       if (lastResponse.file && lastResponse.file.length > 0) {
         setViewFiles(lastResponse.file);
@@ -62,13 +63,15 @@ function ReplyRegistrationModal({ request, setRequest }) {
     } else {
       setViewFiles([]);
     }
-  }, [request]);
+  }, [application]);
 
   // Initialize with the last index expanded
   useEffect(() => {
-    const lastIndex = request.response ? request.response.length - 1 : 0;
+    const lastIndex = application.response
+      ? application.response.length - 1
+      : 0;
     setExpandedIndexes([lastIndex]);
-  }, [request.response]);
+  }, [application.response]);
 
   const fileInputRef = useRef();
 
@@ -136,9 +139,9 @@ function ReplyRegistrationModal({ request, setRequest }) {
       const obj = {
         sender: `${userData.firstName} ${userData.lastName} (STAFF)`,
         message: newMessage.message,
-        status: request.status,
+        status: application.status,
         isRepliable: newMessage.isRepliable,
-        folder_id: request.folder_id,
+        folder_id: application.folder_id,
       };
 
       console.log("obj", obj);
@@ -150,7 +153,7 @@ function ReplyRegistrationModal({ request, setRequest }) {
       }
 
       const response = await axios.patch(
-        `${API_LINK}/requests/?req_id=${request._id}`,
+        `${API_LINK}/application/?app_id=${application._id}`,
         formData
       );
 
@@ -167,7 +170,7 @@ function ReplyRegistrationModal({ request, setRequest }) {
       console.log(error);
       setSubmitClicked(false);
       setReplyingStatus(null);
-      setError("An error occurred while replying to the service request.");
+      setError("An error occurred while replying to the event application.");
     }
   };
 
@@ -196,7 +199,8 @@ function ReplyRegistrationModal({ request, setRequest }) {
                   Conversation History
                 </b>
                 <form>
-                  {!request.response || request.response.length === 0 ? (
+                  {!application.response ||
+                  application.response.length === 0 ? (
                     <div className="flex flex-col items-center">
                       <div className="relative w-full mx-2">
                         <div className="relative w-full">
@@ -205,9 +209,16 @@ function ReplyRegistrationModal({ request, setRequest }) {
                             name="message"
                             onChange={handleChange}
                             rows={7}
-                            className="p-4 pb-12 block w-full border-gray-200 ounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
+                            value={
+                              newMessage.message
+                                ? newMessage.message
+                                : statusChanger
+                                ? `The status of your event application is ${application.status}`
+                                : ""
+                            }
+                            className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
                             placeholder="Input response..."
-                          ></textarea>
+                          />
 
                           <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-white">
                             <div className="flex justify-between items-center">
@@ -250,7 +261,7 @@ function ReplyRegistrationModal({ request, setRequest }) {
                                                 className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                                                 role="tooltip"
                                               >
-                                                Change Request Status
+                                                Change Application Status
                                               </span>
                                             </button>
                                           </div>
@@ -274,7 +285,7 @@ function ReplyRegistrationModal({ request, setRequest }) {
                                               className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                                               role="tooltip"
                                             >
-                                              Change Request Status
+                                              Change Application Status
                                             </span>
                                           </div>
                                         </div>
@@ -283,13 +294,13 @@ function ReplyRegistrationModal({ request, setRequest }) {
                                         id="status"
                                         name="status"
                                         onChange={(e) => {
-                                          setRequest((prev) => ({
+                                          setApplication((prev) => ({
                                             ...prev,
                                             status: e.target.value,
                                           }));
                                         }}
                                         className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
-                                        value={request.status}
+                                        value={application.status}
                                         hidden={!statusChanger}
                                       >
                                         <option value="Pending">PENDING</option>
@@ -358,9 +369,9 @@ function ReplyRegistrationModal({ request, setRequest }) {
                       </div>
                     </div>
                   ) : null}
-                  {request &&
-                    request.response &&
-                    request.response.map((responseItem, index) => (
+                  {application &&
+                    application.response &&
+                    application.response.map((responseItem, index) => (
                       <div
                         key={index}
                         className={`flex flex-col lg:flex-row h-16 mb-2 border-b ${
@@ -415,7 +426,7 @@ function ReplyRegistrationModal({ request, setRequest }) {
                                 setViewFiles={setViewFiles}
                               />
                             )}
-                            {index === request.response.length - 1 && (
+                            {index === application.response.length - 1 && (
                               <div className="flex flex-row items-center">
                                 <button
                                   type="button"
@@ -436,9 +447,16 @@ function ReplyRegistrationModal({ request, setRequest }) {
                                         name="message"
                                         onChange={handleChange}
                                         rows={7}
+                                        value={
+                                          newMessage.message
+                                            ? newMessage.message
+                                            : statusChanger
+                                            ? `The status of your event application is ${application.status}`
+                                            : ""
+                                        }
                                         className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
                                         placeholder="Input response..."
-                                      ></textarea>
+                                      />
 
                                       <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-white">
                                         <div className="flex justify-between items-center">
@@ -488,7 +506,7 @@ function ReplyRegistrationModal({ request, setRequest }) {
                                                             className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                                                             role="tooltip"
                                                           >
-                                                            Change Request
+                                                            Change Application
                                                             Status
                                                           </span>
                                                         </button>
@@ -513,7 +531,8 @@ function ReplyRegistrationModal({ request, setRequest }) {
                                                           className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                                                           role="tooltip"
                                                         >
-                                                          Change Request Status
+                                                          Change Application
+                                                          Status
                                                         </span>
                                                       </div>
                                                     </div>
@@ -522,13 +541,16 @@ function ReplyRegistrationModal({ request, setRequest }) {
                                                     id="status"
                                                     name="status"
                                                     onChange={(e) => {
-                                                      setRequest((prev) => ({
-                                                        ...prev,
-                                                        status: e.target.value,
-                                                      }));
+                                                      setApplication(
+                                                        (prev) => ({
+                                                          ...prev,
+                                                          status:
+                                                            e.target.value,
+                                                        })
+                                                      );
                                                     }}
                                                     className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
-                                                    value={request.status}
+                                                    value={application.status}
                                                     hidden={!statusChanger}
                                                   >
                                                     <option value="Pending">

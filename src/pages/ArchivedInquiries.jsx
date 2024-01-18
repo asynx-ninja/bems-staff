@@ -112,9 +112,9 @@ const Inquiries = () => {
   ];
 
   const tableHeader = [
-    "Inquiry id",
     "name",
     "e-mail",
+    "message",
     "date",
     "status",
     "actions",
@@ -216,7 +216,7 @@ const Inquiries = () => {
         <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
           <div className="flex justify-center items-center sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
-              className="mx-auto font-bold text-xs md:text-xl lg:text-[17px] xl:text-[20px] xxl:text-[1.5rem] xxxl:text-4xl text-white"
+              className="mx-auto font-bold text-xs md:text-xl lg:text-[17px] xl:text-[26px] xxxl:text-4xl text-white"
               style={{ letterSpacing: "0.2em" }}
             >
               ARCHIVED INQUIRIES
@@ -479,26 +479,26 @@ const Inquiries = () => {
                       />
                     </div>
                   </td>
-                  <td className="px-2 xl:px-6 py-3">
-                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                      {item.inq_id}
-                    </span>
-                  </td>
-                  <td className="px-2 xl:px-6 py-3">
+                  <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                         {item.name}
                       </span>
                     </div>
                   </td>
-                  <td className="px-2 xl:px-6 py-3">
+                  <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                         {item.email}
                       </span>
                     </div>
                   </td>
-                  <td className="px-2 xl:px-6 py-3">
+                  <td className="px-6 py-3">
+                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
+                      {item.compose.message}
+                    </span>
+                  </td>
+                  <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {DateFormat(item.compose.date) || ""}

@@ -94,7 +94,6 @@ const EventsManagement = () => {
   };
 
   const tableHeader = [
-    "event id",
     "title",
     "details",
     "date",
@@ -103,7 +102,7 @@ const EventsManagement = () => {
   ];
 
   useEffect(() => {
-    document.title = "Announcement | Barangay E-Services Management";
+    document.title = "Events Management | Barangay E-Services Management";
   }, []);
 
   const handleView = (item) => {
@@ -454,11 +453,6 @@ const EventsManagement = () => {
                         id=""
                       />
                     </div>
-                  </td>
-                  <td className="px-6 py-3 w-4/12">
-                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                      {item.event_id}
-                    </span>
                   </td>
                   <td className="px-3 py-3 w-4/12">
                     <div className="flex justify-center items-center">
