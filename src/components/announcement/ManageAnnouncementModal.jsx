@@ -140,7 +140,7 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
     } catch (err) {
       console.log(err);
       setSubmitClicked(false);
-      setUpdatingStatus(null);
+      setUpdatingStatus("error");
       setError("An error occurred while creating the announcement.");
     }
   };
