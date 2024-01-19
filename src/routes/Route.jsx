@@ -27,8 +27,6 @@ import EventsManagement from "../pages/EventsManagement";
 import EventsRegistrations from "../pages/EventsRegistrations";
 import ArchivedEvents from "../pages/ArchivedEvents";
 import ArchivedRegistrations from "../pages/ArchivedRegistrations";
-import BrgyAdminManagement from "../pages/BrgyAdminManagement";
-import ArchivedAdminManagement from "../pages/ArchivedAdminManagement";
 
 const pages = [
   {
@@ -114,14 +112,6 @@ const pages = [
   {
     path: "/archived_staff_management",
     element: <Navbar comp={<ArchivedStaffsManagement />} />,
-  },
-  {
-    path: "/brgy_admin_management",
-    element: <Navbar comp={<BrgyAdminManagement />} />,
-  },
-  {
-    path: "/archived_brgy_admin_management",
-    element: <Navbar comp={<ArchivedAdminManagement />} />,
   },
   {
     path: "/info",

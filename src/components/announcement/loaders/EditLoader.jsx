@@ -5,7 +5,7 @@ function EditLoader({ updatingStatus, error }) {
     updating: "Updating the announcement...",
     waiting: "Please wait...",
     success: "Announcement Update Successful!",
-    error: "Error updating announcement. Please try again.",
+    error: error,
   };
 
   const [loadingText, setLoadingText] = useState(
@@ -50,7 +50,7 @@ function EditLoader({ updatingStatus, error }) {
             <span className="sr-only">Loading...</span>
           </div>
           <span className="text-white">{loadingText}</span>
-          {error && <span className="text-red-500 ml-2">{error}</span>}
+          {/* {error && <span className="text-red-500 ml-2">{error}</span>} */}
         </div>
       </div>
     </div>

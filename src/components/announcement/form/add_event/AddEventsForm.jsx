@@ -149,7 +149,7 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
     } catch (err) {
       console.error(err.message);
       setSubmitClicked(false);
-      setCreationStatus(null);
+      setCreationStatus("error");
       setError(err.message || "An error occurred while creating/updating the announcement.");
     }
   };

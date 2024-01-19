@@ -117,7 +117,7 @@ function CreateServiceModal({ brgy }) {
     } catch (err) {
       console.log(err);
       setSubmitClicked(false);
-      setCreationStatus(null);
+      setCreationStatus("error");
       setError("An error occurred while creating the announcement.");
     }
   };

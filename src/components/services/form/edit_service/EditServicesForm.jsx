@@ -70,7 +70,7 @@ const EditServicesForm = ({ service_id, brgy }) => {
       }, 1000);
     } catch (err) {
       setSubmitClicked(false);
-      setUpdatingStatus(null);
+      setUpdatingStatus("error");
       setError("An error occurred while creating the announcement.");
     }
   };

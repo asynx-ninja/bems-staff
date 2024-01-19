@@ -181,7 +181,7 @@ const EditSectionForm = ({ detail, setDetail }) => {
             <div key={sectionIndex} className="rounded-lg mb-2 w-full">
               {/* DROPDOWN */}
               <div
-                className={`hs-dropdown relative bg-gradient-to-r bg-teal-800 pb-2 text-white flex flex-col justify-between items-centertext-sm px-3 py-1 md:text-base lg:text-lg rounded-lg`}
+                className={`hs-dropdown relative bg-gradient-to-r bg-[#20565f] pb-2 text-white flex flex-col justify-between items-centertext-sm px-3 py-1 md:text-base lg:text-lg rounded-lg`}
               >
                 <button
                   onClick={() => removeSectionField(sectionIndex)}
@@ -229,10 +229,10 @@ const EditSectionForm = ({ detail, setDetail }) => {
                 {/* CUSTOM INPUT */}
                 <div
                   id={`hs-statistics-dashboard-${sectionIndex}`}
-                  className="hs-collapse hidden w-full overflow-hidden transition-[height] duration-300 py-2 bg-teal-400 rounded-lg px-2"
+                  className="hs-collapse hidden w-full overflow-hidden transition-[height] duration-300 py-2 bg-[#29787c] rounded-lg px-2"
                   aria-labelledby="hs-unstyled-collapse"
                 >
-                  <div className="flex justify-between items-center bg-green-800 mb-2 px-3 py-2  mt-2 rounded-md w-full">
+                  <div className="flex justify-between items-center bg-[#6baab3] mb-2 px-3 py-2  mt-2 rounded-md w-full">
                     <h1 className="text-white font-bold text-sm">
                       ADD CUSTOM INPUT
                     </h1>
@@ -246,7 +246,7 @@ const EditSectionForm = ({ detail, setDetail }) => {
                       />
                     </button>
                   </div>
-                  <div className="bg-green-700 p-2 rounded-lg space-y-2">
+                  <div className="bg-[#6baab3] p-2 rounded-lg space-y-2">
                     {section.form.map((form, formIndex) => (
                       <div
                         className="flex flex-col bg-white rounded-lg px-2"
@@ -329,7 +329,7 @@ const EditSectionForm = ({ detail, setDetail }) => {
                           form.type === "select" ||
                           form.type === "checkbox") && (
                           <div className="pb-2">
-                            <div className="flex justify-between items-center rounded-md bg-purple-800 mb-2 px-3 py-2 sticky top-0 ">
+                            <div className="flex justify-between items-center rounded-md bg-[#508a5a] mb-2 px-3 py-2 sticky top-0 ">
                               <h1 className="text-white font-medium text-sm">
                                 ADD CUSTOMIZABLE OPTION
                               </h1>
@@ -346,7 +346,7 @@ const EditSectionForm = ({ detail, setDetail }) => {
                               </button>
                             </div>
                             {/* OPTION'S PANE */}
-                            <div className="bg-purple-500 p-2 rounded-lg space-y-2">
+                            <div className="bg-[#508a5a] p-2 rounded-lg space-y-2">
                               {form.children.map(
                                 (childrenItem, childrenIndex) => (
                                   <div key={childrenIndex}>

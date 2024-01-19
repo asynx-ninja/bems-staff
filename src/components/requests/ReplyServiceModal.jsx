@@ -183,7 +183,7 @@ function ReplyServiceModal({ request, setRequest }) {
     } catch (error) {
       console.log(error);
       setSubmitClicked(false);
-      setReplyingStatus(null);
+      setReplyingStatus("error");
       setError("An error occurred while replying to the service request.");
     }
   };

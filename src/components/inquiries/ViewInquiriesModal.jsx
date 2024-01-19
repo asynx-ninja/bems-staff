@@ -181,7 +181,7 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
     } catch (error) {
       console.log(error);
       setSubmitClicked(false);
-      setReplyStatus(null);
+      setReplyStatus("error");
       setError("An error occurred while creating the announcement.");
     }
   };
