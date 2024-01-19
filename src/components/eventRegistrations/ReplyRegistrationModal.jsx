@@ -85,12 +85,29 @@ function ReplyRegistrationModal({ application, setApplication }) {
     }
   };
 
+  // const handleChange = (e) => {
+  //   setNewMessage((prev) => ({
+  //     ...prev,
+  //     [e.target.name]:
+  //       e.target.name === "isRepliable" ? e.target.checked : e.target.value,
+  //   }));
+  // };
+
   const handleChange = (e) => {
-    setNewMessage((prev) => ({
-      ...prev,
-      [e.target.name]:
-        e.target.name === "isRepliable" ? e.target.checked : e.target.value,
-    }));
+    e.preventDefault();
+
+    if (statusChanger === true) {
+      setNewMessage((prev) => ({
+        ...prev,
+        message: `The status of your event application is ${application.status}`,
+      }));
+    } else {
+      setNewMessage((prev) => ({
+        ...prev,
+        [e.target.name]:
+          e.target.name === "isRepliable" ? e.target.checked : e.target.value,
+      }));
+    }
   };
 
   const DateFormat = (date) => {
@@ -294,6 +311,16 @@ function ReplyRegistrationModal({ application, setApplication }) {
                                         id="status"
                                         name="status"
                                         onChange={(e) => {
+                                          if (
+                                            statusChanger &&
+                                            (!newMessage.message ||
+                                              newMessage.message.trim() === "")
+                                          ) {
+                                            setNewMessage((prev) => ({
+                                              ...prev,
+                                              message: `The status of your inquiry is ${e.target.value}`,
+                                            }));
+                                          }
                                           setApplication((prev) => ({
                                             ...prev,
                                             status: e.target.value,
@@ -541,13 +568,20 @@ function ReplyRegistrationModal({ application, setApplication }) {
                                                     id="status"
                                                     name="status"
                                                     onChange={(e) => {
-                                                      setApplication(
-                                                        (prev) => ({
+                                                      if (
+                                                        statusChanger &&
+                                                        (!newMessage.message ||
+                                                          newMessage.message.trim() === "")
+                                                      ) {
+                                                        setNewMessage((prev) => ({
                                                           ...prev,
-                                                          status:
-                                                            e.target.value,
-                                                        })
-                                                      );
+                                                          message: `The status of your event application is ${e.target.value}`,
+                                                        }));
+                                                      }
+                                                      setApplication((prev) => ({
+                                                        ...prev,
+                                                        status: e.target.value,
+                                                      }));
                                                     }}
                                                     className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
                                                     value={application.status}
