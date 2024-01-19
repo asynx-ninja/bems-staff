@@ -97,14 +97,34 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
     setUpload(!upload);
   };
 
+  // const handleChange = (e) => {
+  //   e.preventDefault();
+
+  //   setNewMessage((prev) => ({
+  //     ...prev,
+  //     [e.target.name]: e.target.value,
+  //   }));
+  // };
+
   const handleChange = (e) => {
     e.preventDefault();
-    
-    setNewMessage((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+
+    if (statusChanger === true) {
+      setNewMessage((prev) => ({
+        ...prev,
+        message: `The status of your inquiry is ${inquiry.status}`,
+      }));
+    } else {
+      setNewMessage((prev) => ({
+        ...prev,
+        [e.target.name]: e.target.value,
+      }));
+    }
   };
+
+  console.log("StatusChanger: ", statusChanger);
+
+  console.log("New Message: ", newMessage.message);
 
   const DateFormat = (date) => {
     if (!date) return "";
@@ -151,13 +171,13 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
         formData
       );
 
-      setTimeout(() => {
-        setSubmitClicked(false);
-        setReplyStatus("success");
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
-      }, 1000);
+      // setTimeout(() => {
+      //   setSubmitClicked(false);
+      //   setReplyStatus("success");
+      //   setTimeout(() => {
+      //     window.location.reload();
+      //   }, 3000);
+      // }, 1000);
     } catch (error) {
       console.log(error);
       setSubmitClicked(false);
@@ -385,6 +405,14 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
                                             id="status"
                                             name="status"
                                             onChange={(e) => {
+                                              console.log(
+                                                "gege",
+                                                e.target.value
+                                              );
+                                              setNewMessage((prev) => ({
+                                                ...prev,
+                                                message: `The status of your inquiry is ${e.target.value}`,
+                                              }));
                                               setInquiry((prev) => ({
                                                 ...prev,
                                                 status: e.target.value,
@@ -610,6 +638,16 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
                                                         id="status"
                                                         name="status"
                                                         onChange={(e) => {
+                                                          console.log(
+                                                            "gege",
+                                                            e.target.value
+                                                          );
+                                                          setNewMessage(
+                                                            (prev) => ({
+                                                              ...prev,
+                                                              message: `The status of your inquiry is ${e.target.value}`,
+                                                            })
+                                                          );
                                                           setInquiry(
                                                             (prev) => ({
                                                               ...prev,

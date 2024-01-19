@@ -479,7 +479,7 @@ const Services = () => {
                       </span>
                     </div>
                   </td>
-                  <td className="px-2 xl:px-6 py-3 w-4/12">
+                  <td className="px-2 xl:px-3 py-3 w-2/12">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {item.type}

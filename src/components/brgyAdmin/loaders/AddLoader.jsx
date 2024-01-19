@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 
 function AddLoader({ creationStatus, error }) {
   const textPrompts = {
-    creating: "Creating the announcement...",
+    creating: "Creating the new barangay staff...",
     waiting: "Please wait...",
-    success: "Announcement Creation Successful!",
-    error: error,
+    success: "Barangay Staff Creation Successful!",
+    error: "Error creating staff. Please try again.",
   };
 
   const [loadingText, setLoadingText] = useState(
-    textPrompts[creationStatus] || "Creating the announcement.."
+    textPrompts[creationStatus] || "Creating the new barangay staff..."
   );
   const [loading, setLoading] = useState(creationStatus === "creating");
 
@@ -50,7 +50,7 @@ function AddLoader({ creationStatus, error }) {
             <span className="sr-only">Loading...</span>
           </div>
           <span className="text-white">{loadingText}</span>
-          {/* {error && <span className="text-red-500 ml-2">{error}</span>} */}
+          {error && <span className="text-red-500 ml-2">{error}</span>}
         </div>
       </div>
     </div>

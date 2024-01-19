@@ -29,12 +29,10 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
     setFiles(announcement.length === 0 ? [] : announcement.collections.file);
 
     var logoSrc = document.getElementById("edit_logo");
-    logoSrc.src =
-      announcement.length === 0 ? "" : announcement.collections.logo.link;
+    logoSrc.src = announcement.length === 0 ? "" : announcement.collections.logo.link;
 
     var bannerSrc = document.getElementById("edit_banner");
-    bannerSrc.src =
-      announcement.length === 0 ? "" : announcement.collections.banner.link;
+    bannerSrc.src = announcement.length === 0 ? "" : announcement.collections.banner.link;
   }, [announcement]);
 
   const renameFile = (file, newName) => {
@@ -189,10 +187,10 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
                         <input
                           type="file"
                           onChange={handleLogoChange}
-                          disabled={!edit}
                           name="logo"
                           accept="image/*"
                           value={!logo ? "" : logo.originalname}
+                          disabled={!edit}
                           className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4  file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
                         />
                       </label>
@@ -293,6 +291,7 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
                     name="date"
                     value={announcement && dateFormat(announcement.date)}
                     disabled={!edit}
+                    onChange={handleChange}
                   />
                 </div>
 

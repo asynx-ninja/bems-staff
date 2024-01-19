@@ -83,8 +83,8 @@ const EditEventsForm = ({ announcement_id, brgy }) => {
     } catch (err) {
       console.error(err.message);
       setSubmitClicked(false);
-      setUpdatingStatus(null);
-      setError(err.message || "An error occurred while creating the announcement.");
+      setUpdatingStatus("error");
+      setError(err.message);
     }
   };
   

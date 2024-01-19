@@ -24,15 +24,6 @@ function CreateAnnouncementModal({ brgy }) {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const isFormValid = () => {
-    // Check if all required fields have valid values
-    return (
-      announcement.title.trim() !== "" &&
-      announcement.details.trim() !== "" &&
-      announcement.date !== ""
-    );
-  };
-
   const handleLogoChange = (e) => {
     setLogo(e.target.files[0]);
 
@@ -114,8 +105,8 @@ function CreateAnnouncementModal({ brgy }) {
     } catch (err) {
       console.error(err);
       setSubmitClicked(false);
-      setCreationStatus(null);
-      setError("An error occurred while creating the announcement.");
+      setCreationStatus("error");
+      setError(err.message);
     }
   };
 
@@ -239,6 +230,7 @@ function CreateAnnouncementModal({ brgy }) {
                   value={announcement.title}
                   onChange={handleChange}
                   placeholder="Announcement title"
+                  required
                 />
               </div>
               <div className="mb-4">
@@ -256,6 +248,7 @@ function CreateAnnouncementModal({ brgy }) {
                   onChange={handleChange}
                   className="block p-2.5 w-full text-sm text-gray-700  rounded-lg border border-gray-300 focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline "
                   placeholder="Enter announcement details..."
+                  required
                 />
               </div>
               <div className="mb-4">
@@ -288,7 +281,6 @@ function CreateAnnouncementModal({ brgy }) {
                   type="submit"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
                   onClick={handleSubmit}
-                  disabled={!isFormValid()}
                 >
                   CREATE
                 </button>

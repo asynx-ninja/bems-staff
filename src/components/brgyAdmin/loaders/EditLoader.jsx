@@ -1,30 +1,30 @@
 import React, { useState, useEffect } from "react";
 
-function AddLoader({ creationStatus, error }) {
+function EditLoader({ updatingStatus, error }) {
   const textPrompts = {
-    creating: "Creating the announcement...",
+    updating: "Updating the barangay staff...",
     waiting: "Please wait...",
-    success: "Announcement Creation Successful!",
-    error: error,
+    success: "Barangay Staff Update Successful!",
+    error: "Error updating staff. Please try again.",
   };
 
   const [loadingText, setLoadingText] = useState(
-    textPrompts[creationStatus] || "Creating the announcement.."
+    textPrompts[updatingStatus] || "Updating the barangay staff..."
   );
-  const [loading, setLoading] = useState(creationStatus === "creating");
+  const [loading, setLoading] = useState(updatingStatus === "updating");
 
   useEffect(() => {
-    if (["success", "error"].includes(creationStatus)) {
+    if (["success", "error"].includes(updatingStatus)) {
       const timeout = setTimeout(() => {
         setLoading(false);
       }, 3000);
 
       return () => clearTimeout(timeout);
     }
-  }, [creationStatus]);
+  }, [updatingStatus]);
 
   return (
-    <div className="absolute bottom-0 lg:bottom-0 lg:end-0 mb-20 lg:mr-10">
+    <div className="absolute bottom-0 lg:bottom-0 lg:end-0 mb-20 lg:mr-10 z-[80]">
       <div
         className="w-screen md:w-80 bg-[#0d4b75] border border-gray-200 rounded-xl shadow-lg"
         role="alert"
@@ -50,11 +50,11 @@ function AddLoader({ creationStatus, error }) {
             <span className="sr-only">Loading...</span>
           </div>
           <span className="text-white">{loadingText}</span>
-          {/* {error && <span className="text-red-500 ml-2">{error}</span>} */}
+          {error && <span className="text-red-500 ml-2">{error}</span>}
         </div>
       </div>
     </div>
   );
 }
 
-export default AddLoader;
+export default EditLoader;

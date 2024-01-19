@@ -412,6 +412,26 @@ const Sidebar = () => {
                       </Link>
 
                       <Link
+                        to={`/brgy_admin_management/?id=${id}&brgy=${brgy}`}
+                        onClick={() => {
+                          setSelectedOption("BrgyAdminManagement");
+                          // Additional logic if needed
+                          window.innerWidth >= 320 && window.innerWidth <= 1023
+                            ? document
+                              .querySelector("[data-hs-overlay-backdrop-template]")
+                              .remove()
+                            : null;
+                        }}
+                        className={`${selectedOption === "BrgyAdminManagement"
+                          ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
+                          : ""
+                          } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                      >
+                        <MdManageAccounts size={15} />
+                        Barangay Admin Management
+                      </Link>
+
+                      <Link
                         to={`/staff_management/?id=${id}&brgy=${brgy}`}
                         onClick={() => {
                           setSelectedOption("staffManagement");

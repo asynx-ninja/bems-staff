@@ -292,22 +292,22 @@ const EventsManagement = () => {
                   </svg>
                 </button>
                 <ul
-                  className="bg-[#21556d] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-xl p-2 "
                   aria-labelledby="hs-dropdown"
                 >
                   <a
                     onClick={handleResetFilter}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 rounded-md text-sm text-black hover:bg-gradient-to-r from-[#21556d] to-[#4b7c80] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     RESET FILTERS
                   </a>
-                  <hr className="border-[#ffffff] my-1" />
-                  <div class="hs-dropdown relative inline-flex flex-col w-full space-y-1 px-2">
-                    <label className="text-white font-medium">DATE RANGE</label>
+                  <hr className="border-[#4e4e4e] my-1" />
+                  <div class="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
+                    <label className="text-black font-medium mb-1">DATE RANGE</label>
                     <div className="flex gap-2">
                       <select
-                        className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
+                        className="bg-[#f8f8f8] text-black py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
 
                         onChange={onSelect}
                         defaultValue={selected}
@@ -319,7 +319,7 @@ const EventsManagement = () => {
                       </select>
                       {selected === "date" && (
                         <input
-                          className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
+                          className="bg-[#f8f8f8] text-gray-500 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="date"
                           id="date"
                           name="date"
@@ -328,7 +328,7 @@ const EventsManagement = () => {
                       )}
                       {selected === "week" && (
                         <input
-                          className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
+                          className="bg-[#f8f8f8] text-gray-500 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="week"
                           id="week"
                           name="week"
@@ -337,7 +337,7 @@ const EventsManagement = () => {
                       )}
                       {selected === "month" && (
                         <input
-                          className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
+                          className="bg-[#21556d] text-gray-500 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="month"
                           id="month"
                           name="month"
@@ -346,7 +346,7 @@ const EventsManagement = () => {
                       )}
                       {selected === "year" && (
                         <input
-                          className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
+                          className="bg-[#21556d] text-gray-500 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
                           type="number"
                           id="year"
                           name="year"
