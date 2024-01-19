@@ -24,10 +24,10 @@ function CreateOfficialModal({ brgy }) {
 
   const checkEmptyFields = () => {
     let arr = [];
-    const keysToCheck = ["firstName", "middleName", "lastName", "position"]
+    const keysToCheck = ["firstName", "middleName", "lastName", "position"];
     for (const key of keysToCheck) {
       if (official[key] === "") {
-        arr.push(key)
+        arr.push(key);
       }
     }
     setEmptyFields(arr);
@@ -129,9 +129,11 @@ function CreateOfficialModal({ brgy }) {
             <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
               <div className="flex flex-col">
                 {empty && (
-                  <p className="text-red-500 mt-2 mb-4">
-                    Please fill in the required fields.
-                  </p>
+                  <div className="flex w-full bg-[#e7ecf0] justify-center items-center p-3 rounded-xl">
+                    <p className="text-[#d84e4e] mt-1 text-xs font-medium ">
+                     (Please fill in the required fields.)
+                    </p>
+                  </div>
                 )}
                 <div className="flex flex-col lg:flex-row mb-1">
                   {/* Service Description */}
@@ -140,8 +142,9 @@ function CreateOfficialModal({ brgy }) {
                     <div className="relative w-full overflow-y-auto">
                       <div className="relative w-full border rounded-t-xl">
                         <img
-                          className={`${pfp ? "" : "hidden"
-                            } w-[250px] h-[250px] md:w-full md:h-[350px] lg:w-full lg:h-[250px] rounded-t-xl object-cover`}
+                          className={`${
+                            pfp ? "" : "hidden"
+                          } w-[250px] h-[250px] md:w-full md:h-[350px] lg:w-full lg:h-[250px] rounded-t-xl object-cover`}
                           id="add_pfp"
                           alt="Current profile photo"
                         />{" "}
@@ -177,8 +180,9 @@ function CreateOfficialModal({ brgy }) {
                       type="text"
                       id="firstName"
                       name="firstName"
-                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("firstName") && "border-red-500"
-                        }`}
+                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                        emptyFields.includes("firstName") && "border-red-500"
+                      }`}
                       placeholder=""
                       value={official.firstName}
                       onChange={(e) =>
@@ -196,8 +200,9 @@ function CreateOfficialModal({ brgy }) {
                       type="text"
                       id="middleName"
                       name="middleName"
-                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("middleName") && "border-red-500"
-                    }`}
+                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                        emptyFields.includes("middleName") && "border-red-500"
+                      }`}
                       placeholder=""
                       value={official.middleName}
                       onChange={(e) =>
@@ -232,8 +237,9 @@ function CreateOfficialModal({ brgy }) {
                       type="text"
                       id="lastName"
                       name="lastName"
-                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("lastName") && "border-red-500"
-                        }`}
+                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                        emptyFields.includes("lastName") && "border-red-500"
+                      }`}
                       placeholder=""
                       value={official.lastName}
                       onChange={(e) =>
@@ -259,8 +265,9 @@ function CreateOfficialModal({ brgy }) {
                     <select
                       id="position"
                       name="position"
-                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("position") && "border-red-500"
-                    }`}
+                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                        emptyFields.includes("position") && "border-red-500"
+                      }`}
                       onChange={(e) =>
                         setOfficial({ ...official, position: e.target.value })
                       }

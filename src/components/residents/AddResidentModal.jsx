@@ -145,15 +145,15 @@ function AddResidentModal({ brgy }) {
 
           setSubmitClicked(false);
           setCreationStatus("success");
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
+          // setTimeout(() => {
+          //   window.location.reload();
+          // }, 3000);
         }
       }
     } catch (err) {
       console.log(err);
       setSubmitClicked(false);
-      setCreationStatus(null);
+      setCreationStatus("error");
       setError("An error occurred while creating resident.");
     }
   };
@@ -215,11 +215,13 @@ function AddResidentModal({ brgy }) {
 
               <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
                 <form>
-                  {empty && (
-                    <p className="text-red-500 mt-2 mb-4">
-                      Please fill in the required fields.
+                {empty && (
+                  <div className="flex w-full bg-[#e7ecf0] justify-center items-center p-3 rounded-xl">
+                    <p className="text-[#d84e4e] mt-1 text-xs font-medium ">
+                     (Please fill in the required fields.)
                     </p>
-                  )}
+                  </div>
+                )}
                   <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                     <div className="flex flex-col mb-1 w-full">
                       {/* Service Description */}
@@ -333,8 +335,7 @@ function AddResidentModal({ brgy }) {
                               id="age"
                               name="age"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("age") && "border-red-500"
-                                }`}
+                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
                               value={calculateAge(user.birthday) || ""}
                             />
@@ -488,7 +489,7 @@ function AddResidentModal({ brgy }) {
                               id="street"
                               name="street"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("street") && "border-red-500"
+                              className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("street") && "border-red-500"
                                 }`}
                               placeholder=""
                             />

@@ -394,7 +394,7 @@ const Officials = () => {
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2 uppercase">
                         {item.lastName +
                           ", " +
                           item.firstName +

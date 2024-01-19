@@ -168,9 +168,11 @@ function CreateAnnouncementModal({ brgy }) {
 
             <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
             {empty && (
-                  <p className="text-red-500 mt-2 mb-4">
-                    Please fill in the required fields.
-                  </p>
+                  <div className="flex w-full bg-[#e7ecf0] justify-center items-center p-3 rounded-xl">
+                    <p className="text-[#d84e4e] mt-1 text-xs font-medium ">
+                     (Please fill in the required fields.)
+                    </p>
+                  </div>
                 )}
 
               <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">

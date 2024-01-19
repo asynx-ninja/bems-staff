@@ -22,6 +22,8 @@ const Reports = () => {
   const [isAnnualSelected, setIsAnnualSelected] = useState(false);
   const [dateType, setDateType] = useState("specific");
   const [startDate, setStartDate] = useState("");
+  const [specifiedDate, setSpecifiedDate] = useState(new Date());
+  const [selected, setSelected] = useState("date");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -777,22 +779,54 @@ const Reports = () => {
     },
   };
 
+  const onChangeDate = (e) => {
+    const date = new Date(e.target.value);
+    setSpecifiedDate(date);
+    // setFilteredInquiries(filters(selected, date))
+  };
+
+  const onChangeWeek = (e) => {
+    const date = moment(e.target.value).toDate();
+    setSpecifiedDate(date);
+    // setFilteredInquiries(filters(selected, date))
+  };
+
+  const onChangeMonth = (e) => {
+    const date = moment(e.target.value).toDate();
+    setSpecifiedDate(date);
+    // setFilteredInquiries(filters(selected, date))
+  };
+
+  const onChangeYear = (e) => {
+    if (e.target.value === "") {
+      setFilteredInquiries(inquiries);
+    } else {
+      const date = new Date(e.target.value, 0, 1);
+      setSpecifiedDate(date);
+      console.log("selected year converted date", date);
+      console.log("specified year", filters(selected, date));
+      // setFilteredInquiries(filters(selected, date))
+    }
+  };
+
   return (
     <div className="mx-4 mt-4 ">
-      <div className="flex flex-col scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_95px)]">
-        <div className="flex justify-end mb-3">
-          <div className="flex flex-col">
+      <div className="flex flex-col scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb lg:overflow-y-scroll lg:overflow-x-hidden lg:h-[calc(100vh_-_95px)]">
+        <div className="flex lg:justify-end mb-3 w-full lg:w-auto ">
+          <div className="flex flex-col w-full lg:w-auto">
             <div
               id="toggle-count"
-              className="flex p-0.5 bg-gray-700 rounded-lg w-full lg:w-auto items-center"
+              className="flex p-0.5 bg-gray-700 rounded-lg w-full lg:w-auto items-center overflow-y-scroll lg:overflow-y-hidden"
             >
-               <label
+              <label
                 htmlFor="toggle-count-specific"
-                className="relative inline-block py-2 px-3 w-full lg:w-auto flex items-center justify-center"
+                className="relative inline-block py-1.5 md:py-2 px-3 w-full bg-gray-700 lg:w-auto items-center justify-center"
               >
                 <span
-                  className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
-                    isSpecificSelected ? "dark:text-white" : "dark:text-gray-200"
+                  className={`inline-block relative z-10 w-24 text-sm font-medium text-gray-800 cursor-pointer ${
+                    isSpecificSelected
+                      ? "dark:text-white"
+                      : "dark:text-gray-200"
                   }`}
                   onClick={handleSpecificToggle}
                 >
@@ -804,7 +838,7 @@ const Reports = () => {
                   type="radio"
                   className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
                   checked={isSpecificSelected}
-                  onChange={() => {}}
+                  onChange={onChangeDate}
                 />
               </label>
               <label
@@ -825,7 +859,6 @@ const Reports = () => {
                   type="radio"
                   className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
                   checked={isTodaySelected}
-                  onChange={() => {}}
                 />
               </label>
               <label
@@ -846,7 +879,7 @@ const Reports = () => {
                   type="radio"
                   className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
                   checked={isWeeklySelected}
-                  onChange={() => {}}
+                  onChange={onChangeWeek}
                 />
               </label>
               <label
@@ -866,6 +899,7 @@ const Reports = () => {
                   name="toggle-count"
                   type="radio"
                   className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
+                  onChange={onChangeMonth}
                 />
               </label>
               <label
@@ -885,6 +919,9 @@ const Reports = () => {
                   name="toggle-count"
                   type="radio"
                   className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
+                  onChange={onChangeYear}
+                  min={1990}
+                  max={new Date().getFullYear() + 10}
                 />
               </label>
             </div>
@@ -940,13 +977,13 @@ const Reports = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-4 lg:items-center border border-gray-200 bg-[#2c606d] shadow-sm rounded-xl">
           <div className="flex flex-col p-4">
-            <h4 className="text-white mb-1 text-sm lg:text-md">
+            <h4 className="text-white mb-1 text-xs lg:text-md">
               TOTAL SERVICES TAKEN
             </h4>
             <div className="flex gap-x-1">
               <p
                 data-hs-toggle-count='{"target": "#toggle-count", "min": 19, "max": 29}'
-                className="text-white font-semibold text-3xl "
+                className="text-white font-semibold text-xl lg:text-3xl "
               >
                 {filteredTotalServices}
               </p>
@@ -955,14 +992,14 @@ const Reports = () => {
 
           <div className="flex flex-col p-4">
             <div className="flex justify-between">
-              <h4 className="text-white mb-1 text-sm lg:text-md">
+              <h4 className="text-white mb-1 text-xs lg:text-md">
                 COMPLETED SERVICES
               </h4>
             </div>
             <div className="flex gap-x-1">
               <p
                 data-hs-toggle-count='{"target": "#toggle-count", "min": 89, "max": 99}'
-                className="text-gray-800 font-semibold text-3xl dark:text-gray-200"
+                className="text-gray-800 font-semibold text-xl lg:text-3xl dark:text-gray-200"
               >
                 {filteredCompletedServices}
               </p>
@@ -971,17 +1008,17 @@ const Reports = () => {
 
           <div className="flex flex-col p-4">
             <div className="flex justify-between">
-              <h4 className="text-white mb-1 text-sm lg:text-md">
+              <h4 className="text-white mb-1 text-xs lg:text-md">
                 ESTIMATED OVERALL REVENUE
               </h4>
             </div>
             <div className="flex gap-x-1">
-              <span className="text-xl font-normal text-gray-800 dark:text-gray-200">
+              <span className="text-md lg:text-xl font-normal text-gray-800 dark:text-gray-200">
                 PHP
               </span>
               <p
                 data-hs-toggle-count='{"target": "#toggle-count", "min": 89, "max": 99}'
-                className="text-gray-800 font-semibold text-3xl dark:text-gray-200"
+                className="text-gray-800 font-semibold text-xl lg:text-3xl dark:text-gray-200"
               >
                 {filteredEstimatedRevenue}
               </p>
@@ -989,16 +1026,16 @@ const Reports = () => {
           </div>
 
           <div className="flex flex-col p-4">
-            <h4 className="text-white mb-1 text-sm lg:text-md">
+            <h4 className="text-white mb-1 text-xs lg:text-md">
               CURRENT REVENUE FROM SERVICES
             </h4>
             <div className="flex gap-x-1">
-              <span className="text-xl font-normal text-gray-800 dark:text-gray-200">
+              <span className="text-md lg:text-xl font-normal text-gray-800 dark:text-gray-200">
                 PHP
               </span>
               <p
                 data-hs-toggle-count='{"target": "#toggle-count", "min": 129, "max": 149}'
-                className="text-gray-800 font-semibold text-3xl dark:text-gray-200"
+                className="text-gray-800 font-semibold text-xl lg:text-3xl dark:text-gray-200"
               >
                 {totalFees}
               </p>
@@ -1046,7 +1083,7 @@ const Reports = () => {
             <div className="flex rounded-xl justify-center items-center">
               <Chart
                 type="pie"
-                className="flex rounded-xl justify-center w-full lg:w-[600px]"
+                className="flex rounded-xl justify-center w-[400px] lg:w-[300px] xl:w-[400px] xxl:w-[500px] my-10"
                 series={chartDataResidentStatus.series}
                 options={chartDataResidentStatus.options}
               />
@@ -1077,7 +1114,7 @@ const Reports = () => {
             <div className="flex justify-center items-center rounded-xl">
               <Chart
                 type="pie"
-                className="w-[full] lg:w-[650px]"
+                className="flex rounded-xl justify-center w-[500px] lg:w-[300px] xl:w-[400px] xxl:w-[600px] my-10"
                 series={chartDataStatusPercentage.series}
                 options={chartDataStatusPercentage.options}
               />
@@ -1091,7 +1128,7 @@ const Reports = () => {
             <div className="flex rounded-xl">
               <Chart
                 type="line"
-                className="flex w-full rounded-xl "
+                className="flex w-full rounded-xl flex-col "
                 series={chartDataCompletionRate.series}
                 options={chartDataCompletionRate.options}
               />
@@ -1100,35 +1137,36 @@ const Reports = () => {
         </div>
 
         {/* CHARTS 4 */}
-        <div className="flex flex-col lg:flex-row lg:space-x-2 w-full">
-          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
-            <h1 className="mt-5 ml-5 font-medium text-black uppercase">
-              OVERALL TRENDING EVENTS
+        <div className="flex flex-col lg:flex-row lg:space-x-2 w-full ">
+          <div className="flex flex-col bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
+            OVERALL TRENDING EVENTS
             </h1>
             <div className="flex justify-center items-center rounded-xl">
               <Chart
                 type="bar"
-                className="w-[full] lg:w-[650px]"
+                className="flex w-full justify-center rounded-xl xl:w-[500px] xxl:w-full mt-5"
                 series={chartDataAttendanceTrend.series}
                 options={chartDataAttendanceTrend.options}
               />
             </div>
           </div>
 
-          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
-            <h1 className="mt-5 ml-5 font-medium text-black uppercase">
-              OVERALL NUMBER OF CREATED EVENTS (FOR THE PAST 6 MONTHS)
+          <div className="flex flex-col bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
+            OVERALL NUMBER OF CREATED EVENTS (FOR THE PAST 6 MONTHS)
             </h1>
-            <div className="flex rounded-xl">
+            <div className="flex justify-center items-center rounded-xl">
               <Chart
                 type="line"
-                className="flex w-full rounded-xl"
+                className="flex w-full justify-center rounded-xl xl:w-[500px] xxl:w-full mt-5"
                 series={chartDataEventsOrganized.series}
                 options={chartDataEventsOrganized.options}
               />
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );
