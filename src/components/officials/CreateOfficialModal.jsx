@@ -9,6 +9,8 @@ function CreateOfficialModal({ brgy }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
+  const [emptyFields, setEmptyFields] = useState([]);
+  const [empty, setEmpty] = useState(false);
   const [official, setOfficial] = useState({
     firstName: "",
     middleName: "",
@@ -20,12 +22,33 @@ function CreateOfficialModal({ brgy }) {
     brgy: brgy,
   });
 
+  const checkEmptyFields = () => {
+    let arr = [];
+    const keysToCheck = ["firstName", "middleName", "lastName", "position"]
+    for (const key of keysToCheck) {
+      if (official[key] === "") {
+        arr.push(key)
+      }
+    }
+    setEmptyFields(arr);
+    return arr;
+  };
+
   const [pfp, setPfp] = useState();
 
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
       setSubmitClicked(true);
+
+      const emptyFieldsArr = checkEmptyFields();
+
+      if (emptyFieldsArr.length > 0) {
+        console.log(emptyFieldsArr);
+        setEmpty(true);
+        setSubmitClicked(false);
+        return;
+      }
 
       const formData = new FormData();
       formData.append("file", pfp);
@@ -105,6 +128,11 @@ function CreateOfficialModal({ brgy }) {
 
             <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
               <div className="flex flex-col">
+                {empty && (
+                  <p className="text-red-500 mt-2 mb-4">
+                    Please fill in the required fields.
+                  </p>
+                )}
                 <div className="flex flex-col lg:flex-row mb-1">
                   {/* Service Description */}
                   <div className="relative mt-4 flex flex-col w-full lg:w-1/2">
@@ -112,9 +140,8 @@ function CreateOfficialModal({ brgy }) {
                     <div className="relative w-full overflow-y-auto">
                       <div className="relative w-full border rounded-t-xl">
                         <img
-                          className={`${
-                            pfp ? "" : "hidden"
-                          } w-[250px] h-[250px] md:w-full md:h-[350px] lg:w-full lg:h-[250px] rounded-t-xl object-cover`}
+                          className={`${pfp ? "" : "hidden"
+                            } w-[250px] h-[250px] md:w-full md:h-[350px] lg:w-full lg:h-[250px] rounded-t-xl object-cover`}
                           id="add_pfp"
                           alt="Current profile photo"
                         />{" "}
@@ -149,7 +176,9 @@ function CreateOfficialModal({ brgy }) {
                     <input
                       type="text"
                       id="firstName"
-                      className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                      name="firstName"
+                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("firstName") && "border-red-500"
+                        }`}
                       placeholder=""
                       value={official.firstName}
                       onChange={(e) =>
@@ -166,7 +195,9 @@ function CreateOfficialModal({ brgy }) {
                     <input
                       type="text"
                       id="middleName"
-                      className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                      name="middleName"
+                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("middleName") && "border-red-500"
+                    }`}
                       placeholder=""
                       value={official.middleName}
                       onChange={(e) =>
@@ -184,7 +215,7 @@ function CreateOfficialModal({ brgy }) {
                       type="text"
                       id="suffix"
                       className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                      placeholder=""
+                      placeholder="--Optional--"
                       value={official.suffix}
                       onChange={(e) =>
                         setOfficial({ ...official, suffix: e.target.value })
@@ -200,7 +231,9 @@ function CreateOfficialModal({ brgy }) {
                     <input
                       type="text"
                       id="lastName"
-                      className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                      name="lastName"
+                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("lastName") && "border-red-500"
+                        }`}
                       placeholder=""
                       value={official.lastName}
                       onChange={(e) =>
@@ -225,7 +258,9 @@ function CreateOfficialModal({ brgy }) {
                     </h1>
                     <select
                       id="position"
-                      className="shadow border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                      name="position"
+                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("position") && "border-red-500"
+                    }`}
                       onChange={(e) =>
                         setOfficial({ ...official, position: e.target.value })
                       }

@@ -22,7 +22,21 @@ function CreateAnnouncementModal({ brgy }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
+  const [emptyFields, setEmptyFields] = useState([]);
+  const [empty, setEmpty] = useState(false);
   const navigate = useNavigate();
+
+  const checkEmptyFields = () => {
+    let arr = [];
+    const keysToCheck = ["title", "details", "date"]
+    for (const key of keysToCheck) {
+      if (announcement[key] === "") {
+        arr.push(key)
+      }
+    }
+    setEmptyFields(arr);
+    return arr;
+  };
 
   const handleLogoChange = (e) => {
     setLogo(e.target.files[0]);
@@ -43,6 +57,7 @@ function CreateAnnouncementModal({ brgy }) {
       URL.revokeObjectURL(output.src); // free memory
     };
   };
+
 
   const handleChange = (e) => {
     setAnnouncement((prev) => ({
@@ -71,17 +86,26 @@ function CreateAnnouncementModal({ brgy }) {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSubmitClicked(true);
-
+   
+  
     try {
+      e.preventDefault();
+      setSubmitClicked(true);
+      const emptyFieldsArr = checkEmptyFieldsForAnnouncement();
+      
+      if (emptyFieldsArr.length > 0) {
+        setEmpty(true);
+        setSubmitClicked(false);
+        return;
+      }
+  
       const formData = new FormData();
       const newFiles = [banner, logo, ...files].filter((file) => file);
-
+  
       for (const file of newFiles) {
         formData.append("files", file);
       }
-
+  
       const obj = {
         title: announcement.title,
         details: announcement.details,
@@ -89,11 +113,11 @@ function CreateAnnouncementModal({ brgy }) {
         brgy: brgy,
         isOpen: announcement.isOpen,
       };
-
+  
       formData.append("announcement", JSON.stringify(obj));
-
+  
       const result = await axios.post(`${API_LINK}/announcement/`, formData);
-
+  
       if (result.status === 200) {
         clearForm();
         setSubmitClicked(false);
@@ -109,6 +133,19 @@ function CreateAnnouncementModal({ brgy }) {
       setError(err.message);
     }
   };
+  
+  const checkEmptyFieldsForAnnouncement = () => {
+    let arr = [];
+    const keysToCheck = ["title", "details", "date"];
+    for (const key of keysToCheck) {
+      if (announcement[key] === "") {
+        arr.push(key);
+      }
+    }
+    setEmptyFields(arr);
+    return arr;
+  };
+  
 
   return (
     <div>
@@ -130,6 +167,12 @@ function CreateAnnouncementModal({ brgy }) {
             </div>
 
             <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
+            {empty && (
+                  <p className="text-red-500 mt-2 mb-4">
+                    Please fill in the required fields.
+                  </p>
+                )}
+
               <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                 <div className="w-full">
                   <label
@@ -224,7 +267,8 @@ function CreateAnnouncementModal({ brgy }) {
                 </label>
                 <input
                   id="title"
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                  className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("title") && "border-red-500"
+                }`}
                   name="title"
                   type="text"
                   value={announcement.title}
@@ -246,7 +290,10 @@ function CreateAnnouncementModal({ brgy }) {
                   name="details"
                   value={announcement.details}
                   onChange={handleChange}
-                  className="block p-2.5 w-full text-sm text-gray-700  rounded-lg border border-gray-300 focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline "
+                  className={`block p-2.5 w-full text-sm text-gray-700 rounded-lg border ${
+                    emptyFields.includes("details") ? "border-red-500" : "border-gray-300"
+                  } focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline`}
+                  
                   placeholder="Enter announcement details..."
                   required
                 />
@@ -259,7 +306,8 @@ function CreateAnnouncementModal({ brgy }) {
                   Date
                 </label>
                 <input
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                  className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("date") && "border-red-500"
+                }`}
                   id="date"
                   name="date"
                   type="date"
