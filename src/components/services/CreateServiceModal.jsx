@@ -10,6 +10,8 @@ function CreateServiceModal({ brgy }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
+  const [emptyFields, setEmptyFields] = useState([]);
+  const [empty, setEmpty] = useState(false);
   const [service, setService] = useState({
     name: "",
     type: "",
@@ -59,6 +61,13 @@ function CreateServiceModal({ brgy }) {
     try {
       e.preventDefault();
       setSubmitClicked(true);
+      const emptyFieldsArr = checkEmptyFieldsForService();
+
+      if (emptyFieldsArr.length > 0) {
+        setEmpty(true);
+        setSubmitClicked(false);
+        return;
+      }
 
       var formData = new FormData();
 
@@ -113,6 +122,30 @@ function CreateServiceModal({ brgy }) {
     }
   };
 
+  const checkEmptyFields = () => {
+    let arr = [];
+    const keysToCheck = ["name", "type", "details", "fee"];
+    for (const key of keysToCheck) {
+      if (service[key] === "") {
+        arr.push(key);
+      }
+    }
+    setEmptyFields(arr);
+    return arr;
+  };
+
+  const checkEmptyFieldsForService = () => {
+    let arr = [];
+    const keysToCheck = ["name", "type", "details", "fee"];
+    for (const key of keysToCheck) {
+      if (service[key] === "") {
+        arr.push(key);
+      }
+    }
+    setEmptyFields(arr);
+    return arr;
+  };
+
   return (
     <div>
       <div
@@ -133,6 +166,13 @@ function CreateServiceModal({ brgy }) {
             </div>
 
             <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
+              {empty && (
+                <div className="flex w-full bg-[#e7ecf0] justify-center items-center mb-2 p-3 rounded-xl">
+                  <p className="text-[#d84e4e] mt-1 text-xs font-medium ">
+                    (Please fill in the required fields.)
+                  </p>
+                </div>
+              )}
               <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                 <div className="w-full">
                   <label
@@ -212,7 +252,9 @@ function CreateServiceModal({ brgy }) {
                 </label>
                 <input
                   id="name"
-                  className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                  className={`shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                    emptyFields.includes("name") && "border-red-500"
+                  }`}
                   name="name"
                   type="text"
                   value={service.name}
@@ -230,7 +272,9 @@ function CreateServiceModal({ brgy }) {
                 <select
                   name="type"
                   onChange={handleChange}
-                  className="shadow  border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                  className={`shadow  border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                    emptyFields.includes("type") && "border-red-500"
+                  }`}
                 >
                   <option value="Healthcare">Healthcare Services</option>
                   <option value="Education">Education Services</option>
@@ -263,7 +307,9 @@ function CreateServiceModal({ brgy }) {
                   name="details"
                   value={service.details}
                   onChange={handleChange}
-                  className="shadow appearance-none border w-full p-2.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                  className={`shadow appearance-none border w-full p-2.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                    emptyFields.includes("details") && "border-red-500"
+                  }`}
                   placeholder="Enter service details..."
                 />
               </div>
@@ -275,7 +321,9 @@ function CreateServiceModal({ brgy }) {
                   Service Fee
                 </label>
                 <input
-                  className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                  className={`shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                    emptyFields.includes("fee") && "border-red-500"
+                  }`}
                   id="fee"
                   name="fee"
                   type="number"
