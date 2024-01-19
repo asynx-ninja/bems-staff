@@ -166,7 +166,7 @@ const ArchivedRegistrations = () => {
   const filters = (choice, selectedDate) => {
     switch (choice) {
       case "date":
-        return requests.filter((item) => {
+        return applications.filter((item) => {
           console.log(typeof new Date(item.createdAt), selectedDate);
           return (
             new Date(item.createdAt).getFullYear() === selectedDate.getFullYear() &&
@@ -181,7 +181,7 @@ const ArchivedRegistrations = () => {
 
         console.log("start and end", startDate, endDate);
 
-        return requests.filter(
+        return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() === startDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === startDate.getMonth() &&
@@ -189,13 +189,13 @@ const ArchivedRegistrations = () => {
             new Date(item.createdAt).getDate() <= endDate.getDate()
         );
       case "month":
-        return requests.filter(
+        return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() === selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
-        return requests.filter(
+        return applications.filter(
           (item) => new Date(item.createdAt).getFullYear() === selectedDate.getFullYear()
         );
     }
@@ -212,30 +212,30 @@ const ArchivedRegistrations = () => {
   const onChangeDate = (e) => {
     const date = new Date(e.target.value);
     setSpecifiedDate(date);
-    setFilteredRequests(filters(selected, date))
+    setFilteredApplications(filters(selected, date))
   };
 
   const onChangeWeek = (e) => {
     const date = moment(e.target.value).toDate();
     setSpecifiedDate(date);
-    setFilteredRequests(filters(selected, date))
+    setFilteredApplications(filters(selected, date))
   };
 
   const onChangeMonth = (e) => {
     const date = moment(e.target.value).toDate();
     setSpecifiedDate(date);
-    setFilteredRequests(filters(selected, date))
+    setFilteredApplications(filters(selected, date))
   };
 
   const onChangeYear = (e) => {
     if (e.target.value === "") {
-      setFilteredRequests(requests)
+      setFilteredApplications(applications)
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
       console.log("selected year converted date", date);
       console.log("specified year", filters(selected, date));
-      setFilteredRequests(filters(selected, date))
+      setFilteredApplications(filters(selected, date))
     }
   };
 
@@ -259,9 +259,6 @@ const ArchivedRegistrations = () => {
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse lg:flex-row flex justify-between w-full">
             <div className="flex flex-col lg:flex-row lg:space-x-2 md:mt-2 lg:mt-0 md:space-y-2 lg:space-y-0">
-              {/* <span className="font-medium text-[#292929]  justify-center flex text-center my-auto mx-2">
-                SORT BY:{" "}
-              </span> */}
 
               {/* Status Sort */}
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
@@ -272,9 +269,8 @@ const ArchivedRegistrations = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -290,55 +286,55 @@ const ArchivedRegistrations = () => {
                   </svg>
                 </button>
                 <ul
-                  className="bg-[#21556d] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                   className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
                   aria-labelledby="hs-dropdown"
                 >
                   <a
                     onClick={handleResetFilter}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     RESET FILTERS
                   </a>
-                  <hr className="border-[#ffffff] my-1" />
+                  <hr className="border-[#4e4e4e] my-1" />
                   <a
                     onClick={() => handleStatusFilter("Pending")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PENDING
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Paid")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PAID
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Processing")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PROCESSING
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Cancelled")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     CANCELLED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Transaction Completed")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     TRANSACTION COMPLETED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Rejected")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     REJECTED
@@ -370,23 +366,24 @@ const ArchivedRegistrations = () => {
                   </svg>
                 </button>
                 <ul
-                  className="bg-[#21556d] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
                   aria-labelledby="hs-dropdown"
                 >
                   <a
                     onClick={handleResetFilter}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     RESET FILTERS
                   </a>
-                  <hr className="border-[#ffffff] my-1" />
-                  <div class="hs-dropdown relative inline-flex flex-col w-full space-y-1 px-2">
-                    <label className="text-white font-medium">DATE RANGE</label>
-                    <div className="flex gap-2">
+                  <hr className="border-[#4e4e4e] my-1" />
+                  <div class="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
+                    <label className="text-black font-medium mb-1">
+                      DATE RANGE
+                    </label>
+                    <div className="flex flex-col gap-2">
                       <select
-                        className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
-
+                       className="bg-[#f8f8f8] text-gray-600 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                         onChange={onSelect}
                         defaultValue={selected}
                       >
@@ -397,7 +394,7 @@ const ArchivedRegistrations = () => {
                       </select>
                       {selected === "date" && (
                         <input
-                          className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
+                           className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="date"
                           id="date"
                           name="date"
@@ -406,7 +403,7 @@ const ArchivedRegistrations = () => {
                       )}
                       {selected === "week" && (
                         <input
-                          className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
+                           className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="week"
                           id="week"
                           name="week"
@@ -415,7 +412,7 @@ const ArchivedRegistrations = () => {
                       )}
                       {selected === "month" && (
                         <input
-                          className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
+                           className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="month"
                           id="month"
                           name="month"
@@ -471,12 +468,12 @@ const ArchivedRegistrations = () => {
                   placeholder="Search for items"
                   value={searchQuery}
                   onChange={(e) => {setSearchQuery(e.target.value)
-                    const Requests = requests.filter(
+                    const Applications = applications.filter(
                       (item) =>
                         item.event_name.toLowerCase().includes(e.target.value.toLowerCase())
                     );
                 
-                    setFilteredRequests(Requests)
+                    setFilteredApplications(Applications)
                   }}
                 />
               </div>
@@ -528,7 +525,7 @@ const ArchivedRegistrations = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {Requests.map((item, index) => (
+              {Applications.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">

@@ -245,7 +245,6 @@ const Inquiries = () => {
           <div className="sm:flex-col-reverse md:flex-row flex justify-between w-full">
             <div className="flex space-x-2">
   
-
               {/* Status Sort */}
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button
@@ -271,34 +270,34 @@ const Inquiries = () => {
                   </svg>
                 </button>
                 <ul
-                  className="bg-[#21556d] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
                   aria-labelledby="hs-dropdown"
                 >
                   <a
                     onClick={handleResetFilter}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     RESET FILTERS
                   </a>
-                  <hr className="border-[#ffffff] my-1" />
+                  <hr className="border-[#4e4e4e] my-1" />
                   <a
                     onClick={() => handleStatusFilter("Pending")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PENDING
                   </a>
                   <a
                     onClick={() => handleStatusFilter("In Progress")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     IN PROGRESS
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Completed")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     COMPLETED
@@ -331,22 +330,24 @@ const Inquiries = () => {
                   </svg>
                 </button>
                 <ul
-                  className="bg-[#21556d] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                   className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
                   aria-labelledby="hs-dropdown"
                 >
                   <a
                     onClick={handleResetFilter}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#0d4b75] to-[#305da0] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     RESET FILTERS
                   </a>
-                  <hr className="border-[#ffffff] my-1" />
-                  <div class="hs-dropdown relative inline-flex flex-col w-full space-y-1 px-2">
-                    <label className="text-white font-medium">DATE RANGE</label>
-                    <div className="flex gap-2">
+                  <hr className="border-[#4e4e4e] my-1" />
+                  <div class="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
+                    <label className="text-black font-medium mb-1">
+                      DATE RANGE
+                    </label>
+                    <div className="flex flex-col gap-2">
                       <select
-                        className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
+                       className="bg-[#f8f8f8] text-gray-600 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
 
                         onChange={onSelect}
                         defaultValue={selected}
@@ -358,7 +359,7 @@ const Inquiries = () => {
                       </select>
                       {selected === "date" && (
                         <input
-                          className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
+                          className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="date"
                           id="date"
                           name="date"
@@ -367,7 +368,7 @@ const Inquiries = () => {
                       )}
                       {selected === "week" && (
                         <input
-                          className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
+                          className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="week"
                           id="week"
                           name="week"
@@ -376,7 +377,7 @@ const Inquiries = () => {
                       )}
                       {selected === "month" && (
                         <input
-                          className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
+                          className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="month"
                           id="month"
                           name="month"
@@ -385,7 +386,7 @@ const Inquiries = () => {
                       )}
                       {selected === "year" && (
                         <input
-                          className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
+                          className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black w-full"
                           type="number"
                           id="year"
                           name="year"

@@ -68,14 +68,13 @@ const Services = () => {
         setPageCount(response.data.pageCount);
       } else setServices([]);
     };
-  
+
     fetch();
   }, [brgy, statusFilter, serviceFilter, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
-
 
   const Services = services.filter(
     (item) =>
@@ -139,8 +138,6 @@ const Services = () => {
   const handleView = (item) => {
     setService(item);
   };
-
-  
 
   return (
     <div className="mx-4">
@@ -207,12 +204,8 @@ const Services = () => {
         </div>
 
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
-        <div className="sm:flex-col-reverse lg:flex-row flex justify-between w-full">
+          <div className="sm:flex-col-reverse lg:flex-row flex justify-between w-full">
             <div className="flex flex-col lg:flex-row lg:space-x-2 md:mt-2 lg:mt-0 md:space-y-2 lg:space-y-0">
-              {/* <span className="font-medium text-[#292929]  justify-center flex text-center my-auto mx-2">
-                SORT BY:{" "}
-              </span> */}
-
               {/* Status Sort */}
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button
@@ -240,35 +233,34 @@ const Services = () => {
                   </svg>
                 </button>
                 <ul
-                
-                  className="bg-[#21556d] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
                   aria-labelledby="hs-dropdown"
                 >
                   <a
                     onClick={handleResetFilter}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     RESET FILTERS
                   </a>
-                  <hr className="border-[#ffffff] my-1" />
+                  <hr className="border-[#4e4e4e] my-1" />
                   <a
                     onClick={() => handleStatusFilter("Pending")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PENDING
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Approved")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     APPROVED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Disapproved")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     DISAPPROVED
@@ -303,69 +295,69 @@ const Services = () => {
                   </svg>
                 </button>
                 <ul
-                  className="bg-[#21556d] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
                   aria-labelledby="hs-dropdown"
                 >
                   <a
                     onClick={handleResetFilter}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     RESET FILTERS
                   </a>
-                  <hr className="border-[#ffffff] my-1" />
+                  <hr className="border-[#4e4e4e] my-1" />
                   <a
                     onClick={() => handleServiceFilter("Healthcare")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     HEALTHCARE
                   </a>
                   <a
                     onClick={() => handleServiceFilter("Education")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     EDUCATION
                   </a>
                   <a
                     onClick={() => handleServiceFilter("Social Welfare")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     SOCIAL WELFARE
                   </a>
                   <a
                     onClick={() => handleServiceFilter("Security and Safety")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     SECURITY AND SAFETY
                   </a>
                   <a
                     onClick={() => handleServiceFilter("Infrastructure")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     INFRASTRUCTURE
                   </a>
                   <a
                     onClick={() => handleServiceFilter("Community")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     COMMUNITY
                   </a>
                   <a
-                   onClick={() => handleServiceFilter("Administrative")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    onClick={() => handleServiceFilter("Administrative")}
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     ADMINISTRATIVE
                   </a>
                   <a
-                   onClick={() => handleServiceFilter("Environmental")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    onClick={() => handleServiceFilter("Environmental")}
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     ENVIRONMENTAL
@@ -598,22 +590,22 @@ const Services = () => {
         </div>
       </div>
       <div className="md:py-4 md:px-4 bg-[#21556d] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
-          <span className="font-medium text-white sm:text-xs text-sm">
-            Showing {currentPage + 1} out of {pageCount} pages
-          </span>
-          <ReactPaginate
-            breakLabel="..."
-            nextLabel=">>"
-            onPageChange={handlePageChange}
-            pageRangeDisplayed={3}
-            pageCount={pageCount}
-            previousLabel="<<"
-            className="flex space-x-3 text-white font-bold"
-            activeClassName="text-yellow-500"
-            disabledLinkClassName="text-gray-300"
-            renderOnZeroPageCount={null}
-          />
-        </div>
+        <span className="font-medium text-white sm:text-xs text-sm">
+          Showing {currentPage + 1} out of {pageCount} pages
+        </span>
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel=">>"
+          onPageChange={handlePageChange}
+          pageRangeDisplayed={3}
+          pageCount={pageCount}
+          previousLabel="<<"
+          className="flex space-x-3 text-white font-bold"
+          activeClassName="text-yellow-500"
+          disabledLinkClassName="text-gray-300"
+          renderOnZeroPageCount={null}
+        />
+      </div>
       <ArchiveServicesModal selectedItems={selectedItems} />
       <CreateServiceModal brgy={brgy} />
       {/*<StatusServices status={status} setStatus={setStatus}/>*/}
