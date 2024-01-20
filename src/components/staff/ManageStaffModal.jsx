@@ -334,23 +334,26 @@ function ManageStaffModal({ user, setUser }) {
                             </div>
                           </div>
                         </div>
-                        <div className="flex flex-col w-full">
-                          <label
-                            htmlFor="status"
-                            className="block text-sm font-medium"
-                          >
-                            Type
-                          </label>
-                          <select
-                            id="type"
-                            name="type"
-                            onChange={handleChange}
-                            className="shadow border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                          >
-                            <option>-- Select Status --</option>
-                            <option value="Brgy Admin">Barangay Admin</option>
-                            <option value="Staff">Barangay Staff</option>
-                          </select>
+                        <div className="mt-2 flex flex-row">
+                          <div className="w-full">
+                            <label
+                              htmlFor="type"
+                              className="block text-sm font-medium"
+                            >
+                              USER TYPE
+                            </label>
+                            <select
+                              id="type"
+                              name="type"
+                              onChange={handleChange}
+                              className="shadow border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                              value={user.type}
+                              disabled={!edit}
+                            >
+                              <option value="Brgy Admin">Barangay Admin</option>
+                              <option value="Staff">Barangay Staff</option>
+                            </select>
+                          </div>
                         </div>
                       </div>
 
@@ -571,40 +574,7 @@ function ManageStaffModal({ user, setUser }) {
                           </div>
                         </div>
 
-                        <div className="mt-2 flex flex-row px-1">
-                          <div className="w-full">
-                            <label
-                              htmlFor="type"
-                              className="block text-sm font-medium"
-                            >
-                              USER TYPE
-                            </label>
-                            <select
-                              id="type"
-                              name="type"
-                              onChange={handleChange}
-                              className="shadow border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                              value={user.type}
-                              disabled
-                            >
-                              {/* <option selected>-- Select User Type --</option>
-                              <option
-                                value="Admin"
-                                selected={user.type === "Admin"}
-                              >
-                                Admin
-                              </option>
-                              <option
-                                value="Staff"
-                                selected={user.type === "Staff"}
-                              >
-                                Barangay Staff
-                              </option> */}
-                              <option value="Resident">Resident</option>
-                              <option value="Staff">Barangay Staff</option>
-                            </select>
-                          </div>
-                        </div>
+                        
                       </div>
 
                       {/* Section 3 */}

@@ -29,10 +29,12 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
     setFiles(announcement.length === 0 ? [] : announcement.collections.file);
 
     var logoSrc = document.getElementById("edit_logo");
-    logoSrc.src = announcement.length === 0 ? "" : announcement.collections.logo.link;
+    logoSrc.src =
+      announcement.length === 0 ? "" : announcement.collections.logo.link;
 
     var bannerSrc = document.getElementById("edit_banner");
-    bannerSrc.src = announcement.length === 0 ? "" : announcement.collections.banner.link;
+    bannerSrc.src =
+      announcement.length === 0 ? "" : announcement.collections.banner.link;
   }, [announcement]);
 
   const renameFile = (file, newName) => {
@@ -344,11 +346,11 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
               </div>
             </div>
           </div>
+          {submitClicked && <EditLoader updatingStatus="updating" />}
+          {updatingStatus && (
+            <EditLoader updatingStatus={updatingStatus} error={error} />
+          )}
         </div>
-        {submitClicked && <EditLoader updatingStatus="updating" />}
-        {updatingStatus && (
-          <EditLoader updatingStatus={updatingStatus} error={error} />
-        )}
       </div>
     </div>
   );

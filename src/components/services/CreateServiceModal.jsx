@@ -5,6 +5,7 @@ import Dropbox from "./Dropbox";
 import API_LINK from "../../config/API";
 import { CiImageOn } from "react-icons/ci";
 import AddLoader from "./loaders/AddLoader";
+import ErrorPopup from "./popup/ErrorPopup";
 
 function CreateServiceModal({ brgy }) {
   const [submitClicked, setSubmitClicked] = useState(false);
@@ -166,13 +167,6 @@ function CreateServiceModal({ brgy }) {
             </div>
 
             <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
-              {empty && (
-                <div className="flex w-full bg-[#e7ecf0] justify-center items-center mb-2 p-3 rounded-xl">
-                  <p className="text-[#d84e4e] mt-1 text-xs font-medium ">
-                    (Please fill in the required fields.)
-                  </p>
-                </div>
-              )}
               <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                 <div className="w-full">
                   <label
@@ -360,11 +354,12 @@ function CreateServiceModal({ brgy }) {
               </div>
             </div>
           </div>
-          {submitClicked && <AddLoader creationStatus="creating" />}
-          {creationStatus && (
-            <AddLoader creationStatus={creationStatus} error={error} />
-          )}
         </div>
+        {empty && <ErrorPopup />}
+        {submitClicked && <AddLoader creationStatus="creating" />}
+        {creationStatus && (
+          <AddLoader creationStatus={creationStatus} error={error} />
+        )}
       </div>
     </div>
   );

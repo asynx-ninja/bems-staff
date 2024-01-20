@@ -194,7 +194,7 @@ const StaffManagement = () => {
                   type="button"
                   className="bg-[#21556d] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
                 >
-                  TYPE
+                  ACCOUNT TYPE
                   <svg
                     className={`hs-dropdown-open:rotate-${
                       sortOrder === "asc" ? "180" : "0"

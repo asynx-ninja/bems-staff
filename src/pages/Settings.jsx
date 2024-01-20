@@ -23,6 +23,21 @@ const Settings = () => {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
+  const [isSmallerThanLG, setIsSmallerThanLG] = useState(window.innerWidth <= 1280);
+  const [isBiggerThanMD, setIsBiggerThanMD] = useState(window.innerWidth >= 1536);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallerThanLG(window.innerWidth <= 1280);
+      setIsBiggerThanMD(window.innerWidth >= 1536);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const handleAdd = (e) => {
     e.preventDefault();
@@ -371,7 +386,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="mx-4 overflow-y-auto scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb  lg:h-[calc(100vh_-_80px)]">
+    <div className="mx-4 overflow-y-auto scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb lg:h-[calc(100vh_-_80px)]">
       <div>
         <div className="flex flex-col w-full justify-center items-center ">
           <div className="w-full relative">
@@ -1221,42 +1236,58 @@ const Settings = () => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col justify-center items-center py-6 text-white gap-2 mb-[20px]">
+        <div className="flex flex-col justify-center items-center py-2 lg:py-6 text-white gap-2 mb-[20px]">
           <div className="flex flex-col lg:flex-row gap-2 w-full xxl:w-1/2 justify-center items-center px-2 md:px-5 xl:px-8 ">
-            {editButton ? (
-              <button
-                name="edit"
-                onClick={handleOnEdit}
-                className="bg-[#2f4da5] text-white font-medium px-[20px] py-[5px] rounded-md"
-              >
-                Edit
-              </button>
-            ) : (
-              <div className="flex gap-5">
-                <button
-                  type="submit"
-                  name="save"
-                  onClick={saveChanges}
-                  className="bg-custom-green-button text-white font-medium px-[20px] py-[5px] rounded-md"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={handleOnEdit}
-                  name="cancel"
-                  className="bg-custom-red-button text-white font-medium px-[20px] py-[5px] rounded-md"
-                >
-                  Cancel
-                </button>
+            {/* Sm to md screen loader */}
+            {isSmallerThanLG && (
+              <div className="flex w-full justify-center items-center px-1 md:px-5 xl:px-8 xxl:px-[320px] xxxl:px-[415px]">
+                <EditLoader updatingStatus="updating" />
+                {submitClicked && <EditLoader updatingStatus="updating" />}
+                {updatingStatus && !isBiggerThanMD && (
+                  <EditLoader updatingStatus={updatingStatus} error={error} />
+                )}
               </div>
             )}
+
+            <div className="flex flex-col lg:flex-row gap-2 w-full xxl:w-1/2 justify-center items-center px-2 md:px-5 xl:px-8 ">
+              {editButton ? (
+                <button
+                  name="edit"
+                  onClick={handleOnEdit}
+                  className="bg-[#2f4da5] text-white font-medium px-[20px] py-[5px] rounded-md"
+                >
+                  Edit
+                </button>
+              ) : (
+                <div className="flex gap-5">
+                  <button
+                    type="submit"
+                    name="save"
+                    onClick={saveChanges}
+                    className="bg-custom-green-button text-white font-medium px-[20px] py-[5px] rounded-md"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={handleOnEdit}
+                    name="cancel"
+                    className="bg-custom-red-button text-white font-medium px-[20px] py-[5px] rounded-md"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
-      <EditLoader updatingStatus="updating" />
-      {submitClicked && <EditLoader updatingStatus="updating" />}
-      {updatingStatus && (
-        <EditLoader updatingStatus={updatingStatus} error={error} />
+      {isBiggerThanMD && (
+        <div>
+          {submitClicked && <EditLoader updatingStatus="updating" />}
+          {updatingStatus && (
+            <EditLoader updatingStatus={updatingStatus} error={error} />
+          )}
+        </div>
       )}
     </div>
   );

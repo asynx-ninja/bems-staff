@@ -5,6 +5,7 @@ import API_LINK from "../../config/API";
 import { LiaRandomSolid } from "react-icons/lia";
 import CreateOccupationList from "./CreateOccupationList";
 import AddLoader from "./loaders/AddLoader";
+import ErrorPopup from "./popup/ErrorPopup";
 
 function AddResidentModal({ brgy }) {
   const [submitClicked, setSubmitClicked] = useState(false);
@@ -40,10 +41,20 @@ function AddResidentModal({ brgy }) {
 
   const checkEmptyFields = () => {
     let arr = [];
-    const keysToCheck = ["firstName", "lastName", "age", "email", "birthday", "contact", "username", "password", "street"]
+    const keysToCheck = [
+      "firstName",
+      "lastName",
+      "age",
+      "email",
+      "birthday",
+      "contact",
+      "username",
+      "password",
+      "street",
+    ];
     for (const key of keysToCheck) {
       if (user[key] === "") {
-        arr.push(key)
+        arr.push(key);
       }
     }
     setEmptyFields(arr);
@@ -61,11 +72,11 @@ function AddResidentModal({ brgy }) {
   const handleChange = (e) => {
     setUser((prev) => {
       const createUser = { ...prev, [e.target.name]: e.target.value };
-  
-      if (e.target.name === 'birthday') {
+
+      if (e.target.name === "birthday") {
         createUser.age = calculateAge(createUser.birthday);
       }
-  
+
       return createUser;
     });
   };
@@ -87,7 +98,7 @@ function AddResidentModal({ brgy }) {
       if (emptyFieldsArr.length > 0) {
         console.log(emptyFieldsArr);
         setEmpty(true);
-        setSubmitClicked(false); 
+        setSubmitClicked(false);
       } else {
         const calculatedAge = calculateAge(user.birthday);
 
@@ -215,13 +226,6 @@ function AddResidentModal({ brgy }) {
 
               <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
                 <form>
-                {empty && (
-                  <div className="flex w-full bg-[#e7ecf0] justify-center items-center p-3 rounded-xl">
-                    <p className="text-[#d84e4e] mt-1 text-xs font-medium ">
-                     (Please fill in the required fields.)
-                    </p>
-                  </div>
-                )}
                   <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                     <div className="flex flex-col mb-1 w-full">
                       {/* Service Description */}
@@ -244,8 +248,10 @@ function AddResidentModal({ brgy }) {
                               id="firstName"
                               name="firstName"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("firstName") && "border-red-500"
-                                }`}
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                                emptyFields.includes("firstName") &&
+                                "border-red-500"
+                              }`}
                               placeholder=""
                             />
                           </div>
@@ -279,8 +285,10 @@ function AddResidentModal({ brgy }) {
                               id="lastName"
                               name="lastName"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("lastName") && "border-red-500"
-                                }`}
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                                emptyFields.includes("lastName") &&
+                                "border-red-500"
+                              }`}
                               placeholder=""
                             />
                           </div>
@@ -316,8 +324,10 @@ function AddResidentModal({ brgy }) {
                               id="birthday"
                               name="birthday"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("birthday") && "border-red-500"
-                                }`}
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                                emptyFields.includes("birthday") &&
+                                "border-red-500"
+                              }`}
                               placeholder="mm/dd/yyyy"
                               value={birthdayFormat(user.birthday) || ""}
                             />
@@ -354,11 +364,12 @@ function AddResidentModal({ brgy }) {
                               id="email"
                               name="email"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("email") && "border-red-500"
-                                }`}
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                                emptyFields.includes("email") &&
+                                "border-red-500"
+                              }`}
                               placeholder=""
                             />
-
                           </div>
 
                           <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full md:w-[27%] lg:w-[32%]">
@@ -373,11 +384,12 @@ function AddResidentModal({ brgy }) {
                               id="contact"
                               name="contact"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("contact") && "border-red-500"
-                                }`}
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                                emptyFields.includes("contact") &&
+                                "border-red-500"
+                              }`}
                               placeholder=""
                             />
-
                           </div>
 
                           <div className="w-full md:ml-4 md:w-[20%]">
@@ -489,8 +501,10 @@ function AddResidentModal({ brgy }) {
                               id="street"
                               name="street"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("street") && "border-red-500"
-                                }`}
+                              className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                                emptyFields.includes("street") &&
+                                "border-red-500"
+                              }`}
                               placeholder=""
                             />
                           </div>
@@ -668,11 +682,12 @@ function AddResidentModal({ brgy }) {
                             id="username"
                             name="username"
                             onChange={handleChange}
-                            className={`shadow appearance-none border w-full p-1.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("username") && "border-red-500"
-                              }`}
+                            className={`shadow appearance-none border w-full p-1.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                              emptyFields.includes("username") &&
+                              "border-red-500"
+                            }`}
                             placeholder=""
                           />
-
                         </div>
 
                         <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full">
@@ -703,11 +718,12 @@ function AddResidentModal({ brgy }) {
                               id="password"
                               name="password"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-r-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("password") && "border-red-500"
-                                }`}
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-r-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                                emptyFields.includes("password") &&
+                                "border-red-500"
+                              }`}
                               value={user.password}
                             />
-
                           </div>
                         </div>
                       </div>
@@ -736,6 +752,7 @@ function AddResidentModal({ brgy }) {
               </div>
             </div>
           </div>
+          {empty && <ErrorPopup />}
           {submitClicked && <AddLoader creationStatus="creating" />}
           {creationStatus && (
             <AddLoader creationStatus={creationStatus} error={error} />

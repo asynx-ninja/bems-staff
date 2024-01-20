@@ -82,13 +82,18 @@ function ReplyServiceModal({ request, setRequest }) {
     }
   };
 
-  // const handleChange = (e) => {
-  //   setNewMessage((prev) => ({
-  //     ...prev,
-  //     [e.target.name]:
-  //       e.target.name === "isRepliable" ? e.target.checked : e.target.value,
-  //   }));
-  // };
+  useEffect(() => {
+    if (request && request.response && request.response.length > 0) {
+      // Sort the responses based on date in ascending order
+      request.response.sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+  
+      // Initialize with the last index expanded
+      const lastIndex = request.response.length - 1;
+      setExpandedIndexes([lastIndex]);
+    }
+  }, [request]);
 
   const handleChange = (e) => {
     e.preventDefault();
@@ -149,28 +154,29 @@ function ReplyServiceModal({ request, setRequest }) {
     try {
       e.preventDefault();
       setSubmitClicked(true);
-
+  
       const obj = {
-        sender: `${userData.firstName} ${userData.lastName} (STAFF)`,
+        sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
         message: newMessage.message,
         status: request.status,
         isRepliable: newMessage.isRepliable,
         folder_id: request.folder_id,
+        date: new Date(), // Add the current date and time
       };
-
+  
       console.log("obj", obj);
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
-
+  
       for (let i = 0; i < createFiles.length; i++) {
         formData.append("files", createFiles[i]);
       }
-
+  
       const response = await axios.patch(
         `${API_LINK}/requests/?req_id=${request._id}`,
         formData
       );
-
+  
       setTimeout(() => {
         setSubmitClicked(false);
         setReplyingStatus("success");
@@ -178,8 +184,6 @@ function ReplyServiceModal({ request, setRequest }) {
           window.location.reload();
         }, 3000);
       }, 1000);
-
-      // window.location.reload();
     } catch (error) {
       console.log(error);
       setSubmitClicked(false);

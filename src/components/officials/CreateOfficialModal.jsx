@@ -4,6 +4,7 @@ import { CiImageOn } from "react-icons/ci";
 import API_LINK from "../../config/API";
 import axios from "axios";
 import AddLoader from "./loaders/AddLoader";
+import ErrorPopup from "./popup/ErrorPopup";
 
 function CreateOfficialModal({ brgy }) {
   const [submitClicked, setSubmitClicked] = useState(false);
@@ -128,13 +129,6 @@ function CreateOfficialModal({ brgy }) {
 
             <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
               <div className="flex flex-col">
-                {empty && (
-                  <div className="flex w-full bg-[#e7ecf0] justify-center items-center p-3 rounded-xl">
-                    <p className="text-[#d84e4e] mt-1 text-xs font-medium ">
-                     (Please fill in the required fields.)
-                    </p>
-                  </div>
-                )}
                 <div className="flex flex-col lg:flex-row mb-1">
                   {/* Service Description */}
                   <div className="relative mt-4 flex flex-col w-full lg:w-1/2">
@@ -368,6 +362,7 @@ function CreateOfficialModal({ brgy }) {
             </div>
           </div>
         </div>
+        {empty && <ErrorPopup />}
         {submitClicked && <AddLoader creationStatus="creating" />}
         {creationStatus && (
           <AddLoader creationStatus={creationStatus} error={error} />

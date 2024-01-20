@@ -6,6 +6,8 @@ import Dropbox from "./Dropbox";
 import API_LINK from "../../config/API";
 import { CiImageOn } from "react-icons/ci";
 import AddLoader from "./loaders/AddLoader";
+import { MdError } from "react-icons/md";
+import ErrorPopup from "./popup/ErrorPopup";
 
 function CreateAnnouncementModal({ brgy }) {
   const [announcement, setAnnouncement] = useState({
@@ -25,18 +27,6 @@ function CreateAnnouncementModal({ brgy }) {
   const [emptyFields, setEmptyFields] = useState([]);
   const [empty, setEmpty] = useState(false);
   const navigate = useNavigate();
-
-  const checkEmptyFields = () => {
-    let arr = [];
-    const keysToCheck = ["title", "details", "date"];
-    for (const key of keysToCheck) {
-      if (announcement[key] === "") {
-        arr.push(key);
-      }
-    }
-    setEmptyFields(arr);
-    return arr;
-  };
 
   const handleLogoChange = (e) => {
     setLogo(e.target.files[0]);
@@ -163,14 +153,6 @@ function CreateAnnouncementModal({ brgy }) {
             </div>
 
             <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
-              {empty && (
-                <div className="flex w-full bg-[#e7ecf0] justify-center items-center p-3 rounded-xl">
-                  <p className="text-[#d84e4e] mt-1 text-xs font-medium ">
-                    (Please fill in the required fields.)
-                  </p>
-                </div>
-              )}
-
               <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                 <div className="w-full">
                   <label
@@ -266,8 +248,10 @@ function CreateAnnouncementModal({ brgy }) {
                 <input
                   id="title"
                   className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                    emptyFields.includes("title") && "border-red-500"
-                  }`}
+                    emptyFields.includes("details")
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline`}
                   name="title"
                   type="text"
                   value={announcement.title}
@@ -344,6 +328,9 @@ function CreateAnnouncementModal({ brgy }) {
             </div>
           </div>
         </div>
+        {empty && (
+        <ErrorPopup />
+        )}
         {/* <AddLoader /> */}
         {submitClicked && <AddLoader creationStatus="creating" />}
         {creationStatus && (
