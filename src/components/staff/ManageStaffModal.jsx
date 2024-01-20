@@ -334,6 +334,24 @@ function ManageStaffModal({ user, setUser }) {
                             </div>
                           </div>
                         </div>
+                        <div className="flex flex-col w-full">
+                          <label
+                            htmlFor="status"
+                            className="block text-sm font-medium"
+                          >
+                            Type
+                          </label>
+                          <select
+                            id="type"
+                            name="type"
+                            onChange={handleChange}
+                            className="shadow border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                          >
+                            <option>-- Select Status --</option>
+                            <option value="Brgy Admin">Barangay Admin</option>
+                            <option value="Staff">Barangay Staff</option>
+                          </select>
+                        </div>
                       </div>
 
                       {/* Section 2 */}
