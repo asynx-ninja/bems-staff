@@ -24,9 +24,9 @@ function EditLoader({ updatingStatus, error }) {
   }, [updatingStatus]);
 
   return (
-    <div className="absolute bottom-0 lg:bottom-0 lg:end-0 mb-20 lg:mr-10 z-[80]">
-      <div
-        className="w-screen md:w-80 bg-[#0d4b75] border border-gray-200 rounded-xl shadow-lg"
+    <div className="absolute w-auto end-0 bottom-0 mr-5 lg:mr-10">
+     <div
+        className="w-80 bg-[#0d4b75] border border-gray-200 rounded-xl shadow-lg "
         role="alert"
       >
         <div className="flex items-center p-4 space-x-3">
@@ -49,7 +49,7 @@ function EditLoader({ updatingStatus, error }) {
             </svg>
             <span className="sr-only">Loading...</span>
           </div>
-          <span className="text-white">{loadingText}</span>
+          <span className="text-white text-sm lg:text-md">{loadingText}</span>
           {/* {error && <span className="text-red-500 ml-2">{error}</span>} */}
         </div>
       </div>
