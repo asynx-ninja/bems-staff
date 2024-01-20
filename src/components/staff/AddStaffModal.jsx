@@ -79,7 +79,7 @@ function AddStaffModal({ brgy }) {
         address: { street: user.street, brgy: user.brgy, city: user.city },
         occupation: user.occupation,
         civil_status: user.civil_status,
-        type: user.type === "" ? "Staff" : user.type,
+        type: user.type,
         isVoter: user.isVoter,
         isHead: user.isHead,
         isArchived: user.isArchived,
@@ -370,6 +370,24 @@ function AddStaffModal({ brgy }) {
                               </label>
                             </div>
                           </div>
+                        </div>
+                        <div className="flex flex-col w-full">
+                          <label
+                            htmlFor="status"
+                            className="block text-sm font-medium"
+                          >
+                            Type
+                          </label>
+                          <select
+                            id="type"
+                            name="type"
+                            onChange={handleChange}
+                            className="shadow border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                          >
+                            <option>-- Select Status --</option>
+                            <option value="Brgy Admin">Barangay Admin</option>
+                            <option value="Staff">Barangay Staff</option>
+                          </select>
                         </div>
                       </div>
 
@@ -669,7 +687,7 @@ function AddStaffModal({ brgy }) {
               </div>
               {/* Buttons */}
               <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
-               <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
+                <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
                   <button
                     type="button"
                     onClick={handleSubmit}
@@ -689,9 +707,9 @@ function AddStaffModal({ brgy }) {
             </div>
           </div>
           {submitClicked && <AddLoader creationStatus="creating" />}
-        {creationStatus && (
-          <AddLoader creationStatus={creationStatus} error={error} />
-        )}
+          {creationStatus && (
+            <AddLoader creationStatus={creationStatus} error={error} />
+          )}
         </div>
       </div>
     </div>

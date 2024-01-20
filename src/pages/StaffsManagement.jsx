@@ -92,6 +92,7 @@ const StaffManagement = () => {
     "AGE",
     "GENDER",
     "CONTACT",
+    "TYPE", 
     "STATUS",
     "ACTIONS",
   ];
@@ -369,6 +370,13 @@ const StaffManagement = () => {
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {item.contact}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-2 xl:px-6 py-3">
+                    <div className="flex justify-center items-center">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {item.type}
                       </span>
                     </div>
                   </td>
