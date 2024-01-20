@@ -24,9 +24,9 @@ function EditLoader({ updatingStatus, error }) {
   }, [updatingStatus]);
 
   return (
-    <div className="absolute bottom-0 lg:bottom-0 lg:end-0 mb-20 lg:mr-10 z-[80]">
+    <div className="flex w-full bottom-10 justify-center xxl:absolute xxl:w-auto xxl:bottom-0 xxl:end-0 xxl:mb-20 xxl:mr-10">
       <div
-        className="w-screen md:w-80 bg-[#0d4b75] border border-gray-200 rounded-xl shadow-lg"
+        className="w-full xxl:w-80 bg-[#0d4b75] border border-gray-200 rounded-xl shadow-lg "
         role="alert"
       >
         <div className="flex items-center p-4 space-x-3">
