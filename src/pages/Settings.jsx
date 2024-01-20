@@ -431,9 +431,9 @@ const Settings = () => {
                         className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                         placeholder="First name"
                         value={userData.firstName || ""}
-                        // onChange={(e) =>
-                        //   handleUserDataChange('firstName', e.target.value)
-                        // }
+                        onChange={(e) =>
+                          handleUserDataChange('firstName', e.target.value)
+                        }
                       />
                     </div>
                     <div>

@@ -25,6 +25,7 @@ const Officials = () => {
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
+  const [positionFilter, setPositionFilter] = useState("all");
   const [pageCount, setPageCount] = useState(0);
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
@@ -84,7 +85,7 @@ const Officials = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false&page=${currentPage}`
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false&page=${currentPage}&position=${positionFilter}`
         );
 
         if (response.status === 200) {
@@ -108,10 +109,16 @@ const Officials = () => {
     };
 
     fetchData();
-  }, [currentPage, brgy]);
+  }, [currentPage, brgy, positionFilter]); // Add positionFilter dependency
+
+  const handlePositionFilter = (selectedPosition) => {
+    setPositionFilter(selectedPosition);
+  };
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
+
 
   const Officials = officials.filter((item) => {
     const fullName =
@@ -149,6 +156,10 @@ const Officials = () => {
       : "";
 
     return `${startYearMonth} ${endYearMonth}`;
+  };
+
+  const handleResetFilter = () => {
+    setPositionFilter("all");
   };
 
   return (
@@ -219,7 +230,7 @@ const Officials = () => {
           <div className="sm:flex-col-reverse lg:flex-row flex justify-between w-full">
             <div className="flex flex-col lg:flex-row lg:space-x-2 md:mt-2 lg:mt-0 md:space-y-2 lg:space-y-0">
               
-              {/* Status Sort */}
+              
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button
                   id="hs-dropdown"
@@ -250,7 +261,7 @@ const Officials = () => {
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    // onClick={handleResetFilter}
+                    onClick={handleResetFilter}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -258,28 +269,28 @@ const Officials = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    // onClick={() => handleStatusFilter("Pending")}
+                     onClick={() => handlePositionFilter("Barangay Chairman")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     BARANGAY CHAIRMAN
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("In Progress")}
+                    onClick={() => handlePositionFilter("Barangay Kagawad")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     BARANGAY KAGAWAD
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
+                     onClick={() => handlePositionFilter("SK Chairman")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     SK CHAIRMAN
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
+                     onClick={() => handlePositionFilter("SK Kagawad")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
