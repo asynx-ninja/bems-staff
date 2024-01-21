@@ -11,6 +11,7 @@ import RestoreAnnouncementModal from "../components/announcement/RestoreAnnounce
 import axios from "axios";
 import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
+import noData from "../assets/image/no-data.png";
 
 const ArchivedEvents = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -388,72 +389,88 @@ const ArchivedEvents = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {filteredAnnouncements.map((item, index) => (
-                <tr key={index} className="odd:bg-slate-100 text-center">
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <input
-                        type="checkbox"
-                        checked={selectedItems.includes(item._id)}
-                        value={item._id}
-                        onChange={checkboxHandler}
-                        id=""
-                      />
-                    </div>
-                  </td>
-                  <td className="px-6 py-3 w-4/12">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                        {item.title}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3 w-4/12">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black  line-clamp-2 text-left">
-                        {item.details}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="py-3 w-4/12">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {DateFormat(item.createdAt) || ""}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3 ">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.attendees.length}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center space-x-1 sm:space-x-none">
-                      <div className="hs-tooltip inline-block w-full">
-                        <button
-                          type="button"
-                          data-hs-overlay="#hs-modal-viewArchivedAnnouncement"
-                          onClick={() => handleView({ ...item })}
-                          className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                        >
-                          <AiOutlineEye
-                            size={24}
-                            style={{ color: "#ffffff" }}
-                          />
-                        </button>
-                        <span
-                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                          role="tooltip"
-                        >
-                          View Announcement
+              {filteredAnnouncements.length > 0 ? (
+                filteredAnnouncements.map((item, index) => (
+                  <tr key={index} className="odd:bg-slate-100 text-center">
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item._id)}
+                          value={item._id}
+                          onChange={checkboxHandler}
+                          id=""
+                        />
+                      </div>
+                    </td>
+                    <td className="px-6 py-3 w-4/12">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
+                          {item.title}
                         </span>
                       </div>
-                    </div>
+                    </td>
+                    <td className="px-6 py-3 w-4/12">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black  line-clamp-2 text-left">
+                          {item.details}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-3 w-4/12">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {DateFormat(item.createdAt) || ""}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3 ">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {item.attendees.length}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center space-x-1 sm:space-x-none">
+                        <div className="hs-tooltip inline-block w-full">
+                          <button
+                            type="button"
+                            data-hs-overlay="#hs-modal-viewArchivedAnnouncement"
+                            onClick={() => handleView({ ...item })}
+                            className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                          >
+                            <AiOutlineEye
+                              size={24}
+                              style={{ color: "#ffffff" }}
+                            />
+                          </button>
+                          <span
+                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                            role="tooltip"
+                          >
+                            View Announcement
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={tableHeader.length + 1}
+                    className="text-center py-48 lg:py-48 xxl:py-32"
+                  >
+                    <img
+                      src={noData}
+                      alt=""
+                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                    />
+                    <strong className="text-[#535353]">NO DATA FOUND</strong>
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

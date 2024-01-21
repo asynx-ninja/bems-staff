@@ -14,6 +14,7 @@ import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
 import StatusResident from "../components/residents/StatusResident";
 import ManageResidentModal from "../components/residents/ManageResidentsModal";
+import noData from "../assets/image/no-data.png";
 
 const Residents = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -121,14 +122,7 @@ const Residents = () => {
     }
   };
 
-  const tableHeader = [
-    "NAME",
-    "EMAIL",
-    "AGE",
-    "CONTACT",
-    "STATUS",
-    "ACTIONS",
-  ];
+  const tableHeader = ["NAME", "EMAIL", "AGE", "CONTACT", "STATUS", "ACTIONS"];
 
   useEffect(() => {
     document.title = "Residents | Barangay E-Services Management";
@@ -212,7 +206,6 @@ const Residents = () => {
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse lg:flex-row flex justify-between w-full">
             <div className="flex flex-col lg:flex-row lg:space-x-2 md:mt-2 lg:mt-0 md:space-y-2 lg:space-y-0">
-
               {/* Status Sort */}
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button
@@ -222,8 +215,9 @@ const Residents = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -252,25 +246,25 @@ const Residents = () => {
                   <hr className="border-[#4e4e4e] my-1" />
                   <li
                     onClick={() => handleStatusFilter("Registered")}
-                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${statusFilter === "Registered" &&
-                      "bg-[#b3c5cc]"
-                      }`}
+                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
+                      statusFilter === "Registered" && "bg-[#b3c5cc]"
+                    }`}
                   >
                     REGISTERED
                   </li>
                   <li
                     onClick={() => handleStatusFilter("Pending")}
-                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${statusFilter === "Pending" &&
-                      "bg-[#b3c5cc]"
-                      }`}
+                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
+                      statusFilter === "Pending" && "bg-[#b3c5cc]"
+                    }`}
                   >
                     PENDING
                   </li>
                   <li
                     onClick={() => handleStatusFilter("Denied")}
-                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${statusFilter === "Denied" &&
-                      "bg-[#b3c5cc]"
-                      }`}
+                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
+                      statusFilter === "Denied" && "bg-[#b3c5cc]"
+                    }`}
                   >
                     DENIED
                   </li>
@@ -358,113 +352,133 @@ const Residents = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {Users.map((item, index) => (
-                <tr key={index} className="odd:bg-slate-100 text-center">
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <input
-                        type="checkbox"
-                        checked={selectedItems.includes(item._id)}
-                        value={item._id}
-                        onChange={checkboxHandler}
-                        id=""
-                      />
-                    </div>
-                  </td>
-                  <td className="py-3">
-                    <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {item.lastName + ", " + item.firstName + (item.middleName !== undefined ? " " + item.middleName : "")}
-                    </span>
-
-                  </td>
-                  <td className="py-3">
-                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                      {item.email}
-                    </span>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                        {item.age}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="py-3">
-                    <div className="flex justify-center items-center">
+              {Users.length > 0 ? (
+                Users.map((item, index) => (
+                  <tr key={index} className="odd:bg-slate-100 text-center">
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item._id)}
+                          value={item._id}
+                          onChange={checkboxHandler}
+                          id=""
+                        />
+                      </div>
+                    </td>
+                    <td className="py-3">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.contact}
+                        {item.lastName +
+                          ", " +
+                          item.firstName +
+                          (item.middleName !== undefined
+                            ? " " + item.middleName
+                            : "")}
                       </span>
-                    </div>
-                  </td>
-                  <td className="py-3">
-                    {item.isApproved === "Registered" && (
-                      <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                        <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
-                          REGISTERED
+                    </td>
+                    <td className="py-3">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2 ">
+                        {item.email}
+                      </span>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
+                          {item.age}
                         </span>
                       </div>
-                    )}
-                    {item.isApproved === "Denied" && (
-                      <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                        <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
-                          DENIED
+                    </td>
+                    <td className="py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {item.contact}
                         </span>
                       </div>
-                    )}
-                    {item.isApproved === "Pending" && (
-                      <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
-                        <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
-                          PENDING
-                        </span>
+                    </td>
+                    <td className="py-3">
+                      {item.isApproved === "Registered" && (
+                        <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                            REGISTERED
+                          </span>
+                        </div>
+                      )}
+                      {item.isApproved === "Denied" && (
+                        <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                            DENIED
+                          </span>
+                        </div>
+                      )}
+                      {item.isApproved === "Pending" && (
+                        <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                            PENDING
+                          </span>
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center space-x-1 sm:space-x-none">
+                        <div className="hs-tooltip inline-block">
+                          <button
+                            type="button"
+                            data-hs-overlay="#hs-modal-editResident"
+                            onClick={() => handleView({ ...item })}
+                            className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                          >
+                            <AiOutlineEye
+                              size={24}
+                              style={{ color: "#ffffff" }}
+                            />
+                          </button>
+                          <span
+                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                            role="tooltip"
+                          >
+                            View Resident
+                          </span>
+                        </div>
+                        <div className="hs-tooltip inline-block">
+                          <button
+                            type="button"
+                            data-hs-overlay="#hs-modal-statusResident"
+                            onClick={() =>
+                              handleStatus({
+                                id: item._id,
+                                status: item.isApproved,
+                              })
+                            }
+                            className="hs-tooltip-toggle text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                          >
+                            <FiEdit size={24} style={{ color: "#ffffff" }} />
+                          </button>
+                          <span
+                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                            role="tooltip"
+                          >
+                            Change Status
+                          </span>
+                        </div>
                       </div>
-                    )}
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center space-x-1 sm:space-x-none">
-                      <div className="hs-tooltip inline-block">
-                        <button
-                          type="button"
-                          data-hs-overlay="#hs-modal-editResident"
-                          onClick={() => handleView({ ...item })}
-                          className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                        >
-                          <AiOutlineEye
-                            size={24}
-                            style={{ color: "#ffffff" }}
-                          />
-                        </button>
-                        <span
-                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                          role="tooltip"
-                        >
-                          View Resident
-                        </span>
-                      </div>
-                      <div className="hs-tooltip inline-block">
-                        <button
-                          type="button"
-                          data-hs-overlay="#hs-modal-statusResident"
-                          onClick={() =>
-                            handleStatus({
-                              id: item._id,
-                              status: item.isApproved,
-                            })
-                          }
-                          className="hs-tooltip-toggle text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                        >
-                          <FiEdit size={24} style={{ color: "#ffffff" }} />
-                        </button>
-                        <span
-                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                          role="tooltip"
-                        >
-                          Change Status
-                        </span>
-                      </div>
-                    </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={tableHeader.length + 1}
+                    className="text-center py-48 lg:py-48 xxl:py-32"
+                  >
+                    <img
+                      src={noData}
+                      alt=""
+                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                    />
+                    <strong className="text-[#535353]">NO DATA FOUND</strong>
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

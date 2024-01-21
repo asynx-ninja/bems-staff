@@ -97,17 +97,18 @@ function ReplyServiceModal({ request, setRequest }) {
 
   const handleChange = (e) => {
     e.preventDefault();
-
-    if (statusChanger === true) {
+  
+    const inputValue = e.target.value;
+  
+    if (statusChanger && (!newMessage.message || newMessage.message.trim() === "")) {
       setNewMessage((prev) => ({
         ...prev,
-        message: `The status of your inquiry is ${request.status}`,
+        message: `The status of your service request is ${inputValue}`,
       }));
     } else {
       setNewMessage((prev) => ({
         ...prev,
-        [e.target.name]:
-          e.target.name === "isRepliable" ? e.target.checked : e.target.value,
+        [e.target.name]: e.target.name === "isRepliable" ? e.target.checked : inputValue,
       }));
     }
   };
@@ -230,7 +231,7 @@ function ReplyServiceModal({ request, setRequest }) {
                               newMessage.message
                                 ? newMessage.message
                                 : statusChanger
-                                ? `The status of your inquiry is ${request.status}`
+                                ? `The status of your service request is ${request.status}`
                                 : ""
                             }
                             className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
@@ -318,7 +319,7 @@ function ReplyServiceModal({ request, setRequest }) {
                                           ) {
                                             setNewMessage((prev) => ({
                                               ...prev,
-                                              message: `The status of your inquiry is ${e.target.value}`,
+                                              message: `The status of your service request is ${e.target.value}`,
                                             }));
                                           }
                                           setRequest((prev) => ({
@@ -478,7 +479,7 @@ function ReplyServiceModal({ request, setRequest }) {
                                           newMessage.message
                                             ? newMessage.message
                                             : statusChanger
-                                            ? `The status of your inquiry is ${request.status}`
+                                            ? `The status of your service request is ${request.status}`
                                             : ""
                                         }
                                         className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
@@ -576,7 +577,7 @@ function ReplyServiceModal({ request, setRequest }) {
                                                         setNewMessage(
                                                           (prev) => ({
                                                             ...prev,
-                                                            message: `The status of your inquiry is ${e.target.value}`,
+                                                            message: `The status of your service request is ${e.target.value}`,
                                                           })
                                                         );
                                                       }

@@ -18,6 +18,7 @@ import AddModal from "../components/announcement/AddAnnouncementModal";
 import ManageAnnouncementModal from "../components/announcement/ManageAnnouncementModal";
 import AddEventsForm from "../components/announcement/form/add_event/AddEventsForm";
 import EditEventsForm from "../components/announcement/form/edit_event/EditEventsForm";
+import noData from "../assets/image/no-data.png";
 
 const EventsManagement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -445,7 +446,8 @@ const EventsManagement = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100 ">
-              {filteredAnnouncements.map((item, index) => (
+            {filteredAnnouncements.length > 0 ? (
+                filteredAnnouncements.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
@@ -561,7 +563,22 @@ const EventsManagement = () => {
                     </div>
                   </td>
                 </tr>
-              ))}
+              ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={tableHeader.length + 1}
+                    className="text-center py-48 lg:py-48 xxl:py-32"
+                  >
+                    <img
+                      src={noData}
+                      alt=""
+                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                    />
+                    <strong className="text-[#535353]">NO DATA FOUND</strong>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

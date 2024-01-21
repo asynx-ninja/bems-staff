@@ -14,6 +14,7 @@ import RequestsReportsModal from "../components/requests/RequestsReportsModal";
 import ViewRequestModal from "../components/requests/ViewRequestModal";
 import Breadcrumbs from "../components/archivedRequests/Breadcrumbs";
 import RestoreRequestsModal from "../components/archivedRequests/RestoreRequestsModal";
+import noData from "../assets/image/no-data.png";
 
 const ArchivedRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -580,7 +581,8 @@ const ArchivedRequests = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {filteredRequests.map((item, index) => (
+            {filteredRequests.length > 0 ? (
+                filteredRequests.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
@@ -712,7 +714,21 @@ const ArchivedRequests = () => {
                     </div>
                   </td>
                 </tr>
-              ))}
+              ))) : (
+                <tr>
+                  <td
+                    colSpan={tableHeader.length + 1}
+                    className="text-center py-48 lg:py-48 xxl:py-32"
+                  >
+                    <img
+                      src={noData}
+                      alt=""
+                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                    />
+                    <strong className="text-[#535353]">NO DATA FOUND</strong>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
