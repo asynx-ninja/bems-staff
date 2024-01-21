@@ -69,13 +69,13 @@ const EventsRegistrations = () => {
     setSearchQuery("");
   };
 
-  const Applications = applications.filter((item) =>
-    item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   useEffect(() => {
     document.title = "Events Applications | Barangay E-Services Management";
   }, []);
+
+  const Applications = applications.filter((item) =>
+  item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
+);
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -93,7 +93,8 @@ const EventsRegistrations = () => {
   };
 
   const checkAllHandler = () => {
-    const applicationsToCheck = Applications.length > 0 ? Applications : applications;
+    const applicationsToCheck =
+      Applications.length > 0 ? Applications : applications;
 
     if (applicationsToCheck.length === selectedItems.length) {
       setSelectedItems([]);
@@ -272,7 +273,7 @@ const EventsRegistrations = () => {
                   </svg>
                 </button>
                 <ul
-                   className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
+                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
                   aria-labelledby="hs-dropdown"
                 >
                   <a
@@ -292,35 +293,35 @@ const EventsRegistrations = () => {
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Paid")}
-                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PAID
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Processing")}
-                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PROCESSING
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Cancelled")}
-                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     CANCELLED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Transaction Completed")}
-                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     TRANSACTION COMPLETED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Rejected")}
-                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     REJECTED
@@ -369,7 +370,7 @@ const EventsRegistrations = () => {
                     </label>
                     <div className="flex flex-col gap-2">
                       <select
-                       className="bg-[#f8f8f8] text-gray-600 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
+                        className="bg-[#f8f8f8] text-gray-600 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                         onChange={onSelect}
                         defaultValue={selected}
                       >
@@ -380,7 +381,7 @@ const EventsRegistrations = () => {
                       </select>
                       {selected === "date" && (
                         <input
-                           className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
+                          className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="date"
                           id="date"
                           name="date"
@@ -389,7 +390,7 @@ const EventsRegistrations = () => {
                       )}
                       {selected === "week" && (
                         <input
-                           className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
+                          className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="week"
                           id="week"
                           name="week"
@@ -398,7 +399,7 @@ const EventsRegistrations = () => {
                       )}
                       {selected === "month" && (
                         <input
-                           className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
+                          className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="month"
                           id="month"
                           name="month"
@@ -407,7 +408,7 @@ const EventsRegistrations = () => {
                       )}
                       {selected === "year" && (
                         <input
-                          className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
+                          className=" text-black py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
                           type="number"
                           id="year"
                           name="year"
@@ -454,13 +455,14 @@ const EventsRegistrations = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {setSearchQuery(e.target.value)
-                    const Requests = requests.filter(
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value)
+                    const Application = applications.filter(
                       (item) =>
                         item.event_name.toLowerCase().includes(e.target.value.toLowerCase())
                     );
-                
-                    setFilteredRequests(Requests)
+
+                    setFilteredApplications(Application)
                   }}
                 />
               </div>

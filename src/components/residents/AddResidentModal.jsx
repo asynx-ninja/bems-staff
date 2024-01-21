@@ -16,21 +16,13 @@ function AddResidentModal({ brgy }) {
   const [user, setUser] = useState({
     user_id: "",
     firstName: "",
-    middleName: "",
     lastName: "",
-    suffix: "",
-    religion: "",
     email: "",
     birthday: "",
     age: "",
     contact: "",
-    sex: "",
     street: "",
-    occupation: "",
-    civil_status: "",
     type: "",
-    isVoter: "",
-    isHead: "",
     username: "",
     password: "",
     isArchived: false,
@@ -131,25 +123,17 @@ function AddResidentModal({ brgy }) {
           setUser({
             user_id: "",
             firstName: "",
-            middleName: "",
             lastName: "",
-            suffix: "",
-            religion: "",
             email: "",
             birthday: "",
             age: "",
             contact: "",
-            sex: "",
             address: "",
-            occupation: "",
-            civil_status: "",
             type: "",
-            isVoter: "",
-            isHead: "",
             username: "",
             password: "",
-            isArchived: "",
-            isApproved: "",
+            isArchived: false,
+            isApproved: "Registered",
             city: "Rodriguez, Rizal",
             brgy: brgy,
           });
@@ -248,10 +232,9 @@ function AddResidentModal({ brgy }) {
                               id="firstName"
                               name="firstName"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("firstName") &&
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("firstName") &&
                                 "border-red-500"
-                              }`}
+                                }`}
                               placeholder=""
                             />
                           </div>
@@ -285,10 +268,9 @@ function AddResidentModal({ brgy }) {
                               id="lastName"
                               name="lastName"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("lastName") &&
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("lastName") &&
                                 "border-red-500"
-                              }`}
+                                }`}
                               placeholder=""
                             />
                           </div>
@@ -324,10 +306,9 @@ function AddResidentModal({ brgy }) {
                               id="birthday"
                               name="birthday"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("birthday") &&
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("birthday") &&
                                 "border-red-500"
-                              }`}
+                                }`}
                               placeholder="mm/dd/yyyy"
                               value={birthdayFormat(user.birthday) || ""}
                             />
@@ -364,10 +345,9 @@ function AddResidentModal({ brgy }) {
                               id="email"
                               name="email"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("email") &&
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("email") &&
                                 "border-red-500"
-                              }`}
+                                }`}
                               placeholder=""
                             />
                           </div>
@@ -384,10 +364,9 @@ function AddResidentModal({ brgy }) {
                               id="contact"
                               name="contact"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("contact") &&
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("contact") &&
                                 "border-red-500"
-                              }`}
+                                }`}
                               placeholder=""
                             />
                           </div>
@@ -501,10 +480,9 @@ function AddResidentModal({ brgy }) {
                               id="street"
                               name="street"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("street") &&
+                              className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("street") &&
                                 "border-red-500"
-                              }`}
+                                }`}
                               placeholder=""
                             />
                           </div>
@@ -682,10 +660,9 @@ function AddResidentModal({ brgy }) {
                             id="username"
                             name="username"
                             onChange={handleChange}
-                            className={`shadow appearance-none border w-full p-1.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                              emptyFields.includes("username") &&
+                            className={`shadow appearance-none border w-full p-1.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("username") &&
                               "border-red-500"
-                            }`}
+                              }`}
                             placeholder=""
                           />
                         </div>
@@ -718,10 +695,9 @@ function AddResidentModal({ brgy }) {
                               id="password"
                               name="password"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-r-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("password") &&
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-r-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("password") &&
                                 "border-red-500"
-                              }`}
+                                }`}
                               value={user.password}
                             />
                           </div>

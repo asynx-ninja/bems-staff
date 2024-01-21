@@ -335,7 +335,7 @@ const EventsManagement = () => {
                       )}
                       {selected === "month" && (
                         <input
-                          className="bg-[#21556d] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
+                          className=" text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="month"
                           id="month"
                           name="month"
@@ -344,7 +344,7 @@ const EventsManagement = () => {
                       )}
                       {selected === "year" && (
                         <input
-                          className="bg-[#21556d] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
+                          className=" text-black py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
                           type="number"
                           id="year"
                           name="year"

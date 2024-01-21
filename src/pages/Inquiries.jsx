@@ -122,7 +122,7 @@ const Inquiries = () => {
   const handleResetFilter = () => {
     setStatusFilter("all");
     setSearchQuery("");
-    setInquiries();
+    setFilteredInquiries();
   };
 
 

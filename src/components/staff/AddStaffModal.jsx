@@ -16,21 +16,13 @@ function AddStaffModal({ brgy }) {
   const [user, setUser] = useState({
     user_id: "",
     firstName: "",
-    middleName: "",
     lastName: "",
-    suffix: "",
-    religion: "",
     email: "",
     birthday: "",
     age: "",
     contact: "",
-    sex: "",
     street: "",
-    occupation: "",
-    civil_status: "",
     type: "",
-    isVoter: "",
-    isHead: "",
     username: "",
     password: "",
     isArchived: false,
@@ -48,10 +40,15 @@ function AddStaffModal({ brgy }) {
   };
 
   const handleChange = (e) => {
-    setUser((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+    setUser((prev) => {
+      const createUser = { ...prev, [e.target.name]: e.target.value };
+
+      if (e.target.name === "birthday") {
+        createUser.age = calculateAge(createUser.birthday);
+      }
+
+      return createUser;
+    });
   };
 
   const handleChange2 = (field, value) => {
@@ -103,25 +100,17 @@ function AddStaffModal({ brgy }) {
         setUser({
           user_id: "",
           firstName: "",
-          middleName: "",
           lastName: "",
-          suffix: "",
-          religion: "",
           email: "",
           birthday: "",
           age: "",
           contact: "",
-          sex: "",
-          address: "",
-          occupation: "",
-          civil_status: "",
+          street: "",
           type: "",
-          isVoter: "",
-          isHead: "",
           username: "",
           password: "",
-          isArchived: "",
-          isApproved: "",
+          isArchived: false,
+          isApproved: "Registered",
           city: "Rodriguez, Rizal",
           brgy: brgy,
         });
@@ -179,17 +168,15 @@ function AddStaffModal({ brgy }) {
     let arr = [];
     const keysToCheck = [
       "firstName",
-      "middleName",
       "lastName",
       "age",
       "email",
       "birthday",
       "contact",
-      "civil_status",
-      "religion",
-      "street",
       "username",
       "password",
+      "street",
+      "type",
     ];
     for (const key of keysToCheck) {
       if (user[key] === "") {
@@ -265,10 +252,7 @@ function AddStaffModal({ brgy }) {
                               id="middleName"
                               name="middleName"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("middleName") &&
-                                "border-red-500"
-                              }`}
+                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
                             />
                           </div>
@@ -437,9 +421,13 @@ function AddStaffModal({ brgy }) {
                               id="type"
                               name="type"
                               onChange={handleChange}
-                              className="shadow border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                                emptyFields.includes("type") &&
+                                "border-red-500"
+                              }`}
                               value={user.type}
                             >
+                              {user.type === '' && <option value="">Select option</option>}
                               <option value="Brgy Admin">Barangay Admin</option>
                               <option value="Staff">Barangay Staff</option>
                             </select>
@@ -464,10 +452,7 @@ function AddStaffModal({ brgy }) {
                               id="civil_status"
                               name="civil_status"
                               onChange={handleChange}
-                              className={`shadow border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("civil_status") &&
-                                "border-red-500"
-                              }`}
+                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                             >
                               <option>-- Select Status --</option>
                               <option value="Single">Single</option>
@@ -489,10 +474,7 @@ function AddStaffModal({ brgy }) {
                             <select
                               name="religion"
                               onChange={handleChange}
-                              className={`shadow border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("religion") &&
-                                "border-red-500"
-                              }`}
+                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                             >
                               <option value="">-- Select Religion --</option>
                               {religions.map((religion, index) => (
