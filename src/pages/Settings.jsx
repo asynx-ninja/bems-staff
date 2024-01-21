@@ -1237,11 +1237,10 @@ const Settings = () => {
           </div>
         </div>
         <div className="flex flex-col justify-center items-center py-2 lg:py-6 text-white gap-2 mb-[20px]">
-          <div className="flex flex-col lg:flex-row gap-2 w-full xxl:w-1/2 justify-center items-center px-2 md:px-5 xl:px-8 ">
+         
             {/* Sm to md screen loader */}
             {isSmallerThanLG && (
               <div className="flex w-full justify-center items-center px-1 md:px-5 xl:px-8 xxl:px-[320px] xxxl:px-[415px]">
-                <EditLoader updatingStatus="updating" />
                 {submitClicked && <EditLoader updatingStatus="updating" />}
                 {updatingStatus && !isBiggerThanMD && (
                   <EditLoader updatingStatus={updatingStatus} error={error} />
@@ -1278,7 +1277,7 @@ const Settings = () => {
                 </div>
               )}
             </div>
-          </div>
+
         </div>
       </div>
       {isBiggerThanMD && (

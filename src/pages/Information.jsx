@@ -24,13 +24,13 @@ const Information = () => {
     return newFile;
   };
 
-  const [isSmallerThanLG, setIsSmallerThanLG] = useState(window.innerWidth <= 1280);
-  const [isBiggerThanMD, setIsBiggerThanMD] = useState(window.innerWidth >= 1536);
+  const [isSmallerThanLG, setIsSmallerThanLG] = useState(window.innerWidth <= 640);
+  const [isBiggerThanMD, setIsBiggerThanMD] = useState(window.innerWidth >= 1024);
 
   useEffect(() => {
     const handleResize = () => {
-      setIsSmallerThanLG(window.innerWidth <= 1280);
-      setIsBiggerThanMD(window.innerWidth >= 1536);
+      setIsSmallerThanLG(window.innerWidth <= 640);
+      setIsBiggerThanMD(window.innerWidth >= 1024);
     };
 
     window.addEventListener("resize", handleResize);
