@@ -9,9 +9,21 @@ import {
 } from "@react-pdf/renderer";
 import logo from "../../../assets/header/montalban-logo.png";
 import id_picture from "../../../assets/sample/official.jpg";
+import BALITE from "../../../assets/logo/BALITE.png";
+import BURGOS from "../../../assets/logo/BURGOS.png";
 
 const PrintPDF = ({ detail }) => {
   const [date, setDate] = useState(new Date());
+  
+  const returnLogo = () => {
+    switch (detail.brgy) {
+      case "BALITE": 
+      return BALITE
+
+      case "BURGOS": 
+      return BURGOS
+    }
+  };
 
   const formatBday = (bday) => {
     const formattedBirthday = bday.toLocaleDateString("en-PH", {
@@ -317,7 +329,7 @@ const PrintPDF = ({ detail }) => {
           Barangay Hall, Dike Street, Rodriguez, Rizal | +63 (2) 8 948 0157
         </Text>
       </View>
-      <Image src={logo} alt="" srcset="" style={styles.letterHead.image} />
+      <Image src={returnLogo()} alt="" srcset="" style={styles.letterHead.image} />
     </View>
   );
 

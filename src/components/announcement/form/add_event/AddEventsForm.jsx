@@ -95,33 +95,65 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
 
   const handleSubmit = async (e) => {
     try {
-      setSubmitClicked(true);
 
-      const response = await axios.post(
-        `http://localhost:8800/api/event_form/?brgy=${brgy}&event_id=${announcement_id}&checked=${checked}`,
-        {
-          form: form,
-          section: section,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
+      // Prepare the request payload
+      const requestData = {
+        form: form,
+        section: section,
+      };
+
+      
+      if (checked) {
+        // Check if there's an active form
+        const activeFormResponse = await axios.get(
+          `http://localhost:8800/api/event_form/check/?brgy=${brgy}&event_id=${announcement_id}`
+        );
+         console.log(activeFormResponse)
+        if (activeFormResponse.data.length > 0) {
+          throw new Error("There's an active form. Please turn it off before updating the new form.");
+        } else {
+          setSubmitClicked(true);
+          const response = await axios.post(
+            `http://localhost:8800/api/event_form/?brgy=${brgy}&event_id=${announcement_id}&checked=${checked}`,
+            requestData,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          setSubmitClicked(false);
+          setCreationStatus("success");
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
         }
-      );
-
-      setSubmitClicked(false);
-      setCreationStatus("success");
-      setTimeout(() => {
-        window.location.reload();
-      }, 3000);
+      } else {
+        setSubmitClicked(true);
+        // Make the POST request
+        const response = await axios.post(
+          `http://localhost:8800/api/event_form/?brgy=${brgy}&event_id=${announcement_id}&checked=${checked}`,
+          requestData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        setSubmitClicked(false);
+        setCreationStatus("success");
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      }
     } catch (err) {
-      console.log(err.message);
+      console.error(err.message);
       setSubmitClicked(false);
-      setCreationStatus(null);
-      setError("An error occurred while creating the announcement.");
+      setCreationStatus("error");
+      setError(err.message || "An error occurred while creating/updating the announcement.");
     }
   };
+
 
   console.log("Section in Add Events", section);
 

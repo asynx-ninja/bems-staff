@@ -25,6 +25,7 @@ const Officials = () => {
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
+  const [positionFilter, setPositionFilter] = useState("all");
   const [pageCount, setPageCount] = useState(0);
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
@@ -84,7 +85,7 @@ const Officials = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false&page=${currentPage}`
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false&page=${currentPage}&position=${positionFilter}`
         );
 
         if (response.status === 200) {
@@ -108,10 +109,16 @@ const Officials = () => {
     };
 
     fetchData();
-  }, [currentPage, brgy]);
+  }, [currentPage, brgy, positionFilter]); // Add positionFilter dependency
+
+  const handlePositionFilter = (selectedPosition) => {
+    setPositionFilter(selectedPosition);
+  };
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
+
 
   const Officials = officials.filter((item) => {
     const fullName =
@@ -149,6 +156,10 @@ const Officials = () => {
       : "";
 
     return `${startYearMonth} ${endYearMonth}`;
+  };
+
+  const handleResetFilter = () => {
+    setPositionFilter("all");
   };
 
   return (
@@ -218,11 +229,8 @@ const Officials = () => {
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse lg:flex-row flex justify-between w-full">
             <div className="flex flex-col lg:flex-row lg:space-x-2 md:mt-2 lg:mt-0 md:space-y-2 lg:space-y-0">
-              {/* <span className="font-medium text-[#292929]  justify-center flex text-center my-auto mx-2">
-                SORT BY:{" "}
-              </span> */}
-
-              {/* Status Sort */}
+              
+              
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button
                   id="hs-dropdown"
@@ -249,41 +257,41 @@ const Officials = () => {
                   </svg>
                 </button>
                 <ul
-                  className="bg-[#21556d] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    // onClick={handleResetFilter}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    onClick={handleResetFilter}
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     RESET FILTERS
                   </a>
-                  <hr className="border-[#ffffff] my-1" />
+                  <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    // onClick={() => handleStatusFilter("Pending")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                     onClick={() => handlePositionFilter("Barangay Chairman")}
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     BARANGAY CHAIRMAN
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("In Progress")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    onClick={() => handlePositionFilter("Barangay Kagawad")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     BARANGAY KAGAWAD
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                     onClick={() => handlePositionFilter("SK Chairman")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     SK CHAIRMAN
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                     onClick={() => handlePositionFilter("SK Kagawad")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     SK KAGAWAD
@@ -390,14 +398,14 @@ const Officials = () => {
                         <img
                           src={item.picture.link}
                           alt=""
-                          className="w-[120px] h-[90px] xl:h-28 xl:w-28 bg-cover rounded-full mx-auto border-[5px] border-[#295141] object-cover"
+                          className="w-[70px] h-[70px] md:w-[80px] md:h-[80px] xl:h-28 xl:w-28 bg-cover rounded-full mx-auto border-[5px] border-[#295141] object-cover"
                         />
                       </div>
                     </span>
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2 uppercase">
                         {item.lastName +
                           ", " +
                           item.firstName +

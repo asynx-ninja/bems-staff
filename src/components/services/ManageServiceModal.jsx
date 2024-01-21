@@ -130,7 +130,7 @@ function ManageServiceModal({ service, setService }) {
     } catch (err) {
       console.log(err);
       setSubmitClicked(false);
-      setUpdatingStatus(null);
+      setUpdatingStatus("error");
       setError("An error occurred while updating the service.");
     }
   };
@@ -292,7 +292,7 @@ function ManageServiceModal({ service, setService }) {
                   <option value="Infrastructure">
                     Infrastructure Services
                   </option>
-                  <option value="Community Services">Community Services</option>
+                  <option value="Community">Community Services</option>
                   <option value="Administrative">
                     Administrative Services
                   </option>

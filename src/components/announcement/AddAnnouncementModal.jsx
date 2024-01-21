@@ -6,6 +6,8 @@ import Dropbox from "./Dropbox";
 import API_LINK from "../../config/API";
 import { CiImageOn } from "react-icons/ci";
 import AddLoader from "./loaders/AddLoader";
+import { MdError } from "react-icons/md";
+import ErrorPopup from "./popup/ErrorPopup";
 
 function CreateAnnouncementModal({ brgy }) {
   const [announcement, setAnnouncement] = useState({
@@ -22,16 +24,9 @@ function CreateAnnouncementModal({ brgy }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
+  const [emptyFields, setEmptyFields] = useState([]);
+  const [empty, setEmpty] = useState(false);
   const navigate = useNavigate();
-
-  const isFormValid = () => {
-    // Check if all required fields have valid values
-    return (
-      announcement.title.trim() !== "" &&
-      announcement.details.trim() !== "" &&
-      announcement.date !== ""
-    );
-  };
 
   const handleLogoChange = (e) => {
     setLogo(e.target.files[0]);
@@ -80,10 +75,17 @@ function CreateAnnouncementModal({ brgy }) {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSubmitClicked(true);
-
     try {
+      e.preventDefault();
+      setSubmitClicked(true);
+      const emptyFieldsArr = checkEmptyFieldsForAnnouncement();
+
+      if (emptyFieldsArr.length > 0) {
+        setEmpty(true);
+        setSubmitClicked(false);
+        return;
+      }
+
       const formData = new FormData();
       const newFiles = [banner, logo, ...files].filter((file) => file);
 
@@ -114,9 +116,21 @@ function CreateAnnouncementModal({ brgy }) {
     } catch (err) {
       console.error(err);
       setSubmitClicked(false);
-      setCreationStatus(null);
-      setError("An error occurred while creating the announcement.");
+      setCreationStatus("error");
+      setError(err.message);
     }
+  };
+
+  const checkEmptyFieldsForAnnouncement = () => {
+    let arr = [];
+    const keysToCheck = ["title", "details", "date"];
+    for (const key of keysToCheck) {
+      if (announcement[key] === "") {
+        arr.push(key);
+      }
+    }
+    setEmptyFields(arr);
+    return arr;
   };
 
   return (
@@ -233,12 +247,17 @@ function CreateAnnouncementModal({ brgy }) {
                 </label>
                 <input
                   id="title"
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                  className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                    emptyFields.includes("details")
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline`}
                   name="title"
                   type="text"
                   value={announcement.title}
                   onChange={handleChange}
                   placeholder="Announcement title"
+                  required
                 />
               </div>
               <div className="mb-4">
@@ -254,8 +273,13 @@ function CreateAnnouncementModal({ brgy }) {
                   name="details"
                   value={announcement.details}
                   onChange={handleChange}
-                  className="block p-2.5 w-full text-sm text-gray-700  rounded-lg border border-gray-300 focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline "
+                  className={`block p-2.5 w-full text-sm text-gray-700 rounded-lg border ${
+                    emptyFields.includes("details")
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline`}
                   placeholder="Enter announcement details..."
+                  required
                 />
               </div>
               <div className="mb-4">
@@ -266,7 +290,9 @@ function CreateAnnouncementModal({ brgy }) {
                   Date
                 </label>
                 <input
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                  className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                    emptyFields.includes("date") && "border-red-500"
+                  }`}
                   id="date"
                   name="date"
                   type="date"
@@ -288,7 +314,6 @@ function CreateAnnouncementModal({ brgy }) {
                   type="submit"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
                   onClick={handleSubmit}
-                  disabled={!isFormValid()}
                 >
                   CREATE
                 </button>
@@ -303,6 +328,9 @@ function CreateAnnouncementModal({ brgy }) {
             </div>
           </div>
         </div>
+        {empty && (
+        <ErrorPopup />
+        )}
         {/* <AddLoader /> */}
         {submitClicked && <AddLoader creationStatus="creating" />}
         {creationStatus && (

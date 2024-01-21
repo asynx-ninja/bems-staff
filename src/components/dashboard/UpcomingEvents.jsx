@@ -36,11 +36,12 @@ const UpcomingEvents = () => {
   console.log("announcements: ", announcement);
 
   return (
-    <div className="relative w-full lg:w-6/12 flex flex-col overflow-y-auto h-full">
+    <div className="w-full lg:w-6/12 flex flex-col h-full">
+    <div className="flex flex-col max-h-screen">
       <b className="border-solid border-0 border-black border-b-2 pb-2 uppercase font-heavy text-lg md:text-xl mb-4">
         UPCOMING EVENTS
       </b>
-      <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-auto xxl:h-[calc(100vh_-_410px)] xxxl:h-[calc(100vh_-_410px)]">
+      <div className="relative scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-auto lg:h-[calc(100vh_-_130px)] xxl:h-[calc(100vh_-_410px)] xxxl:h-[calc(100vh_-_410px)] w-full">
         <div className="w-full gap-3 flex flex-col border">
           {announcements.map((item, index) => (
             <div className="flex flex-row bg-gradient-to-r from-[#4b7c80] to-[#21556d] h-full text-white font-medium overflow-hidden">
@@ -84,6 +85,7 @@ const UpcomingEvents = () => {
         brgy={brgy}
         id={id}
       />
+      </div>
     </div>
   );
 };

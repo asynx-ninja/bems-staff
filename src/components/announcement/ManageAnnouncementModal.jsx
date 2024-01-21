@@ -142,7 +142,7 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
     } catch (err) {
       console.log(err);
       setSubmitClicked(false);
-      setUpdatingStatus(null);
+      setUpdatingStatus("error");
       setError("An error occurred while creating the announcement.");
     }
   };
@@ -189,10 +189,10 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
                         <input
                           type="file"
                           onChange={handleLogoChange}
-                          disabled={!edit}
                           name="logo"
                           accept="image/*"
                           value={!logo ? "" : logo.originalname}
+                          disabled={!edit}
                           className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4  file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
                         />
                       </label>
@@ -293,6 +293,7 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
                     name="date"
                     value={announcement && dateFormat(announcement.date)}
                     disabled={!edit}
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -345,11 +346,11 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
               </div>
             </div>
           </div>
+          {submitClicked && <EditLoader updatingStatus="updating" />}
+          {updatingStatus && (
+            <EditLoader updatingStatus={updatingStatus} error={error} />
+          )}
         </div>
-        {submitClicked && <EditLoader updatingStatus="updating" />}
-        {updatingStatus && (
-          <EditLoader updatingStatus={updatingStatus} error={error} />
-        )}
       </div>
     </div>
   );

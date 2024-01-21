@@ -82,12 +82,34 @@ function ReplyServiceModal({ request, setRequest }) {
     }
   };
 
+  useEffect(() => {
+    if (request && request.response && request.response.length > 0) {
+      // Sort the responses based on date in ascending order
+      request.response.sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+  
+      // Initialize with the last index expanded
+      const lastIndex = request.response.length - 1;
+      setExpandedIndexes([lastIndex]);
+    }
+  }, [request]);
+
   const handleChange = (e) => {
-    setNewMessage((prev) => ({
-      ...prev,
-      [e.target.name]:
-        e.target.name === "isRepliable" ? e.target.checked : e.target.value,
-    }));
+    e.preventDefault();
+
+    if (statusChanger === true) {
+      setNewMessage((prev) => ({
+        ...prev,
+        message: `The status of your inquiry is ${request.status}`,
+      }));
+    } else {
+      setNewMessage((prev) => ({
+        ...prev,
+        [e.target.name]:
+          e.target.name === "isRepliable" ? e.target.checked : e.target.value,
+      }));
+    }
   };
 
   const DateFormat = (date) => {
@@ -132,28 +154,29 @@ function ReplyServiceModal({ request, setRequest }) {
     try {
       e.preventDefault();
       setSubmitClicked(true);
-
+  
       const obj = {
-        sender: `${userData.firstName} ${userData.lastName} (STAFF)`,
+        sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
         message: newMessage.message,
         status: request.status,
         isRepliable: newMessage.isRepliable,
         folder_id: request.folder_id,
+        date: new Date(), // Add the current date and time
       };
-
+  
       console.log("obj", obj);
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
-
+  
       for (let i = 0; i < createFiles.length; i++) {
         formData.append("files", createFiles[i]);
       }
-
+  
       const response = await axios.patch(
         `${API_LINK}/requests/?req_id=${request._id}`,
         formData
       );
-
+  
       setTimeout(() => {
         setSubmitClicked(false);
         setReplyingStatus("success");
@@ -161,12 +184,10 @@ function ReplyServiceModal({ request, setRequest }) {
           window.location.reload();
         }, 3000);
       }, 1000);
-
-      // window.location.reload();
     } catch (error) {
       console.log(error);
       setSubmitClicked(false);
-      setReplyingStatus(null);
+      setReplyingStatus("error");
       setError("An error occurred while replying to the service request.");
     }
   };
@@ -205,7 +226,14 @@ function ReplyServiceModal({ request, setRequest }) {
                             name="message"
                             onChange={handleChange}
                             rows={7}
-                            className="p-4 pb-12 block w-full border-gray-200 ounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
+                            value={
+                              newMessage.message
+                                ? newMessage.message
+                                : statusChanger
+                                ? `The status of your inquiry is ${request.status}`
+                                : ""
+                            }
+                            className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
                             placeholder="Input response..."
                           ></textarea>
 
@@ -283,6 +311,16 @@ function ReplyServiceModal({ request, setRequest }) {
                                         id="status"
                                         name="status"
                                         onChange={(e) => {
+                                          if (
+                                            statusChanger &&
+                                            (!newMessage.message ||
+                                              newMessage.message.trim() === "")
+                                          ) {
+                                            setNewMessage((prev) => ({
+                                              ...prev,
+                                              message: `The status of your inquiry is ${e.target.value}`,
+                                            }));
+                                          }
                                           setRequest((prev) => ({
                                             ...prev,
                                             status: e.target.value,
@@ -436,6 +474,13 @@ function ReplyServiceModal({ request, setRequest }) {
                                         name="message"
                                         onChange={handleChange}
                                         rows={7}
+                                        value={
+                                          newMessage.message
+                                            ? newMessage.message
+                                            : statusChanger
+                                            ? `The status of your inquiry is ${request.status}`
+                                            : ""
+                                        }
                                         className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
                                         placeholder="Input response..."
                                       ></textarea>
@@ -522,6 +567,19 @@ function ReplyServiceModal({ request, setRequest }) {
                                                     id="status"
                                                     name="status"
                                                     onChange={(e) => {
+                                                      if (
+                                                        statusChanger &&
+                                                        (!newMessage.message ||
+                                                          newMessage.message.trim() ===
+                                                            "")
+                                                      ) {
+                                                        setNewMessage(
+                                                          (prev) => ({
+                                                            ...prev,
+                                                            message: `The status of your inquiry is ${e.target.value}`,
+                                                          })
+                                                        );
+                                                      }
                                                       setRequest((prev) => ({
                                                         ...prev,
                                                         status: e.target.value,

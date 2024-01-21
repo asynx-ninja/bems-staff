@@ -48,32 +48,70 @@ const EditEventsForm = ({ announcement_id, brgy }) => {
     try {
       setSubmitClicked(true);
 
-      const response = await axios.patch(
-        `http://localhost:8800/api/event_form/`,
-        {
-          detail: detail,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      if (detail.isActive) {
+        const activeFormResponse = await axios.get(
+          `http://localhost:8800/api/event_form/check/?brgy=${brgy}&event_id=${announcement_id}`
+        );
+        if (activeFormResponse.data.length === 0 || activeFormResponse.data[0].version === detail.version) {
+          const response = await axios.patch(
+            `http://localhost:8800/api/event_form/`,
+            {
+              detail: detail,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
 
-      console.log(response);
-      setTimeout(() => {
-        setSubmitClicked(false);
-        setUpdatingStatus("success");
+          console.log(response);
+
+          setTimeout(() => {
+            setSubmitClicked(false);
+            setUpdatingStatus("success");
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+          }, 1000);
+        }
+        else if (activeFormResponse.data[0].version !== detail.version) {
+          throw new Error("There's an active form. Please turn it off before updating the form.");
+        }
+      }
+      else {
+        const response = await axios.patch(
+          `http://localhost:8800/api/event_form/`,
+          {
+            detail: detail,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        console.log(response);
+
         setTimeout(() => {
-          window.location.reload();
-        }, 3000);
-      }, 1000);
+          setSubmitClicked(false);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        }, 1000);
+      }
+
+
     } catch (err) {
+      console.error(err.message);
       setSubmitClicked(false);
-      setUpdatingStatus(null);
-      setError("An error occurred while creating the announcement.");
+      setUpdatingStatus("error");
+      setError(err.message);
     }
   };
+
 
   const handleSelectChange = (e) => {
     setDetail(details[e.target.value]);

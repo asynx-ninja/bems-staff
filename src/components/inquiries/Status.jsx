@@ -32,7 +32,7 @@ function InquiryStatus({ status, setStatus }) {
     } catch (err) {
       console.log(err);
       setSubmitClicked(false);
-      setUpdatingStatus(null);
+      setUpdatingStatus("error");
       setError("An error occurred while updating the inquiry.");
     }
   };

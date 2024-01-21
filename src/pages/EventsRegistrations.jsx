@@ -1,43 +1,52 @@
 import React from "react";
 import ReactPaginate from "react-paginate";
+import moment from "moment";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { BsPrinter } from "react-icons/bs";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { AiOutlineSend } from "react-icons/ai";
 import { FaArchive } from "react-icons/fa";
 import ReplyRegistrationModal from "../components/eventRegistrations/ReplyRegistrationModal";
 import ArchiveRegistrationModal from "../components/eventRegistrations/ArchiveRegistrationModal";
-import RequestsReportsModal from "../components/eventRegistrations/RequestsReportsModal";
 import ViewRegistrationModal from "../components/eventRegistrations/ViewRegistrationModal";
 import { useSearchParams } from "react-router-dom";
 import API_LINK from "../config/API";
 import axios from "axios";
 
 const EventsRegistrations = () => {
-  const [requests, setRequests] = useState([]);
-  const [request, setRequest] = useState({ response: [{ file: [] }] });
+  const [applications, setApplications] = useState([]);
+  const [application, setApplication] = useState({ response: [{ file: [] }] });
   const [selectedItems, setSelectedItems] = useState([]);
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
   const [sortOrder, setSortOrder] = useState("desc");
-  const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+
+  //Status filter and pagination
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
+
+  //date filtering
+  const [specifiedDate, setSpecifiedDate] = useState(new Date());
+  const [filteredApplications, setFilteredApplications] = useState([]);
+  const [selected, setSelected] = useState("date");
+
+
   useEffect(() => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/applications/?brgy=${brgy}&archived=false&status=${statusFilter}&page=${currentPage}`
+          `${API_LINK}/application/?brgy=${brgy}&archived=false&status=${statusFilter}&page=${currentPage}`
         );
 
         if (response.status === 200) {
-          setRequests(response.data.result);
+          setApplications(response.data.result);
           setPageCount(response.data.pageCount);
+          setFilteredApplications(response.data.result)
         }
+        else setApplications([]);
       } catch (err) {
         console.log(err);
       }
@@ -56,15 +65,16 @@ const EventsRegistrations = () => {
 
   const handleResetFilter = () => {
     setStatusFilter("all");
-    setDateFilter(null);
+    setApplications();
     setSearchQuery("");
   };
-  const Requests = requests.filter((item) =>
-    item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
+
+  const Applications = applications.filter((item) =>
+    item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   useEffect(() => {
-    document.title = "Service Requests | Barangay E-Services Management";
+    document.title = "Events Applications | Barangay E-Services Management";
   }, []);
 
   const checkboxHandler = (e) => {
@@ -83,12 +93,12 @@ const EventsRegistrations = () => {
   };
 
   const checkAllHandler = () => {
-    const requestsToCheck = Requests.length > 0 ? Requests : requests;
+    const applicationsToCheck = Applications.length > 0 ? Applications : applications;
 
-    if (requestsToCheck.length === selectedItems.length) {
+    if (applicationsToCheck.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const postIds = requestsToCheck.map((item) => {
+      const postIds = applicationsToCheck.map((item) => {
         return item._id;
       });
 
@@ -97,53 +107,98 @@ const EventsRegistrations = () => {
   };
 
   const tableHeader = [
-    "SERVICE NAME",
+    "EVENT NAME",
     "SENDER",
-    "TYPE OF SERVICE",
     "DATE",
     "STATUS",
     "ACTIONS",
   ];
 
   const handleView = (item) => {
-    setRequest(item);
+    setApplication(item);
   };
 
-  const handleSort = (sortBy) => {
-    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
-    setSortOrder(newSortOrder);
-    setSortColumn(sortBy);
-
-    const sortedData = requests.slice().sort((a, b) => {
-      if (sortBy === "request_id") {
-        return newSortOrder === "asc"
-          ? a.request_id.localeCompare(b.request_id)
-          : b.request_id.localeCompare(a.request_id);
-      } else if (sortBy === "service_name") {
-        return newSortOrder === "asc"
-          ? a.service_name.localeCompare(b.service_name)
-          : b.service_name.localeCompare(a.service_name);
-      } else if (sortBy === "status") {
-        const order = {
-          "Transaction Completed": 1,
-          Pending: 2,
-          Paid: 3,
-          Processing: 4,
-          Cancelled: 5,
-          Rejected: 6,
-        };
-        return newSortOrder === "asc"
-          ? order[a.status] - order[b.status]
-          : order[b.status] - order[a.status];
-      }
-
-      return 0;
-    });
-
-    setRequests(sortedData);
+  const DateFormat = (date) => {
+    const dateFormat = date === undefined ? "" : date.substr(0, 10);
+    return dateFormat;
   };
 
-  console.log("req parent", requests);
+
+  const filters = (choice, selectedDate) => {
+    switch (choice) {
+      case "date":
+        return applications.filter((item) => {
+          console.log(typeof new Date(item.createdAt), selectedDate);
+          return (
+            new Date(item.createdAt).getFullYear() === selectedDate.getFullYear() &&
+            new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
+            new Date(item.createdAt).getDate() === selectedDate.getDate()
+          );
+        });
+      case "week":
+        const startDate = selectedDate;
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 6);
+
+        console.log("start and end", startDate, endDate);
+
+        return applications.filter(
+          (item) =>
+            new Date(item.createdAt).getFullYear() === startDate.getFullYear() &&
+            new Date(item.createdAt).getMonth() === startDate.getMonth() &&
+            new Date(item.createdAt).getDate() >= startDate.getDate() &&
+            new Date(item.createdAt).getDate() <= endDate.getDate()
+        );
+      case "month":
+        return applications.filter(
+          (item) =>
+            new Date(item.createdAt).getFullYear() === selectedDate.getFullYear() &&
+            new Date(item.createdAt).getMonth() === selectedDate.getMonth()
+        );
+      case "year":
+        return applications.filter(
+          (item) => new Date(item.createdAt).getFullYear() === selectedDate.getFullYear()
+        );
+    }
+  };
+
+  const onSelect = (e) => {
+    console.log("select", e.target.value);
+
+    setSelected(e.target.value);
+
+    console.log("specified select", filters(e.target.value, specifiedDate));
+  };
+
+  const onChangeDate = (e) => {
+    const date = new Date(e.target.value);
+    setSpecifiedDate(date);
+    setFilteredApplications(filters(selected, date))
+  };
+
+  const onChangeWeek = (e) => {
+    const date = moment(e.target.value).toDate();
+    setSpecifiedDate(date);
+    setFilteredApplications(filters(selected, date))
+  };
+
+  const onChangeMonth = (e) => {
+    const date = moment(e.target.value).toDate();
+    setSpecifiedDate(date);
+    setFilteredApplications(filters(selected, date))
+  };
+
+  const onChangeYear = (e) => {
+    if (e.target.value === "") {
+      setFilteredApplications(applications)
+    } else {
+      const date = new Date(e.target.value, 0, 1);
+      setSpecifiedDate(date);
+      console.log("selected year converted date", date);
+      console.log("specified year", filters(selected, date));
+      setFilteredApplications(filters(selected, date))
+    }
+  };
 
   return (
     <div className="mx-4 ">
@@ -156,7 +211,7 @@ const EventsRegistrations = () => {
               className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
-              EVENTS REGISTRATIONS
+              EVENTS APPLICATIONS
             </h1>
           </div>
           <div className="lg:w-3/5 flex flex-row justify-end items-center ">
@@ -171,13 +226,13 @@ const EventsRegistrations = () => {
                     >
                       <FaArchive size={24} style={{ color: "#ffffff" }} />
                       <span className="sm:block md:hidden sm:pl-5">
-                        Archived Requests
+                        Archived Event Applications
                       </span>
                       <span
                         className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                         role="tooltip"
                       >
-                        Archived Requests
+                        Archived Event Applications
                       </span>
                     </button>
                   </div>
@@ -190,9 +245,6 @@ const EventsRegistrations = () => {
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse lg:flex-row flex justify-between w-full">
             <div className="flex flex-col lg:flex-row lg:space-x-2 md:mt-2 lg:mt-0 md:space-y-2 lg:space-y-0">
-              {/* <span className="font-medium text-[#292929]  justify-center flex text-center my-auto mx-2">
-                SORT BY:{" "}
-              </span> */}
 
               {/* Status Sort */}
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
@@ -203,9 +255,8 @@ const EventsRegistrations = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -221,55 +272,55 @@ const EventsRegistrations = () => {
                   </svg>
                 </button>
                 <ul
-                  className="bg-[#21556d] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                   className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
                   aria-labelledby="hs-dropdown"
                 >
                   <a
                     onClick={handleResetFilter}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     RESET FILTERS
                   </a>
-                  <hr className="border-[#ffffff] my-1" />
+                  <hr className="border-[#4e4e4e] my-1" />
                   <a
                     onClick={() => handleStatusFilter("Pending")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PENDING
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Paid")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PAID
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Processing")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PROCESSING
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Cancelled")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     CANCELLED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Transaction Completed")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     TRANSACTION COMPLETED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Rejected")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     REJECTED
@@ -277,7 +328,6 @@ const EventsRegistrations = () => {
                 </ul>
               </div>
 
-              {/* Date Sort */}
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button
                   id="hs-dropdown"
@@ -286,9 +336,7 @@ const EventsRegistrations = () => {
                 >
                   DATE
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -304,173 +352,77 @@ const EventsRegistrations = () => {
                   </svg>
                 </button>
                 <ul
-                  className="bg-[#21556d] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
+                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    // onClick={handleResetFilter}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
+                    onClick={handleResetFilter}
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     RESET FILTERS
                   </a>
-                  <hr className="border-[#ffffff] my-1" />
-                  <div class="hs-dropdown relative inline-flex flex-col w-full space-y-1 px-2">
-                    <label className="text-white font-medium">DATE RANGE</label>
-                    <div className="flex gap-2">
+                  <hr className="border-[#4e4e4e] my-1" />
+                  <div class="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
+                    <label className="text-black font-medium mb-1">
+                      DATE RANGE
+                    </label>
+                    <div className="flex flex-col gap-2">
                       <select
-                        className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
-                        // value={dateType}
-                        // onChange={handleDateTypeChange}
+                       className="bg-[#f8f8f8] text-gray-600 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
+                        onChange={onSelect}
+                        defaultValue={selected}
                       >
-                        <option value="specific">Specific Date</option>
+                        <option value="date">Specific Date</option>
                         <option value="week">Week</option>
                         <option value="month">Month</option>
                         <option value="year">Year</option>
                       </select>
-                      {/* {dateType === "specific" && (
+                      {selected === "date" && (
                         <input
-                          className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
+                           className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="date"
-                          id="specificDate"
-                          name="specificDate"
+                          id="date"
+                          name="date"
+                          onChange={onChangeDate}
                         />
                       )}
-                      {dateType === "week" && (
+                      {selected === "week" && (
                         <input
-                          className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
+                           className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="week"
                           id="week"
                           name="week"
+                          onChange={onChangeWeek}
                         />
                       )}
-                      {dateType === "month" && (
+                      {selected === "month" && (
                         <input
-                          className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800"
+                           className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="month"
                           id="month"
                           name="month"
+                          onChange={onChangeMonth}
                         />
                       )}
-                      {dateType === "year" && (
+                      {selected === "year" && (
                         <input
                           className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
                           type="number"
                           id="year"
                           name="year"
                           placeholder="YEAR"
-                          min="1900"
-                          max="2100"
+                          onChange={onChangeYear}
+                          min={1990}
+                          max={new Date().getFullYear() + 10}
                         />
-                      )} */}
+                      )}
                     </div>
-                    <button
-                      type="submit"
-                      // onClick={() => handleSort("date")}
-                      className="bg-[#21556d] uppercase text-white mt-2 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 hover:bg-[#0d4675]"
-                    >
-                      APPLY
-                    </button>
                   </div>
                 </ul>
               </div>
 
-              {/* Service Type Sort */}
-              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
-                <button
-                  id="hs-dropdown"
-                  type="button"
-                  className="bg-[#21556d] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
-                >
-                  SERVICE TYPE
-                  <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </button>
-                <ul
-                  className="bg-[#21556d] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-md rounded-lg p-2 "
-                  aria-labelledby="hs-dropdown"
-                >
-                  <a
-                    // onClick={handleResetFilter}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    RESET FILTERS
-                  </a>
-                  <hr className="border-[#ffffff] my-1" />
-                  <a
-                    // onClick={() => handleStatusFilter("Pending")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    HEALTHCARE
-                  </a>
-                  <a
-                    // onClick={() => handleStatusFilter("In Progress")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    EDUCATION
-                  </a>
-                  <a
-                    // onClick={() => handleStatusFilter("Completed")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    SOCIAL WELFARE
-                  </a>
-                  <a
-                    // onClick={() => handleStatusFilter("Completed")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    SECURITY AND SAFETY
-                  </a>
-                  <a
-                    // onClick={() => handleStatusFilter("Completed")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    INFRASTRUCTURE
-                  </a>
-                  <a
-                    // onClick={() => handleStatusFilter("Completed")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    COMMUNITY
-                  </a>
-                  <a
-                    // onClick={() => handleStatusFilter("Completed")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    ADMINISTRATIVE
-                  </a>
-                  <a
-                    // onClick={() => handleStatusFilter("Completed")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-white hover:bg-gradient-to-r from-[#21556d] to-[#276683] hover:text-[#EFC586] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    ENVIRONMENTAL
-                  </a>
-                </ul>
-              </div>
+
             </div>
 
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12">
@@ -502,7 +454,14 @@ const EventsRegistrations = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {setSearchQuery(e.target.value)
+                    const Requests = requests.filter(
+                      (item) =>
+                        item.event_name.toLowerCase().includes(e.target.value.toLowerCase())
+                    );
+                
+                    setFilteredRequests(Requests)
+                  }}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
@@ -553,7 +512,7 @@ const EventsRegistrations = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {Requests.map((item, index) => (
+              {filteredApplications.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
@@ -567,7 +526,7 @@ const EventsRegistrations = () => {
                   </td>
                   <td className="px-6 py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {item.service_name}
+                      {item.event_name}
                     </span>
                   </td>
                   <td className="px-6 py-3">
@@ -582,14 +541,7 @@ const EventsRegistrations = () => {
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.type}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {new Date(item.createdAt).toISOString().split("T")[0]}
+                        {DateFormat(item.createdAt) || ""}
                       </span>
                     </div>
                   </td>
@@ -644,7 +596,7 @@ const EventsRegistrations = () => {
                       <div className="hs-tooltip inline-block">
                         <button
                           type="button"
-                          data-hs-overlay="#hs-view-request-modal"
+                          data-hs-overlay="#hs-view-application-modal"
                           onClick={() => handleView({ ...item })}
                           className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                         >
@@ -657,7 +609,7 @@ const EventsRegistrations = () => {
                           className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                           role="tooltip"
                         >
-                          View Request
+                          View Application
                         </span>
                       </div>
 
@@ -677,7 +629,7 @@ const EventsRegistrations = () => {
                           className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                           role="tooltip"
                         >
-                          Reply to Request
+                          Reply to Application
                         </span>
                       </div>
                     </div>
@@ -705,12 +657,11 @@ const EventsRegistrations = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      {Object.hasOwn(request, "service_id") ? (
-        <ViewRegistrationModal request={request} />
+      {Object.hasOwn(application, "event_id") ? (
+        <ViewRegistrationModal application={application} />
       ) : null}
-      <ReplyRegistrationModal request={request} setRequest={setRequest} />
+      <ReplyRegistrationModal application={application} setApplication={setApplication} />
       <ArchiveRegistrationModal selectedItems={selectedItems} />
-      <RequestsReportsModal />
     </div>
   );
 };

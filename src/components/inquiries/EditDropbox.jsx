@@ -114,7 +114,7 @@ const EditDropbox = ({ files, setFiles }) => {
                     alt="no data"
                   />
                   <span className="text-small text-gray-500">
-                    No files selected
+                    No files attached
                   </span>
                 </li>
               )}

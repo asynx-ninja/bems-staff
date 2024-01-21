@@ -7,8 +7,8 @@ import PrintPDF from "./form/PrintPDF";
 
 import { PDFDownloadLink } from "@react-pdf/renderer";
 
-function ViewRegistrationModal({ request }) {
-  const [detail, ] = useState(request);
+function ViewRegistrationModal({ application }) {
+  const [detail, ] = useState(application);
   const [empty, ] = useState(false);
 
   const returnFile = (string) => {
@@ -60,7 +60,7 @@ function ViewRegistrationModal({ request }) {
   return (
     <div>
       <div
-        id="hs-view-request-modal"
+        id="hs-view-application-modal"
         className="hs-overlay hidden fixed top-0 left-0 z-[80] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center "
       >
         {/* Modal */}
@@ -106,7 +106,7 @@ function ViewRegistrationModal({ request }) {
                 <button
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
-                  data-hs-overlay="#hs-view-request-modal"
+                  data-hs-overlay="#hs-view-application-modal"
                 >
                   CLOSE
                 </button>

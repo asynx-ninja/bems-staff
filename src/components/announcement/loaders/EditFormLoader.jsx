@@ -5,7 +5,7 @@ function EditFormLoader({ updatingStatus, error }) {
     updating: "Updating the service form...",
     waiting: "Please wait...",
     success: "Service Form Update Successful!",
-    error: "Error updating service form. Please try again.",
+    error: error,
   };
 
   const [loadingText, setLoadingText] = useState(
@@ -50,7 +50,7 @@ function EditFormLoader({ updatingStatus, error }) {
             <span className="sr-only">Loading...</span>
           </div>
           <span className="text-white">{loadingText}</span>
-          {error && <span className="text-red-500 ml-2">{error}</span>}
+          {/* {error && <span className="text-red-500 ml-2">{error}</span>} */}
         </div>
       </div>
     </div>

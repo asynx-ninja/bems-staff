@@ -69,7 +69,7 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
     } catch (error) {
       console.error(error);
       setSubmitClicked(false);
-      setUpdatingStatus(null);
+      setUpdatingStatus("error");
       setError("An error occurred while creating the announcement.");
     }
   };

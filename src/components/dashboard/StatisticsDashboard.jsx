@@ -158,7 +158,7 @@ const StatisticsDashboard = () => {
 
         try {
           const inquiriesResponse = await axios.get(
-            `${API_LINK}/inquiries/?brgy=${brgy}&archived=false`
+            `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=false`
           );
           setInquiries(
             inquiriesResponse.status === 200 ? inquiriesResponse.data : []
@@ -169,7 +169,7 @@ const StatisticsDashboard = () => {
 
         try {
           const archivedInquiriesResponse = await axios.get(
-            `${API_LINK}/inquiries/?brgy=${brgy}&archived=true`
+            `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=true`
           );
           setArchivedInquiries(
             archivedInquiriesResponse.status === 200

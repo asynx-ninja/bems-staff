@@ -24,6 +24,22 @@ const Information = () => {
     return newFile;
   };
 
+  const [isSmallerThanLG, setIsSmallerThanLG] = useState(window.innerWidth <= 1280);
+  const [isBiggerThanMD, setIsBiggerThanMD] = useState(window.innerWidth >= 1536);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallerThanLG(window.innerWidth <= 1280);
+      setIsBiggerThanMD(window.innerWidth >= 1536);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   useEffect(() => {
     document.title = "Barangay Information | Barangay E-Services Management";
 
@@ -272,38 +288,55 @@ const Information = () => {
                   />
                 </div>
               </div>
-              <div className=" flex justify-center py-6 text-white">
-                {isEditingMode ? (
-                  <>
-                    <button
-                      onClick={handleSaveChanges}
-                      className="bg-custom-green-button3  px-7 py-2 rounded-xl mr-2"
-                    >
-                      SAVE CHANGES
-                    </button>
-                    <button
-                      className="bg-pink-700 px-7 py-2 rounded-xl mr-2"
-                      onClick={() => setisEditingMode(false)}
-                    >
-                      CANCEL
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    className="text-white w-36 bg-custom-green-button3 font-medium rounded-full text-sm m-2 py-2 px-10 text-center"
-                    onClick={() => setisEditingMode(true)}
-                  >
-                    EDIT
-                  </button>
+              <div className="flex flex-col justify-center items-center py-6 text-white gap-2">
+
+                {/* Sm to md screen loader */}
+                {isSmallerThanLG && (
+                <div className="flex w-full justify-center items-center px-1 md:px-5 xl:px-8 xxl:px-[320px] xxxl:px-[415px]">
+                  {submitClicked && <EditLoader updatingStatus="updating" />}
+                  {updatingStatus && !isBiggerThanMD && (
+                    <EditLoader updatingStatus={updatingStatus} error={error} />
+                  )}
+                </div>
                 )}
+
+                <div className="flex flex-col lg:flex-row gap-2 w-full xxl:w-1/2 justify-center items-center px-2 md:px-5 xl:px-8 ">
+                  {isEditingMode ? (
+                    <>
+                      <button
+                        onClick={handleSaveChanges}
+                        className="bg-custom-green-button3 w-full xxl:w-1/2 text-sm lg:text-sm px-7 py-3 md:py-2.5 rounded-xl "
+                      >
+                        SAVE CHANGES
+                      </button>
+                      <button
+                        className="bg-pink-700 w-full xxl:w-1/2 px-7 py-2 rounded-xl"
+                        onClick={() => setisEditingMode(false)}
+                      >
+                        CANCEL
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      className="text-white w-full lg:w-auto bg-custom-green-button3 font-medium rounded-full text-sm m-2 py-2 px-10 text-center"
+                      onClick={() => setisEditingMode(true)}
+                    >
+                      EDIT
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      {submitClicked && <EditLoader updatingStatus="updating" />}
-      {updatingStatus && (
-        <EditLoader updatingStatus={updatingStatus} error={error} />
+      {isBiggerThanMD && (
+        <div>
+          {submitClicked && <EditLoader updatingStatus="updating" />}
+          {updatingStatus && (
+            <EditLoader updatingStatus={updatingStatus} error={error} />
+          )}
+        </div>
       )}
     </div>
   );

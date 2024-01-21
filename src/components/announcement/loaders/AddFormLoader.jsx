@@ -5,7 +5,7 @@ function AddFormLoader({ creationStatus, error }) {
     creating: "Creating new service form...",
     waiting: "Please wait...",
     success: "Service Form Creation Successful!",
-    error: "Error creating service form. Please try again.",
+    error: error,
   };
 
   const [loadingText, setLoadingText] = useState(
@@ -50,7 +50,7 @@ function AddFormLoader({ creationStatus, error }) {
             <span className="sr-only">Loading...</span>
           </div>
           <span className="text-white">{loadingText}</span>
-          {error && <span className="text-red-500 ml-2">{error}</span>}
+          {/* {error && <span className="text-red-500 ml-2">{error}</span>} */}
         </div>
       </div>
     </div>

@@ -4,11 +4,14 @@ import { CiImageOn } from "react-icons/ci";
 import API_LINK from "../../config/API";
 import axios from "axios";
 import AddLoader from "./loaders/AddLoader";
+import ErrorPopup from "./popup/ErrorPopup";
 
 function CreateOfficialModal({ brgy }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
+  const [emptyFields, setEmptyFields] = useState([]);
+  const [empty, setEmpty] = useState(false);
   const [official, setOfficial] = useState({
     firstName: "",
     middleName: "",
@@ -20,12 +23,33 @@ function CreateOfficialModal({ brgy }) {
     brgy: brgy,
   });
 
+  const checkEmptyFields = () => {
+    let arr = [];
+    const keysToCheck = ["firstName", "middleName", "lastName", "position"];
+    for (const key of keysToCheck) {
+      if (official[key] === "") {
+        arr.push(key);
+      }
+    }
+    setEmptyFields(arr);
+    return arr;
+  };
+
   const [pfp, setPfp] = useState();
 
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
       setSubmitClicked(true);
+
+      const emptyFieldsArr = checkEmptyFields();
+
+      if (emptyFieldsArr.length > 0) {
+        console.log(emptyFieldsArr);
+        setEmpty(true);
+        setSubmitClicked(false);
+        return;
+      }
 
       const formData = new FormData();
       formData.append("file", pfp);
@@ -69,7 +93,7 @@ function CreateOfficialModal({ brgy }) {
     } catch (err) {
       console.error("Error adding official:", err);
       setSubmitClicked(false);
-      setCreationStatus(null);
+      setCreationStatus("error");
       setError("An error occurred while creating the announcement.");
     }
   };
@@ -149,7 +173,10 @@ function CreateOfficialModal({ brgy }) {
                     <input
                       type="text"
                       id="firstName"
-                      className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                      name="firstName"
+                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                        emptyFields.includes("firstName") && "border-red-500"
+                      }`}
                       placeholder=""
                       value={official.firstName}
                       onChange={(e) =>
@@ -166,7 +193,10 @@ function CreateOfficialModal({ brgy }) {
                     <input
                       type="text"
                       id="middleName"
-                      className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                      name="middleName"
+                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                        emptyFields.includes("middleName") && "border-red-500"
+                      }`}
                       placeholder=""
                       value={official.middleName}
                       onChange={(e) =>
@@ -184,7 +214,7 @@ function CreateOfficialModal({ brgy }) {
                       type="text"
                       id="suffix"
                       className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                      placeholder=""
+                      placeholder="--Optional--"
                       value={official.suffix}
                       onChange={(e) =>
                         setOfficial({ ...official, suffix: e.target.value })
@@ -200,7 +230,10 @@ function CreateOfficialModal({ brgy }) {
                     <input
                       type="text"
                       id="lastName"
-                      className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                      name="lastName"
+                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                        emptyFields.includes("lastName") && "border-red-500"
+                      }`}
                       placeholder=""
                       value={official.lastName}
                       onChange={(e) =>
@@ -225,7 +258,10 @@ function CreateOfficialModal({ brgy }) {
                     </h1>
                     <select
                       id="position"
-                      className="shadow border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                      name="position"
+                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
+                        emptyFields.includes("position") && "border-red-500"
+                      }`}
                       onChange={(e) =>
                         setOfficial({ ...official, position: e.target.value })
                       }
@@ -326,6 +362,7 @@ function CreateOfficialModal({ brgy }) {
             </div>
           </div>
         </div>
+        {empty && <ErrorPopup />}
         {submitClicked && <AddLoader creationStatus="creating" />}
         {creationStatus && (
           <AddLoader creationStatus={creationStatus} error={error} />
