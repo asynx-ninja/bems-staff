@@ -105,7 +105,7 @@ const StaffManagement = () => {
     "NAME",
     "EMAIL",
     "CONTACT",
-    "TYPE", 
+    "TYPE",
     "STATUS",
     "ACTIONS",
   ];
@@ -209,9 +209,8 @@ const StaffManagement = () => {
                 >
                   ACCOUNT TYPE
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -255,7 +254,7 @@ const StaffManagement = () => {
                 </ul>
               </div>
             </div>
-            
+
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12">
               <div className="flex flex-row w-full md:mr-2">
                 <button className=" bg-[#21556d] p-3 rounded-l-md">
@@ -351,11 +350,7 @@ const StaffManagement = () => {
                   </td>
                   <td className="px-2 xl:px-6 py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                      {item.lastName +
-                        ", " +
-                        item.middleName +
-                        " " +
-                        item.firstName}
+                      {item.lastName + ", " + item.firstName + (item.middleName !== undefined ? " " + item.middleName : "")}
                     </span>
                   </td>
                   <td className="px-2 xl:px-6 py-3">
