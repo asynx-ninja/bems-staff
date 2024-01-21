@@ -597,7 +597,7 @@ const Requests = () => {
         </div>
 
         {/* Table */}
-        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_280px)] xxxl:h-[calc(100vh_-_300px)]">
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_280px)] xl:h-[calc(100vh_-_300px)] xxl:h-[calc(100vh_-_280px)] xxxl:h-[calc(100vh_-_300px)]">
           <table className="relative table-auto w-full">
             <thead className="bg-[#21556d] sticky top-0">
               <tr className="">

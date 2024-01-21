@@ -194,7 +194,7 @@ const ArchivedEvents = () => {
         <div className="flex flex-row lg:mt-4 sm:flex-col-reverse lg:flex-row w-full">
           <div className="flex justify-center items-center sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] py-4 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
-              className="mx-auto font-bold text-xs md:text-xl xl:text-[16px] xxl:text-[1.3rem] xxxl:text-2xl xxxl:mt-1 text-white text-center"
+              className="mx-auto font-bold text-xs md:text-xl lg:text-[15px] xl:text-[16px] xxl:text-[1.3rem] xxxl:text-2xl xxxl:mt-1 text-white text-center"
               style={{ letterSpacing: "0.2em" }}
             >
               ARCHIVED EVENTS
