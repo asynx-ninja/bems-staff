@@ -9,14 +9,19 @@ const Reports = () => {
   const [services, setServices] = useState([]);
   const [requests, setRequests] = useState([]);
   const [users, setUsers] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
   const [archivedServices, setArchivedServices] = useState([]);
   const [archivedRequests, setArchivedRequests] = useState([]);
+  const [archivedUsers, setArchivedUsers] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
+  const [isSpecificSelected, setIsSpecificSelected] = useState(false);
   const [isTodaySelected, setIsTodaySelected] = useState(false);
   const [isWeeklySelected, setIsWeeklySelected] = useState(false);
   const [isMonthlySelected, setIsMonthlySelected] = useState(false);
   const [isAnnualSelected, setIsAnnualSelected] = useState(false);
+  const [dateType, setDateType] = useState("specific");
+  const [startDate, setStartDate] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,10 +34,12 @@ const Reports = () => {
           `${API_LINK}/requests/?brgy=${brgy}&archived=false`
         );
 
-        if (servicesResponse.status === 200) setServices(servicesResponse.data.result);
+        if (servicesResponse.status === 200)
+          setServices(servicesResponse.data.result);
         else setServices([]);
 
-        if (requestsResponse.status === 200) setRequests(requestsResponse.data.result);
+        if (requestsResponse.status === 200)
+          setRequests(requestsResponse.data.result);
 
         // Fetch archived requests
         const archivedRequestsResponse = await axios.get(
@@ -49,20 +56,43 @@ const Reports = () => {
           setArchivedServices(archivedServicesResponse.data.result);
 
         // Fetch users
-        const usersResponse = await axios.get(
+        const activeUsersResponse = await axios.get(
           `${API_LINK}/users/?brgy=${brgy}&type=Resident`
         );
-        if (usersResponse.status === 200) {
-          setUsers(usersResponse.data.result);
+        if (activeUsersResponse.status === 200) {
+          setUsers(activeUsersResponse.data.result);
         } else {
           setUsers([]);
+        }
+
+        // Fetch archived users
+        const archivedUsersResponse = await axios.get(
+          `${API_LINK}/users/showArchived/?brgy=${brgy}&type=Resident`
+        );
+        if (archivedUsersResponse.status === 200) {
+          setArchivedUsers(archivedUsersResponse.data.result);
+        } else {
+          setArchivedUsers([]);
+        }
+
+        const announcementsResponse = await axios.get(
+          `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
+        );
+        if (announcementsResponse.status === 200) {
+          setAnnouncements(announcementsResponse.data.result);
+        } else {
+          setAnnouncements([]);
         }
       } catch (err) {
         console.log(err);
       }
     };
 
-    fetchData();
+    const intervalId = setInterval(() => {
+      fetchData();
+    }, 3000);
+
+    return () => clearInterval(intervalId);
   }, [brgy]);
 
   const startOfWeek = (date) => {
@@ -103,18 +133,46 @@ const Reports = () => {
   };
 
   const handleTodayToggle = () => {
+    setIsTodaySelected(false);
+    setIsSpecificSelected(false);
+    setIsWeeklySelected(false);
+    setIsMonthlySelected(false);
+    setIsAnnualSelected(false);
     setIsTodaySelected(!isTodaySelected);
   };
 
+  const handleSpecificToggle = () => {
+    setIsSpecificSelected(true);
+    setIsTodaySelected(false);
+    setIsWeeklySelected(false);
+    setIsMonthlySelected(false);
+    setIsAnnualSelected(false);
+    setIsSpecificSelected(!isSpecificSelected);
+  };
+
   const handleWeeklyToggle = () => {
+    setIsSpecificSelected(false);
+    setIsTodaySelected(false);
+    setIsWeeklySelected(true);
+    setIsMonthlySelected(false);
+    setIsAnnualSelected(false);
     setIsWeeklySelected(!isWeeklySelected);
   };
 
   const handleMonthlyToggle = () => {
+    setIsSpecificSelected(false);
+    setIsTodaySelected(false);
+    setIsWeeklySelected(false);
+    setIsMonthlySelected(true);
+    setIsAnnualSelected(false);
     setIsMonthlySelected(!isMonthlySelected);
   };
 
   const handleAnnualToggle = () => {
+    setIsTodaySelected(false);
+    setIsWeeklySelected(false);
+    setIsMonthlySelected(false);
+    setIsAnnualSelected(true);
     setIsAnnualSelected(!isAnnualSelected);
   };
 
@@ -299,10 +357,7 @@ const Reports = () => {
       },
     ],
     options: {
-      theme: {
-        mode: "dark",
-      },
-      colors: ["#ff0000"],
+      colors: ["#4b7c80"],
       chart: {
         background: "transparent",
       },
@@ -336,10 +391,7 @@ const Reports = () => {
   const chartDataResidentStatus = {
     series: [registeredCount, pendingCount, deniedCount],
     options: {
-      theme: {
-        mode: "dark",
-      },
-      colors: ["#4caf50", "#ff9800", "#f44336"], // Colors for Registered, Pending, Denied
+      colors: ["#4caf50", "#ff9800", "#ac4646"], // Colors for Registered, Pending, Denied
       chart: {
         background: "transparent",
       },
@@ -383,10 +435,326 @@ const Reports = () => {
       },
     ],
     options: {
-      theme: {
-        mode: "dark",
+      colors: ["#4b7c80"],
+      chart: {
+        background: "transparent",
       },
-      colors: ["#ff0000"],
+      xaxis: {
+        categories: Array.from({ length: 6 }, (_, index) =>
+          new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth() - index,
+            1
+          ).toLocaleString("en-us", {
+            month: "short",
+          })
+        ).reverse(),
+        labels: {
+          style: {
+            fontSize: "9px",
+          },
+        },
+      },
+    },
+  };
+
+  const handleDateTypeChange = (e) => {
+    setDateType(e.target.value);
+  };
+
+  const getStatusPercentages = () => {
+    const statusCounts = {};
+
+    // Initialize counts
+    [
+      "Transaction Completed",
+      "Rejected",
+      "Pending",
+      "Paid",
+      "Processing",
+      "Cancelled",
+    ].forEach((status) => {
+      statusCounts[status] = 0;
+    });
+
+    // Count occurrences of each status
+    requests.forEach((request) => {
+      statusCounts[request.status]++;
+    });
+
+    // Calculate percentages
+    const totalCount = requests.length;
+    const percentages = Object.fromEntries(
+      Object.entries(statusCounts).map(([status, count]) => [
+        status,
+        (count / totalCount) * 100,
+      ])
+    );
+
+    return percentages;
+  };
+
+  const statusPercentages = getStatusPercentages();
+
+  const chartDataStatusPercentage = {
+    series: Object.values(statusPercentages),
+    options: {
+      colors: [
+        "#4caf50",
+        "#ff9800",
+        "#ac4646",
+        "#2196f3",
+        "#ffeb3b",
+        "#9e9e9e",
+      ], // Add more colors if needed
+      chart: {
+        background: "transparent",
+      },
+      labels: [
+        "Transaction Completed",
+        "Rejected",
+        "Pending",
+        "Paid",
+        "Processing",
+        "Cancelled",
+      ],
+    },
+  };
+
+  const getPopulationGrowthData = () => {
+    const currentDate = new Date();
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(currentDate.getMonth() - 6);
+
+    const activePopulationData = Array.from({ length: 6 }, (_, index) => {
+      const startOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - index,
+        1
+      );
+      const endOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - index + 1,
+        0
+      );
+
+      const activePopulationCount = users.filter(
+        (user) => new Date(user.createdAt) <= endOfMonth
+      ).length;
+
+      return activePopulationCount;
+    }).reverse();
+
+    const archivedPopulationData = Array.from({ length: 6 }, (_, index) => {
+      const startOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - index,
+        1
+      );
+      const endOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - index + 1,
+        0
+      );
+
+      const archivedPopulationCount = archivedUsers.filter(
+        (user) => new Date(user.createdAt) <= endOfMonth
+      ).length;
+
+      return archivedPopulationCount;
+    }).reverse();
+
+    const totalResidentsData = Array.from({ length: 6 }, (_, index) => {
+      const startOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - index,
+        1
+      );
+      const endOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - index + 1,
+        0
+      );
+
+      const totalResidentsCount =
+        users.filter((user) => new Date(user.createdAt) <= endOfMonth).length +
+        archivedUsers.filter((user) => new Date(user.createdAt) <= endOfMonth)
+          .length;
+
+      return totalResidentsCount;
+    }).reverse();
+
+    return {
+      series: [
+        {
+          name: "Active Residents",
+          data: activePopulationData,
+        },
+        {
+          name: "Archived Residents",
+          data: archivedPopulationData,
+        },
+        {
+          name: "Total Residents",
+          data: totalResidentsData,
+        },
+      ],
+      options: {
+        colors: ["#4b7c80", "#ff0000", "#0000ff"], // Adjust colors as needed
+        chart: {
+          background: "transparent",
+        },
+        xaxis: {
+          categories: Array.from({ length: 6 }, (_, index) =>
+            new Date(
+              currentDate.getFullYear(),
+              currentDate.getMonth() - index,
+              1
+            ).toLocaleString("en-us", {
+              month: "short",
+            })
+          ).reverse(),
+          labels: {
+            style: {
+              fontSize: "9px",
+            },
+          },
+        },
+      },
+    };
+  };
+
+  const chartDataPopulationGrowth = getPopulationGrowthData();
+
+  const getCompletedRequestsLastSixMonths = () => {
+    const startDate = sixMonthsAgo.toISOString();
+    const endDate = currentDate.toISOString();
+    return requests.filter(
+      (request) =>
+        request.status === "Transaction Completed" &&
+        new Date(request.updatedAt) >= new Date(startDate) &&
+        new Date(request.updatedAt) <= new Date(endDate)
+    );
+  };
+
+  const completedRequestsLastSixMonths = getCompletedRequestsLastSixMonths();
+  const completionRateData = Array.from({ length: 6 }, (_, index) => {
+    const startOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() - index,
+      1
+    );
+    const endOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() - index + 1,
+      0
+    );
+
+    const completedCount = completedRequestsLastSixMonths.filter(
+      (request) =>
+        new Date(request.updatedAt) >= startOfMonth &&
+        new Date(request.updatedAt) <= endOfMonth
+    ).length;
+
+    return completedCount;
+  }).reverse();
+
+  const chartDataCompletionRate = {
+    series: [
+      {
+        name: "Completed Requests",
+        data: completionRateData,
+      },
+    ],
+    options: {
+      colors: ["#4b7c80"],
+      chart: {
+        background: "transparent",
+      },
+      xaxis: {
+        categories: Array.from({ length: 6 }, (_, index) =>
+          new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth() - index,
+            1
+          ).toLocaleString("en-us", {
+            month: "short",
+          })
+        ).reverse(),
+        labels: {
+          style: {
+            fontSize: "9px",
+          },
+        },
+      },
+    },
+  };
+
+  // Function to get the total attendees for each announcement
+  const totalAttendees = announcements.map((announcement) => ({
+    announcement_title: announcement.title,
+    attendees: announcement.attendees.length,
+  }));
+
+  // Sort the total attendees array in descending order
+  totalAttendees.sort((a, b) => b.attendees - a.attendees);
+
+  // Chart data for trend of attendance in events
+  const chartDataAttendanceTrend = {
+    series: [
+      {
+        name: "Total Attendees",
+        data: totalAttendees.map((item) => item.attendees),
+      },
+    ],
+    options: {
+      colors: ["#4b7c80"],
+      chart: {
+        background: "transparent",
+      },
+      xaxis: {
+        categories: totalAttendees.map((item) => item.announcement_title),
+        labels: {
+          style: {
+            fontSize: "9px",
+          },
+        },
+      },
+    },
+  };
+
+  // Function to get the total number of events created each month
+  const eventsCreatedEachMonth = Array.from({ length: 6 }, (_, index) => {
+    const startOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() - index,
+      1
+    );
+    const endOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() - index + 1,
+      0
+    );
+
+    const eventsCount = announcements.filter(
+      (announcement) =>
+        new Date(announcement.createdAt) >= startOfMonth &&
+        new Date(announcement.createdAt) <= endOfMonth
+    ).length;
+
+    return eventsCount;
+  }).reverse();
+
+  // Chart data for number of events organized each month
+  const chartDataEventsOrganized = {
+    series: [
+      {
+        name: "Number of Events",
+        data: eventsCreatedEachMonth,
+      },
+    ],
+    options: {
+      colors: ["#4b7c80"],
       chart: {
         background: "transparent",
       },
@@ -413,94 +781,164 @@ const Reports = () => {
     <div className="mx-4 mt-4 ">
       <div className="flex flex-col scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_95px)]">
         <div className="flex justify-end mb-3">
-          <div
-            id="toggle-count"
-            className="flex p-0.5 bg-gray-700 rounded-lg w-full lg:w-auto items-center"
-          >
-            <label
-              htmlFor="toggle-count-today"
-              className="relative inline-block py-2 px-3 w-full lg:w-auto flex items-center justify-center"
+          <div className="flex flex-col">
+            <div
+              id="toggle-count"
+              className="flex p-0.5 bg-gray-700 rounded-lg w-full lg:w-auto items-center"
             >
-              <span
-                className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
-                  isTodaySelected ? "dark:text-white" : "dark:text-gray-200"
-                }`}
-                onClick={handleTodayToggle}
+               <label
+                htmlFor="toggle-count-specific"
+                className="relative inline-block py-2 px-3 w-full lg:w-auto flex items-center justify-center"
               >
-                Today
-              </span>
-              <input
-                id="toggle-count-today"
-                name="toggle-count"
-                type="radio"
-                className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
-                checked={isTodaySelected}
-                onChange={() => {}}
-              />
-            </label>
-            <label
-              htmlFor="toggle-count-weekly"
-              className="relative inline-block py-2 px-3 w-full lg:w-auto flex items-center justify-center"
-            >
-              <span
-                className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
-                  isWeeklySelected ? "dark:text-white" : "dark:text-gray-200"
-                }`}
-                onClick={handleWeeklyToggle}
+                <span
+                  className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
+                    isSpecificSelected ? "dark:text-white" : "dark:text-gray-200"
+                  }`}
+                  onClick={handleSpecificToggle}
+                >
+                  Specific Date
+                </span>
+                <input
+                  id="toggle-count-today"
+                  name="toggle-count"
+                  type="radio"
+                  className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
+                  checked={isSpecificSelected}
+                  onChange={() => {}}
+                />
+              </label>
+              <label
+                htmlFor="toggle-count-today"
+                className="relative inline-block py-2 px-3 w-full lg:w-auto flex items-center justify-center"
               >
-                Weekly
-              </span>
-              <input
-                id="toggle-count-weekly"
-                name="toggle-count"
-                type="radio"
-                className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
-                checked={isWeeklySelected}
-                onChange={() => {}}
-              />
-            </label>
-            <label
-              htmlFor="toggle-count-monthly"
-              className="relative inline-block py-2 px-3 w-full lg:w-auto flex items-center justify-center"
-            >
-              <span
-                className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
-                  isMonthlySelected ? "dark:text-white" : "dark:text-gray-200"
-                }`}
-                onClick={handleMonthlyToggle}
+                <span
+                  className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
+                    isTodaySelected ? "dark:text-white" : "dark:text-gray-200"
+                  }`}
+                  onClick={handleTodayToggle}
+                >
+                  Today
+                </span>
+                <input
+                  id="toggle-count-today"
+                  name="toggle-count"
+                  type="radio"
+                  className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
+                  checked={isTodaySelected}
+                  onChange={() => {}}
+                />
+              </label>
+              <label
+                htmlFor="toggle-count-weekly"
+                className="relative inline-block py-2 px-1 lg:px-3 w-full lg:w-auto flex items-center justify-center"
               >
-                Monthly
-              </span>
-              <input
-                id="toggle-count-monthly"
-                name="toggle-count"
-                type="radio"
-                className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
-              />
-            </label>
-            <label
-              htmlFor="toggle-count-annual"
-              className="relative inline-block py-2 px-3 w-full lg:w-auto flex items-center justify-center"
-            >
-              <span
-                className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
-                  isAnnualSelected ? "dark:text-white" : "dark:text-gray-200"
-                }`}
-                onClick={handleAnnualToggle}
+                <span
+                  className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
+                    isWeeklySelected ? "dark:text-white" : "dark:text-gray-200"
+                  }`}
+                  onClick={handleWeeklyToggle}
+                >
+                  Weekly
+                </span>
+                <input
+                  id="toggle-count-weekly"
+                  name="toggle-count"
+                  type="radio"
+                  className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
+                  checked={isWeeklySelected}
+                  onChange={() => {}}
+                />
+              </label>
+              <label
+                htmlFor="toggle-count-monthly"
+                className="relative inline-block py-2 px-3 w-full lg:w-auto flex items-center justify-center"
               >
-                Annual
-              </span>
-              <input
-                id="toggle-count-annual"
-                name="toggle-count"
-                type="radio"
-                className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
-              />
-            </label>
+                <span
+                  className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
+                    isMonthlySelected ? "dark:text-white" : "dark:text-gray-200"
+                  }`}
+                  onClick={handleMonthlyToggle}
+                >
+                  Monthly
+                </span>
+                <input
+                  id="toggle-count-monthly"
+                  name="toggle-count"
+                  type="radio"
+                  className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
+                />
+              </label>
+              <label
+                htmlFor="toggle-count-annual"
+                className="relative inline-block py-2 px-3 w-full lg:w-auto flex items-center justify-center"
+              >
+                <span
+                  className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
+                    isAnnualSelected ? "dark:text-white" : "dark:text-gray-200"
+                  }`}
+                  onClick={handleAnnualToggle}
+                >
+                  Annual
+                </span>
+                <input
+                  id="toggle-count-annual"
+                  name="toggle-count"
+                  type="radio"
+                  className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
+                />
+              </label>
+            </div>
+
+            {/* DATE INPUTS */}
+            <div className="w-full">
+              {isSpecificSelected && (
+                <input
+                  className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
+                  type="date"
+                  id="specificDate"
+                  name="specificDate"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+              )}
+
+              {isWeeklySelected && (
+                <input
+                  className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
+                  type="week"
+                  id="week"
+                  name="week"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+              )}
+              {isMonthlySelected && (
+                <input
+                  className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
+                  type="month"
+                  id="month"
+                  name="month"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+              )}
+              {isAnnualSelected && (
+                <input
+                  className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full w-full"
+                  type="number"
+                  id="year"
+                  name="year"
+                  min="1900"
+                  max="2100"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 lg:items-center border border-gray-200 rounded-xl bg-slate-800">
+        <div className="grid grid-cols-1 md:grid-cols-4 lg:items-center border border-gray-200 bg-[#2c606d] shadow-sm rounded-xl">
           <div className="flex flex-col p-4">
             <h4 className="text-white mb-1 text-sm lg:text-md">
               TOTAL SERVICES TAKEN
@@ -508,7 +946,7 @@ const Reports = () => {
             <div className="flex gap-x-1">
               <p
                 data-hs-toggle-count='{"target": "#toggle-count", "min": 19, "max": 29}'
-                className="text-gray-800 font-semibold text-3xl dark:text-gray-200"
+                className="text-white font-semibold text-3xl "
               >
                 {filteredTotalServices}
               </p>
@@ -570,9 +1008,9 @@ const Reports = () => {
 
         {/* CHARTS */}
         <div className="flex flex-col lg:flex-row lg:space-x-2 w-full">
-          <div className="bg-slate-800 w-full lg:w-1/2 rounded-xl mt-5">
-            <h1 className="mt-5 ml-5 font-medium text-white">
-              OVERALL AVAILED SERVICES
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
+              REQUESTED SERVICES
             </h1>
             <div className="flex rounded-xl">
               <Chart
@@ -584,8 +1022,8 @@ const Reports = () => {
             </div>
           </div>
 
-          <div className="bg-slate-800 w-full lg:w-1/2 rounded-xl mt-5">
-            <h1 className="mt-5 ml-5 font-medium text-white">
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
               REVENUE FOR THE PAST 6 MONTHS
             </h1>
             <div className="flex rounded-xl">
@@ -601,44 +1039,92 @@ const Reports = () => {
 
         {/* CHARTS 2 */}
         <div className="flex flex-col lg:flex-row lg:space-x-2 w-full">
-          <div className="bg-slate-800 w-full lg:w-1/2 rounded-xl mt-5">
-            <h1 className="mt-5 ml-5 font-medium text-white">
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
               RESIDENT STATUS CHART
             </h1>
-            <div className="flex rounded-xl">
+            <div className="flex rounded-xl justify-center items-center">
               <Chart
                 type="pie"
-                width={600}
-                height={600}
-                className="flex w-full rounded-xl justify-center"
+                className="flex rounded-xl justify-center w-full lg:w-[600px]"
                 series={chartDataResidentStatus.series}
                 options={chartDataResidentStatus.options}
               />
             </div>
           </div>
 
-          <div className="bg-slate-800 w-full lg:w-1/2 rounded-xl mt-5">
-            <h1 className="mt-5 ml-5 font-medium text-white">FILL LATER</h1>
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
+              POPULATION GROWTH (FOR THE PAST 6 MONTHS)
+            </h1>
+            <div className="flex rounded-xl">
+              <Chart
+                type="line"
+                className="flex w-full rounded-xl"
+                series={chartDataPopulationGrowth.series}
+                options={chartDataPopulationGrowth.options}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* CHARTS 3 */}
+        <div className="flex flex-col lg:flex-row lg:space-x-2 w-full">
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
+              SERVICE REQUEST PERCENTAGE
+            </h1>
+            <div className="flex justify-center items-center rounded-xl">
+              <Chart
+                type="pie"
+                className="w-[full] lg:w-[650px]"
+                series={chartDataStatusPercentage.series}
+                options={chartDataStatusPercentage.options}
+              />
+            </div>
+          </div>
+
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
+              SERVICE REQUEST COMPLETION RATE (FOR THE PAST 6 MONTHS)
+            </h1>
             <div className="flex rounded-xl">
               <Chart
                 type="line"
                 className="flex w-full rounded-xl "
-                series={[
-                  {
-                    name: "Company1",
-                    data: [100, 200, 232, 132, 422, 132],
-                  },
-                ]}
-                options={{
-                  theme: {
-                    mode: "dark",
-                  },
-                  colors: ["#ff0000"], // Corrected color code
-                  chart: {
-                    background: "transparent",
-                  },
-                  // Add other chart options as needed
-                }}
+                series={chartDataCompletionRate.series}
+                options={chartDataCompletionRate.options}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* CHARTS 4 */}
+        <div className="flex flex-col lg:flex-row lg:space-x-2 w-full">
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black uppercase">
+              OVERALL TRENDING EVENTS
+            </h1>
+            <div className="flex justify-center items-center rounded-xl">
+              <Chart
+                type="bar"
+                className="w-[full] lg:w-[650px]"
+                series={chartDataAttendanceTrend.series}
+                options={chartDataAttendanceTrend.options}
+              />
+            </div>
+          </div>
+
+          <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black uppercase">
+              OVERALL NUMBER OF CREATED EVENTS (FOR THE PAST 6 MONTHS)
+            </h1>
+            <div className="flex rounded-xl">
+              <Chart
+                type="line"
+                className="flex w-full rounded-xl"
+                series={chartDataEventsOrganized.series}
+                options={chartDataEventsOrganized.options}
               />
             </div>
           </div>

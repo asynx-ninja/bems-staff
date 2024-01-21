@@ -34,7 +34,7 @@ function ArchiveAnnouncementModal({ selectedItems }) {
           />
 
           <p className="relative bottom-[3rem] text-center sm:text-[16px] sm:w-[13rem] md:text-[1.2rem] md:w-[15rem] lg:w-[19rem]  lg:text-2xl text-gray-700 w-[30rem]">
-            Are you sure you want to archive this announcement?
+            Are you sure you want to archive this event?
           </p>
 
           <div className="flex mt-8 space-x-4 relative bottom-[3rem]">

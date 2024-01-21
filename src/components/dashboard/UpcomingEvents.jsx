@@ -33,6 +33,8 @@ const UpcomingEvents = () => {
     setAnnouncement(item);
   };
 
+  console.log("announcements: ", announcement);
+
   return (
     <div className="relative w-full lg:w-6/12 flex flex-col overflow-y-auto h-full">
       <b className="border-solid border-0 border-black border-b-2 pb-2 uppercase font-heavy text-lg md:text-xl mb-4">
@@ -41,7 +43,7 @@ const UpcomingEvents = () => {
       <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-auto xxl:h-[calc(100vh_-_410px)] xxxl:h-[calc(100vh_-_410px)]">
         <div className="w-full gap-3 flex flex-col border">
           {announcements.map((item, index) => (
-            <div className="flex flex-row bg-gradient-to-r from-[#0d4b75] to-[#2e65ac] h-full text-white font-medium overflow-hidden">
+            <div className="flex flex-row bg-gradient-to-r from-[#4b7c80] to-[#21556d] h-full text-white font-medium overflow-hidden">
               <div
                 className="bg-cover bg-center w-[20%] h-[4rem] md:h-[5rem] lg:h-[6rem] object-cover rounded-r-full border-solid border-0"
                 style={{
