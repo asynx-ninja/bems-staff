@@ -35,7 +35,7 @@ const ArchivedRegistrations = () => {
 
   //date filtering
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
-  const [filteredRequests, setFilteredRequests] = useState([]);
+  const [filteredApplications, setFilteredApplications] = useState([]);
   const [selected, setSelected] = useState("date");
 
 
@@ -49,7 +49,7 @@ const ArchivedRegistrations = () => {
         if (response.status === 200) {
           setApplications(response.data.result);
           setPageCount(response.data.pageCount);
-          setFilteredRequests(response.data.result)
+          setFilteredApplications(response.data.result)
         }
         else setRequests([]);
       } catch (err) {
@@ -421,7 +421,7 @@ const ArchivedRegistrations = () => {
                       )}
                       {selected === "year" && (
                         <input
-                          className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
+                          className=" text-black py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
                           type="number"
                           id="year"
                           name="year"
@@ -525,7 +525,7 @@ const ArchivedRegistrations = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {Applications.map((item, index) => (
+              {filteredApplications.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">

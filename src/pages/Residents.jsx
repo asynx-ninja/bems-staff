@@ -125,7 +125,6 @@ const Residents = () => {
     "NAME",
     "EMAIL",
     "AGE",
-    "GENDER",
     "CONTACT",
     "STATUS",
     "ACTIONS",
@@ -223,9 +222,8 @@ const Residents = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -241,7 +239,7 @@ const Residents = () => {
                   </svg>
                 </button>
                 <ul
-                 className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
+                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
                   aria-labelledby="hs-dropdown"
                 >
                   <a
@@ -254,28 +252,25 @@ const Residents = () => {
                   <hr className="border-[#4e4e4e] my-1" />
                   <li
                     onClick={() => handleStatusFilter("Registered")}
-                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
-                      statusFilter === "Registered" &&
+                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${statusFilter === "Registered" &&
                       "bg-[#b3c5cc]"
-                    }`}
+                      }`}
                   >
                     REGISTERED
                   </li>
                   <li
                     onClick={() => handleStatusFilter("Pending")}
-                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
-                      statusFilter === "Pending" &&
+                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${statusFilter === "Pending" &&
                       "bg-[#b3c5cc]"
-                    }`}
+                      }`}
                   >
                     PENDING
                   </li>
                   <li
                     onClick={() => handleStatusFilter("Denied")}
-                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
-                      statusFilter === "Denied" &&
+                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${statusFilter === "Denied" &&
                       "bg-[#b3c5cc]"
-                    }`}
+                      }`}
                   >
                     DENIED
                   </li>
@@ -377,13 +372,10 @@ const Residents = () => {
                     </div>
                   </td>
                   <td className="py-3">
-                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                      {item.lastName +
-                        ", " +
-                        item.firstName +
-                        " " +
-                        item.middleName}
+                    <span className="text-xs sm:text-sm text-black line-clamp-2">
+                      {item.lastName + ", " + item.firstName + (item.middleName !== undefined ? " " + item.middleName : "")}
                     </span>
+
                   </td>
                   <td className="py-3">
                     <span className="text-xs sm:text-sm text-black line-clamp-2 ">
@@ -394,13 +386,6 @@ const Residents = () => {
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                         {item.age}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.sex}
                       </span>
                     </div>
                   </td>

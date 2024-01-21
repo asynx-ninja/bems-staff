@@ -48,7 +48,7 @@ const Requests = () => {
         );
 
         if (response.status === 200) {
-         setRequests(response.data.result);
+          setRequests(response.data.result);
           setPageCount(response.data.pageCount);
           setFilteredRequests(response.data.result)
         }
@@ -419,7 +419,7 @@ const Requests = () => {
                       )}
                       {selected === "year" && (
                         <input
-                          className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
+                          className=" text-black py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
                           type="number"
                           id="year"
                           name="year"
@@ -561,7 +561,14 @@ const Requests = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {setSearchQuery(e.target.value)
+                    const Requests = requests.filter(
+                      (item) =>
+                        item.service_name.toLowerCase().includes(e.target.value.toLowerCase())                   
+                    );
+                
+                    setFilteredRequests(Requests)
+                  }}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
