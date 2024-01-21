@@ -66,61 +66,78 @@ function AddStaffModal({ brgy }) {
       const emptyFieldsArr = checkEmptyFields();
 
       if (emptyFieldsArr.length > 0) {
-        console.log(emptyFieldsArr);
         setEmpty(true);
         setSubmitClicked(false);
       } else {
-      const calculatedAge = calculateAge(user.birthday);
+        const calculatedAge = calculateAge(user.birthday);
 
-      const obj = {
-        firstName: user.firstName,
-        middleName: user.middleName,
-        lastName: user.lastName,
-        suffix: user.suffix,
-        religion: user.religion,
-        email: user.email,
-        birthday: user.birthday,
-        age: calculatedAge,
-        contact: user.contact,
-        sex: user.sex,
-        address: { street: user.street, brgy: user.brgy, city: user.city },
-        occupation: user.occupation,
-        civil_status: user.civil_status,
-        type: user.type,
-        isVoter: user.isVoter,
-        isHead: user.isHead,
-        isArchived: user.isArchived,
-        isApproved: user.isApproved,
-        username: user.username,
-        password: user.password,
-      };
-      const result = await axios.post(`${API_LINK}/staffs/`, obj);
+        if (calculatedAge < 17) {
+          // Set an error message if the age is less than 17
+          setCreationStatus("ageError");
+          setSubmitClicked(false);
+          return;
+        } else {
+          try {
+            const obj = {
+              firstName: user.firstName,
+              middleName: user.middleName,
+              lastName: user.lastName,
+              suffix: user.suffix,
+              religion: user.religion,
+              email: user.email,
+              birthday: user.birthday,
+              age: calculatedAge,
+              contact: user.contact,
+              sex: user.sex,
+              address: {
+                street: user.street,
+                brgy: user.brgy,
+                city: user.city,
+              },
+              occupation: user.occupation,
+              civil_status: user.civil_status,
+              type: user.type,
+              isVoter: user.isVoter,
+              isHead: user.isHead,
+              isArchived: user.isArchived,
+              isApproved: user.isApproved,
+              username: user.username,
+              password: user.password,
+            };
+            const result = await axios.post(`${API_LINK}/staffs/`, obj);
 
-      if (result.status === 200) {
-        setUser({
-          user_id: "",
-          firstName: "",
-          lastName: "",
-          email: "",
-          birthday: "",
-          age: "",
-          contact: "",
-          street: "",
-          type: "",
-          username: "",
-          password: "",
-          isArchived: false,
-          isApproved: "Registered",
-          city: "Rodriguez, Rizal",
-          brgy: brgy,
-        });
-        setSubmitClicked(false);
-        setCreationStatus("success");
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
+            if (result.status === 200) {
+              setUser({
+                user_id: "",
+                firstName: "",
+                lastName: "",
+                email: "",
+                birthday: "",
+                age: "",
+                contact: "",
+                street: "",
+                type: "",
+                username: "",
+                password: "",
+                isArchived: false,
+                isApproved: "Registered",
+                city: "Rodriguez, Rizal",
+                brgy: brgy,
+              });
+              setSubmitClicked(false);
+              setCreationStatus("success");
+              setTimeout(() => {
+                window.location.reload();
+              }, 3000);
+            }
+          } catch (err) {
+            console.log(err);
+            setSubmitClicked(false);
+            setCreationStatus("error");
+            setError("An error occurred while creating the announcement.");
+          }
+        }
       }
-    }
     } catch (err) {
       console.log(err);
       setSubmitClicked(false);
@@ -422,12 +439,13 @@ function AddStaffModal({ brgy }) {
                               name="type"
                               onChange={handleChange}
                               className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("type") &&
-                                "border-red-500"
+                                emptyFields.includes("type") && "border-red-500"
                               }`}
                               value={user.type}
                             >
-                              {user.type === '' && <option value="">Select option</option>}
+                              {user.type === "" && (
+                                <option value="">Select option</option>
+                              )}
                               <option value="Brgy Admin">Barangay Admin</option>
                               <option value="Staff">Barangay Staff</option>
                             </select>

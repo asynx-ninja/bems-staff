@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { MdError } from "react-icons/md";
 
 function ReplyLoader({ replyingStatus, error }) {
   const textPrompts = {

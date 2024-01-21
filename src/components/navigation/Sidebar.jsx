@@ -363,7 +363,7 @@ const Sidebar = () => {
                   </div>
                 </li>
 
-                {userData.type === "Staff" ? (
+                {userData.type === "Brgy Admin" ? (
                   <li>
                     <button
                       id="hs-unstyled-collapse"
