@@ -413,7 +413,7 @@ const ArchivedStaffsManagement = () => {
           previousLabel="<<"
           className="flex space-x-3 text-white font-bold"
           activeClassName="text-yellow-500"
-          disabledLinkClassName="text-gray-300"
+          disabledLinkClassName="text-gray-400"
           renderOnZeroPageCount={null}
         />
       </div>

@@ -40,7 +40,7 @@ const Notifications = () => {
     <button
       id="hs-dropdown"
       type="button"
-      class="m-1 ms-0 relative flex justify-center items-center h-[2.875rem] w-[2.875rem] text-sm font-semibold text-white shadow-sm hover:bg-[#3d8da1] disabled:opacity-50 disabled:pointer-events-none"
+      class="m-1 ms-0 relative flex justify-center items-center h-[2.875rem] w-[2.875rem] text-sm font-semibold text-white shadow-sm hover:bg-[#3d8da1] hover:rounded-xl disabled:opacity-50 disabled:pointer-events-none"
     >
       <FaBell size={20} />
       {notifications.length > 0 && (

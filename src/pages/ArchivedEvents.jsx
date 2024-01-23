@@ -86,10 +86,17 @@ const ArchivedEvents = () => {
     }
   };
 
-  const tableHeader = ["title", "details", "date", "# of attendees", "actions"];
+  const tableHeader = [
+    "title",
+    "details",
+    "creation date",
+    "event date",
+    "# of attendees",
+    "actions",
+  ];
 
   useEffect(() => {
-    document.title = "Announcement | Barangay E-Services Management";
+    document.title = "Archived Events | Barangay E-Services Management";
   }, []);
 
   const DateFormat = (date) => {
@@ -417,13 +424,20 @@ const ArchivedEvents = () => {
                         </span>
                       </div>
                     </td>
-                    <td className="py-3 w-4/12">
-                      <div className="flex justify-center items-center">
-                        <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {DateFormat(item.createdAt) || ""}
-                        </span>
-                      </div>
-                    </td>
+                    <td className="px-2 py-3 w-2/12">
+                    <div className="flex justify-center items-center">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {DateFormat(item.createdAt) || ""}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-3 w-4/12">
+                    <div className="flex justify-center items-center">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {DateFormat(item.date) || ""}
+                      </span>
+                    </div>
+                  </td>
                     <td className="px-6 py-3 ">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
@@ -487,7 +501,7 @@ const ArchivedEvents = () => {
             previousLabel="<<"
             className="flex space-x-3 text-white font-bold"
             activeClassName="text-yellow-500"
-            disabledLinkClassName="text-gray-300"
+            disabledLinkClassName="text-gray-400"
             renderOnZeroPageCount={null}
           />
         </div>

@@ -37,7 +37,7 @@ const TopHeader = () => {
 
   return (
     <div className="flex flex-col-reverse md:flex-row justify-between items-center sm:px-2 lg:pr-3 bg-[url('/imgs/header-bg.png')] font-medium py-2 z-50 bg-[#276b7c] uppercase text-white text-sm  md:text-sm lg:text-base 2xl:text-xl">
-      <div className="flex flex-row sm:justify-between md:justify-center items-center space-x-3">
+      <div className="flex flex-row w-full sm:justify-between md:justify-center items-center space-x-3">
         <button
           type="button"
           className="lg:hidden block"
@@ -47,23 +47,22 @@ const TopHeader = () => {
         >
           <FaBars size={window.innerWidth <= 640 ? 25 : 35} />
         </button>
-        <div>
+        <div className="w-full">
           <h1 className="text-xs lg:text-lg">{formattedDate} </h1>
           <h1 className="text-xs lg:text-lg">
             {formattedTime} Philippine Standard Time (PMT)
           </h1>
         </div>
+        <div>
+          <Notifications />
+        </div>
       </div>
 
-      <div className="flex flex-row space-x-2">
-        <Notifications />
-
-        <img
-          className="mx-auto md:mx-0 md:mb-0 h-[50px] md:h-[50px] w-[165px] md:w-[170px]"
-          src={header}
-          alt=""
-        />
-      </div>
+      <img
+        className="mx-auto md:mx-0 md:mb-0 h-[50px] md:h-[50px] w-[165px] md:w-[170px] mb-2 md:mb-0"
+        src={header}
+        alt=""
+      />
     </div>
   );
 };

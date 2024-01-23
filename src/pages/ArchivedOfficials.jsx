@@ -26,6 +26,7 @@ const ArchivedOfficials = () => {
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
+  const [positionFilter, setPositionFilter] = useState("all");
   const [pageCount, setPageCount] = useState(0);
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
@@ -90,7 +91,7 @@ const ArchivedOfficials = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=true&page=${currentPage}`
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=true&page=${currentPage}&position=${positionFilter}`
         );
 
         if (response.status === 200) {
@@ -114,7 +115,8 @@ const ArchivedOfficials = () => {
     };
 
     fetchData();
-  }, [currentPage, brgy]);
+  }, [currentPage, brgy, positionFilter]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
@@ -151,6 +153,14 @@ const ArchivedOfficials = () => {
       : "";
 
     return `${startYearMonth} ${endYearMonth}`;
+  };
+
+  const handlePositionFilter = (selectedPosition) => {
+    setPositionFilter(selectedPosition);
+  };
+
+  const handleResetFilter = () => {
+    setPositionFilter("all");
   };
 
   return (
@@ -204,7 +214,7 @@ const ArchivedOfficials = () => {
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    // onClick={handleResetFilter}
+                    onClick={handleResetFilter}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -212,28 +222,28 @@ const ArchivedOfficials = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    // onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handlePositionFilter("Barangay Chairman")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     BARANGAY CHAIRMAN
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("In Progress")}
+                    onClick={() => handlePositionFilter("Barangay Kagawad")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     BARANGAY KAGAWAD
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
+                    onClick={() => handlePositionFilter("SK Chairman")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     SK CHAIRMAN
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Completed")}
+                    onClick={() => handlePositionFilter("SK Kagawad")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -430,7 +440,7 @@ const ArchivedOfficials = () => {
           previousLabel="<<"
           className="flex space-x-3 text-white font-bold"
           activeClassName="text-yellow-500"
-          disabledLinkClassName="text-gray-300"
+          disabledLinkClassName="text-gray-400"
           renderOnZeroPageCount={null}
         />
       </div>

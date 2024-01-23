@@ -97,7 +97,8 @@ const EventsManagement = () => {
   const tableHeader = [
     "title",
     "details",
-    "date",
+    "creation date",
+    "event date",
     "# of attendees",
     "actions",
   ];
@@ -127,6 +128,7 @@ const EventsManagement = () => {
       case "date":
         return announcements.filter((item) => {
           console.log(typeof new Date(item.createdAt), selectedDate);
+          console.log("Announcements: ", announcements)
           return (
             new Date(item.createdAt).getFullYear() === selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
@@ -474,10 +476,17 @@ const EventsManagement = () => {
                       </span>
                     </div>
                   </td>
-                  <td className="py-3 w-4/12">
+                  <td className="px-2 py-3 w-2/12">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {DateFormat(item.createdAt) || ""}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-3 w-4/12">
+                    <div className="flex justify-center items-center">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {DateFormat(item.date) || ""}
                       </span>
                     </div>
                   </td>
@@ -596,7 +605,7 @@ const EventsManagement = () => {
             previousLabel="<<"
             className="flex space-x-3 text-white font-bold"
             activeClassName="text-yellow-500"
-            disabledLinkClassName="text-gray-300"
+            disabledLinkClassName="text-gray-400"
             renderOnZeroPageCount={null}
           />
         </div>

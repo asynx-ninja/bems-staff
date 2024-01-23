@@ -140,7 +140,7 @@ const StaffManagement = () => {
               className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-xl xxxl:text-xl xxxl:mt-1 text-white uppercase"
               style={{ letterSpacing: "0.2em" }}
             >
-              Barangay Personnel Management
+              Staff Management
             </h1>
           </div>
           <div className="lg:w-3/5 flex flex-row justify-end items-center ">
@@ -455,7 +455,7 @@ const StaffManagement = () => {
           previousLabel="<<"
           className="flex space-x-3 text-white font-bold"
           activeClassName="text-yellow-500"
-          disabledLinkClassName="text-gray-300"
+          disabledLinkClassName="text-gray-400"
           renderOnZeroPageCount={null}
         />
       </div>
