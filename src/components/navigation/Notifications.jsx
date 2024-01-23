@@ -40,9 +40,9 @@ const Notifications = () => {
     <button
       id="hs-dropdown"
       type="button"
-      class="m-1 ms-0 relative flex justify-center items-center h-[2.875rem] w-[2.875rem] text-sm font-semibold rounded-lg border border-gray-200 bg-[#327383] text-white shadow-sm hover:bg-[#3d8da1] disabled:opacity-50 disabled:pointer-events-none"
+      class="m-1 ms-0 relative flex justify-center items-center h-[2.875rem] w-[2.875rem] text-sm font-semibold text-white shadow-sm hover:bg-[#3d8da1] hover:rounded-xl disabled:opacity-50 disabled:pointer-events-none"
     >
-      <FaBell />
+      <FaBell size={20} />
       {notifications.length > 0 && (
         <span className="flex absolute top-0 end-0 h-3 w-3 -mt-1.5 -me-1.5">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600"></span>

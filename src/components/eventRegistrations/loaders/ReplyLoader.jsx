@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { MdError } from "react-icons/md";
 
 function ReplyLoader({ replyingStatus, error }) {
   const textPrompts = {
@@ -50,7 +51,6 @@ function ReplyLoader({ replyingStatus, error }) {
             <span className="sr-only">Loading...</span>
           </div>
           <span className="text-white">{loadingText}</span>
-          {error && <span className="text-red-500 ml-2">{error}</span>}
         </div>
       </div>
     </div>

@@ -15,6 +15,7 @@ import API_LINK from "../config/API";
 import banner from "../assets/image/1.png";
 import OccupationList from "../components/occupations/OccupationList";
 import EditLoader from "../components/settings/loaders/EditLoader";
+import Credentials from "../components/settings/Credentials";
 
 const Settings = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -23,13 +24,17 @@ const Settings = () => {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
-  const [isSmallerThanLG, setIsSmallerThanLG] = useState(window.innerWidth <= 1280);
-  const [isBiggerThanMD, setIsBiggerThanMD] = useState(window.innerWidth >= 1536);
+  const [isSmallerThanLG, setIsSmallerThanLG] = useState(
+    window.innerWidth <= 640
+  );
+  const [isBiggerThanMD, setIsBiggerThanMD] = useState(
+    window.innerWidth >= 1024
+  );
 
   useEffect(() => {
     const handleResize = () => {
-      setIsSmallerThanLG(window.innerWidth <= 1280);
-      setIsBiggerThanMD(window.innerWidth >= 1536);
+      setIsSmallerThanLG(window.innerWidth <= 640);
+      setIsBiggerThanMD(window.innerWidth >= 1024);
     };
 
     window.addEventListener("resize", handleResize);
@@ -299,8 +304,8 @@ const Settings = () => {
     } catch (error) {
       console.error("Error saving changes:", error);
       setSubmitClicked(false);
-      setUpdatingStatus(null);
-      setError("An error occurred while creating the announcement.");
+      setUpdatingStatus("error");
+      setError(err.message);
     }
   };
 
@@ -315,14 +320,10 @@ const Settings = () => {
       password: newPassword !== "" ? newPassword : oldPassword,
     };
 
-    console.log(user);
-
     try {
       const response = await axios.get(
-        `${API_LINK}/auth/${oldUsername}/${oldPassword}/${userData.type}`
+        `${API_LINK}/auth/${oldUsername}/${oldPassword}`
       );
-
-      console.log(response);
 
       if (response.status === 200) {
         await axios.patch(`${API_LINK}/auth/${id}`, user);
@@ -331,6 +332,11 @@ const Settings = () => {
           success: true,
           error: false,
           message: "Success!",
+        });
+        setUserCred({
+          username: "",
+          oldPass: "",
+          newPass: "",
         });
       }
     } catch (err) {
@@ -386,7 +392,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="mx-4 overflow-y-auto scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb lg:h-[calc(100vh_-_80px)]">
+    <div className="mx-4 overflow-y-auto scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb h-[calc(100vh_-_80px)] lg:h-[calc(100vh_-_80px)]">
       <div>
         <div className="flex flex-col w-full justify-center items-center ">
           <div className="w-full relative">
@@ -955,197 +961,15 @@ const Settings = () => {
                 </div>
               </div>
               <div
-                className={
-                  activeButton.credential
-                    ? "shadow-lg px-[30px] pb-[30px]"
-                    : "hidden"
-                }
-              >
-                <div className="flex flex-col w-[80%] justify-center mx-auto gap-4">
-                  <div className={message.display ? "block" : "hidden"}>
-                    <div
-                      className={
-                        message.success
-                          ? "w-[100%] bg-green-400 rounded-md flex"
-                          : "hidden"
-                      }
-                    >
-                      <p className="py-[10px] text-[12px] px-[20px] text-white font-medium">
-                        {message.message}
-                      </p>
-                    </div>
-                    <div
-                      className={
-                        message.error
-                          ? "w-[100%] bg-red-500 rounded-md flex"
-                          : "hidden"
-                      }
-                    >
-                      <p className="py-[10px] text-[12px] px-[20px] text-white font-medium">
-                        {message.message}
-                      </p>
-                    </div>
-                  </div>
-                  <div className={!changePass ? "flex flex-col" : "hidden"}>
-                    <label
-                      htmlFor="username"
-                      className="block sm:text-xs lg:text-sm font-medium mb-2"
-                    >
-                      Username
-                    </label>
-                    <input
-                      type="text"
-                      disabled={editButton}
-                      id="username"
-                      className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
-                      placeholder="username"
-                      aria-describedby="hs-input-helper-text"
-                      value={userCred.username || ""}
-                      onChange={(e) =>
-                        handleUserChangeCred("username", e.target.value)
-                      }
-                    />
-                  </div>
-
-                  <div className="relative z-0">
-                    <label
-                      htmlFor="oldpass"
-                      className="block sm:text-xs lg:text-sm font-medium mb-2"
-                    >
-                      Enter your old password
-                    </label>
-                    <input
-                      type={oldpasswordShown ? "text" : "password"}
-                      disabled={editButton}
-                      id="oldpass"
-                      className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
-                      placeholder="password"
-                      aria-describedby="hs-input-helper-text"
-                      onChange={(e) =>
-                        handleUserChangeCred("oldPass", e.target.value)
-                      }
-                    />
-                    <button
-                      name="old"
-                      type="button"
-                      onClick={toggleOldPassword}
-                      className="absolute right-2 sm:top-5 lg:top-7 p-2.5 mt-1 text-sm font-medium text-white"
-                    >
-                      {oldpasswordShown ? (
-                        <AiOutlineEye style={{ color: "green" }} size={20} />
-                      ) : (
-                        <AiOutlineEyeInvisible
-                          style={{ color: "green" }}
-                          size={20}
-                        />
-                      )}
-                    </button>
-                  </div>
-                  <div className={changePass ? "flex flex-col" : "hidden"}>
-                    <div className="relative z-0">
-                      <label
-                        htmlFor="newpass"
-                        className="block sm:text-xs lg:text-sm font-medium mb-2"
-                      >
-                        Enter your new password
-                      </label>
-                      <input
-                        type={newpasswordShown ? "text" : "password"}
-                        disabled={editButton}
-                        readOnly={userCred.oldPass === ""}
-                        id="newpass"
-                        className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
-                        placeholder="password"
-                        aria-describedby="hs-input-helper-text"
-                        onChange={(e) =>
-                          handleUserChangeCred("newPass", e.target.value)
-                        }
-                      />
-                      <button
-                        name="new"
-                        type="button"
-                        onClick={toggleNewPassword}
-                        className="absolute right-2 sm:top-5 lg:top-7 p-2.5 mt-1 text-sm font-medium text-white"
-                      >
-                        {newpasswordShown ? (
-                          <AiOutlineEye style={{ color: "green" }} size={20} />
-                        ) : (
-                          <AiOutlineEyeInvisible
-                            style={{ color: "green" }}
-                            size={20}
-                          />
-                        )}
-                      </button>
-                    </div>
-                    <div>
-                      {userCred.newPass && (
-                        <div className="flex w-full h-1.5 bg-gray-200 rounded-full overflow-hidden dark:bg-gray-700">
-                          <div
-                            className={`flex flex-col justify-center overflow-hidden ${
-                              passwordStrength < 25
-                                ? "bg-red-500"
-                                : passwordStrength < 50
-                                ? "bg-yellow-500"
-                                : passwordStrength < 75
-                                ? "bg-amber-500"
-                                : passwordStrength < 100
-                                ? "bg-blue-500"
-                                : "bg-green-500"
-                            }`}
-                            role="progressbar"
-                            style={{ width: `${passwordStrength}%` }}
-                            aria-valuenow={passwordStrength}
-                            aria-valuemin={0}
-                            aria-valuemax={100}
-                          />
-                        </div>
-                      )}
-                      {passwordStrengthSuccess && (
-                        <div
-                          className="bg-green-50 border border-green-200 text-sm text-green-600 rounded-md p-4 mt-2"
-                          role="alert"
-                        >
-                          <span className="font-bold">Sucess:</span> Password is
-                          already strong
-                        </div>
-                      )}
-                      {passwordStrengthError && passwordStrength < 100 && (
-                        <div
-                          className="bg-orange-50 border border-orange-200 text-sm text-orange-600 rounded-md p-4 mt-2"
-                          role="alert"
-                        >
-                          <span className="font-bold">Warning:</span> Password
-                          must contain at least 8 characters, one uppercase
-                          letter, one lowercase letter, one number, and one
-                          special character
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className={editButton ? "hidden" : "mx-auto"}>
-                    <button
-                      className={
-                        changePass
-                          ? "bg-custom-green-button text-white mx-auto w-[200px] font-medium px-[20px] py-[5px] rounded-md"
-                          : "hidden"
-                      }
-                      onClick={() => setChangePass(!changePass)}
-                    >
-                      Change Username
-                    </button>
-                    <button
-                      className={
-                        changePass
-                          ? "hidden"
-                          : "bg-[#2f4da5] text-white mx-auto w-[200px] font-medium px-[20px] py-[5px] rounded-md"
-                      }
-                      onClick={() => setChangePass(!changePass)}
-                    >
-                      Change Password
-                    </button>
-                  </div>
-                </div>
-              </div>
+              className={
+                activeButton.credential
+                  ? "shadow-lg px-[30px] pb-[30px]"
+                  : "hidden"
+              }
+            >
+              {/* CREDENTIALS */}
+              <Credentials userCred={userCred} handleUserChangeCred={handleUserChangeCred} editButton={editButton} message={message} passwordStrengthError={passwordStrengthError} passwordStrengthSuccess={passwordStrengthSuccess} passwordStrength={passwordStrength} />
+            </div>
             </div>
             <div className="sm:w-full lg:w-[95%] relative mt-[-150px] mb-[20px]">
               <div className="flex flex-col justify-center items-center">
@@ -1196,98 +1020,105 @@ const Settings = () => {
                   </div>
                 </div>
                 <div className="flex flex-col justify-center sm:w-[80%] md:w-[95%] lg:w-full items-center mx-auto mt-5 rounded-md p-[10px]">
-                  <div className="flex justify-center items-center border-b-[1px] border-gray-300 w-full pb-[10px]">
-                    <h6 className="font-bold text-black">SOCIALS</h6>
-                  </div>
-                  <div className="p-[10px] flex sm:flex-col md:flex-row gap-5">
-                    <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
-                      <FaFacebook />
-                      <p className="text-left truncate text-[14px]">
-                        {userSocials.facebook.name}
-                      </p>
-                    </button>
-                    <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
-                      <FaInstagram />
-                      <p className="text-left truncate text-[14px]">
-                        {userSocials.instagram.name}
-                      </p>
-                    </button>
-                    <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
-                      <FaTwitter />
-                      <p className="text-left truncate text-[14px]">
-                        {userSocials.twitter.name}
-                      </p>
-                    </button>
-                    <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
-                      <FaPhone />
-                      <p className="text-left truncate text-[14px]">
-                        {userData.contact}
-                      </p>
-                    </button>
-                    <button className=" flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
-                      <FaEnvelope />
-                      <p className="text-left truncate text-[14px]">
-                        {userData.email}
-                      </p>
-                    </button>
-                  </div>
-                </div>
+  {userSocials.facebook.name || userSocials.instagram.name || userSocials.twitter.name || userData.contact || userData.email ? (
+    <>
+      <div className="flex justify-center items-center border-b-[1px] border-gray-300 w-full pb-[10px]">
+        <h6 className="font-bold text-black">SOCIALS</h6>
+      </div>
+      <div className="p-[10px] flex sm:flex-col md:flex-row gap-5">
+        {userSocials.facebook.name && (
+          <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
+            <FaFacebook />
+            <p className="text-left truncate text-[14px]">
+              {userSocials.facebook.name}
+            </p>
+          </button>
+        )}
+        {userSocials.instagram.name && (
+          <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
+            <FaInstagram />
+            <p className="text-left truncate text-[14px]">
+              {userSocials.instagram.name}
+            </p>
+          </button>
+        )}
+        {userSocials.twitter.name && (
+          <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
+            <FaTwitter />
+            <p className="text-left truncate text-[14px]">
+              {userSocials.twitter.name}
+            </p>
+          </button>
+        )}
+        {userData.contact && (
+          <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
+            <FaPhone />
+            <p className="text-left truncate text-[14px]">
+              {userData.contact}
+            </p>
+          </button>
+        )}
+        {userData.email && (
+          <button className=" flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
+            <FaEnvelope />
+            <p className="text-left truncate text-[14px]">
+              {userData.email}
+            </p>
+          </button>
+        )}
+      </div>
+    </>
+  ) : null}
+</div>
               </div>
             </div>
           </div>
         </div>
         <div className="flex flex-col justify-center items-center py-2 lg:py-6 text-white gap-2 mb-[20px]">
-          <div className="flex flex-col lg:flex-row gap-2 w-full xxl:w-1/2 justify-center items-center px-2 md:px-5 xl:px-8 ">
-            {/* Sm to md screen loader */}
-            {isSmallerThanLG && (
-              <div className="flex w-full justify-center items-center px-1 md:px-5 xl:px-8 xxl:px-[320px] xxxl:px-[415px]">
-                <EditLoader updatingStatus="updating" />
-                {submitClicked && <EditLoader updatingStatus="updating" />}
-                {updatingStatus && !isBiggerThanMD && (
-                  <EditLoader updatingStatus={updatingStatus} error={error} />
-                )}
-              </div>
-            )}
-
-            <div className="flex flex-col lg:flex-row gap-2 w-full xxl:w-1/2 justify-center items-center px-2 md:px-5 xl:px-8 ">
-              {editButton ? (
-                <button
-                  name="edit"
-                  onClick={handleOnEdit}
-                  className="bg-[#2f4da5] text-white font-medium px-[20px] py-[5px] rounded-md"
-                >
-                  Edit
-                </button>
-              ) : (
-                <div className="flex gap-5">
-                  <button
-                    type="submit"
-                    name="save"
-                    onClick={saveChanges}
-                    className="bg-custom-green-button text-white font-medium px-[20px] py-[5px] rounded-md"
-                  >
-                    Save
-                  </button>
-                  <button
-                    onClick={handleOnEdit}
-                    name="cancel"
-                    className="bg-custom-red-button text-white font-medium px-[20px] py-[5px] rounded-md"
-                  >
-                    Cancel
-                  </button>
-                </div>
+          {/* Sm to md screen loader */}
+          {/* {isSmallerThanLG && (
+            <div className="flex w-full justify-center items-center px-1 md:px-5 xl:px-8 xxl:px-[320px] xxxl:px-[415px]">
+              {submitClicked && <EditLoader updatingStatus="updating" />}
+              {updatingStatus && !isBiggerThanMD && (
+                <EditLoader updatingStatus={updatingStatus} error={error} />
               )}
             </div>
+          )} */}
+
+          <div className="flex flex-col lg:flex-row gap-2 w-full xxl:w-1/2 justify-center items-center px-2 md:px-5 xl:px-8 ">
+            {editButton ? (
+              <button
+                name="edit"
+                onClick={handleOnEdit}
+                className="bg-[#2f4da5] text-white font-medium px-[20px] py-[5px] rounded-md"
+              >
+                Edit
+              </button>
+            ) : (
+              <div className="flex gap-5">
+                <button
+                  type="submit"
+                  name="save"
+                  onClick={saveChanges}
+                  className="bg-custom-green-button text-white font-medium px-[20px] py-[5px] rounded-md"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={handleOnEdit}
+                  name="cancel"
+                  className="bg-custom-red-button text-white font-medium px-[20px] py-[5px] rounded-md"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
-      {isBiggerThanMD && (
-        <div>
-          {submitClicked && <EditLoader updatingStatus="updating" />}
-          {updatingStatus && (
-            <EditLoader updatingStatus={updatingStatus} error={error} />
-          )}
-        </div>
+      {submitClicked && <EditLoader updatingStatus="updating" />}
+      {updatingStatus && (
+        <EditLoader updatingStatus={updatingStatus} error={error} />
       )}
     </div>
   );

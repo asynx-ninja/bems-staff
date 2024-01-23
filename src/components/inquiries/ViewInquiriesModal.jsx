@@ -108,20 +108,22 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
 
   const handleChange = (e) => {
     e.preventDefault();
-
-    if (statusChanger === true) {
+  
+    const inputValue = e.target.value;
+  
+    if (statusChanger && (!newMessage.message || newMessage.message.trim() === "")) {
       setNewMessage((prev) => ({
         ...prev,
-        message: `The status of your inquiry is ${inquiry.status}`,
+        message: `The status of your inquiry is ${inputValue}`,
       }));
     } else {
       setNewMessage((prev) => ({
         ...prev,
-        [e.target.name]: e.target.value,
+        [e.target.name]: inputValue,
       }));
     }
   };
-
+  
   console.log("StatusChanger: ", statusChanger);
 
   console.log("New Message: ", newMessage.message);

@@ -18,6 +18,7 @@ import AddModal from "../components/announcement/AddAnnouncementModal";
 import ManageAnnouncementModal from "../components/announcement/ManageAnnouncementModal";
 import AddEventsForm from "../components/announcement/form/add_event/AddEventsForm";
 import EditEventsForm from "../components/announcement/form/edit_event/EditEventsForm";
+import noData from "../assets/image/no-data.png";
 
 const EventsManagement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -96,7 +97,8 @@ const EventsManagement = () => {
   const tableHeader = [
     "title",
     "details",
-    "date",
+    "creation date",
+    "event date",
     "# of attendees",
     "actions",
   ];
@@ -126,6 +128,7 @@ const EventsManagement = () => {
       case "date":
         return announcements.filter((item) => {
           console.log(typeof new Date(item.createdAt), selectedDate);
+          console.log("Announcements: ", announcements)
           return (
             new Date(item.createdAt).getFullYear() === selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
@@ -203,7 +206,7 @@ const EventsManagement = () => {
         <div className="flex flex-row sm:flex-col-reverse lg:flex-row w-full ">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
-              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[1.2rem] xl:text-2xl xxl:text-2xl xxxl:text-4xl xxxl:mt-1 text-white"
+              className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-4xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
              EVENTS MANAGEMENT
@@ -335,7 +338,7 @@ const EventsManagement = () => {
                       )}
                       {selected === "month" && (
                         <input
-                          className="bg-[#21556d] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
+                          className=" text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="month"
                           id="month"
                           name="month"
@@ -344,7 +347,7 @@ const EventsManagement = () => {
                       )}
                       {selected === "year" && (
                         <input
-                          className="bg-[#21556d] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
+                          className=" text-black py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
                           type="number"
                           id="year"
                           name="year"
@@ -445,7 +448,8 @@ const EventsManagement = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100 ">
-              {filteredAnnouncements.map((item, index) => (
+            {filteredAnnouncements.length > 0 ? (
+                filteredAnnouncements.map((item, index) => (
                 <tr key={index} className="odd:bg-slate-100 text-center">
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
@@ -472,10 +476,17 @@ const EventsManagement = () => {
                       </span>
                     </div>
                   </td>
-                  <td className="py-3 w-4/12">
+                  <td className="px-2 py-3 w-2/12">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {DateFormat(item.createdAt) || ""}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-3 w-4/12">
+                    <div className="flex justify-center items-center">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {DateFormat(item.date) || ""}
                       </span>
                     </div>
                   </td>
@@ -563,7 +574,22 @@ const EventsManagement = () => {
                     </div>
                   </td>
                 </tr>
-              ))}
+              ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={tableHeader.length + 1}
+                    className="text-center py-48 lg:py-48 xxl:py-32"
+                  >
+                    <img
+                      src={noData}
+                      alt=""
+                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                    />
+                    <strong className="text-[#535353]">NO DATA FOUND</strong>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -581,7 +607,7 @@ const EventsManagement = () => {
             previousLabel="<<"
             className="flex space-x-3 text-white font-bold"
             activeClassName="text-yellow-500"
-            disabledLinkClassName="text-gray-300"
+            disabledLinkClassName="text-gray-400"
             renderOnZeroPageCount={null}
           />
         </div>

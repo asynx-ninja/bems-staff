@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import API_LINK from "../config/API";
 import Chart from "react-apexcharts";
+import moment from "moment";
 
 const Reports = () => {
   const [services, setServices] = useState([]);
@@ -90,6 +91,7 @@ const Reports = () => {
       }
     };
 
+    // fetchData();
     const intervalId = setInterval(() => {
       fetchData();
     }, 3000);
@@ -178,6 +180,7 @@ const Reports = () => {
     setIsAnnualSelected(!isAnnualSelected);
   };
 
+  //Start for Profit
   const allRequests = [...requests, ...archivedRequests];
   const getFilteredRequests = () => {
     if (isTodaySelected) {
@@ -338,6 +341,8 @@ const Reports = () => {
           request.status !== "Cancelled" ? total + request.fee : total,
         0
       );
+
+   // End for Profit
 
   // Calculate total availed for each service
   const allServices = [...services, ...archivedServices];
@@ -738,7 +743,7 @@ const Reports = () => {
       0
     );
 
-    const eventsCount = announcements.filter(
+    const eventsCount = requests.filter(
       (announcement) =>
         new Date(announcement.createdAt) >= startOfMonth &&
         new Date(announcement.createdAt) <= endOfMonth
@@ -779,35 +784,76 @@ const Reports = () => {
     },
   };
 
+  const filters = (choice, selectedDate) => {
+    switch (choice) {
+      case "date":
+        return requests.filter((item) => {
+          console.log(typeof new Date(item.createdAt), selectedDate);
+          console.log(requests);
+          return (
+            new Date(item.createdAt).getFullYear() === selectedDate.getFullYear() &&
+            new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
+            new Date(item.createdAt).getDate() === selectedDate.getDate()
+          );
+        });
+      case "week":
+        const startDate = selectedDate;
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 6);
+
+        console.log("start and end", startDate, endDate);
+
+        return requests.filter(
+          (item) =>
+            new Date(item.createdAt).getFullYear() === startDate.getFullYear() &&
+            new Date(item.createdAt).getMonth() === startDate.getMonth() &&
+            new Date(item.createdAt).getDate() >= startDate.getDate() &&
+            new Date(item.createdAt).getDate() <= endDate.getDate()
+        );
+      case "month":
+        return requests.filter(
+          (item) =>
+            new Date(item.createdAt).getFullYear() === selectedDate.getFullYear() &&
+            new Date(item.createdAt).getMonth() === selectedDate.getMonth()
+        );
+      case "year":
+        return requests.filter(
+          (item) => new Date(item.createdAt).getFullYear() === selectedDate.getFullYear()
+        );
+    }
+  };
+
+  const onSelect = (e) => {
+    console.log("select", e.target.value);
+
+    setSelected(e.target.value);
+
+    console.log("specified select", filters(e.target.value, specifiedDate));
+  };
+
   const onChangeDate = (e) => {
     const date = new Date(e.target.value);
     setSpecifiedDate(date);
-    // setFilteredInquiries(filters(selected, date))
   };
 
   const onChangeWeek = (e) => {
     const date = moment(e.target.value).toDate();
     setSpecifiedDate(date);
-    // setFilteredInquiries(filters(selected, date))
   };
 
   const onChangeMonth = (e) => {
     const date = moment(e.target.value).toDate();
     setSpecifiedDate(date);
-    // setFilteredInquiries(filters(selected, date))
   };
 
   const onChangeYear = (e) => {
     if (e.target.value === "") {
-      setFilteredInquiries(inquiries);
+      setRequests(requests); // Replace with your initial data
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      console.log("selected year converted date", date);
-      console.log("specified year", filters(selected, date));
-      // setFilteredInquiries(filters(selected, date))
     }
-  };
+  }
 
   return (
     <div className="mx-4 mt-4 ">
@@ -823,14 +869,14 @@ const Reports = () => {
                 className="relative inline-block py-1.5 md:py-2 px-3 w-full bg-gray-700 lg:w-auto items-center justify-center"
               >
                 <span
-                  className={`inline-block relative z-10 w-24 text-sm font-medium text-gray-800 cursor-pointer ${
+                  className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
                     isSpecificSelected
                       ? "dark:text-white"
                       : "dark:text-gray-200"
                   }`}
                   onClick={handleSpecificToggle}
                 >
-                  Specific Date
+                  Specific
                 </span>
                 <input
                   id="toggle-count-today"
@@ -929,47 +975,57 @@ const Reports = () => {
             {/* DATE INPUTS */}
             <div className="w-full">
               {isSpecificSelected && (
-                <input
-                  className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
-                  type="date"
-                  id="specificDate"
-                  name="specificDate"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
-              )}
-
-              {isWeeklySelected && (
-                <input
-                  className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
-                  type="week"
-                  id="week"
-                  name="week"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
-              )}
-              {isMonthlySelected && (
-                <input
-                  className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
-                  type="month"
-                  id="month"
-                  name="month"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
-              )}
-              {isAnnualSelected && (
-                <input
-                  className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full w-full"
-                  type="number"
-                  id="year"
-                  name="year"
-                  min="1900"
-                  max="2100"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
+                <div className="flex flex-col">
+                  <select
+                    className="bg-[#f8f8f8] text-gray-600 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
+                    onChange={onSelect}
+                    defaultValue={selected}
+                  >
+                    <option value="date">Specific Date</option>
+                    <option value="week">Week</option>
+                    <option value="month">Month</option>
+                    <option value="year">Year</option>
+                  </select>
+                  {selected === "date" && (
+                    <input
+                      className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
+                      type="date"
+                      id="date"
+                      name="date"
+                      onChange={onChangeDate}
+                    />
+                  )}
+                  {selected === "week" && (
+                    <input
+                      className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
+                      type="week"
+                      id="week"
+                      name="week"
+                      onChange={onChangeWeek}
+                    />
+                  )}
+                  {selected === "month" && (
+                    <input
+                      className=" text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
+                      type="month"
+                      id="month"
+                      name="month"
+                      onChange={onChangeMonth}
+                    />
+                  )}
+                  {selected === "year" && (
+                    <input
+                      className=" text-black py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
+                      type="number"
+                      id="year"
+                      name="year"
+                      placeholder="YEAR"
+                      onChange={onChangeYear}
+                      min={1990}
+                      max={new Date().getFullYear() + 10}
+                    />
+                  )}
+                </div>
               )}
             </div>
           </div>
@@ -1140,7 +1196,7 @@ const Reports = () => {
         <div className="flex flex-col lg:flex-row lg:space-x-2 w-full ">
           <div className="flex flex-col bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
             <h1 className="mt-5 ml-5 font-medium text-black">
-            OVERALL TRENDING EVENTS
+              OVERALL TRENDING EVENTS
             </h1>
             <div className="flex justify-center items-center rounded-xl">
               <Chart
@@ -1154,7 +1210,7 @@ const Reports = () => {
 
           <div className="flex flex-col bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
             <h1 className="mt-5 ml-5 font-medium text-black">
-            OVERALL NUMBER OF CREATED EVENTS (FOR THE PAST 6 MONTHS)
+              OVERALL NUMBER OF CREATED EVENTS (FOR THE PAST 6 MONTHS)
             </h1>
             <div className="flex justify-center items-center rounded-xl">
               <Chart
@@ -1166,7 +1222,6 @@ const Reports = () => {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

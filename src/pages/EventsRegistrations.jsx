@@ -12,6 +12,7 @@ import ViewRegistrationModal from "../components/eventRegistrations/ViewRegistra
 import { useSearchParams } from "react-router-dom";
 import API_LINK from "../config/API";
 import axios from "axios";
+import noData from "../assets/image/no-data.png";
 
 const EventsRegistrations = () => {
   const [applications, setApplications] = useState([]);
@@ -33,7 +34,6 @@ const EventsRegistrations = () => {
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [selected, setSelected] = useState("date");
 
-
   useEffect(() => {
     const fetch = async () => {
       try {
@@ -44,9 +44,8 @@ const EventsRegistrations = () => {
         if (response.status === 200) {
           setApplications(response.data.result);
           setPageCount(response.data.pageCount);
-          setFilteredApplications(response.data.result)
-        }
-        else setApplications([]);
+          setFilteredApplications(response.data.result);
+        } else setApplications([]);
       } catch (err) {
         console.log(err);
       }
@@ -69,13 +68,13 @@ const EventsRegistrations = () => {
     setSearchQuery("");
   };
 
-  const Applications = applications.filter((item) =>
-    item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   useEffect(() => {
     document.title = "Events Applications | Barangay E-Services Management";
   }, []);
+
+  const Applications = applications.filter((item) =>
+    item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -93,7 +92,8 @@ const EventsRegistrations = () => {
   };
 
   const checkAllHandler = () => {
-    const applicationsToCheck = Applications.length > 0 ? Applications : applications;
+    const applicationsToCheck =
+      Applications.length > 0 ? Applications : applications;
 
     if (applicationsToCheck.length === selectedItems.length) {
       setSelectedItems([]);
@@ -106,13 +106,7 @@ const EventsRegistrations = () => {
     }
   };
 
-  const tableHeader = [
-    "EVENT NAME",
-    "SENDER",
-    "DATE",
-    "STATUS",
-    "ACTIONS",
-  ];
+  const tableHeader = ["EVENT NAME", "SENDER", "DATE", "STATUS", "ACTIONS"];
 
   const handleView = (item) => {
     setApplication(item);
@@ -123,14 +117,14 @@ const EventsRegistrations = () => {
     return dateFormat;
   };
 
-
   const filters = (choice, selectedDate) => {
     switch (choice) {
       case "date":
         return applications.filter((item) => {
           console.log(typeof new Date(item.createdAt), selectedDate);
           return (
-            new Date(item.createdAt).getFullYear() === selectedDate.getFullYear() &&
+            new Date(item.createdAt).getFullYear() ===
+              selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
             new Date(item.createdAt).getDate() === selectedDate.getDate()
           );
@@ -144,7 +138,8 @@ const EventsRegistrations = () => {
 
         return applications.filter(
           (item) =>
-            new Date(item.createdAt).getFullYear() === startDate.getFullYear() &&
+            new Date(item.createdAt).getFullYear() ===
+              startDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === startDate.getMonth() &&
             new Date(item.createdAt).getDate() >= startDate.getDate() &&
             new Date(item.createdAt).getDate() <= endDate.getDate()
@@ -152,12 +147,15 @@ const EventsRegistrations = () => {
       case "month":
         return applications.filter(
           (item) =>
-            new Date(item.createdAt).getFullYear() === selectedDate.getFullYear() &&
+            new Date(item.createdAt).getFullYear() ===
+              selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
         return applications.filter(
-          (item) => new Date(item.createdAt).getFullYear() === selectedDate.getFullYear()
+          (item) =>
+            new Date(item.createdAt).getFullYear() ===
+            selectedDate.getFullYear()
         );
     }
   };
@@ -173,30 +171,30 @@ const EventsRegistrations = () => {
   const onChangeDate = (e) => {
     const date = new Date(e.target.value);
     setSpecifiedDate(date);
-    setFilteredApplications(filters(selected, date))
+    setFilteredApplications(filters(selected, date));
   };
 
   const onChangeWeek = (e) => {
     const date = moment(e.target.value).toDate();
     setSpecifiedDate(date);
-    setFilteredApplications(filters(selected, date))
+    setFilteredApplications(filters(selected, date));
   };
 
   const onChangeMonth = (e) => {
     const date = moment(e.target.value).toDate();
     setSpecifiedDate(date);
-    setFilteredApplications(filters(selected, date))
+    setFilteredApplications(filters(selected, date));
   };
 
   const onChangeYear = (e) => {
     if (e.target.value === "") {
-      setFilteredApplications(applications)
+      setFilteredApplications(applications);
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
       console.log("selected year converted date", date);
       console.log("specified year", filters(selected, date));
-      setFilteredApplications(filters(selected, date))
+      setFilteredApplications(filters(selected, date));
     }
   };
 
@@ -245,7 +243,6 @@ const EventsRegistrations = () => {
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse lg:flex-row flex justify-between w-full">
             <div className="flex flex-col lg:flex-row lg:space-x-2 md:mt-2 lg:mt-0 md:space-y-2 lg:space-y-0">
-
               {/* Status Sort */}
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button
@@ -255,8 +252,9 @@ const EventsRegistrations = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -272,7 +270,7 @@ const EventsRegistrations = () => {
                   </svg>
                 </button>
                 <ul
-                   className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
+                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
                   aria-labelledby="hs-dropdown"
                 >
                   <a
@@ -292,35 +290,35 @@ const EventsRegistrations = () => {
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Paid")}
-                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PAID
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Processing")}
-                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PROCESSING
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Cancelled")}
-                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     CANCELLED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Transaction Completed")}
-                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     TRANSACTION COMPLETED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Rejected")}
-                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     REJECTED
@@ -369,7 +367,7 @@ const EventsRegistrations = () => {
                     </label>
                     <div className="flex flex-col gap-2">
                       <select
-                       className="bg-[#f8f8f8] text-gray-600 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
+                        className="bg-[#f8f8f8] text-gray-600 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                         onChange={onSelect}
                         defaultValue={selected}
                       >
@@ -380,7 +378,7 @@ const EventsRegistrations = () => {
                       </select>
                       {selected === "date" && (
                         <input
-                           className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
+                          className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="date"
                           id="date"
                           name="date"
@@ -389,7 +387,7 @@ const EventsRegistrations = () => {
                       )}
                       {selected === "week" && (
                         <input
-                           className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
+                          className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="week"
                           id="week"
                           name="week"
@@ -398,7 +396,7 @@ const EventsRegistrations = () => {
                       )}
                       {selected === "month" && (
                         <input
-                           className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
+                          className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="month"
                           id="month"
                           name="month"
@@ -407,7 +405,7 @@ const EventsRegistrations = () => {
                       )}
                       {selected === "year" && (
                         <input
-                          className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
+                          className=" text-black py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
                           type="number"
                           id="year"
                           name="year"
@@ -421,8 +419,6 @@ const EventsRegistrations = () => {
                   </div>
                 </ul>
               </div>
-
-
             </div>
 
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12">
@@ -454,13 +450,15 @@ const EventsRegistrations = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {setSearchQuery(e.target.value)
-                    const Requests = requests.filter(
-                      (item) =>
-                        item.event_name.toLowerCase().includes(e.target.value.toLowerCase())
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    const Application = applications.filter((item) =>
+                      item.event_name
+                        .toLowerCase()
+                        .includes(e.target.value.toLowerCase())
                     );
-                
-                    setFilteredRequests(Requests)
+
+                    setFilteredApplications(Application);
                   }}
                 />
               </div>
@@ -512,130 +510,146 @@ const EventsRegistrations = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {filteredApplications.map((item, index) => (
-                <tr key={index} className="odd:bg-slate-100 text-center">
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <input
-                        type="checkbox"
-                        checked={selectedItems.includes(item._id)}
-                        value={item._id}
-                        onChange={checkboxHandler}
-                      />
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {item.event_name}
-                    </span>
-                  </td>
-                  <td className="px-6 py-3">
-                    <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {item.form[0].lastName.value +
-                        ", " +
-                        item.form[0].firstName.value +
-                        " " +
-                        item.form[0].middleName.value}
-                    </span>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
+              {filteredApplications.length > 0 ? (
+                filteredApplications.map((item, index) => (
+                  <tr key={index} className="odd:bg-slate-100 text-center">
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item._id)}
+                          value={item._id}
+                          onChange={checkboxHandler}
+                        />
+                      </div>
+                    </td>
+                    <td className="px-6 py-3">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {DateFormat(item.createdAt) || ""}
+                        {item.event_name}
                       </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3 xxl:w-3/12">
-                    {item.status === "Transaction Completed" && (
-                      <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                          TRANSACTION COMPLETED
+                    </td>
+                    <td className="px-6 py-3">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {item.form[0].lastName.value +
+                          ", " +
+                          item.form[0].firstName.value +
+                          " " +
+                          item.form[0].middleName.value}
+                      </span>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {DateFormat(item.createdAt) || ""}
                         </span>
                       </div>
-                    )}
-                    {item.status === "Rejected" && (
-                      <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                          REJECTED
-                        </span>
-                      </div>
-                    )}
-                    {item.status === "Pending" && (
-                      <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
-                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                          PENDING
-                        </span>
-                      </div>
-                    )}
-                    {item.status === "Paid" && (
-                      <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
-                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                          PAID
-                        </span>
-                      </div>
-                    )}
+                    </td>
+                    <td className="px-6 py-3 xxl:w-3/12">
+                      {item.status === "Transaction Completed" && (
+                        <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            TRANSACTION COMPLETED
+                          </span>
+                        </div>
+                      )}
+                      {item.status === "Rejected" && (
+                        <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            REJECTED
+                          </span>
+                        </div>
+                      )}
+                      {item.status === "Pending" && (
+                        <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            PENDING
+                          </span>
+                        </div>
+                      )}
+                      {item.status === "Paid" && (
+                        <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            PAID
+                          </span>
+                        </div>
+                      )}
 
-                    {item.status === "Processing" && (
-                      <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
-                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                          PROCESSING
-                        </span>
-                      </div>
-                    )}
+                      {item.status === "Processing" && (
+                        <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            PROCESSING
+                          </span>
+                        </div>
+                      )}
 
-                    {item.status === "Cancelled" && (
-                      <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
-                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                          CANCELLED
-                        </span>
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center space-x-1 sm:space-x-none">
-                      <div className="hs-tooltip inline-block">
-                        <button
-                          type="button"
-                          data-hs-overlay="#hs-view-application-modal"
-                          onClick={() => handleView({ ...item })}
-                          className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                        >
-                          <AiOutlineEye
-                            size={24}
-                            style={{ color: "#ffffff" }}
-                          />
-                        </button>
-                        <span
-                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                          role="tooltip"
-                        >
-                          View Application
-                        </span>
-                      </div>
+                      {item.status === "Cancelled" && (
+                        <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            CANCELLED
+                          </span>
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center space-x-1 sm:space-x-none">
+                        <div className="hs-tooltip inline-block">
+                          <button
+                            type="button"
+                            data-hs-overlay="#hs-view-application-modal"
+                            onClick={() => handleView({ ...item })}
+                            className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                          >
+                            <AiOutlineEye
+                              size={24}
+                              style={{ color: "#ffffff" }}
+                            />
+                          </button>
+                          <span
+                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                            role="tooltip"
+                          >
+                            View Application
+                          </span>
+                        </div>
 
-                      <div className="hs-tooltip inline-block">
-                        <button
-                          type="button"
-                          data-hs-overlay="#hs-reply-modal"
-                          onClick={() => handleView({ ...item })}
-                          className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                        >
-                          <AiOutlineSend
-                            size={24}
-                            style={{ color: "#ffffff" }}
-                          />
-                        </button>
-                        <span
-                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                          role="tooltip"
-                        >
-                          Reply to Application
-                        </span>
+                        <div className="hs-tooltip inline-block">
+                          <button
+                            type="button"
+                            data-hs-overlay="#hs-reply-modal"
+                            onClick={() => handleView({ ...item })}
+                            className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                          >
+                            <AiOutlineSend
+                              size={24}
+                              style={{ color: "#ffffff" }}
+                            />
+                          </button>
+                          <span
+                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                            role="tooltip"
+                          >
+                            Reply to Application
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={tableHeader.length + 1}
+                    className="text-center py-48 lg:py-48 xxl:py-32"
+                  >
+                    <img
+                      src={noData}
+                      alt=""
+                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                    />
+                    <strong className="text-[#535353]">NO DATA FOUND</strong>
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
@@ -653,14 +667,17 @@ const EventsRegistrations = () => {
           previousLabel="<<"
           className="flex space-x-3 text-white font-bold"
           activeClassName="text-yellow-500"
-          disabledLinkClassName="text-gray-300"
+          disabledLinkClassName="text-gray-400"
           renderOnZeroPageCount={null}
         />
       </div>
       {Object.hasOwn(application, "event_id") ? (
         <ViewRegistrationModal application={application} />
       ) : null}
-      <ReplyRegistrationModal application={application} setApplication={setApplication} />
+      <ReplyRegistrationModal
+        application={application}
+        setApplication={setApplication}
+      />
       <ArchiveRegistrationModal selectedItems={selectedItems} />
     </div>
   );

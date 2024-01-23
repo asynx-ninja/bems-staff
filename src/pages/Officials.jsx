@@ -13,6 +13,7 @@ import EditOfficialModal from "../components/officials/ManageOfficialModal";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import API_LINK from "../config/API";
+import noData from "../assets/image/no-data.png";
 
 const Officials = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -118,7 +119,6 @@ const Officials = () => {
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
-
 
   const Officials = officials.filter((item) => {
     const fullName =
@@ -229,8 +229,6 @@ const Officials = () => {
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse lg:flex-row flex justify-between w-full">
             <div className="flex flex-col lg:flex-row lg:space-x-2 md:mt-2 lg:mt-0 md:space-y-2 lg:space-y-0">
-              
-              
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button
                   id="hs-dropdown"
@@ -269,7 +267,7 @@ const Officials = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                     onClick={() => handlePositionFilter("Barangay Chairman")}
+                    onClick={() => handlePositionFilter("Barangay Chairman")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -283,14 +281,14 @@ const Officials = () => {
                     BARANGAY KAGAWAD
                   </a>
                   <a
-                     onClick={() => handlePositionFilter("SK Chairman")}
+                    onClick={() => handlePositionFilter("SK Chairman")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     SK CHAIRMAN
                   </a>
                   <a
-                     onClick={() => handlePositionFilter("SK Kagawad")}
+                    onClick={() => handlePositionFilter("SK Kagawad")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -380,77 +378,93 @@ const Officials = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {Officials.map((item, index) => (
-                <tr key={index} className="odd:bg-slate-100 text-center">
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <input
-                        type="checkbox"
-                        checked={selectedItems.includes(item._id)}
-                        value={item._id}
-                        onChange={checkboxHandler}
-                      />
-                    </div>
-                  </td>
-                  <td className="xl:px-6 xl:py-3">
-                    <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      <div className="py-2 xl:px-6 xl:py-2">
-                        <img
-                          src={item.picture.link}
-                          alt=""
-                          className="w-[70px] h-[70px] md:w-[80px] md:h-[80px] xl:h-28 xl:w-28 bg-cover rounded-full mx-auto border-[5px] border-[#295141] object-cover"
+              {Officials.length > 0 ? (
+                Officials.map((item, index) => (
+                  <tr key={index} className="odd:bg-slate-100 text-center">
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item._id)}
+                          value={item._id}
+                          onChange={checkboxHandler}
                         />
                       </div>
-                    </span>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2 uppercase">
-                        {item.lastName +
-                          ", " +
-                          item.firstName +
-                          " " +
-                          item.middleName}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
+                    </td>
+                    <td className="xl:px-6 xl:py-3">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.position}
+                        <div className="py-2 xl:px-6 xl:py-2">
+                          <img
+                            src={item.picture.link}
+                            alt=""
+                            className="w-[70px] h-[70px] md:w-[80px] md:h-[80px] xl:h-28 xl:w-28 bg-cover rounded-full mx-auto border-[5px] border-[#295141] object-cover"
+                          />
+                        </div>
                       </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {dateFormat(item.fromYear) || ""} -{" "}
-                        {dateFormat(item.toYear) || ""}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center space-x-1 sm:space-x-none">
-                      <div className="hs-tooltip inline-block w-full">
-                        <button
-                          type="button"
-                          data-hs-overlay="#hs-edit-official-modal"
-                          className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                          onClick={() => handleEditClick(item)}
-                        >
-                          <FiEdit size={24} style={{ color: "#ffffff" }} />
-                          <span
-                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                            role="tooltip"
-                          >
-                            View Official
-                          </span>
-                        </button>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2 uppercase">
+                          {item.lastName +
+                            ", " +
+                            item.firstName +
+                            " " +
+                            item.middleName}
+                        </span>
                       </div>
-                    </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {item.position}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {dateFormat(item.fromYear) || ""} -{" "}
+                          {dateFormat(item.toYear) || ""}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center space-x-1 sm:space-x-none">
+                        <div className="hs-tooltip inline-block w-full">
+                          <button
+                            type="button"
+                            data-hs-overlay="#hs-edit-official-modal"
+                            className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                            onClick={() => handleEditClick(item)}
+                          >
+                            <FiEdit size={24} style={{ color: "#ffffff" }} />
+                            <span
+                              className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                              role="tooltip"
+                            >
+                              View Official
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={tableHeader.length + 1}
+                    className="text-center py-48 lg:py-48 xxl:py-32"
+                  >
+                    <img
+                      src={noData}
+                      alt=""
+                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                    />
+                    <strong className="text-[#535353]">NO DATA FOUND</strong>
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
@@ -468,7 +482,7 @@ const Officials = () => {
           previousLabel="<<"
           className="flex space-x-3 text-white font-bold"
           activeClassName="text-yellow-500"
-          disabledLinkClassName="text-gray-300"
+          disabledLinkClassName="text-gray-400"
           renderOnZeroPageCount={null}
         />
       </div>

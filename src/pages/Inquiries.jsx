@@ -12,6 +12,7 @@ import axios from "axios";
 import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
 import ViewInquiriesModal from "../components/inquiries/ViewInquiriesModal";
+import noData from "../assets/image/no-data.png";
 
 const Inquiries = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -64,7 +65,6 @@ const Inquiries = () => {
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
-
 
   console.log("inquiries: ", filteredInquiries);
 
@@ -122,9 +122,8 @@ const Inquiries = () => {
   const handleResetFilter = () => {
     setStatusFilter("all");
     setSearchQuery("");
-    setInquiries();
+    setFilteredInquiries();
   };
-
 
   const filters = (choice, selectedDate) => {
     switch (choice) {
@@ -132,8 +131,10 @@ const Inquiries = () => {
         return inquiries.filter((item) => {
           console.log(typeof new Date(item.compose.date), selectedDate);
           return (
-            new Date(item.compose.date).getFullYear() === selectedDate.getFullYear() &&
-            new Date(item.compose.date).getMonth() === selectedDate.getMonth() &&
+            new Date(item.compose.date).getFullYear() ===
+              selectedDate.getFullYear() &&
+            new Date(item.compose.date).getMonth() ===
+              selectedDate.getMonth() &&
             new Date(item.compose.date).getDate() === selectedDate.getDate()
           );
         });
@@ -146,7 +147,8 @@ const Inquiries = () => {
 
         return inquiries.filter(
           (item) =>
-            new Date(item.compose.date).getFullYear() === startDate.getFullYear() &&
+            new Date(item.compose.date).getFullYear() ===
+              startDate.getFullYear() &&
             new Date(item.compose.date).getMonth() === startDate.getMonth() &&
             new Date(item.compose.date).getDate() >= startDate.getDate() &&
             new Date(item.compose.date).getDate() <= endDate.getDate()
@@ -154,12 +156,15 @@ const Inquiries = () => {
       case "month":
         return inquiries.filter(
           (item) =>
-            new Date(item.compose.date).getFullYear() === selectedDate.getFullYear() &&
+            new Date(item.compose.date).getFullYear() ===
+              selectedDate.getFullYear() &&
             new Date(item.compose.date).getMonth() === selectedDate.getMonth()
         );
       case "year":
         return inquiries.filter(
-          (item) => new Date(item.compose.date).getFullYear() === selectedDate.getFullYear()
+          (item) =>
+            new Date(item.compose.date).getFullYear() ===
+            selectedDate.getFullYear()
         );
     }
   };
@@ -175,30 +180,30 @@ const Inquiries = () => {
   const onChangeDate = (e) => {
     const date = new Date(e.target.value);
     setSpecifiedDate(date);
-    setFilteredInquiries(filters(selected, date))
+    setFilteredInquiries(filters(selected, date));
   };
 
   const onChangeWeek = (e) => {
     const date = moment(e.target.value).toDate();
     setSpecifiedDate(date);
-    setFilteredInquiries(filters(selected, date))
+    setFilteredInquiries(filters(selected, date));
   };
 
   const onChangeMonth = (e) => {
     const date = moment(e.target.value).toDate();
     setSpecifiedDate(date);
-    setFilteredInquiries(filters(selected, date))
+    setFilteredInquiries(filters(selected, date));
   };
 
   const onChangeYear = (e) => {
     if (e.target.value === "") {
-      setFilteredInquiries(inquiries)
+      setFilteredInquiries(inquiries);
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
       console.log("selected year converted date", date);
       console.log("specified year", filters(selected, date));
-      setFilteredInquiries(filters(selected, date))
+      setFilteredInquiries(filters(selected, date));
     }
   };
 
@@ -244,7 +249,6 @@ const Inquiries = () => {
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse md:flex-row flex justify-between w-full">
             <div className="flex space-x-2">
-  
               {/* Status Sort */}
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button
@@ -330,7 +334,7 @@ const Inquiries = () => {
                   </svg>
                 </button>
                 <ul
-                   className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
+                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
                   aria-labelledby="hs-dropdown"
                 >
                   <a
@@ -347,8 +351,7 @@ const Inquiries = () => {
                     </label>
                     <div className="flex flex-col gap-2">
                       <select
-                       className="bg-[#f8f8f8] text-gray-600 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
-
+                        className="bg-[#f8f8f8] text-gray-600 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                         onChange={onSelect}
                         defaultValue={selected}
                       >
@@ -431,16 +434,20 @@ const Inquiries = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {setSearchQuery(e.target.value)
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
                     const Inquiries = inquiries.filter(
                       (item) =>
-                        item.name.toLowerCase().includes(e.target.value.toLowerCase()) ||
-                        item.inq_id.toLowerCase().includes(e.target.value.toLowerCase())
+                        item.name
+                          .toLowerCase()
+                          .includes(e.target.value.toLowerCase()) ||
+                        item.inq_id
+                          .toLowerCase()
+                          .includes(e.target.value.toLowerCase())
                     );
-                
-                    setFilteredInquiries (Inquiries)
+
+                    setFilteredInquiries(Inquiries);
                   }}
-                  
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-64 items-center justify-center">
@@ -490,97 +497,113 @@ const Inquiries = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {filteredInquiries.map((item, index) => (
-                <tr key={index} className="odd:bg-slate-100 text-center">
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <input
-                        type="checkbox"
-                        checked={selectedItems.includes(item._id)}
-                        value={item._id}
-                        onChange={checkboxHandler}
-                        id=""
-                      />
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                        {item.name}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                        {item.email}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <span className="text-xs sm:text-sm text-black line-clamp-2 ">
-                      {item.compose.message}
-                    </span>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {DateFormat(item.compose.date) || ""}
-                      </span>
-                    </div>
-                  </td>
-
-                  <td className="px-6 py-3 xxl:w-2/12">
-                    <div className="flex justify-center items-center">
-                      {item.isApproved === "Completed" && (
-                        <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
-                            COMPLETED
-                          </span>
-                        </div>
-                      )}
-                      {item.isApproved === "Pending" && (
-                        <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
-                            PENDING
-                          </span>
-                        </div>
-                      )}
-                      {item.isApproved === "In Progress" && (
-                        <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
-                            IN PROGRESS
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </td>
-
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center space-x-1 sm:space-x-none">
-                      <div className="hs-tooltip inline-block">
-                        <button
-                          type="button"
-                          data-hs-overlay="#hs-modal-viewInquiries"
-                          onClick={() => handleView({ ...item })}
-                          className="hs-tooltip-toggle text-white bg-teal-800  font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                        >
-                          <AiOutlineEye
-                            size={24}
-                            style={{ color: "#ffffff" }}
-                          />
-                        </button>
-                        <span
-                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                          role="tooltip"
-                        >
-                          View Inquiry
+              {filteredInquiries.length > 0 ? (
+                filteredInquiries.map((item, index) => (
+                  <tr key={index} className="odd:bg-slate-100 text-center">
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item._id)}
+                          value={item._id}
+                          onChange={checkboxHandler}
+                          id=""
+                        />
+                      </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
+                          {item.name}
                         </span>
                       </div>
-                    </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
+                          {item.email}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2 ">
+                        {item.compose.message}
+                      </span>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {DateFormat(item.compose.date) || ""}
+                        </span>
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-3 xxl:w-2/12">
+                      <div className="flex justify-center items-center">
+                        {item.isApproved === "Completed" && (
+                          <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
+                            <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                              COMPLETED
+                            </span>
+                          </div>
+                        )}
+                        {item.isApproved === "Pending" && (
+                          <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
+                            <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                              PENDING
+                            </span>
+                          </div>
+                        )}
+                        {item.isApproved === "In Progress" && (
+                          <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
+                            <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                              IN PROGRESS
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center space-x-1 sm:space-x-none">
+                        <div className="hs-tooltip inline-block">
+                          <button
+                            type="button"
+                            data-hs-overlay="#hs-modal-viewInquiries"
+                            onClick={() => handleView({ ...item })}
+                            className="hs-tooltip-toggle text-white bg-teal-800  font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                          >
+                            <AiOutlineEye
+                              size={24}
+                              style={{ color: "#ffffff" }}
+                            />
+                          </button>
+                          <span
+                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                            role="tooltip"
+                          >
+                            View Inquiry
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={tableHeader.length + 1}
+                    className="text-center py-48 lg:py-48 xxl:py-32"
+                  >
+                    <img
+                      src={noData}
+                      alt=""
+                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                    />
+                    <strong className="text-[#535353]">NO DATA FOUND</strong>
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
@@ -597,7 +620,7 @@ const Inquiries = () => {
             previousLabel="<<"
             className="flex space-x-3 text-white font-bold"
             activeClassName="text-yellow-500"
-            disabledLinkClassName="text-gray-300"
+            disabledLinkClassName="text-gray-400"
             renderOnZeroPageCount={null}
           />
         </div>

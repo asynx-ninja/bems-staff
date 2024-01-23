@@ -119,7 +119,7 @@ const AddServicesForm = ({ service_id, brgy }) => {
       console.log(err.message);
       setSubmitClicked(false);
       setCreationStatus("error");
-      setError("An error occurred while creating the announcement.");
+      setError(err.message);
     }
   };
 

@@ -95,17 +95,18 @@ function ReplyRegistrationModal({ application, setApplication }) {
 
   const handleChange = (e) => {
     e.preventDefault();
-
-    if (statusChanger === true) {
+  
+    const inputValue = e.target.value;
+  
+    if (statusChanger && (!newMessage.message || newMessage.message.trim() === "")) {
       setNewMessage((prev) => ({
         ...prev,
-        message: `The status of your event application is ${application.status}`,
+        message: `The status of your event application is ${inputValue}`,
       }));
     } else {
       setNewMessage((prev) => ({
         ...prev,
-        [e.target.name]:
-          e.target.name === "isRepliable" ? e.target.checked : e.target.value,
+        [e.target.name]: e.target.name === "isRepliable" ? e.target.checked : inputValue,
       }));
     }
   };
