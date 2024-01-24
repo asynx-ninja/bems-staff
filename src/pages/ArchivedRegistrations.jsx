@@ -497,7 +497,7 @@ const ArchivedRegistrations = () => {
         </div>
 
         {/* Table */}
-        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_325px)] xxxl:h-[calc(100vh_-_345px)]">
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_325px)] lg:h-[calc(100vh_-_350px)] xxxl:h-[calc(100vh_-_345px)]">
           <table className="relative table-auto w-full">
             <thead className="bg-[#21556d] sticky top-0">
               <tr className="">

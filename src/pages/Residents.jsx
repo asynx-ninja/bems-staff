@@ -326,7 +326,7 @@ const Residents = () => {
         </div>
 
         {/* Table */}
-        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_275px)] xxl:h-[calc(100vh_-_275px)] xxxl:h-[calc(100vh_-_300px)]">
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_275px)] xl:h-[calc(100vh_-_300px)] xxl:h-[calc(100vh_-_275px)] xxxl:h-[calc(100vh_-_300px)]">
           <table className="relative table-auto w-full">
             <thead className="bg-[#21556d] sticky top-0">
               <tr className="">
@@ -367,7 +367,7 @@ const Residents = () => {
                       </div>
                     </td>
                     <td className="py-3">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
                         {item.lastName +
                           ", " +
                           item.firstName +
@@ -377,11 +377,11 @@ const Residents = () => {
                       </span>
                     </td>
                     <td className="py-3">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2 ">
+                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2 ">
                         {item.email}
                       </span>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="xl:px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                           {item.age}
@@ -397,28 +397,28 @@ const Residents = () => {
                     </td>
                     <td className="py-3">
                       {item.isApproved === "Registered" && (
-                        <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                        <div className="flex w-full items-center justify-center bg-custom-green-button3 xl:m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
                             REGISTERED
                           </span>
                         </div>
                       )}
                       {item.isApproved === "Denied" && (
-                        <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                        <div className="flex w-full items-center justify-center bg-custom-red-button xl:m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
                             DENIED
                           </span>
                         </div>
                       )}
                       {item.isApproved === "Pending" && (
-                        <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                        <div className="flex w-full items-center justify-center bg-custom-amber xl:m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
                             PENDING
                           </span>
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="xl:px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">
                         <div className="hs-tooltip inline-block">
                           <button

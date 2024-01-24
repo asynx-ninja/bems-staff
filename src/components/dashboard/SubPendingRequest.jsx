@@ -5,6 +5,7 @@ import API_LINK from "../../config/API";
 import { useSearchParams } from "react-router-dom";
 import { AiOutlineEye } from "react-icons/ai";
 import ViewRequestModal from "./ViewRequestModal";
+import ReactPaginate from "react-paginate";
 
 const SubPendingRequest = () => {
   const [requests, setRequests] = useState([]);
@@ -12,22 +13,26 @@ const SubPendingRequest = () => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
 
   useEffect(() => {
     const fetch = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/requests/?brgy=${brgy}&archived=false`
-        );
-
-        if (response.status === 200) setRequests(response.data.result);
-      } catch (err) {
-        console.log(err);
-      }
+      const response = await axios.get(
+        `${API_LINK}/requests/?brgy=${brgy}&archived=false&page=${currentPage}`
+      );
+      if (response.status === 200) {
+        setRequests(response.data.result);
+        setPageCount(response.data.pageCount);
+      } else setRequests([]);
     };
 
     fetch();
-  }, []);
+  }, [currentPage]);
+
+  const handlePageChange = ({ selected }) => {
+    setCurrentPage(selected);
+  };
 
   const handleView = (item) => {
     setRequest(item);
@@ -39,7 +44,7 @@ const SubPendingRequest = () => {
         <b className="border-solid border-0 border-black border-b-2 pb-2 uppercase font-heavy text-lg md:text-xl mb-4 shrink-0">
           PENDING REQUESTS
         </b>
-        <div className="relative scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-auto xxl:h-[calc(100vh_-_410px)] xxxl:h-[calc(100vh_-_410px)] w-full">
+        <div className="relative scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-auto lg:h-[calc(100vh_-_480px)] xxl:h-[calc(100vh_-_465px)] xxxl:h-[calc(100vh_-_410px)] w-full">
           <table className="table-auto w-full">
             <thead className="uppercase text-xs md:text-sm bg-gray-100 sticky top-0">
               <tr>
@@ -90,6 +95,23 @@ const SubPendingRequest = () => {
             </tbody>
           </table>
         </div>
+      </div>
+      <div className="md:py-4 md:px-4 bg-[#21556d] flex items-center rounded-b-xl justify-between sm:flex-col-reverse md:flex-row sm:py-3">
+        <span className="font-medium text-white sm:text-xs text-sm">
+          Showing {currentPage + 1} out of {pageCount} pages
+        </span>
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel=">>"
+          onPageChange={handlePageChange}
+          pageRangeDisplayed={3}
+          pageCount={pageCount}
+          previousLabel="<<"
+          className="flex space-x-3 text-white font-bold"
+          activeClassName="text-yellow-500"
+          disabledLinkClassName="text-gray-400"
+          renderOnZeroPageCount={null}
+        />
       </div>
       {Object.hasOwn(request, "service_id") ? (
         <ViewRequestModal request={request} id={id} brgy={brgy} />

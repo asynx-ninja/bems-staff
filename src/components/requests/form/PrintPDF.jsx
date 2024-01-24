@@ -11,6 +11,15 @@ import logo from "../../../assets/header/montalban-logo.png";
 import id_picture from "../../../assets/sample/official.jpg";
 import BALITE from "../../../assets/logo/BALITE.png";
 import BURGOS from "../../../assets/logo/BURGOS.png";
+import GERONIMO from "../../../assets/logo/GERONIMO.png";
+import MACABUD from "../../../assets/logo/MACABUD.png";
+import MANGGAHAN from "../../../assets/logo/MANGGAHAN.png";
+import MASCAP from "../../../assets/logo/MASCAP.png";
+import PURAY from "../../../assets/logo/PURAY.png";
+import ROSARIO from "../../../assets/logo/ROSARIO.png";
+import SAN_ISIDRO from "../../../assets/logo/SAN_ISIDRO.png";
+import SAN_JOSE from "../../../assets/logo/SAN_JOSE.png";
+import SAN_RAFAEL from "../../../assets/logo/SAN_RAFAEL.png";
 
 const PrintPDF = ({ detail }) => {
   const [date, setDate] = useState(new Date());
@@ -22,6 +31,33 @@ const PrintPDF = ({ detail }) => {
 
       case "BURGOS": 
       return BURGOS
+
+      case "GERONIMO": 
+      return GERONIMO
+
+      case "MACABUD": 
+      return MACABUD
+
+      case "MANGGAHAN": 
+      return MANGGAHAN
+
+      case "MASCAP": 
+      return MASCAP
+
+      case "PURAY": 
+      return PURAY
+
+      case "ROSARIO": 
+      return ROSARIO
+
+      case "SAN ISIDRO": 
+      return SAN_ISIDRO
+
+      case "SAN JOSE": 
+      return SAN_JOSE
+
+      case "SAN RAFAEL": 
+      return SAN_RAFAEL
     }
   };
 

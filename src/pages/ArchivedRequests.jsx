@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import API_LINK from "../config/API";
 import axios from "axios";
-import { BsPrinter } from "react-icons/bs";
 import { AiOutlineEye } from "react-icons/ai";
 import { AiOutlineSend } from "react-icons/ai";
 import { MdRestartAlt } from "react-icons/md";
@@ -501,7 +500,7 @@ const ArchivedRequests = () => {
               </div>
             </div>
 
-            <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12">
+            <div className="sm:flex-col md:flex-row flex sm:w-full lg:ml-2 xl:ml-0 lg:w-7/12">
               <div className="flex flex-row w-full md:mr-2">
                 <button className=" bg-[#21556d] p-3 rounded-l-md">
                   <div className="w-full overflow-hidden">
