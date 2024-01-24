@@ -27,11 +27,11 @@ const EventsManagement = () => {
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
   const [announcement, setAnnouncement] = useState([]);
-  
+
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
-  
+
   //date filtering
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [filteredAnnouncements, setFilteredAnnouncements] = useState([]);
@@ -46,8 +46,7 @@ const EventsManagement = () => {
         setAnnouncements(response.data.result);
         setFilteredAnnouncements(response.data.result);
         setPageCount(response.data.pageCount);
-      }
-      else setAnnouncements([]);
+      } else setAnnouncements([]);
     };
 
     fetch();
@@ -56,7 +55,6 @@ const EventsManagement = () => {
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
-
 
   const Announcements = announcements.filter(
     (item) =>
@@ -126,39 +124,46 @@ const EventsManagement = () => {
   const filters = (choice, selectedDate) => {
     switch (choice) {
       case "date":
-        return announcements.filter((item) => {
-          console.log(typeof new Date(item.createdAt), selectedDate);
-          console.log("Announcements: ", announcements)
+        const newArr = announcements.filter((item) => {
+          const createdAt = new Date(item.createdAt.slice(0, 10));
+
           return (
-            new Date(item.createdAt).getFullYear() === selectedDate.getFullYear() &&
-            new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
-            new Date(item.createdAt).getDate() === selectedDate.getDate()
+            createdAt.getFullYear() === selectedDate.getFullYear() &&
+            createdAt.getMonth() === selectedDate.getMonth() &&
+            createdAt.getDate() === selectedDate.getDate()
           );
         });
+
+        return newArr;
       case "week":
         const startDate = selectedDate;
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
 
-        console.log("start and end", startDate, endDate);
+        return announcements.filter((item) => {
+          const createdAt = new Date(item.createdAt.slice(0, 10));
 
-        return announcements.filter(
-          (item) =>
-            new Date(item.createdAt).getFullYear() === startDate.getFullYear() &&
-            new Date(item.createdAt).getMonth() === startDate.getMonth() &&
-            new Date(item.createdAt).getDate() >= startDate.getDate() &&
-            new Date(item.createdAt).getDate() <= endDate.getDate()
-        );
+          return (
+            createdAt.getFullYear() === startDate.getFullYear() &&
+            createdAt.getMonth() === startDate.getMonth() &&
+            createdAt.getDate() >= startDate.getDate() &&
+            createdAt.getDate() <= endDate.getDate()
+          );
+        });
       case "month":
-        return announcements.filter(
-          (item) =>
-            new Date(item.createdAt).getFullYear() === selectedDate.getFullYear() &&
-            new Date(item.createdAt).getMonth() === selectedDate.getMonth()
-        );
+        return announcements.filter((item) => {
+          const createdAt = new Date(item.createdAt.slice(0, 10));
+
+          return (
+            createdAt.getFullYear() === selectedDate.getFullYear() &&
+            createdAt.getMonth() === selectedDate.getMonth()
+          );
+        });
       case "year":
-        return announcements.filter(
-          (item) => new Date(item.createdAt).getFullYear() === selectedDate.getFullYear()
-        );
+        return announcements.filter((item) => {
+          const createdAt = new Date(item.createdAt.slice(0, 10));
+          return createdAt.getFullYear() === selectedDate.getFullYear();
+        });
     }
   };
 
@@ -172,31 +177,32 @@ const EventsManagement = () => {
 
   const onChangeDate = (e) => {
     const date = new Date(e.target.value);
+    date.setHours(0, 0, 0, 0);
     setSpecifiedDate(date);
-    setFilteredAnnouncements(filters(selected, date))
+    setFilteredAnnouncements(filters(selected, date));
   };
 
   const onChangeWeek = (e) => {
     const date = moment(e.target.value).toDate();
     setSpecifiedDate(date);
-    setFilteredAnnouncements(filters(selected, date))
+    setFilteredAnnouncements(filters(selected, date));
   };
 
   const onChangeMonth = (e) => {
     const date = moment(e.target.value).toDate();
     setSpecifiedDate(date);
-    setFilteredAnnouncements(filters(selected, date))
+    setFilteredAnnouncements(filters(selected, date));
   };
 
   const onChangeYear = (e) => {
     if (e.target.value === "") {
-      setFilteredAnnouncements(announcements)
+      setFilteredAnnouncements(announcements);
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
       console.log("selected year converted date", date);
       console.log("specified year", filters(selected, date));
-      setFilteredAnnouncements(filters(selected, date))
+      setFilteredAnnouncements(filters(selected, date));
     }
   };
 
@@ -209,7 +215,7 @@ const EventsManagement = () => {
               className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-4xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
-             EVENTS MANAGEMENT
+              EVENTS MANAGEMENT
             </h1>
           </div>
           <div className="lg:w-3/5 flex flex-row justify-end items-center ">
@@ -305,11 +311,12 @@ const EventsManagement = () => {
                   </a>
                   <hr className="border-[#4e4e4e] mt-1" />
                   <div class="hs-dropdown relative inline-flex flex-col w-full space-y-1 my-2 px-2">
-                    <label className="text-black font-medium mb-1">DATE RANGE</label>
+                    <label className="text-black font-medium mb-1">
+                      DATE RANGE
+                    </label>
                     <div className="flex flex-col gap-2">
                       <select
                         className="bg-[#f8f8f8] text-gray-600 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
-
                         onChange={onSelect}
                         defaultValue={selected}
                       >
@@ -392,12 +399,14 @@ const EventsManagement = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {setSearchQuery(e.target.value)
-                    const Announcements = announcements.filter(
-                      (item) =>
-                        item.title.toLowerCase().includes(e.target.value.toLowerCase())
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    const Announcements = announcements.filter((item) =>
+                      item.title
+                        .toLowerCase()
+                        .includes(e.target.value.toLowerCase())
                     );
-                    setFilteredAnnouncements (Announcements)
+                    setFilteredAnnouncements(Announcements);
                   }}
                 />
               </div>
@@ -500,7 +509,7 @@ const EventsManagement = () => {
                   <td className="px-6 py-3">
                     <div className="flex justify-center space-x-1 sm:space-x-none">
                       <div className="hs-tooltip inline-block">
-                      <button
+                        <button
                           type="button"
                           data-hs-overlay="#hs-modal-editAnnouncement"
                           onClick={() => handleView({ ...item })}
@@ -617,8 +626,8 @@ const EventsManagement = () => {
           announcement={announcement}
           setAnnouncement={setAnnouncement}
         />
-        <AddEventsForm announcement_id={announcement.event_id} brgy={brgy}/>
-        <EditEventsForm announcement_id={announcement.event_id} brgy={brgy}/>
+        <AddEventsForm announcement_id={announcement.event_id} brgy={brgy} />
+        <EditEventsForm announcement_id={announcement.event_id} brgy={brgy} />
       </div>
     </div>
   );
