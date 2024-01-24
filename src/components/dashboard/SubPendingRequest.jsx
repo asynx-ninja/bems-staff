@@ -19,7 +19,7 @@ const SubPendingRequest = () => {
         const response = await axios.get(
           `${API_LINK}/requests/?brgy=${brgy}&archived=false`
         );
-
+console.log("kulng",response)
         if (response.status === 200) setRequests(response.data.result);
       } catch (err) {
         console.log(err);
