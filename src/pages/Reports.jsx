@@ -26,7 +26,9 @@ const Reports = () => {
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [selected, setSelected] = useState("date");
 
+
   useEffect(() => {
+    document.title = "Reports | Barangay E-Services Management";
     const fetchData = async () => {
       try {
         // Fetch services and requests
