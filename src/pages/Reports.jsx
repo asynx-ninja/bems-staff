@@ -16,6 +16,9 @@ const Reports = () => {
   const [archivedUsers, setArchivedUsers] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
+  const [registeredCount, setRegisteredCount] = useState(0);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [deniedCount, setDeniedCount] = useState(0);
 
   useEffect(() => {
     document.title = "Reports | Barangay E-Services Management";
@@ -126,21 +129,35 @@ const Reports = () => {
     },
   };
 
-  const getStatusCounts = () => {
-    const registeredCount = users.filter(
-      (user) => user.isApproved === "Registered"
-    ).length;
-    const pendingCount = users.filter(
-      (user) => user.isApproved === "Pending"
-    ).length;
-    const deniedCount = users.filter(
-      (user) => user.isApproved === "Denied"
-    ).length;
+  useEffect(() => {
+    // Fetch counts for each status
+    const getStatusCounts = async () => {
+      try {
+        const response = await axios.get(`${API_LINK}/users/all_brgy_resident`, {
+          params: {
+            brgy: brgy, // Replace with the specific barangay you want
+          },
+        });
 
-    return [registeredCount, pendingCount, deniedCount];
-  };
+        const data = response.data[0]; // Assuming there is only one item in the response array
 
-  const [registeredCount, pendingCount, deniedCount] = getStatusCounts();
+        if (data) {
+          const { residents } = data;
+          const registeredCount = residents.filter((resident) => resident.status === 'Registered').length;
+          const pendingCount = residents.filter((resident) => resident.status === 'Pending').length;
+          const deniedCount = residents.filter((resident) => resident.status === 'Denied').length;
+
+          setRegisteredCount(registeredCount);
+          setPendingCount(pendingCount);
+          setDeniedCount(deniedCount);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    getStatusCounts();
+  }, [brgy]); // Dependency on brgy to update counts when barangay changes
 
   const chartDataResidentStatus = {
     series: [registeredCount, pendingCount, deniedCount],
