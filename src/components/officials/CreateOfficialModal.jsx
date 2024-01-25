@@ -349,7 +349,7 @@ function CreateOfficialModal({ brgy }) {
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
                   onClick={handleSubmit}
                 >
-                  SAVE CHANGES
+                  CREATE
                 </button>
                 <button
                   type="button"

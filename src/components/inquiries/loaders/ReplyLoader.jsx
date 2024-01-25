@@ -15,17 +15,40 @@ function ReplyLoader({ replyStatus, error }) {
   const [loading, setLoading] = useState(replyStatus === "replying");
 
   useEffect(() => {
-    if (["success", "error"].includes(replyStatus)) {
+    if (replyStatus === "replying") {
+      setLoadingText("Replying to the inquiry...");
+      setLoading(true);
+    } else if (replyStatus === "success") {
+      setLoadingText("Inquiry Reply Sent!");
       const timeout = setTimeout(() => {
         setLoading(false);
       }, 3000);
-
+  
       return () => clearTimeout(timeout);
+    } else if (replyStatus === "error") {
+      setLoadingText("Error replying to the inquiry. Please try again.");
+      setLoading(false);
     }
   }, [replyStatus]);
 
+
   return (
     <div className="absolute bottom-0 lg:bottom-0 lg:end-0 mb-20 lg:mr-10">
+      {replyStatus === "error" ? (
+        <div className="w-screen md:w-96 rounded-xl shadow-lg" role="alert">
+          <div className="flex flex-row bg-[#e05353]  items-center p-3 rounded-xl space-x-3">
+            <MdError size={25} className="text-white" />
+            <div className="flex flex-row w-full">
+              <div className="flex space-x-1.5 items-center">
+                <p className="text-[#f5f5f5] text-sm font-medium ">ERROR:</p>
+                <p className="text-[#f5f5f5] text-xs font-medium ">
+                  {error}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
       <div
         className="w-screen md:w-80 bg-[#0d4b75] border border-gray-200 rounded-xl shadow-lg"
         role="alert"
@@ -51,9 +74,9 @@ function ReplyLoader({ replyStatus, error }) {
             <span className="sr-only">Loading...</span>
           </div>
           <span className="text-white">{loadingText}</span>
-          {/* {error && <span className="text-red-500 ml-2">{error}</span>} */}
         </div>
       </div>
+      )}
     </div>
   );
 }

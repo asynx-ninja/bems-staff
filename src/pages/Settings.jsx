@@ -961,15 +961,23 @@ const Settings = () => {
                 </div>
               </div>
               <div
-              className={
-                activeButton.credential
-                  ? "shadow-lg px-[30px] pb-[30px]"
-                  : "hidden"
-              }
-            >
-              {/* CREDENTIALS */}
-              <Credentials userCred={userCred} handleUserChangeCred={handleUserChangeCred} editButton={editButton} message={message} passwordStrengthError={passwordStrengthError} passwordStrengthSuccess={passwordStrengthSuccess} passwordStrength={passwordStrength} />
-            </div>
+                className={
+                  activeButton.credential
+                    ? "shadow-lg px-[30px] pb-[30px]"
+                    : "hidden"
+                }
+              >
+                {/* CREDENTIALS */}
+                <Credentials
+                  userCred={userCred}
+                  handleUserChangeCred={handleUserChangeCred}
+                  editButton={editButton}
+                  message={message}
+                  passwordStrengthError={passwordStrengthError}
+                  passwordStrengthSuccess={passwordStrengthSuccess}
+                  passwordStrength={passwordStrength}
+                />
+              </div>
             </div>
             <div className="sm:w-full lg:w-[95%] relative mt-[-150px] mb-[20px]">
               <div className="flex flex-col justify-center items-center">
@@ -1020,71 +1028,65 @@ const Settings = () => {
                   </div>
                 </div>
                 <div className="flex flex-col justify-center sm:w-[80%] md:w-[95%] lg:w-full items-center mx-auto mt-5 rounded-md p-[10px]">
-  {userSocials.facebook.name || userSocials.instagram.name || userSocials.twitter.name || userData.contact || userData.email ? (
-    <>
-      <div className="flex justify-center items-center border-b-[1px] border-gray-300 w-full pb-[10px]">
-        <h6 className="font-bold text-black">SOCIALS</h6>
-      </div>
-      <div className="p-[10px] flex sm:flex-col md:flex-row gap-5">
-        {userSocials.facebook.name && (
-          <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
-            <FaFacebook />
-            <p className="text-left truncate text-[14px]">
-              {userSocials.facebook.name}
-            </p>
-          </button>
-        )}
-        {userSocials.instagram.name && (
-          <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
-            <FaInstagram />
-            <p className="text-left truncate text-[14px]">
-              {userSocials.instagram.name}
-            </p>
-          </button>
-        )}
-        {userSocials.twitter.name && (
-          <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
-            <FaTwitter />
-            <p className="text-left truncate text-[14px]">
-              {userSocials.twitter.name}
-            </p>
-          </button>
-        )}
-        {userData.contact && (
-          <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
-            <FaPhone />
-            <p className="text-left truncate text-[14px]">
-              {userData.contact}
-            </p>
-          </button>
-        )}
-        {userData.email && (
-          <button className=" flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
-            <FaEnvelope />
-            <p className="text-left truncate text-[14px]">
-              {userData.email}
-            </p>
-          </button>
-        )}
-      </div>
-    </>
-  ) : null}
-</div>
+                  {userSocials.facebook.name ||
+                  userSocials.instagram.name ||
+                  userSocials.twitter.name ||
+                  userData.contact ||
+                  userData.email ? (
+                    <>
+                      <div className="flex justify-center items-center border-b-[1px] border-gray-300 w-full pb-[10px]">
+                        <h6 className="font-bold text-black">SOCIALS</h6>
+                      </div>
+                      <div className="p-[10px] flex sm:flex-col md:flex-row gap-5">
+                        {userSocials.facebook.name && (
+                          <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
+                            <FaFacebook />
+                            <p className="text-left truncate text-[14px]">
+                              {userSocials.facebook.name}
+                            </p>
+                          </button>
+                        )}
+                        {userSocials.instagram.name && (
+                          <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
+                            <FaInstagram />
+                            <p className="text-left truncate text-[14px]">
+                              {userSocials.instagram.name}
+                            </p>
+                          </button>
+                        )}
+                        {userSocials.twitter.name && (
+                          <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
+                            <FaTwitter />
+                            <p className="text-left truncate text-[14px]">
+                              {userSocials.twitter.name}
+                            </p>
+                          </button>
+                        )}
+                        {userData.contact && (
+                          <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
+                            <FaPhone />
+                            <p className="text-left truncate text-[14px]">
+                              {userData.contact}
+                            </p>
+                          </button>
+                        )}
+                        {userData.email && (
+                          <button className=" flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
+                            <FaEnvelope />
+                            <p className="text-left truncate text-[14px]">
+                              {userData.email}
+                            </p>
+                          </button>
+                        )}
+                      </div>
+                    </>
+                  ) : null}
+                </div>
               </div>
             </div>
           </div>
         </div>
         <div className="flex flex-col justify-center items-center py-2 lg:py-6 text-white gap-2 mb-[20px]">
-          {/* Sm to md screen loader */}
-          {/* {isSmallerThanLG && (
-            <div className="flex w-full justify-center items-center px-1 md:px-5 xl:px-8 xxl:px-[320px] xxxl:px-[415px]">
-              {submitClicked && <EditLoader updatingStatus="updating" />}
-              {updatingStatus && !isBiggerThanMD && (
-                <EditLoader updatingStatus={updatingStatus} error={error} />
-              )}
-            </div>
-          )} */}
-
           <div className="flex flex-col lg:flex-row gap-2 w-full xxl:w-1/2 justify-center items-center px-2 md:px-5 xl:px-8 ">
             {editButton ? (
               <button

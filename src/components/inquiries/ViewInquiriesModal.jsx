@@ -108,10 +108,13 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
 
   const handleChange = (e) => {
     e.preventDefault();
-  
+
     const inputValue = e.target.value;
-  
-    if (statusChanger && (!newMessage.message || newMessage.message.trim() === "")) {
+
+    if (
+      statusChanger &&
+      (!newMessage.message || newMessage.message.trim() === "")
+    ) {
       setNewMessage((prev) => ({
         ...prev,
         message: `The status of your inquiry is ${inputValue}`,
@@ -123,7 +126,7 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
       }));
     }
   };
-  
+
   console.log("StatusChanger: ", statusChanger);
 
   console.log("New Message: ", newMessage.message);
@@ -154,6 +157,13 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
     console.log(newMessage);
 
     try {
+      if (statusChanger && !inquiry.status) {
+        setSubmitClicked(false);
+        setReplyStatus("error");
+        setError("Please select a status before submitting.");
+        return;
+      }
+
       const obj = {
         sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
         type: newMessage.type,
@@ -184,7 +194,7 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
       console.log(error);
       setSubmitClicked(false);
       setReplyStatus("error");
-      setError("An error occurred while creating the announcement.");
+      setError(err.message);
     }
   };
 
@@ -325,7 +335,7 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
                                 value={
                                   newMessage.message
                                     ? newMessage.message
-                                    : statusChanger
+                                    : statusChanger && inquiry.status
                                     ? `The status of your inquiry is ${inquiry.status}`
                                     : ""
                                 }
@@ -555,7 +565,7 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
                                             value={
                                               newMessage.message
                                                 ? newMessage.message
-                                                : statusChanger
+                                                : statusChanger && inquiry.status
                                                 ? `The status of your inquiry is ${inquiry.status}`
                                                 : ""
                                             }
@@ -640,47 +650,33 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
                                                         </div>
                                                       )}
                                                       <select
-                                                        id="status"
-                                                        name="status"
-                                                        onChange={(e) => {
-                                                          if (
-                                                            statusChanger &&
-                                                            (!newMessage.message ||
-                                                              newMessage.message.trim() ===
-                                                                "")
-                                                          ) {
-                                                            setNewMessage(
-                                                              (prev) => ({
-                                                                ...prev,
-                                                                message: `The status of your inquiry is ${e.target.value}`,
-                                                              })
-                                                            );
-                                                          }
-                                                          setInquiry(
-                                                            (prev) => ({
-                                                              ...prev,
-                                                              status:
-                                                                e.target.value,
-                                                            })
-                                                          );
-                                                        }}
-                                                        className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
-                                                        value={inquiry.status}
-                                                        hidden={!statusChanger}
-                                                      >
-                                                        <option>
-                                                          - Select a Status -
-                                                        </option>
-                                                        <option value="Pending">
-                                                          PENDING
-                                                        </option>
-                                                        <option value="In Progress">
-                                                          IN PROGRESS
-                                                        </option>
-                                                        <option value="Completed">
-                                                          COMPLETED
-                                                        </option>
-                                                      </select>
+    id="status"
+    name="status"
+    onChange={(e) => {
+      if (
+        statusChanger &&
+        (!newMessage.message ||
+          newMessage.message.trim() === "")
+      ) {
+        setNewMessage((prev) => ({
+          ...prev,
+          message: `The status of your inquiry is ${e.target.value}`,
+        }));
+      }
+      setInquiry((prev) => ({
+        ...prev,
+        status: e.target.value,
+      }));
+    }}
+    className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
+    value={inquiry.status}
+    hidden={!statusChanger}
+  >
+    <option>- Select a Status -</option>
+    <option value="Pending">PENDING</option>
+    <option value="In Progress">IN PROGRESS</option>
+    <option value="Completed">COMPLETED</option>
+  </select>
                                                     </div>
                                                   </div>
                                                 </div>
