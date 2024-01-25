@@ -16,17 +16,12 @@ const Reports = () => {
   const [archivedUsers, setArchivedUsers] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
-  const [isSpecificSelected, setIsSpecificSelected] = useState(false);
-  const [isTodaySelected, setIsTodaySelected] = useState(false);
-  const [isWeeklySelected, setIsWeeklySelected] = useState(false);
-  const [isMonthlySelected, setIsMonthlySelected] = useState(false);
-  const [isAnnualSelected, setIsAnnualSelected] = useState(false);
-  const [dateType, setDateType] = useState("specific");
-  const [startDate, setStartDate] = useState("");
-  const [specifiedDate, setSpecifiedDate] = useState(new Date());
-  const [selected, setSelected] = useState("date");
+  const [registeredCount, setRegisteredCount] = useState(0);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [deniedCount, setDeniedCount] = useState(0);
 
   useEffect(() => {
+    document.title = "Reports | Barangay E-Services Management";
     const fetchData = async () => {
       try {
         // Fetch services and requests
@@ -99,251 +94,6 @@ const Reports = () => {
     return () => clearInterval(intervalId);
   }, [brgy]);
 
-  const startOfWeek = (date) => {
-    const currentDate = new Date(date);
-    const day = currentDate.getDay();
-    const diff = currentDate.getDate() - day + (day === 0 ? -6 : 1); // Adjust when Sunday is the first day of the week
-    return new Date(currentDate.setDate(diff));
-  };
-
-  // Function to get the end of the week
-  const endOfWeek = (date) => {
-    const currentDate = new Date(date);
-    const day = currentDate.getDay();
-    const diff = currentDate.getDate() + (6 - day); // Adjust when Sunday is the first day of the week
-    return new Date(currentDate.setDate(diff));
-  };
-
-  const startOfMonth = (date) => {
-    const currentDate = new Date(date);
-    return new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  };
-
-  // Function to get the end of the month
-  const endOfMonth = (date) => {
-    const currentDate = new Date(date);
-    return new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-  };
-
-  const startOfYear = (date) => {
-    const currentDate = new Date(date);
-    return new Date(currentDate.getFullYear(), 0, 1);
-  };
-
-  // Function to get the end of the year
-  const endOfYear = (date) => {
-    const currentDate = new Date(date);
-    return new Date(currentDate.getFullYear(), 11, 31);
-  };
-
-  const handleTodayToggle = () => {
-    setIsTodaySelected(false);
-    setIsSpecificSelected(false);
-    setIsWeeklySelected(false);
-    setIsMonthlySelected(false);
-    setIsAnnualSelected(false);
-    setIsTodaySelected(!isTodaySelected);
-  };
-
-  const handleSpecificToggle = () => {
-    setIsSpecificSelected(true);
-    setIsTodaySelected(false);
-    setIsWeeklySelected(false);
-    setIsMonthlySelected(false);
-    setIsAnnualSelected(false);
-    setIsSpecificSelected(!isSpecificSelected);
-  };
-
-  const handleWeeklyToggle = () => {
-    setIsSpecificSelected(false);
-    setIsTodaySelected(false);
-    setIsWeeklySelected(true);
-    setIsMonthlySelected(false);
-    setIsAnnualSelected(false);
-    setIsWeeklySelected(!isWeeklySelected);
-  };
-
-  const handleMonthlyToggle = () => {
-    setIsSpecificSelected(false);
-    setIsTodaySelected(false);
-    setIsWeeklySelected(false);
-    setIsMonthlySelected(true);
-    setIsAnnualSelected(false);
-    setIsMonthlySelected(!isMonthlySelected);
-  };
-
-  const handleAnnualToggle = () => {
-    setIsTodaySelected(false);
-    setIsWeeklySelected(false);
-    setIsMonthlySelected(false);
-    setIsAnnualSelected(true);
-    setIsAnnualSelected(!isAnnualSelected);
-  };
-
-  //Start for Profit
-  const allRequests = [...requests, ...archivedRequests];
-  const getFilteredRequests = () => {
-    if (isTodaySelected) {
-      return requests.filter(
-        (request) =>
-          request.status === "Transaction Completed" &&
-          new Date(request.createdAt).toDateString() ===
-            new Date().toDateString()
-      );
-    } else if (isWeeklySelected) {
-      return requests.filter(
-        (request) =>
-          request.status === "Transaction Completed" &&
-          new Date(request.createdAt) >= startOfWeek(new Date()) &&
-          new Date(request.createdAt) <= endOfWeek(new Date())
-      );
-    } else if (isMonthlySelected) {
-      return requests.filter(
-        (request) =>
-          request.status === "Transaction Completed" &&
-          new Date(request.createdAt) >= startOfMonth(new Date()) &&
-          new Date(request.createdAt) <= endOfMonth(new Date())
-      );
-    } else if (isAnnualSelected) {
-      return requests.filter(
-        (request) =>
-          request.status === "Transaction Completed" &&
-          new Date(request.createdAt) >= startOfYear(new Date()) &&
-          new Date(request.createdAt) <= endOfYear(new Date())
-      );
-    } else {
-      return requests.filter(
-        (request) => request.status === "Transaction Completed"
-      );
-    }
-  };
-
-  const filteredRequests = getFilteredRequests();
-
-  const totalFees = filteredRequests.reduce(
-    (total, request) => total + request.fee,
-    0
-  );
-
-  const estimatedRevenue = requests.reduce(
-    (total, request) =>
-      request.status !== "Cancelled" ? total + request.fee : total,
-    0
-  );
-
-  const filteredTotalServices = isTodaySelected
-    ? requests.filter(
-        (request) =>
-          new Date(request.createdAt).toDateString() ===
-          new Date().toDateString()
-      ).length
-    : isWeeklySelected
-    ? requests.filter(
-        (request) =>
-          new Date(request.createdAt) >= startOfWeek(new Date()) &&
-          new Date(request.createdAt) <= endOfWeek(new Date())
-      ).length
-    : isMonthlySelected
-    ? requests.filter(
-        (request) =>
-          new Date(request.createdAt) >= startOfMonth(new Date()) &&
-          new Date(request.createdAt) <= endOfMonth(new Date())
-      ).length
-    : isAnnualSelected
-    ? requests.filter(
-        (request) =>
-          new Date(request.createdAt) >= startOfYear(new Date()) &&
-          new Date(request.createdAt) <= endOfYear(new Date())
-      ).length
-    : requests.length;
-
-  const filteredCompletedServices = isTodaySelected
-    ? requests.filter(
-        (request) =>
-          request.status === "Transaction Completed" &&
-          new Date(request.createdAt).toDateString() ===
-            new Date().toDateString()
-      ).length
-    : isWeeklySelected
-    ? requests.filter(
-        (request) =>
-          request.status === "Transaction Completed" &&
-          new Date(request.createdAt) >= startOfWeek(new Date()) &&
-          new Date(request.createdAt) <= endOfWeek(new Date())
-      ).length
-    : isMonthlySelected
-    ? requests.filter(
-        (request) =>
-          request.status === "Transaction Completed" &&
-          new Date(request.createdAt) >= startOfMonth(new Date()) &&
-          new Date(request.createdAt) <= endOfMonth(new Date())
-      ).length
-    : isAnnualSelected
-    ? requests.filter(
-        (request) =>
-          request.status === "Transaction Completed" &&
-          new Date(request.createdAt) >= startOfYear(new Date()) &&
-          new Date(request.createdAt) <= endOfYear(new Date())
-      ).length
-    : requests.filter((request) => request.status === "Transaction Completed")
-        .length;
-
-  const filteredEstimatedRevenue = isTodaySelected
-    ? requests
-        .filter(
-          (request) =>
-            new Date(request.createdAt).toDateString() ===
-            new Date().toDateString()
-        )
-        .reduce(
-          (total, request) =>
-            request.status !== "Cancelled" ? total + request.fee : total,
-          0
-        )
-    : isWeeklySelected
-    ? requests
-        .filter(
-          (request) =>
-            new Date(request.createdAt) >= startOfWeek(new Date()) &&
-            new Date(request.createdAt) <= endOfWeek(new Date())
-        )
-        .reduce(
-          (total, request) =>
-            request.status !== "Cancelled" ? total + request.fee : total,
-          0
-        )
-    : isMonthlySelected
-    ? requests
-        .filter(
-          (request) =>
-            new Date(request.createdAt) >= startOfMonth(new Date()) &&
-            new Date(request.createdAt) <= endOfMonth(new Date())
-        )
-        .reduce(
-          (total, request) =>
-            request.status !== "Cancelled" ? total + request.fee : total,
-          0
-        )
-    : isAnnualSelected
-    ? requests
-        .filter(
-          (request) =>
-            new Date(request.createdAt) >= startOfYear(new Date()) &&
-            new Date(request.createdAt) <= endOfYear(new Date())
-        )
-        .reduce(
-          (total, request) =>
-            request.status !== "Cancelled" ? total + request.fee : total,
-          0
-        )
-    : requests.reduce(
-        (total, request) =>
-          request.status !== "Cancelled" ? total + request.fee : total,
-        0
-      );
-
-   // End for Profit
-
   // Calculate total availed for each service
   const allServices = [...services, ...archivedServices];
   const totalAvailed = allServices.map((service) => {
@@ -379,21 +129,35 @@ const Reports = () => {
     },
   };
 
-  const getStatusCounts = () => {
-    const registeredCount = users.filter(
-      (user) => user.isApproved === "Registered"
-    ).length;
-    const pendingCount = users.filter(
-      (user) => user.isApproved === "Pending"
-    ).length;
-    const deniedCount = users.filter(
-      (user) => user.isApproved === "Denied"
-    ).length;
+  useEffect(() => {
+    // Fetch counts for each status
+    const getStatusCounts = async () => {
+      try {
+        const response = await axios.get(`${API_LINK}/users/all_brgy_resident`, {
+          params: {
+            brgy: brgy, // Replace with the specific barangay you want
+          },
+        });
 
-    return [registeredCount, pendingCount, deniedCount];
-  };
+        const data = response.data[0]; // Assuming there is only one item in the response array
 
-  const [registeredCount, pendingCount, deniedCount] = getStatusCounts();
+        if (data) {
+          const { residents } = data;
+          const registeredCount = residents.filter((resident) => resident.status === 'Registered').length;
+          const pendingCount = residents.filter((resident) => resident.status === 'Pending').length;
+          const deniedCount = residents.filter((resident) => resident.status === 'Denied').length;
+
+          setRegisteredCount(registeredCount);
+          setPendingCount(pendingCount);
+          setDeniedCount(deniedCount);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    getStatusCounts();
+  }, [brgy]); // Dependency on brgy to update counts when barangay changes
 
   const chartDataResidentStatus = {
     series: [registeredCount, pendingCount, deniedCount],
@@ -463,10 +227,6 @@ const Reports = () => {
         },
       },
     },
-  };
-
-  const handleDateTypeChange = (e) => {
-    setDateType(e.target.value);
   };
 
   const getStatusPercentages = () => {
@@ -784,76 +544,284 @@ const Reports = () => {
     },
   };
 
-  const filters = (choice, selectedDate) => {
-    switch (choice) {
-      case "date":
-        return requests.filter((item) => {
-          console.log(typeof new Date(item.createdAt), selectedDate);
-          console.log(requests);
-          return (
-            new Date(item.createdAt).getFullYear() === selectedDate.getFullYear() &&
-            new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
-            new Date(item.createdAt).getDate() === selectedDate.getDate()
-          );
-        });
-      case "week":
-        const startDate = selectedDate;
-        const endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + 6);
+  const [timeRange, setTimeRange] = useState("today");
+  const [specificDate, setSpecificDate] = useState(() => {
+    return new Date(); // Initializes the state to today's date as a Date object
+  });
+  const [specificWeek, setSpecificWeek] = useState(""); // Default to current date
+  const [specificYear, setSpecificYear] = useState(new Date().getFullYear());
+  const [specificMonth, setSpecificMonth] = useState(
+    `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(
+      2,
+      "0"
+    )}`
+  );
 
-        console.log("start and end", startDate, endDate);
+  const [estimatedRevenuess, setEstimatedRevenuess] = useState(0);
 
-        return requests.filter(
-          (item) =>
-            new Date(item.createdAt).getFullYear() === startDate.getFullYear() &&
-            new Date(item.createdAt).getMonth() === startDate.getMonth() &&
-            new Date(item.createdAt).getDate() >= startDate.getDate() &&
-            new Date(item.createdAt).getDate() <= endDate.getDate()
+  useEffect(() => {
+    const fetchFeeSummary = async () => {
+      try {
+        const params = { timeRange: timeRange };
+
+        if (timeRange === "specific") {
+          // specificDate is already in ISO format (YYYY-MM-DD)
+          params.specificDate = specificDate;
+        }
+
+        if (timeRange === "weekly" && specificWeek) {
+          // Send only the start of the week to the backend
+          const [year, weekNumber] = specificWeek.split("-W");
+          const weekStart = moment()
+            .isoWeekYear(year)
+            .isoWeek(weekNumber)
+            .startOf("isoWeek")
+            .toISOString();
+          params.week = weekStart;
+        }
+
+        if (timeRange === "monthly" && specificMonth) {
+          const [year, month] = specificMonth.split("-");
+          params.year = parseInt(year);
+          params.month = parseInt(month);
+        }
+
+        if (timeRange === "annual") {
+          params.year = specificYear;
+        }
+
+        // Make the API request
+        const response = await axios.get(
+          `${API_LINK}/requests/est_brgy_revenue`,
+          {
+            params: params,
+          }
         );
-      case "month":
-        return requests.filter(
-          (item) =>
-            new Date(item.createdAt).getFullYear() === selectedDate.getFullYear() &&
-            new Date(item.createdAt).getMonth() === selectedDate.getMonth()
+
+        const data = response.data;
+
+        // Assuming your data structure is an array with a single object
+        if (data.length > 0) {
+          const { totalFee } = data[0]; // Assuming the totalFee property is present
+          setEstimatedRevenuess(totalFee);
+        } else {
+          // If there is no data, set estimatedRevenuess to 0
+          setEstimatedRevenuess(0);
+        }
+      } catch (error) {
+        console.error("Error fetching fee summary:", error);
+      }
+    };
+
+    fetchFeeSummary();
+  }, [timeRange, specificDate, specificWeek, specificMonth, specificYear]);
+
+  const [totalFeess, setTotalFeess] = useState(0);
+
+  useEffect(() => {
+    const fetchFeeSummary = async () => {
+      try {
+        const params = { timeRange: timeRange };
+
+        if (timeRange === "specific") {
+          // specificDate is already in ISO format (YYYY-MM-DD)
+          params.specificDate = specificDate;
+        }
+
+        if (timeRange === "weekly" && specificWeek) {
+          // Send only the start of the week to the backend
+          const [year, weekNumber] = specificWeek.split("-W");
+          const weekStart = moment()
+            .isoWeekYear(year)
+            .isoWeek(weekNumber)
+            .startOf("isoWeek")
+            .toISOString();
+          params.week = weekStart;
+        }
+
+        if (timeRange === "monthly" && specificMonth) {
+          const [year, month] = specificMonth.split("-");
+          params.year = parseInt(year);
+          params.month = parseInt(month);
+        }
+
+        if (timeRange === "annual") {
+          params.year = specificYear;
+        }
+
+        // Make the API request using the GetRevenue function
+        const response = await axios.get(
+          `${API_LINK}/requests/get_brgy_revenue`,
+          {
+            params: {
+              ...params,
+              brgy: brgy, // Add your barangay value here
+            },
+          }
         );
-      case "year":
-        return requests.filter(
-          (item) => new Date(item.createdAt).getFullYear() === selectedDate.getFullYear()
+
+        const data = response.data;
+
+        // Assuming your data structure is an array with a single object
+        if (data.length > 0) {
+          const { totalFee } = data[0]; // Assuming the totalFee property is present
+          setTotalFeess(totalFee);
+        } else {
+          // If there is no data, set totalFeess to 0
+          setTotalFeess(0);
+        }
+      } catch (error) {
+        console.error("Error fetching fee summary:", error);
+      }
+    };
+
+    fetchFeeSummary();
+  }, [timeRange, specificDate, specificWeek, specificMonth, specificYear]);
+
+
+  const [totalServicess, setTotalServicess] = useState(0);
+  useEffect(() => {
+    const fetchFeeSummary = async () => {
+      try {
+        const params = { timeRange: timeRange };
+
+        if (timeRange === "specific") {
+          // specificDate is already in ISO format (YYYY-MM-DD)
+          params.specificDate = specificDate;
+        }
+
+        if (timeRange === "weekly" && specificWeek) {
+          // Send only the start of the week to the backend
+          const [year, weekNumber] = specificWeek.split("-W");
+          const weekStart = moment()
+            .isoWeekYear(year)
+            .isoWeek(weekNumber)
+            .startOf("isoWeek")
+            .toISOString();
+          params.week = weekStart;
+        }
+
+        if (timeRange === "monthly" && specificMonth) {
+          const [year, month] = specificMonth.split("-");
+          params.year = parseInt(year);
+          params.month = parseInt(month);
+        }
+
+        if (timeRange === "annual") {
+          params.year = specificYear;
+        }
+
+        // Make the API request using the GetRevenue function
+        const response = await axios.get(
+          `${API_LINK}/requests/availed_services`,
+          {
+            params: {
+              ...params,
+              brgy: brgy, // Add your barangay value here
+            },
+          }
         );
+
+        const data = response.data;
+
+        console.log("data for total availed: ", data );
+
+       // Assuming your data structure is an array with multiple objects
+      if (data.length > 0) {
+        // Calculate totalServices by summing up totalRequests for all statuses
+        const totalServices = data.reduce((acc, statusObj) => acc + statusObj.totalRequests, 0);
+        setTotalServicess(totalServices);
+      } else {
+        // If there is no data, set totalServices to 0
+        setTotalServicess(0);
+      }
+    } catch (error) {
+      console.error("Error fetching fee summary:", error);
     }
   };
 
-  const onSelect = (e) => {
-    console.log("select", e.target.value);
+  fetchFeeSummary();
+}, [timeRange, specificDate, specificWeek, specificMonth, specificYear, brgy]);
 
-    setSelected(e.target.value);
+const [completedRequests, setCompletedRequests] = useState(0);
+useEffect(() => {
+  const fetchCompletedRequests = async () => {
+    try {
+      const params = { timeRange: timeRange };
 
-    console.log("specified select", filters(e.target.value, specifiedDate));
-  };
+      if (timeRange === "specific") {
+        // specificDate is already in ISO format (YYYY-MM-DD)
+        params.specificDate = specificDate;
+      }
 
-  const onChangeDate = (e) => {
-    const date = new Date(e.target.value);
-    setSpecifiedDate(date);
-  };
+      if (timeRange === "weekly" && specificWeek) {
+        // Send only the start of the week to the backend
+        const [year, weekNumber] = specificWeek.split("-W");
+        const weekStart = moment()
+          .isoWeekYear(year)
+          .isoWeek(weekNumber)
+          .startOf("isoWeek")
+          .toISOString();
+        params.week = weekStart;
+      }
 
-  const onChangeWeek = (e) => {
-    const date = moment(e.target.value).toDate();
-    setSpecifiedDate(date);
-  };
+      if (timeRange === "monthly" && specificMonth) {
+        const [year, month] = specificMonth.split("-");
+        params.year = parseInt(year);
+        params.month = parseInt(month);
+      }
 
-  const onChangeMonth = (e) => {
-    const date = moment(e.target.value).toDate();
-    setSpecifiedDate(date);
-  };
+      if (timeRange === "annual") {
+        params.year = specificYear;
+      }
 
-  const onChangeYear = (e) => {
-    if (e.target.value === "") {
-      setRequests(requests); // Replace with your initial data
-    } else {
-      const date = new Date(e.target.value, 0, 1);
-      setSpecifiedDate(date);
+      // Make the API request using the GetRevenue function
+      const response = await axios.get(
+        `${API_LINK}/requests/completed_requests`,
+        {
+          params: {
+            ...params,
+            brgy: brgy, // Add your barangay value here
+          },
+        }
+      );
+
+      const data = response.data;
+
+      console.log("data for completed requests: ", data);
+
+      // Assuming your data structure is an array with multiple objects
+      if (data.length > 0) {
+        // Calculate totalCompletedRequests by summing up totalRequests for "Transaction Completed" status
+        const totalCompletedRequests = data.reduce(
+          (acc, statusObj) => acc + (statusObj._id === "Transaction Completed" ? statusObj.totalRequests : 0),
+          0
+        );
+        setCompletedRequests(totalCompletedRequests);
+      } else {
+        // If there is no data, set completedRequests to 0
+        setCompletedRequests(0);
+      }
+    } catch (error) {
+      console.error("Error fetching completed requests:", error);
     }
-  }
+  };
+
+  fetchCompletedRequests();
+}, [timeRange, specificDate, specificWeek, specificMonth, specificYear, brgy]);
+
+
+  console.log("brgy: ", brgy);
+
+  const handleTimeRangeChange = (newTimeRange) => {
+    setTimeRange(newTimeRange);
+  };
+
+  // Function to handle specific date change
+  const handleSpecificDateChange = (date) => {
+    setSpecificDate(date);
+    // You can perform additional logic here if needed
+  };
 
   return (
     <div className="mx-4 mt-4 ">
@@ -862,169 +830,121 @@ const Reports = () => {
           <div className="flex flex-col w-full lg:w-auto">
             <div
               id="toggle-count"
-              className="flex p-0.5 bg-gray-700 rounded-lg w-full lg:w-auto items-center overflow-y-scroll lg:overflow-y-hidden"
+              className="flex p-0.5 bg-gray-700 rounded-lg w-full lg:w-auto items-center overflow-y-hidden"
             >
-              <label
-                htmlFor="toggle-count-specific"
-                className="relative inline-block py-1.5 md:py-2 px-3 w-full bg-gray-700 lg:w-auto items-center justify-center"
+              <button
+                className={`px-3 py-2 w-full bg-gray-700 text-gray-800 rounded-l-lg font-medium text-sm lg:text-base focus:outline-none  ${
+                  timeRange === "specific"
+                    ? "bg-gray-600 text-white"
+                    : "bg-gray-200 text-white"
+                }`}
+                onClick={() => handleTimeRangeChange("specific")}
               >
-                <span
-                  className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
-                    isSpecificSelected
-                      ? "dark:text-white"
-                      : "dark:text-gray-200"
-                  }`}
-                  onClick={handleSpecificToggle}
-                >
-                  Specific
-                </span>
-                <input
-                  id="toggle-count-today"
-                  name="toggle-count"
-                  type="radio"
-                  className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
-                  checked={isSpecificSelected}
-                  onChange={onChangeDate}
-                />
-              </label>
-              <label
-                htmlFor="toggle-count-today"
-                className="relative inline-block py-2 px-3 w-full lg:w-auto flex items-center justify-center"
+                Specific
+              </button>
+              <button
+                className={`px-3 py-2 w-full bg-gray-700 text-gray-800  font-medium text-sm lg:text-base focus:outline-none  ${
+                  timeRange === "today"
+                    ? "bg-gray-600 text-white"
+                    : "bg-gray-200 text-white"
+                }`}
+                onClick={() => handleTimeRangeChange("today")}
               >
-                <span
-                  className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
-                    isTodaySelected ? "dark:text-white" : "dark:text-gray-200"
-                  }`}
-                  onClick={handleTodayToggle}
-                >
-                  Today
-                </span>
-                <input
-                  id="toggle-count-today"
-                  name="toggle-count"
-                  type="radio"
-                  className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
-                  checked={isTodaySelected}
-                />
-              </label>
-              <label
-                htmlFor="toggle-count-weekly"
-                className="relative inline-block py-2 px-1 lg:px-3 w-full lg:w-auto flex items-center justify-center"
+                Today
+              </button>
+              <button
+                className={`px-3 py-2 w-full bg-gray-700 text-gray-800  font-medium text-sm lg:text-base focus:outline-none  ${
+                  timeRange === "weekly"
+                    ? "bg-gray-600 text-white"
+                    : "bg-gray-200 text-white"
+                }`}
+                onClick={() => handleTimeRangeChange("weekly")}
               >
-                <span
-                  className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
-                    isWeeklySelected ? "dark:text-white" : "dark:text-gray-200"
-                  }`}
-                  onClick={handleWeeklyToggle}
-                >
-                  Weekly
-                </span>
-                <input
-                  id="toggle-count-weekly"
-                  name="toggle-count"
-                  type="radio"
-                  className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
-                  checked={isWeeklySelected}
-                  onChange={onChangeWeek}
-                />
-              </label>
-              <label
-                htmlFor="toggle-count-monthly"
-                className="relative inline-block py-2 px-3 w-full lg:w-auto flex items-center justify-center"
+                Weekly
+              </button>
+              <button
+                className={`px-3 py-2 w-full bg-gray-700 text-gray-800  font-medium text-sm lg:text-base focus:outline-none  ${
+                  timeRange === "monthly"
+                    ? "bg-gray-600 text-white"
+                    : "bg-gray-200 text-white"
+                }`}
+                onClick={() => handleTimeRangeChange("monthly")}
               >
-                <span
-                  className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
-                    isMonthlySelected ? "dark:text-white" : "dark:text-gray-200"
-                  }`}
-                  onClick={handleMonthlyToggle}
-                >
-                  Monthly
-                </span>
-                <input
-                  id="toggle-count-monthly"
-                  name="toggle-count"
-                  type="radio"
-                  className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
-                  onChange={onChangeMonth}
-                />
-              </label>
-              <label
-                htmlFor="toggle-count-annual"
-                className="relative inline-block py-2 px-3 w-full lg:w-auto flex items-center justify-center"
+                Monthly
+              </button>
+              <button
+                className={`px-3 py-2 w-full bg-gray-700 text-gray-800  font-medium text-sm lg:text-base focus:outline-none  ${
+                  timeRange === "annual"
+                    ? "bg-gray-600 text-white"
+                    : "bg-gray-200 text-white"
+                }`}
+                onClick={() => handleTimeRangeChange("annual")}
               >
-                <span
-                  className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
-                    isAnnualSelected ? "dark:text-white" : "dark:text-gray-200"
-                  }`}
-                  onClick={handleAnnualToggle}
-                >
-                  Annual
-                </span>
-                <input
-                  id="toggle-count-annual"
-                  name="toggle-count"
-                  type="radio"
-                  className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
-                  onChange={onChangeYear}
-                  min={1990}
-                  max={new Date().getFullYear() + 10}
-                />
-              </label>
+                Annual
+              </button>
             </div>
 
             {/* DATE INPUTS */}
-            <div className="w-full">
-              {isSpecificSelected && (
-                <div className="flex flex-col">
-                  <select
-                    className="bg-[#f8f8f8] text-gray-600 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
-                    onChange={onSelect}
-                    defaultValue={selected}
-                  >
-                    <option value="date">Specific Date</option>
-                    <option value="week">Week</option>
-                    <option value="month">Month</option>
-                    <option value="year">Year</option>
-                  </select>
-                  {selected === "date" && (
+            <div className="w-full mt-2">
+              {timeRange === "specific" && (
+                <div className="flex flex-col md:flex-row md:justify-center md:items-center bg-gray-200 shadow-sm rounded-lg p-2 ">
+                  <label className="mr-4 text-sm font-medium text-gray-700">
+                    Select Specific Date:
+                  </label>
+                  <input
+                    type="date"
+                    value={specificDate.toISOString().split("T")[0]}
+                    onChange={(e) => setSpecificDate(new Date(e.target.value))}
+                    className="px-2 py-1 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500 text-sm text-gray-700"
+                  />
+                </div>
+              )}
+
+              {timeRange === "weekly" && (
+                <div className="flex flex-col md:flex-row md:justify-center md:items-center bg-gray-200 shadow-sm rounded-lg p-2 ">
+                  <label className="mr-4 text-sm font-medium text-gray-700">
+                    Select Specific Week:
+                  </label>
+                  <div className="relative">
                     <input
-                      className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
-                      type="date"
-                      id="date"
-                      name="date"
-                      onChange={onChangeDate}
-                    />
-                  )}
-                  {selected === "week" && (
-                    <input
-                      className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                       type="week"
-                      id="week"
-                      name="week"
-                      onChange={onChangeWeek}
+                      value={specificWeek}
+                      onChange={(e) => setSpecificWeek(e.target.value)}
+                      className="px-2 py-1 border-2 border-gray-300 w-full rounded-md focus:outline-none focus:border-blue-500 text-sm text-gray-700"
                     />
-                  )}
-                  {selected === "month" && (
-                    <input
-                      className=" text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
-                      type="month"
-                      id="month"
-                      name="month"
-                      onChange={onChangeMonth}
-                    />
-                  )}
-                  {selected === "year" && (
-                    <input
-                      className=" text-black py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
-                      type="number"
-                      id="year"
-                      name="year"
-                      placeholder="YEAR"
-                      onChange={onChangeYear}
-                      min={1990}
-                      max={new Date().getFullYear() + 10}
-                    />
-                  )}
+                  </div>
+                </div>
+              )}
+
+              {timeRange === "monthly" && (
+                <div className="flex flex-col md:flex-row md:justify-center md:items-center bg-gray-200 shadow-sm rounded-lg p-2 ">
+                  <label className="mr-4 text-sm font-medium text-gray-700">
+                    Select Month:
+                  </label>
+                  <input
+                    className="text-gray-400 px-2 py-1 rounded-md font-medium shadow-sm text-sm border border-black"
+                    type="month"
+                    id="month"
+                    name="month"
+                    value={specificMonth} // Directly use specificMonth as value
+                    onChange={(e) => setSpecificMonth(e.target.value)} // Update specificMonth with the input's value directly
+                  />
+                </div>
+              )}
+
+              {timeRange === "annual" && (
+                <div className="flex flex-col md:flex-row md:justify-center md:items-center bg-gray-200 shadow-sm rounded-lg p-2">
+                  <label className="mr-4 text-sm font-medium text-gray-700">
+                    Select Year:
+                  </label>
+                  <input
+                    type="number"
+                    value={specificYear}
+                    min="1950"
+                    max={new Date().getFullYear() + 10}
+                    onChange={(e) => setSpecificYear(parseInt(e.target.value))}
+                    className="px-2 py-1 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500 text-sm text-gray-700"
+                  />
                 </div>
               )}
             </div>
@@ -1041,7 +961,7 @@ const Reports = () => {
                 data-hs-toggle-count='{"target": "#toggle-count", "min": 19, "max": 29}'
                 className="text-white font-semibold text-xl lg:text-3xl "
               >
-                {filteredTotalServices}
+                {totalServicess}
               </p>
             </div>
           </div>
@@ -1057,7 +977,7 @@ const Reports = () => {
                 data-hs-toggle-count='{"target": "#toggle-count", "min": 89, "max": 99}'
                 className="text-gray-800 font-semibold text-xl lg:text-3xl dark:text-gray-200"
               >
-                {filteredCompletedServices}
+                {completedRequests}
               </p>
             </div>
           </div>
@@ -1076,7 +996,7 @@ const Reports = () => {
                 data-hs-toggle-count='{"target": "#toggle-count", "min": 89, "max": 99}'
                 className="text-gray-800 font-semibold text-xl lg:text-3xl dark:text-gray-200"
               >
-                {filteredEstimatedRevenue}
+                {estimatedRevenuess}
               </p>
             </div>
           </div>
@@ -1093,7 +1013,7 @@ const Reports = () => {
                 data-hs-toggle-count='{"target": "#toggle-count", "min": 129, "max": 149}'
                 className="text-gray-800 font-semibold text-xl lg:text-3xl dark:text-gray-200"
               >
-                {totalFees}
+                {totalFeess}
               </p>
             </div>
           </div>
@@ -1148,7 +1068,7 @@ const Reports = () => {
 
           <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
             <h1 className="mt-5 ml-5 font-medium text-black">
-              POPULATION GROWTH (FOR THE PAST 6 MONTHS)
+              REGISTERED USERS (FOR THE PAST 6 MONTHS)
             </h1>
             <div className="flex rounded-xl">
               <Chart

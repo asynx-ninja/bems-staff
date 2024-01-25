@@ -450,7 +450,7 @@ const Inquiries = () => {
           </div>
         </div>
 
-        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_320px)] xxxl:h-[calc(100vh_-_340px)]">
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_320px)] xl:h-[calc(100vh_-_350px)] xxxl:h-[calc(100vh_-_340px)]">
           <table className="w-full relative table-auto">
             <thead className="bg-[#21556d] sticky top-0">
               <tr className="">

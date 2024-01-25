@@ -534,7 +534,7 @@ const Requests = () => {
               </div>
             </div>
 
-            <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12">
+            <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12 lg:ml-2 xl:ml-0">
               <div className="flex flex-row w-full md:mr-2">
                 <button className=" bg-[#21556d] p-3 rounded-l-md">
                   <div className="w-full overflow-hidden">
@@ -664,31 +664,31 @@ const Requests = () => {
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-3 xxl:w-3/12">
+                    <td className="px-2 xl:px-6 py-3 xxl:w-3/12">
                       {item.status === "Transaction Completed" && (
                         <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
                             TRANSACTION COMPLETED
                           </span>
                         </div>
                       )}
                       {item.status === "Rejected" && (
                         <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
                             REJECTED
                           </span>
                         </div>
                       )}
                       {item.status === "Pending" && (
                         <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
                             PENDING
                           </span>
                         </div>
                       )}
                       {item.status === "Paid" && (
                         <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
                             PAID
                           </span>
                         </div>
@@ -696,7 +696,7 @@ const Requests = () => {
 
                       {item.status === "Processing" && (
                         <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
                             PROCESSING
                           </span>
                         </div>
@@ -704,13 +704,13 @@ const Requests = () => {
 
                       {item.status === "Cancelled" && (
                         <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
                             CANCELLED
                           </span>
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="px-2 xl:px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">
                         <div className="hs-tooltip inline-block">
                           <button

@@ -410,21 +410,21 @@ const ArchivedEvents = () => {
                         />
                       </div>
                     </td>
-                    <td className="px-6 py-3 w-4/12">
-                      <div className="flex justify-center items-center">
-                        <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                          {item.title}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-3 w-4/12">
-                      <div className="flex justify-center items-center">
-                        <span className="text-xs sm:text-sm text-black  line-clamp-2 text-left">
-                          {item.details}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-2 py-3 w-2/12">
+                    <td className="px-1 xl:px-3 py-3 w-4/12">
+                    <div className="flex justify-center items-center">
+                      <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
+                        {item.title}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-2 xl:px-6 py-3 w-4/12">
+                    <div className="flex justify-center items-center">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2 text-left">
+                        {item.details}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-2 py-3 w-2/12">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {DateFormat(item.createdAt) || ""}
@@ -438,13 +438,13 @@ const ArchivedEvents = () => {
                       </span>
                     </div>
                   </td>
-                    <td className="px-6 py-3 ">
-                      <div className="flex justify-center items-center">
-                        <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {item.attendees.length}
-                        </span>
-                      </div>
-                    </td>
+                  <td className="px-6 py-3">
+                    <div className="flex justify-center items-center">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {item.attendees.length}
+                      </span>
+                    </div>
+                  </td>
                     <td className="px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">
                         <div className="hs-tooltip inline-block w-full">
