@@ -388,7 +388,7 @@ const PrintPDF = ({ detail }) => {
       {/* BODY HEAD */}
       <View style={styles.bodyHead.column}>
         <Text style={styles.bodyHead.text}>
-          APPLICATION ID: {detail.req_id}
+          APPLICATION ID: {detail.application_id}
         </Text>
         <Text style={styles.bodyHead.text}>
           USER ID: {detail.form && detail.form[0].user_id.value}
