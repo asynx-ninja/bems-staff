@@ -87,12 +87,12 @@ const Reports = () => {
     };
 
     fetchData();
-    
-    const intervalId = setInterval(() => {
-      fetchData();
-    }, 10000);
 
-    return () => clearInterval(intervalId);
+    // const intervalId = setInterval(() => {
+    //   fetchData();
+    // }, 10000);
+
+    // return () => clearInterval(intervalId);
   }, [brgy]);
 
   useEffect(() => {
@@ -113,13 +113,13 @@ const Reports = () => {
         if (data) {
           const { residents } = data;
           const registeredCount = residents.filter(
-            (resident) => resident.status === 'Registered'
+            (resident) => resident.status === "Registered"
           ).length;
           const pendingCount = residents.filter(
-            (resident) => resident.status === 'Pending'
+            (resident) => resident.status === "Pending"
           ).length;
           const deniedCount = residents.filter(
-            (resident) => resident.status === 'Denied'
+            (resident) => resident.status === "Denied"
           ).length;
 
           setRegisteredCount(registeredCount);
@@ -127,21 +127,21 @@ const Reports = () => {
           setDeniedCount(deniedCount);
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 
     // Initial fetch
     getStatusCounts();
 
-    // Fetch data every 10 seconds
-    const intervalId = setInterval(() => {
-      getStatusCounts();
-    }, 10000);
+    // // Fetch data every 10 seconds
+    // const intervalId = setInterval(() => {
+    //   getStatusCounts();
+    // }, 10000);
 
-    // Clear the interval when the component is unmounted or when brgy changes
-    return () => clearInterval(intervalId);
-  }, [brgy]);// Dependency on brgy to update counts when barangay changes
+    // // Clear the interval when the component is unmounted or when brgy changes
+    // return () => clearInterval(intervalId);
+  }, [brgy]); // Dependency on brgy to update counts when barangay changes
 
   const chartDataResidentStatus = {
     series: [registeredCount, pendingCount, deniedCount],
@@ -236,54 +236,119 @@ const Reports = () => {
 
         const data = response.data;
 
-        console.log('data for total status requests: ', data);
+        console.log("data for total status requests: ", data);
 
         // Assuming the API response has the structure similar to statusPercentages
         setStatusPercentages(data);
       } catch (error) {
-        console.error('Error fetching total status requests:', error);
+        console.error("Error fetching total status requests:", error);
       }
     };
 
     // Initial fetch
     fetchTotalStatusRequests();
 
-    // Fetch data every 10 seconds
-    const intervalId = setInterval(() => {
-      fetchTotalStatusRequests();
-    }, 10000);
+    // // Fetch data every 10 seconds
+    // const intervalId = setInterval(() => {
+    //   fetchTotalStatusRequests();
+    // }, 10000);
 
-    // Clear the interval when the component is unmounted or when brgy changes
-    return () => clearInterval(intervalId);
+    // // Clear the interval when the component is unmounted or when brgy changes
+    // return () => clearInterval(intervalId);
   }, [brgy]);
 
-const chartDataStatusPercentage = {
-  series: statusPercentages.map((percentage) => percentage.totalRequests),
-  options: {
-    colors: statusPercentages.map((percentage) => {
-      switch (percentage._id) {
-        case "Transaction Completed":
-          return "#007069";
-        case "Rejected":
-          return "#99364D";
-        case "Pending":
-          return "#d99c3f";
-        case "Paid":
-          return "#5B21B6";
-        case "Processing":
-          return "#1E40AF";
-        case "Cancelled":
-          return "#9e9e9e";
-        default:
-          return "#000000"; // Default color, modify as needed
-      }
-    }),
-    chart: {
-      background: "transparent",
+  const chartDataStatusPercentage = {
+    series: statusPercentages.map((percentage) => percentage.totalRequests),
+    options: {
+      colors: statusPercentages.map((percentage) => {
+        switch (percentage._id) {
+          case "Transaction Completed":
+            return "#007069";
+          case "Rejected":
+            return "#99364D";
+          case "Pending":
+            return "#d99c3f";
+          case "Paid":
+            return "#5B21B6";
+          case "Processing":
+            return "#1E40AF";
+          case "Cancelled":
+            return "#9e9e9e";
+          default:
+            return "#000000"; // Default color, modify as needed
+        }
+      }),
+      chart: {
+        background: "transparent",
+      },
+      labels: statusPercentages.map((percentage) => percentage._id),
     },
-    labels: statusPercentages.map((percentage) => percentage._id),
-  },
-};
+  };
+
+  //Inquiries Percentage:
+  const [statusPercentagesInquiries, setStatusPercentagesInquiries] = useState(
+    []
+  );
+
+  const chartDataInquiriesStatusPercentage = {
+    series: statusPercentagesInquiries.map(
+      (percentage) => percentage.totalRequests
+    ),
+    options: {
+      colors: statusPercentagesInquiries.map((percentage) => {
+        switch (percentage._id) {
+          case "Completed":
+            return "#007069";
+          case "Pending":
+            return "#99364D";
+          case "In Progress":
+            return "#d99c3f";
+          default:
+            return "#000000"; // Default color, modify as needed
+        }
+      }),
+      chart: {
+        background: "transparent",
+      },
+      labels: statusPercentagesInquiries.map((percentage) => percentage._id),
+    },
+  };
+
+  useEffect(() => {
+    const fetchTotalStatusInquiries = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/inquiries/all_status_inquiries`,
+          {
+            params: {
+              brgy: brgy,
+            },
+          }
+        );
+
+        const data = response.data;
+
+        console.log("data for total status inquiries: ", data);
+
+        // Assuming the API response has the structure similar to serviceSummary
+        setStatusPercentagesInquiries(data);
+      } catch (error) {
+        console.error("Error fetching total status inquiries:", error);
+      }
+    };
+
+    // Initial fetch
+    fetchTotalStatusInquiries();
+
+    // // // Fetch data every 10 seconds
+    // const intervalId = setInterval(() => {
+    //   fetchTotalStatusInquiries();
+    // }, 10000);
+
+    // // Clear the interval when the component is unmounted or when brgy changes
+    // return () => clearInterval(intervalId);
+  }, [brgy]);
+
   const getPopulationGrowthData = () => {
     const currentDate = new Date();
     const sixMonthsAgo = new Date();
@@ -673,6 +738,45 @@ const chartDataStatusPercentage = {
 
     fetchFeeSummary();
   }, [timeRange, specificDate, specificWeek, specificMonth, specificYear]);
+
+  const [pastRevenues, setPastRevenues] = useState(0);
+
+  useEffect(() => {
+    const fetchFeeSummary = async () => {
+      try {
+        const params = { timeRange: 'monthly' }; // Assuming you want monthly data
+
+        // Add other time range conditions here if needed
+
+        if (brgy) {
+          params.brgy = brgy; // Add your barangay value here
+        }
+
+        // Make the API request using the GetRevenueBrgy6Months function
+        const response = await axios.get(
+          `${API_LINK}/requests/past_revenue`,
+          {
+            params,
+          }
+        );
+
+        const data = response.data;
+
+        // Assuming your data structure is an array with a single object
+        if (data.length > 0) {
+          const { totalFee } = data[0]; // Assuming the totalFee property is present
+          setPastRevenues(totalFee);
+        } else {
+          // If there is no data, set pastRevenues to 0
+          setPastRevenues(0);
+        }
+      } catch (error) {
+        console.error('Error fetching 6-month revenue summary:', error);
+      }
+    };
+
+    fetchFeeSummary();
+  }, [brgy]); 
 
   const [totalServicess, setTotalServicess] = useState(0);
   const [chartDataOverallAvailed, setChartDataOverallAvailed] = useState({
@@ -1131,7 +1235,7 @@ const chartDataStatusPercentage = {
 
           <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
             <h1 className="mt-5 ml-5 font-medium text-black">
-              REGISTERED USERS (FOR THE PAST 6 MONTHS)
+              ACTIVE AND ARCHIVED RESIDENTS
             </h1>
             <div className="flex rounded-xl">
               <Chart
@@ -1153,7 +1257,7 @@ const chartDataStatusPercentage = {
             <div className="flex justify-center items-center rounded-xl">
               <Chart
                 type="pie"
-                className="flex rounded-xl justify-center w-[500px] lg:w-[300px] xl:w-[400px] xxl:w-[600px] my-10"
+                className="flex rounded-xl justify-center w-[500px] lg:w-[300px] xl:w-[400px] xxl:w-[620px] my-10"
                 series={chartDataStatusPercentage.series}
                 options={chartDataStatusPercentage.options}
               />
@@ -1161,6 +1265,20 @@ const chartDataStatusPercentage = {
           </div>
 
           <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
+              INQUIRIES PERCENTAGE
+            </h1>
+            <div className="flex justify-center items-center rounded-xl">
+              <Chart
+                type="pie"
+                className="flex rounded-xl justify-center w-[500px] lg:w-[300px] xl:w-[400px] xxl:w-[550px] my-10"
+                series={chartDataInquiriesStatusPercentage.series}
+                options={chartDataInquiriesStatusPercentage.options}
+              />
+            </div>
+          </div>
+
+          {/* <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
             <h1 className="mt-5 ml-5 font-medium text-black">
               SERVICE REQUEST COMPLETION RATE (FOR THE PAST 6 MONTHS)
             </h1>
@@ -1172,7 +1290,7 @@ const chartDataStatusPercentage = {
                 options={chartDataCompletionRate.options}
               />
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* CHARTS 4 */}
