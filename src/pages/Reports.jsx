@@ -896,7 +896,7 @@ const chartDataStatusPercentage = {
               className="flex p-0.5 bg-gray-700 rounded-lg w-full lg:w-auto items-center overflow-y-hidden"
             >
               <button
-                className={`px-3 py-2 w-full bg-gray-700 text-gray-800 rounded-l-lg font-medium text-sm lg:text-base focus:outline-none  ${
+                className={`px-3 py-2 w-full bg-gray-700 text-gray-800 rounded-l-lg font-medium text-sm lg:text-base focus:bg-gray-600 focus:outline-none  ${
                   timeRange === "specific"
                     ? "bg-gray-600 text-white"
                     : "bg-gray-200 text-white"
@@ -906,7 +906,7 @@ const chartDataStatusPercentage = {
                 Specific
               </button>
               <button
-                className={`px-3 py-2 w-full bg-gray-700 text-gray-800  font-medium text-sm lg:text-base focus:outline-none  ${
+                className={`px-3 py-2 w-full bg-gray-700 text-gray-800  font-medium text-sm lg:text-base focus:bg-gray-600 focus:outline-none  ${
                   timeRange === "today"
                     ? "bg-gray-600 text-white"
                     : "bg-gray-200 text-white"
@@ -916,7 +916,7 @@ const chartDataStatusPercentage = {
                 Today
               </button>
               <button
-                className={`px-3 py-2 w-full bg-gray-700 text-gray-800  font-medium text-sm lg:text-base focus:outline-none  ${
+                className={`px-3 py-2 w-full bg-gray-700 text-gray-800  font-medium text-sm lg:text-base focus:bg-gray-600 focus:outline-none  ${
                   timeRange === "weekly"
                     ? "bg-gray-600 text-white"
                     : "bg-gray-200 text-white"
@@ -926,7 +926,7 @@ const chartDataStatusPercentage = {
                 Weekly
               </button>
               <button
-                className={`px-3 py-2 w-full bg-gray-700 text-gray-800  font-medium text-sm lg:text-base focus:outline-none  ${
+                className={`px-3 py-2 w-full bg-gray-700 text-gray-800  font-medium text-sm lg:text-base focus:bg-gray-600 focus:outline-none  ${
                   timeRange === "monthly"
                     ? "bg-gray-600 text-white"
                     : "bg-gray-200 text-white"
@@ -936,7 +936,7 @@ const chartDataStatusPercentage = {
                 Monthly
               </button>
               <button
-                className={`px-3 py-2 w-full bg-gray-700 text-gray-800  font-medium text-sm lg:text-base focus:outline-none  ${
+                className={`px-3 py-2 w-full bg-gray-700 text-gray-800  font-medium text-sm lg:text-base focus:bg-gray-600 focus:outline-none  ${
                   timeRange === "annual"
                     ? "bg-gray-600 text-white"
                     : "bg-gray-200 text-white"
