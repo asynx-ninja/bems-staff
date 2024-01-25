@@ -86,66 +86,41 @@ const Reports = () => {
       }
     };
 
-    // fetchData();
+    fetchData();
+    
     const intervalId = setInterval(() => {
       fetchData();
-    }, 3000);
+    }, 10000);
 
     return () => clearInterval(intervalId);
   }, [brgy]);
-
-  // Calculate total availed for each service
-  const allServices = [...services, ...archivedServices];
-  const totalAvailed = allServices.map((service) => {
-    const count = requests.filter(
-      (request) => request.service_name === service.name
-    ).length;
-    return {
-      service_name: service.name,
-      count,
-    };
-  });
-
-  const chartDataOverallAvailed = {
-    series: [
-      {
-        name: "Total Availed",
-        data: totalAvailed.map((item) => item.count),
-      },
-    ],
-    options: {
-      colors: ["#4b7c80"],
-      chart: {
-        background: "transparent",
-      },
-      xaxis: {
-        categories: totalAvailed.map((item) => item.service_name),
-        labels: {
-          style: {
-            fontSize: "9px",
-          },
-        },
-      },
-    },
-  };
 
   useEffect(() => {
     // Fetch counts for each status
     const getStatusCounts = async () => {
       try {
-        const response = await axios.get(`${API_LINK}/users/all_brgy_resident`, {
-          params: {
-            brgy: brgy, // Replace with the specific barangay you want
-          },
-        });
+        const response = await axios.get(
+          `${API_LINK}/users/all_brgy_resident`,
+          {
+            params: {
+              brgy: brgy,
+            },
+          }
+        );
 
-        const data = response.data[0]; // Assuming there is only one item in the response array
+        const data = response.data[0];
 
         if (data) {
           const { residents } = data;
-          const registeredCount = residents.filter((resident) => resident.status === 'Registered').length;
-          const pendingCount = residents.filter((resident) => resident.status === 'Pending').length;
-          const deniedCount = residents.filter((resident) => resident.status === 'Denied').length;
+          const registeredCount = residents.filter(
+            (resident) => resident.status === 'Registered'
+          ).length;
+          const pendingCount = residents.filter(
+            (resident) => resident.status === 'Pending'
+          ).length;
+          const deniedCount = residents.filter(
+            (resident) => resident.status === 'Denied'
+          ).length;
 
           setRegisteredCount(registeredCount);
           setPendingCount(pendingCount);
@@ -156,8 +131,17 @@ const Reports = () => {
       }
     };
 
+    // Initial fetch
     getStatusCounts();
-  }, [brgy]); // Dependency on brgy to update counts when barangay changes
+
+    // Fetch data every 10 seconds
+    const intervalId = setInterval(() => {
+      getStatusCounts();
+    }, 10000);
+
+    // Clear the interval when the component is unmounted or when brgy changes
+    return () => clearInterval(intervalId);
+  }, [brgy]);// Dependency on brgy to update counts when barangay changes
 
   const chartDataResidentStatus = {
     series: [registeredCount, pendingCount, deniedCount],
@@ -226,68 +210,80 @@ const Reports = () => {
           },
         },
       },
-    },
-  };
-
-  const getStatusPercentages = () => {
-    const statusCounts = {};
-
-    // Initialize counts
-    [
-      "Transaction Completed",
-      "Rejected",
-      "Pending",
-      "Paid",
-      "Processing",
-      "Cancelled",
-    ].forEach((status) => {
-      statusCounts[status] = 0;
-    });
-
-    // Count occurrences of each status
-    requests.forEach((request) => {
-      statusCounts[request.status]++;
-    });
-
-    // Calculate percentages
-    const totalCount = requests.length;
-    const percentages = Object.fromEntries(
-      Object.entries(statusCounts).map(([status, count]) => [
-        status,
-        (count / totalCount) * 100,
-      ])
-    );
-
-    return percentages;
-  };
-
-  const statusPercentages = getStatusPercentages();
-
-  const chartDataStatusPercentage = {
-    series: Object.values(statusPercentages),
-    options: {
-      colors: [
-        "#4caf50",
-        "#ff9800",
-        "#ac4646",
-        "#2196f3",
-        "#ffeb3b",
-        "#9e9e9e",
-      ], // Add more colors if needed
-      chart: {
-        background: "transparent",
+      yaxis: {
+        labels: {
+          formatter: function (value) {
+            return "PHP " + value;
+          },
+        },
       },
-      labels: [
-        "Transaction Completed",
-        "Rejected",
-        "Pending",
-        "Paid",
-        "Processing",
-        "Cancelled",
-      ],
     },
   };
 
+  const [statusPercentages, setStatusPercentages] = useState([]);
+
+  useEffect(() => {
+    const fetchTotalStatusRequests = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/requests/all_status_requests`,
+          {
+            params: {
+              brgy: brgy,
+            },
+          }
+        );
+
+        const data = response.data;
+
+        console.log('data for total status requests: ', data);
+
+        // Assuming the API response has the structure similar to statusPercentages
+        setStatusPercentages(data);
+      } catch (error) {
+        console.error('Error fetching total status requests:', error);
+      }
+    };
+
+    // Initial fetch
+    fetchTotalStatusRequests();
+
+    // Fetch data every 10 seconds
+    const intervalId = setInterval(() => {
+      fetchTotalStatusRequests();
+    }, 10000);
+
+    // Clear the interval when the component is unmounted or when brgy changes
+    return () => clearInterval(intervalId);
+  }, [brgy]);
+
+const chartDataStatusPercentage = {
+  series: statusPercentages.map((percentage) => percentage.totalRequests),
+  options: {
+    colors: statusPercentages.map((percentage) => {
+      switch (percentage._id) {
+        case "Transaction Completed":
+          return "#007069";
+        case "Rejected":
+          return "#99364D";
+        case "Pending":
+          return "#d99c3f";
+        case "Paid":
+          return "#5B21B6";
+        case "Processing":
+          return "#1E40AF";
+        case "Cancelled":
+          return "#9e9e9e";
+        default:
+          return "#000000"; // Default color, modify as needed
+      }
+    }),
+    chart: {
+      background: "transparent",
+    },
+    labels: statusPercentages.map((percentage) => percentage._id),
+  },
+};
   const getPopulationGrowthData = () => {
     const currentDate = new Date();
     const sixMonthsAgo = new Date();
@@ -678,8 +674,31 @@ const Reports = () => {
     fetchFeeSummary();
   }, [timeRange, specificDate, specificWeek, specificMonth, specificYear]);
 
-
   const [totalServicess, setTotalServicess] = useState(0);
+  const [chartDataOverallAvailed, setChartDataOverallAvailed] = useState({
+    series: [
+      {
+        name: "Total Availed",
+        data: [],
+      },
+    ],
+    options: {
+      colors: ["#4b7c80"],
+      chart: {
+        background: "transparent",
+      },
+      xaxis: {
+        categories: [],
+        labels: {
+          style: {
+            fontSize: "9px",
+          },
+        },
+      },
+    },
+  });
+
+  // const [totalServicess, setTotalServicess] = useState(0);
   useEffect(() => {
     const fetchFeeSummary = async () => {
       try {
@@ -724,94 +743,138 @@ const Reports = () => {
 
         const data = response.data;
 
-        console.log("data for total availed: ", data );
+        console.log("data for total availed: ", data);
 
-       // Assuming your data structure is an array with multiple objects
-      if (data.length > 0) {
-        // Calculate totalServices by summing up totalRequests for all statuses
-        const totalServices = data.reduce((acc, statusObj) => acc + statusObj.totalRequests, 0);
-        setTotalServicess(totalServices);
-      } else {
-        // If there is no data, set totalServices to 0
-        setTotalServicess(0);
-      }
-    } catch (error) {
-      console.error("Error fetching fee summary:", error);
-    }
-  };
+        // Assuming your data structure is an array with multiple objects
+        if (data.length > 0) {
+          // Calculate totalServices by summing up totalRequests for all statuses
+          const totalServices = data.reduce(
+            (acc, statusObj) => acc + statusObj.totalRequests,
+            0
+          );
+          setTotalServicess(totalServices);
 
-  fetchFeeSummary();
-}, [timeRange, specificDate, specificWeek, specificMonth, specificYear, brgy]);
+          // Create chart data based on the fetched data
+          const chartData = {
+            series: [
+              {
+                name: "Total Availed",
+                data: data.map((item) => item.totalRequests),
+              },
+            ],
+            options: {
+              colors: ["#4b7c80"],
+              chart: {
+                background: "transparent",
+              },
+              xaxis: {
+                categories: data.map((item) => item._id), // Assuming service_name is in _id field
+                labels: {
+                  style: {
+                    fontSize: "9px",
+                  },
+                },
+              },
+            },
+          };
 
-const [completedRequests, setCompletedRequests] = useState(0);
-useEffect(() => {
-  const fetchCompletedRequests = async () => {
-    try {
-      const params = { timeRange: timeRange };
-
-      if (timeRange === "specific") {
-        // specificDate is already in ISO format (YYYY-MM-DD)
-        params.specificDate = specificDate;
-      }
-
-      if (timeRange === "weekly" && specificWeek) {
-        // Send only the start of the week to the backend
-        const [year, weekNumber] = specificWeek.split("-W");
-        const weekStart = moment()
-          .isoWeekYear(year)
-          .isoWeek(weekNumber)
-          .startOf("isoWeek")
-          .toISOString();
-        params.week = weekStart;
-      }
-
-      if (timeRange === "monthly" && specificMonth) {
-        const [year, month] = specificMonth.split("-");
-        params.year = parseInt(year);
-        params.month = parseInt(month);
-      }
-
-      if (timeRange === "annual") {
-        params.year = specificYear;
-      }
-
-      // Make the API request using the GetRevenue function
-      const response = await axios.get(
-        `${API_LINK}/requests/completed_requests`,
-        {
-          params: {
-            ...params,
-            brgy: brgy, // Add your barangay value here
-          },
+          setChartDataOverallAvailed(chartData);
+        } else {
+          // If there is no data, set totalServices to 0
+          setTotalServicess(0);
         }
-      );
-
-      const data = response.data;
-
-      console.log("data for completed requests: ", data);
-
-      // Assuming your data structure is an array with multiple objects
-      if (data.length > 0) {
-        // Calculate totalCompletedRequests by summing up totalRequests for "Transaction Completed" status
-        const totalCompletedRequests = data.reduce(
-          (acc, statusObj) => acc + (statusObj._id === "Transaction Completed" ? statusObj.totalRequests : 0),
-          0
-        );
-        setCompletedRequests(totalCompletedRequests);
-      } else {
-        // If there is no data, set completedRequests to 0
-        setCompletedRequests(0);
+      } catch (error) {
+        console.error("Error fetching fee summary:", error);
       }
-    } catch (error) {
-      console.error("Error fetching completed requests:", error);
-    }
-  };
+    };
 
-  fetchCompletedRequests();
-}, [timeRange, specificDate, specificWeek, specificMonth, specificYear, brgy]);
+    fetchFeeSummary();
+  }, [
+    timeRange,
+    specificDate,
+    specificWeek,
+    specificMonth,
+    specificYear,
+    brgy,
+  ]);
 
+  const [completedRequests, setCompletedRequests] = useState(0);
+  useEffect(() => {
+    const fetchCompletedRequests = async () => {
+      try {
+        const params = { timeRange: timeRange };
 
-  console.log("brgy: ", brgy);
+        if (timeRange === "specific") {
+          // specificDate is already in ISO format (YYYY-MM-DD)
+          params.specificDate = specificDate;
+        }
+
+        if (timeRange === "weekly" && specificWeek) {
+          // Send only the start of the week to the backend
+          const [year, weekNumber] = specificWeek.split("-W");
+          const weekStart = moment()
+            .isoWeekYear(year)
+            .isoWeek(weekNumber)
+            .startOf("isoWeek")
+            .toISOString();
+          params.week = weekStart;
+        }
+
+        if (timeRange === "monthly" && specificMonth) {
+          const [year, month] = specificMonth.split("-");
+          params.year = parseInt(year);
+          params.month = parseInt(month);
+        }
+
+        if (timeRange === "annual") {
+          params.year = specificYear;
+        }
+
+        // Make the API request using the GetRevenue function
+        const response = await axios.get(
+          `${API_LINK}/requests/completed_requests`,
+          {
+            params: {
+              ...params,
+              brgy: brgy, // Add your barangay value here
+            },
+          }
+        );
+
+        const data = response.data;
+
+        console.log("data for completed requests: ", data);
+
+        // Assuming your data structure is an array with multiple objects
+        if (data.length > 0) {
+          // Calculate totalCompletedRequests by summing up totalRequests for "Transaction Completed" status
+          const totalCompletedRequests = data.reduce(
+            (acc, statusObj) =>
+              acc +
+              (statusObj._id === "Transaction Completed"
+                ? statusObj.totalRequests
+                : 0),
+            0
+          );
+          setCompletedRequests(totalCompletedRequests);
+        } else {
+          // If there is no data, set completedRequests to 0
+          setCompletedRequests(0);
+        }
+      } catch (error) {
+        console.error("Error fetching completed requests:", error);
+      }
+    };
+
+    fetchCompletedRequests();
+  }, [
+    timeRange,
+    specificDate,
+    specificWeek,
+    specificMonth,
+    specificYear,
+    brgy,
+  ]);
 
   const handleTimeRangeChange = (newTimeRange) => {
     setTimeRange(newTimeRange);

@@ -497,7 +497,7 @@ const ArchivedRegistrations = () => {
         </div>
 
         {/* Table */}
-        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_325px)] lg:h-[calc(100vh_-_350px)] xxxl:h-[calc(100vh_-_345px)]">
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_325px)] lg:h-[calc(100vh_-_350px)] xxl:h-[calc(100vh_-_320px)] xxxl:h-[calc(100vh_-_345px)]">
           <table className="relative table-auto w-full">
             <thead className="bg-[#21556d] sticky top-0">
               <tr className="">
@@ -634,7 +634,7 @@ const ArchivedRegistrations = () => {
                 <tr>
                   <td
                     colSpan={tableHeader.length + 1}
-                    className="text-center py-48 lg:py-48 xxl:py-32"
+                    className="text-center py-48 lg:py-48 xl:py-32"
                   >
                     <img
                       src={noData}

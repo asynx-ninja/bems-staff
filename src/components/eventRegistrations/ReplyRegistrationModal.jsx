@@ -332,15 +332,14 @@ function ReplyRegistrationModal({ application, setApplication }) {
                                         hidden={!statusChanger}
                                       >
                                         <option value="Pending">PENDING</option>
-                                        <option value="Paid">PAID</option>
                                         <option value="Processing">
                                           PROCESSING
                                         </option>
                                         <option value="Cancelled">
                                           CANCELLED
                                         </option>
-                                        <option value="Transaction Completed">
-                                          TRANSACTION COMPLETED
+                                        <option value="Application Completed">
+                                          APPLICATION COMPLETED
                                         </option>
                                         <option value="Rejected">
                                           REJECTED
