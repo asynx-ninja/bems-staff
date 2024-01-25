@@ -95,10 +95,13 @@ function ReplyRegistrationModal({ application, setApplication }) {
 
   const handleChange = (e) => {
     e.preventDefault();
-  
+
     const inputValue = e.target.value;
-  
-    if (statusChanger && (!newMessage.message || newMessage.message.trim() === "")) {
+
+    if (
+      statusChanger &&
+      (!newMessage.message || newMessage.message.trim() === "")
+    ) {
       setNewMessage((prev) => ({
         ...prev,
         message: `The status of your event application is ${inputValue}`,
@@ -106,7 +109,8 @@ function ReplyRegistrationModal({ application, setApplication }) {
     } else {
       setNewMessage((prev) => ({
         ...prev,
-        [e.target.name]: e.target.name === "isRepliable" ? e.target.checked : inputValue,
+        [e.target.name]:
+          e.target.name === "isRepliable" ? e.target.checked : inputValue,
       }));
     }
   };
@@ -571,17 +575,23 @@ function ReplyRegistrationModal({ application, setApplication }) {
                                                       if (
                                                         statusChanger &&
                                                         (!newMessage.message ||
-                                                          newMessage.message.trim() === "")
+                                                          newMessage.message.trim() ===
+                                                            "")
                                                       ) {
-                                                        setNewMessage((prev) => ({
-                                                          ...prev,
-                                                          message: `The status of your event application is ${e.target.value}`,
-                                                        }));
+                                                        setNewMessage(
+                                                          (prev) => ({
+                                                            ...prev,
+                                                            message: `The status of your event application is ${e.target.value}`,
+                                                          })
+                                                        );
                                                       }
-                                                      setApplication((prev) => ({
-                                                        ...prev,
-                                                        status: e.target.value,
-                                                      }));
+                                                      setApplication(
+                                                        (prev) => ({
+                                                          ...prev,
+                                                          status:
+                                                            e.target.value,
+                                                        })
+                                                      );
                                                     }}
                                                     className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
                                                     value={application.status}
@@ -590,17 +600,14 @@ function ReplyRegistrationModal({ application, setApplication }) {
                                                     <option value="Pending">
                                                       PENDING
                                                     </option>
-                                                    <option value="Paid">
-                                                      PAID
-                                                    </option>
                                                     <option value="Processing">
                                                       PROCESSING
                                                     </option>
                                                     <option value="Cancelled">
                                                       CANCELLED
                                                     </option>
-                                                    <option value="Transaction Completed">
-                                                      TRANSACTION COMPLETED
+                                                    <option value="Application Completed">
+                                                      APPLICATION COMPLETED
                                                     </option>
                                                     <option value="Rejected">
                                                       REJECTED

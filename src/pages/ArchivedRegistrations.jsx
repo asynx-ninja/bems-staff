@@ -557,15 +557,14 @@ const ArchivedRegistrations = () => {
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-3 xxl:w-3/12">
-                      {item.status === "Transaction Completed" && (
+                    <td className="px-2 xl:px-6 py-3 xxl:w-3/12">
+                      {item.status === "Application Completed" && (
                         <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            TRANSACTION COMPLETED
+                            APPLICATION COMPLETED
                           </span>
                         </div>
                       )}
-
                       {item.status === "Rejected" && (
                         <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
@@ -573,7 +572,6 @@ const ArchivedRegistrations = () => {
                           </span>
                         </div>
                       )}
-
                       {item.status === "Pending" && (
                         <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">

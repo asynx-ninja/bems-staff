@@ -64,20 +64,29 @@ const Reports = () => {
         }
 
         // Fetch archived users
-        const archivedUsersResponse = await axios.get(
-          `${API_LINK}/users/showArchived/?brgy=${brgy}&type=Resident`
-        );
-        if (archivedUsersResponse.status === 200) {
-          setArchivedUsers(archivedUsersResponse.data.result);
-        } else {
-          setArchivedUsers([]);
-        }
-
         const announcementsResponse = await axios.get(
           `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
         );
+
         if (announcementsResponse.status === 200) {
           setAnnouncements(announcementsResponse.data.result);
+
+          // Fetch completed counts for each announcement
+          const announcementsData = await Promise.all(
+            announcementsResponse.data.result.map(async (announcement) => {
+              const completedResponse = await axios.get(
+                `${API_LINK}/application/completed?brgy=${brgy}&event_id=${announcement.event_id}`
+              );
+
+              if (completedResponse.status === 200) {
+                const completedCount = completedResponse.data.completedCount;
+                return { ...announcement, completedCount };
+              }
+            })
+          );
+
+          // Use the updated announcementsData with completed counts
+          setAnnouncements(announcementsData);
         } else {
           setAnnouncements([]);
         }
@@ -88,11 +97,11 @@ const Reports = () => {
 
     fetchData();
 
-    // const intervalId = setInterval(() => {
-    //   fetchData();
-    // }, 10000);
+    const intervalId = setInterval(() => {
+      fetchData();
+    }, 10000);
 
-    // return () => clearInterval(intervalId);
+    return () => clearInterval(intervalId);
   }, [brgy]);
 
   useEffect(() => {
@@ -134,13 +143,13 @@ const Reports = () => {
     // Initial fetch
     getStatusCounts();
 
-    // // Fetch data every 10 seconds
-    // const intervalId = setInterval(() => {
-    //   getStatusCounts();
-    // }, 10000);
+    // Fetch data every 10 seconds
+    const intervalId = setInterval(() => {
+      getStatusCounts();
+    }, 10000);
 
-    // // Clear the interval when the component is unmounted or when brgy changes
-    // return () => clearInterval(intervalId);
+    // Clear the interval when the component is unmounted or when brgy changes
+    return () => clearInterval(intervalId);
   }, [brgy]); // Dependency on brgy to update counts when barangay changes
 
   const chartDataResidentStatus = {
@@ -153,6 +162,71 @@ const Reports = () => {
       labels: ["Registered", "Pending", "Denied"],
     },
   };
+
+  const [activeResidentCount, setActiveResidentCount] = useState(0);
+  const [archivedResidentCount, setArchivedResidentCount] = useState(0);
+
+  useEffect(() => {
+    // Fetch data for both isArchived: "true" and isArchived: "false"
+    const getResidentIsArchivedData = async () => {
+      try {
+        const responseTrue = await axios.get(
+          `${API_LINK}/users/brgy_resident_isArchived`,
+          {
+            params: {
+              brgy: brgy,
+              isArchived: "true",
+            },
+          }
+        );
+
+        const responseFalse = await axios.get(
+          `${API_LINK}/users/brgy_resident_isArchived`,
+          {
+            params: {
+              brgy: brgy,
+              isArchived: "false",
+            },
+          }
+        );
+
+        const dataTrue = responseTrue.data[0];
+        const dataFalse = responseFalse.data[0];
+
+        const activeResidentCount = dataFalse ? dataFalse.residents.length : 0;
+        const archivedResidentCount = dataTrue ? dataTrue.residents.length : 0;
+
+        // Update state variables
+        setActiveResidentCount(activeResidentCount);
+        setArchivedResidentCount(archivedResidentCount);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    // Initial fetch
+    getResidentIsArchivedData();
+
+    // Fetch data every 10 seconds
+    const intervalId = setInterval(() => {
+      getResidentIsArchivedData();
+    }, 10000);
+
+    // Clear the interval when the component is unmounted or when brgy changes
+    return () => clearInterval(intervalId);
+  }, [brgy]);
+
+  const chartDataResidentIsArchived = {
+    series: [activeResidentCount, archivedResidentCount],
+    options: {
+      colors: ["#4caf50", "#ac4646"], // Colors for Active, Archived
+      chart: {
+        background: "transparent",
+      },
+      labels: ["Active Residents", "Archived Residents"],
+    },
+  };
+
 
   const currentDate = new Date();
   const sixMonthsAgo = new Date();
@@ -248,13 +322,13 @@ const Reports = () => {
     // Initial fetch
     fetchTotalStatusRequests();
 
-    // // Fetch data every 10 seconds
-    // const intervalId = setInterval(() => {
-    //   fetchTotalStatusRequests();
-    // }, 10000);
+    // Fetch data every 10 seconds
+    const intervalId = setInterval(() => {
+      fetchTotalStatusRequests();
+    }, 10000);
 
-    // // Clear the interval when the component is unmounted or when brgy changes
-    // return () => clearInterval(intervalId);
+    // Clear the interval when the component is unmounted or when brgy changes
+    return () => clearInterval(intervalId);
   }, [brgy]);
 
   const chartDataStatusPercentage = {
@@ -340,13 +414,13 @@ const Reports = () => {
     // Initial fetch
     fetchTotalStatusInquiries();
 
-    // // // Fetch data every 10 seconds
-    // const intervalId = setInterval(() => {
-    //   fetchTotalStatusInquiries();
-    // }, 10000);
+    // // Fetch data every 10 seconds
+    const intervalId = setInterval(() => {
+      fetchTotalStatusInquiries();
+    }, 10000);
 
-    // // Clear the interval when the component is unmounted or when brgy changes
-    // return () => clearInterval(intervalId);
+    // Clear the interval when the component is unmounted or when brgy changes
+    return () => clearInterval(intervalId);
   }, [brgy]);
 
   const getPopulationGrowthData = () => {
@@ -518,10 +592,10 @@ const Reports = () => {
     },
   };
 
-  // Function to get the total attendees for each announcement
+  // Use completedCount instead of attendees.length
   const totalAttendees = announcements.map((announcement) => ({
     announcement_title: announcement.title,
-    attendees: announcement.attendees.length,
+    attendees: announcement.completedCount || 0, // Use completedCount, default to 0 if undefined
   }));
 
   // Sort the total attendees array in descending order
@@ -738,45 +812,6 @@ const Reports = () => {
 
     fetchFeeSummary();
   }, [timeRange, specificDate, specificWeek, specificMonth, specificYear]);
-
-  const [pastRevenues, setPastRevenues] = useState(0);
-
-  useEffect(() => {
-    const fetchFeeSummary = async () => {
-      try {
-        const params = { timeRange: 'monthly' }; // Assuming you want monthly data
-
-        // Add other time range conditions here if needed
-
-        if (brgy) {
-          params.brgy = brgy; // Add your barangay value here
-        }
-
-        // Make the API request using the GetRevenueBrgy6Months function
-        const response = await axios.get(
-          `${API_LINK}/requests/past_revenue`,
-          {
-            params,
-          }
-        );
-
-        const data = response.data;
-
-        // Assuming your data structure is an array with a single object
-        if (data.length > 0) {
-          const { totalFee } = data[0]; // Assuming the totalFee property is present
-          setPastRevenues(totalFee);
-        } else {
-          // If there is no data, set pastRevenues to 0
-          setPastRevenues(0);
-        }
-      } catch (error) {
-        console.error('Error fetching 6-month revenue summary:', error);
-      }
-    };
-
-    fetchFeeSummary();
-  }, [brgy]); 
 
   const [totalServicess, setTotalServicess] = useState(0);
   const [chartDataOverallAvailed, setChartDataOverallAvailed] = useState({
@@ -1237,12 +1272,12 @@ const Reports = () => {
             <h1 className="mt-5 ml-5 font-medium text-black">
               ACTIVE AND ARCHIVED RESIDENTS
             </h1>
-            <div className="flex rounded-xl">
+            <div className="flex rounded-xl justify-center items-center">
               <Chart
-                type="line"
-                className="flex w-full rounded-xl"
-                series={chartDataPopulationGrowth.series}
-                options={chartDataPopulationGrowth.options}
+                type="pie"
+                className="flex rounded-xl items-center justify-center w-[400px] lg:w-[300px] xl:w-[400px] xxl:w-[540px] my-10"
+                series={chartDataResidentIsArchived.series}
+                options={chartDataResidentIsArchived.options}
               />
             </div>
           </div>
