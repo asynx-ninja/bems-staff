@@ -396,12 +396,12 @@ const Residents = () => {
                 <tr>
                   <td
                     colSpan={tableHeader.length + 1}
-                    className="text-center py-48 lg:py-48 xl:py-32"
+                    className="text-center sm:h-[16.2rem] xl:py-1 lg:h-[16rem] xxl:py-32 xl:h-[15rem]"
                   >
                     <img
                       src={noData}
                       alt=""
-                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                      className=" w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-[12rem] xl:w-80 mx-auto"
                     />
                     <strong className="text-[#535353]">NO DATA FOUND</strong>
                   </td>
