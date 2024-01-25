@@ -441,7 +441,7 @@ const ArchivedEvents = () => {
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.attendees.length}
+                      {item.completedCount}
                       </span>
                     </div>
                   </td>

@@ -227,72 +227,72 @@ const Reports = () => {
     },
   };
 
-
   const currentDate = new Date();
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(currentDate.getMonth() - 6);
 
-  const monthlyRevenueData = Array.from({ length: 6 }, (_, index) => {
-    const startOfMonth = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth() - index,
-      1
-    );
-    const endOfMonth = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth() - index + 1,
-      0
-    );
+  // const monthlyRevenueData = Array.from({ length: 6 }, (_, index) => {
+  //   const startOfMonth = new Date(
+  //     currentDate.getFullYear(),
+  //     currentDate.getMonth() - index,
+  //     1
+  //   );
+  //   const endOfMonth = new Date(
+  //     currentDate.getFullYear(),
+  //     currentDate.getMonth() - index + 1,
+  //     0
+  //   );
 
-    const revenue = requests
-      .filter(
-        (request) =>
-          request.status === "Transaction Completed" &&
-          new Date(request.createdAt) >= startOfMonth &&
-          new Date(request.createdAt) <= endOfMonth
-      )
-      .reduce((total, request) => total + request.fee, 0);
+  //   const revenue = requests
+  //     .filter(
+  //       (request) =>
+  //         request.status === "Transaction Completed" &&
+  //         new Date(request.createdAt) >= startOfMonth &&
+  //         new Date(request.createdAt) <= endOfMonth
+  //     )
+  //     .reduce((total, request) => total + request.fee, 0);
 
-    return revenue;
-  }).reverse();
+  //   return revenue;
+  // }).reverse();
 
-  const chartDataRevenue = {
-    series: [
-      {
-        name: "Revenue",
-        data: monthlyRevenueData,
-      },
-    ],
-    options: {
-      colors: ["#4b7c80"],
-      chart: {
-        background: "transparent",
-      },
-      xaxis: {
-        categories: Array.from({ length: 6 }, (_, index) =>
-          new Date(
-            currentDate.getFullYear(),
-            currentDate.getMonth() - index,
-            1
-          ).toLocaleString("en-us", {
-            month: "short",
-          })
-        ).reverse(),
-        labels: {
-          style: {
-            fontSize: "9px",
-          },
-        },
-      },
-      yaxis: {
-        labels: {
-          formatter: function (value) {
-            return "PHP " + value;
-          },
-        },
-      },
-    },
-  };
+  // const chartDataRevenue = {
+  //   series: [
+  //     {
+  //       name: "Revenue",
+  //       data: monthlyRevenueData,
+  //     },
+  //   ],
+  //   options: {
+  //     colors: ["#4b7c80"],
+  //     chart: {
+  //       background: "transparent",
+  //     },
+  //     xaxis: {
+  //       categories: Array.from({ length: 6 }, (_, index) =>
+  //         new Date(
+  //           currentDate.getFullYear(),
+  //           currentDate.getMonth() - index,
+  //           1
+  //         ).toLocaleString("en-us", {
+  //           month: "short",
+  //         })
+  //       ).reverse(),
+  //       labels: {
+  //         style: {
+  //           fontSize: "9px",
+  //         },
+  //       },
+  //     },
+  //     yaxis: {
+  //       labels: {
+  //         formatter: function (value) {
+  //           return "PHP " + value;
+  //         },
+  //       },
+  //     },
+  //   },
+  // };
+
 
   const [statusPercentages, setStatusPercentages] = useState([]);
 
@@ -692,6 +692,140 @@ const Reports = () => {
     )}`
   );
 
+  const [totalMonthlyRevenue, setTotalMonthlyRevenue] = useState(0);
+
+  useEffect(() => {
+    const fetchFeeSummary = async () => {
+      try {
+        const params = { timeRange: timeRange };
+
+        if (timeRange === "specific") {
+          // specificDate is already in ISO format (YYYY-MM-DD)
+          params.specificDate = specificDate;
+        }
+
+        if (timeRange === "weekly" && specificWeek) {
+          // Send only the start of the week to the backend
+          const [year, weekNumber] = specificWeek.split("-W");
+          const weekStart = moment()
+            .isoWeekYear(year)
+            .isoWeek(weekNumber)
+            .startOf("isoWeek")
+            .toISOString();
+          params.week = weekStart;
+        }
+
+        if (timeRange === "monthly" && specificMonth) {
+          const [year, month] = specificMonth.split("-");
+          params.year = parseInt(year);
+          params.month = parseInt(month);
+        }
+
+        if (timeRange === "annual") {
+          params.year = specificYear;
+        }
+
+        // Make the API request using the GetMonthlyRevenueBrgy function
+        const response = await axios.get(
+          `${API_LINK}/requests/get_monthly_revenue_brgy`, // Update the endpoint
+          {
+            params: {
+              ...params,
+              brgy: brgy, // Add your barangay value here
+            },
+          }
+        );
+
+        const data = response.data;
+
+        // Assuming your data structure is an array with a single object
+        if (data.length > 0) {
+          const { totalFee } = data[0]; // Assuming the totalFee property is present
+          setTotalMonthlyRevenue(totalFee);
+        } else {
+          // If there is no data, set totalMonthlyRevenue to 0
+          setTotalMonthlyRevenue(0);
+        }
+      } catch (error) {
+        console.error("Error fetching monthly fee summary:", error);
+      }
+    };
+
+    fetchFeeSummary();
+  }, [
+    timeRange,
+    specificDate,
+    specificWeek,
+    specificMonth,
+    specificYear,
+    brgy,
+  ]); // Add brgy to the dependency array
+
+  const monthlyRevenueData = Array.from({ length: 6 }, (_, index) => {
+  const startOfMonth = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() - index,
+    1
+  );
+  const endOfMonth = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() - index + 1,
+    0
+  );
+
+  const revenue =
+    index === 0 ? totalMonthlyRevenue : // Use totalMonthlyRevenue for the current month
+    requests
+      .filter(
+        (request) =>
+          request.status === "Transaction Completed" &&
+          new Date(request.updatedAt) >= startOfMonth &&
+          new Date(request.updatedAt) <= endOfMonth
+      )
+      .reduce((total, request) => total + request.fee, 0);
+
+  return revenue;
+}).reverse();
+
+  const chartDataRevenue = {
+    series: [
+      {
+        name: "Revenue",
+        data: monthlyRevenueData,
+      },
+    ],
+    options: {
+      colors: ["#4b7c80"],
+      chart: {
+        background: "transparent",
+      },
+      xaxis: {
+        categories: Array.from({ length: 6 }, (_, index) =>
+          new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth() - index,
+            1
+          ).toLocaleString("en-us", {
+            month: "short",
+          })
+        ).reverse(),
+        labels: {
+          style: {
+            fontSize: "9px",
+          },
+        },
+      },
+      yaxis: {
+        labels: {
+          formatter: function (value) {
+            return "PHP " + value;
+          },
+        },
+      },
+    },
+  };
+
+
   const [estimatedRevenuess, setEstimatedRevenuess] = useState(0);
 
   useEffect(() => {
@@ -751,7 +885,7 @@ const Reports = () => {
     fetchFeeSummary();
   }, [timeRange, specificDate, specificWeek, specificMonth, specificYear]);
 
-  const [totalFeess, setTotalFeess] = useState(0);
+  const [totalFees, setTotalFees] = useState(0);
 
   useEffect(() => {
     const fetchFeeSummary = async () => {
@@ -800,10 +934,10 @@ const Reports = () => {
         // Assuming your data structure is an array with a single object
         if (data.length > 0) {
           const { totalFee } = data[0]; // Assuming the totalFee property is present
-          setTotalFeess(totalFee);
+          setTotalFees(totalFee);
         } else {
-          // If there is no data, set totalFeess to 0
-          setTotalFeess(0);
+          // If there is no data, set totalFees to 0
+          setTotalFees(0);
         }
       } catch (error) {
         console.error("Error fetching fee summary:", error);
@@ -1215,7 +1349,7 @@ const Reports = () => {
                 data-hs-toggle-count='{"target": "#toggle-count", "min": 129, "max": 149}'
                 className="text-gray-800 font-semibold text-xl lg:text-3xl dark:text-gray-200"
               >
-                {totalFeess}
+                {totalFees}
               </p>
             </div>
           </div>
@@ -1344,7 +1478,7 @@ const Reports = () => {
             </div>
           </div>
 
-          <div className="flex flex-col bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+          {/* <div className="flex flex-col bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
             <h1 className="mt-5 ml-5 font-medium text-black">
               OVERALL NUMBER OF CREATED EVENTS (FOR THE PAST 6 MONTHS)
             </h1>
@@ -1356,7 +1490,7 @@ const Reports = () => {
                 options={chartDataEventsOrganized.options}
               />
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
