@@ -293,7 +293,6 @@ const Reports = () => {
   //   },
   // };
 
-
   const [statusPercentages, setStatusPercentages] = useState([]);
 
   useEffect(() => {
@@ -699,55 +698,56 @@ const Reports = () => {
       try {
         const params = { timeRange: timeRange };
 
-        if (timeRange === "specific") {
-          // specificDate is already in ISO format (YYYY-MM-DD)
+        if (timeRange === 'specific') {
           params.specificDate = specificDate;
         }
 
-        if (timeRange === "weekly" && specificWeek) {
-          // Send only the start of the week to the backend
-          const [year, weekNumber] = specificWeek.split("-W");
+        if (timeRange === 'weekly' && specificWeek) {
+          const [year, weekNumber] = specificWeek.split('-W');
           const weekStart = moment()
             .isoWeekYear(year)
             .isoWeek(weekNumber)
-            .startOf("isoWeek")
+            .startOf('isoWeek')
             .toISOString();
           params.week = weekStart;
         }
 
-        if (timeRange === "monthly" && specificMonth) {
-          const [year, month] = specificMonth.split("-");
+        if (timeRange === 'monthly' && specificMonth) {
+          const [year, month] = specificMonth.split('-');
           params.year = parseInt(year);
           params.month = parseInt(month);
         }
 
-        if (timeRange === "annual") {
+        if (timeRange === 'annual') {
           params.year = specificYear;
         }
 
         // Make the API request using the GetMonthlyRevenueBrgy function
         const response = await axios.get(
-          `${API_LINK}/requests/get_monthly_revenue_brgy`, // Update the endpoint
+          `${API_LINK}/requests/get_monthly_revenue_brgy`,
           {
             params: {
               ...params,
-              brgy: brgy, // Add your barangay value here
+              brgy: brgy,
             },
           }
         );
 
         const data = response.data;
 
-        // Assuming your data structure is an array with a single object
+        // Assuming your data structure is an array of objects
         if (data.length > 0) {
-          const { totalFee } = data[0]; // Assuming the totalFee property is present
-          setTotalMonthlyRevenue(totalFee);
+          // Assuming the totalFee property is present in each object
+          const totalMonthlyRevenue = data.reduce(
+            (total, item) => total + item.totalFee,
+            0
+          );
+          setTotalMonthlyRevenue(totalMonthlyRevenue);
         } else {
-          // If there is no data, set totalMonthlyRevenue to 0
           setTotalMonthlyRevenue(0);
         }
       } catch (error) {
-        console.error("Error fetching monthly fee summary:", error);
+        console.error('Error fetching monthly fee summary:', error);
       }
     };
 
@@ -759,72 +759,77 @@ const Reports = () => {
     specificMonth,
     specificYear,
     brgy,
-  ]); // Add brgy to the dependency array
+  ]);
 
+
+   // Monthly Revenue Data Calculation
+  // const currentDate = new Date();
+  
   const monthlyRevenueData = Array.from({ length: 6 }, (_, index) => {
-  const startOfMonth = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth() - index,
-    1
-  );
-  const endOfMonth = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth() - index + 1,
-    0
-  );
+    const startOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() - index,
+      1
+    );
+    const endOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() - index + 1,
+      0
+    );
 
-  const revenue =
-    index === 0 ? totalMonthlyRevenue : // Use totalMonthlyRevenue for the current month
-    requests
-      .filter(
-        (request) =>
-          request.status === "Transaction Completed" &&
-          new Date(request.updatedAt) >= startOfMonth &&
-          new Date(request.updatedAt) <= endOfMonth
-      )
-      .reduce((total, request) => total + request.fee, 0);
+    const revenue =
+      index === 0
+        ? totalMonthlyRevenue // Use totalMonthlyRevenue for the current month
+        : requests
+            .filter(
+              (request) =>
+                request.status === 'Transaction Completed' &&
+                new Date(request.updatedAt) >= startOfMonth &&
+                new Date(request.updatedAt) <= endOfMonth
+            )
+            .reduce((total, request) => total + request.fee, 0);
 
-  return revenue;
-}).reverse();
+    return revenue;
+  }).reverse();
 
-  const chartDataRevenue = {
-    series: [
-      {
-        name: "Revenue",
-        data: monthlyRevenueData,
-      },
-    ],
-    options: {
-      colors: ["#4b7c80"],
-      chart: {
-        background: "transparent",
-      },
-      xaxis: {
-        categories: Array.from({ length: 6 }, (_, index) =>
-          new Date(
-            currentDate.getFullYear(),
-            currentDate.getMonth() - index,
-            1
-          ).toLocaleString("en-us", {
-            month: "short",
-          })
-        ).reverse(),
-        labels: {
-          style: {
-            fontSize: "9px",
-          },
-        },
-      },
-      yaxis: {
-        labels: {
-          formatter: function (value) {
-            return "PHP " + value;
-          },
+ // Chart Data
+ const chartDataRevenue = {
+  series: [
+    {
+      name: 'Revenue',
+      data: monthlyRevenueData,
+    },
+  ],
+  options: {
+    colors: ['#4b7c80'],
+    chart: {
+      background: 'transparent',
+    },
+    xaxis: {
+      categories: Array.from({ length: 6 }, (_, index) =>
+        new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth() - index,
+          1
+        ).toLocaleString('en-us', {
+          month: 'short',
+        })
+      ).reverse(),
+      labels: {
+        style: {
+          fontSize: '9px',
         },
       },
     },
-  };
-
+    yaxis: {
+      labels: {
+        formatter: function (value) {
+          return 'PHP ' + value;
+        },
+      },
+    },
+  },
+};
 
   const [estimatedRevenuess, setEstimatedRevenuess] = useState(0);
 

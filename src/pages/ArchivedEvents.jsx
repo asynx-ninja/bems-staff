@@ -30,21 +30,47 @@ const ArchivedEvents = () => {
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [filteredAnnouncements, setFilteredAnnouncements] = useState([]);
   const [selected, setSelected] = useState("date");
+  const [announcementWithCounts, setAnnouncementWithCounts] = useState([]);
 
   useEffect(() => {
-    const fetch = async () => {
-      const response = await axios.get(
-        `${API_LINK}/announcement/?brgy=${brgy}&archived=true&page=${currentPage}`
-      );
-      if (response.status === 200) {
-        setAnnouncements(response.data.result);
-        setFilteredAnnouncements(response.data.result);
-        setPageCount(response.data.pageCount);
-      } else setAnnouncements([]);
+    const fetchData = async () => {
+      try {
+        const announcementsResponse = await axios.get(
+          `${API_LINK}/announcement/?brgy=${brgy}&archived=true&page=${currentPage}`
+        );
+  
+        if (announcementsResponse.status === 200) {
+          const announcementsData = announcementsResponse.data.result.map(async (announcement) => {
+            const completedResponse = await axios.get(
+              `${API_LINK}/application/completed?brgy=${brgy}&event_id=${announcement.event_id}`
+            );
+  
+            if (completedResponse.status === 200) {
+              const completedCount = completedResponse.data.completedCount;
+              return { ...announcement, completedCount };
+            }
+          });
+  
+         
+          Promise.all(announcementsData).then((announcementsWithCounts) => {
+            setAnnouncementWithCounts(announcementsWithCounts);
+            setFilteredAnnouncements(announcementsWithCounts);
+          });
+  
+          setPageCount(announcementsResponse.data.pageCount);
+        } else {
+          setAnnouncementWithCounts([]);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        
+        console.error('Error response data:', error.response?.data);
+        console.error('Error response status:', error.response?.status);
+      }
     };
-
-    fetch();
-  }, [currentPage]);
+  
+    fetchData();
+  }, [currentPage, brgy]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -441,7 +467,7 @@ const ArchivedEvents = () => {
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {item.completedCount}
+                        {item.completedCount}
                       </span>
                     </div>
                   </td>
@@ -474,12 +500,12 @@ const ArchivedEvents = () => {
                 <tr>
                   <td
                     colSpan={tableHeader.length + 1}
-                    className="text-center py-48 lg:py-48 xxl:py-32"
+                    className="text-center sm:h-[16.2rem] xl:py-1 lg:h-[17.5rem] xxl:py-32 xl:h-[17.5rem]"
                   >
                     <img
                       src={noData}
                       alt=""
-                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                      className=" w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-[14rem] xl:w-80 mx-auto"
                     />
                     <strong className="text-[#535353]">NO DATA FOUND</strong>
                   </td>

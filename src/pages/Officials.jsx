@@ -454,12 +454,12 @@ const Officials = () => {
                 <tr>
                   <td
                     colSpan={tableHeader.length + 1}
-                    className="text-center py-48 lg:py-48 xxl:py-32"
+                    className="text-center sm:h-[18.7rem] xl:py-1 lg:h-[20rem] xxl:py-32 xl:h-[20rem]"
                   >
                     <img
                       src={noData}
                       alt=""
-                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                      className=" w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-[14rem] xl:w-80 mx-auto"
                     />
                     <strong className="text-[#535353]">NO DATA FOUND</strong>
                   </td>
