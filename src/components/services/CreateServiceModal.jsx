@@ -129,7 +129,7 @@ function CreateServiceModal({ brgy }) {
 
   const checkEmptyFieldsForService = () => {
     let arr = [];
-    const keysToCheck = ["title", "details", "date", "logo", "banner"]; // Add "logo" and "banner" to the list of keys
+    const keysToCheck = ["name", "details", "date", "logo", "banner"]; // Add "logo" and "banner" to the list of keys
     for (const key of keysToCheck) {
       if (key === "logo" && !logo) {
         arr.push(key);

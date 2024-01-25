@@ -34,6 +34,7 @@ const EventsRegistrations = () => {
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [selected, setSelected] = useState("date");
 
+  
   useEffect(() => {
     const fetch = async () => {
       try {
@@ -289,13 +290,6 @@ const EventsRegistrations = () => {
                     PENDING
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Paid")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    PAID
-                  </a>
-                  <a
                     onClick={() => handleStatusFilter("Processing")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
@@ -310,11 +304,11 @@ const EventsRegistrations = () => {
                     CANCELLED
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Transaction Completed")}
+                    onClick={() => handleStatusFilter("Application Completed")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    TRANSACTION COMPLETED
+                    APPLICATION COMPLETED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Rejected")}
@@ -545,10 +539,10 @@ const EventsRegistrations = () => {
                       </div>
                     </td>
                     <td className="px-2 xl:px-6 py-3 xxl:w-3/12">
-                      {item.status === "Transaction Completed" && (
+                      {item.status === "Application Completed" && (
                         <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            TRANSACTION COMPLETED
+                            APPLICATION COMPLETED
                           </span>
                         </div>
                       )}

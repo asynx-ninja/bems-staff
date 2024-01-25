@@ -106,7 +106,6 @@ const Services = () => {
   const handleResetFilter = () => {
     setStatusFilter("all");
     setServiceFilter("all");
-    setDateFilter(null);
     setSearchQuery("");
   };
   const checkAllHandler = () => {

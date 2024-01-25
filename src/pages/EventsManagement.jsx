@@ -26,8 +26,9 @@ const EventsManagement = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
+  const event_id = searchParams.get("event_id")
   const [announcement, setAnnouncement] = useState([]);
-
+  const [announcementWithCounts, setAnnouncementWithCounts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
@@ -36,21 +37,47 @@ const EventsManagement = () => {
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [filteredAnnouncements, setFilteredAnnouncements] = useState([]);
   const [selected, setSelected] = useState("date");
-
+  
   useEffect(() => {
-    const fetch = async () => {
-      const response = await axios.get(
-        `${API_LINK}/announcement/?brgy=${brgy}&archived=false&page=${currentPage}`
-      );
-      if (response.status === 200) {
-        setAnnouncements(response.data.result);
-        setFilteredAnnouncements(response.data.result);
-        setPageCount(response.data.pageCount);
-      } else setAnnouncements([]);
+    const fetchData = async () => {
+      try {
+        const announcementsResponse = await axios.get(
+          `${API_LINK}/announcement/?brgy=${brgy}&archived=false&page=${currentPage}`
+        );
+  
+        if (announcementsResponse.status === 200) {
+          const announcementsData = announcementsResponse.data.result.map(async (announcement) => {
+            const completedResponse = await axios.get(
+              `${API_LINK}/application/completed?brgy=${brgy}&event_id=${announcement.event_id}`
+            );
+  
+            if (completedResponse.status === 200) {
+              const completedCount = completedResponse.data.completedCount;
+              return { ...announcement, completedCount };
+            }
+          });
+  
+         
+          Promise.all(announcementsData).then((announcementsWithCounts) => {
+            setAnnouncementWithCounts(announcementsWithCounts);
+            setFilteredAnnouncements(announcementsWithCounts);
+          });
+  
+          setPageCount(announcementsResponse.data.pageCount);
+        } else {
+          setAnnouncementWithCounts([]);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        
+        console.error('Error response data:', error.response?.data);
+        console.error('Error response status:', error.response?.status);
+      }
     };
-
-    fetch();
-  }, [currentPage]);
+  
+    fetchData();
+  }, [currentPage, brgy]);
+  
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -502,7 +529,7 @@ const EventsManagement = () => {
                   <td className="px-6 py-3">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.attendees.length}
+                      {item.completedCount}
                       </span>
                     </div>
                   </td>
@@ -565,6 +592,8 @@ const EventsManagement = () => {
                           Edit Event Forms
                         </span>
                       </div>
+
+                      
                       {/* <button
                         type="button"
                         onClick={() =>

@@ -138,6 +138,7 @@ const Inquiries = () => {
             new Date(item.compose.date).getDate() === selectedDate.getDate()
           );
         });
+        
       case "week":
         const startDate = selectedDate;
         const endDate = new Date(startDate);
