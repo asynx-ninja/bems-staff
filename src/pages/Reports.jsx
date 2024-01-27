@@ -231,68 +231,6 @@ const Reports = () => {
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(currentDate.getMonth() - 6);
 
-  // const monthlyRevenueData = Array.from({ length: 6 }, (_, index) => {
-  //   const startOfMonth = new Date(
-  //     currentDate.getFullYear(),
-  //     currentDate.getMonth() - index,
-  //     1
-  //   );
-  //   const endOfMonth = new Date(
-  //     currentDate.getFullYear(),
-  //     currentDate.getMonth() - index + 1,
-  //     0
-  //   );
-
-  //   const revenue = requests
-  //     .filter(
-  //       (request) =>
-  //         request.status === "Transaction Completed" &&
-  //         new Date(request.createdAt) >= startOfMonth &&
-  //         new Date(request.createdAt) <= endOfMonth
-  //     )
-  //     .reduce((total, request) => total + request.fee, 0);
-
-  //   return revenue;
-  // }).reverse();
-
-  // const chartDataRevenue = {
-  //   series: [
-  //     {
-  //       name: "Revenue",
-  //       data: monthlyRevenueData,
-  //     },
-  //   ],
-  //   options: {
-  //     colors: ["#4b7c80"],
-  //     chart: {
-  //       background: "transparent",
-  //     },
-  //     xaxis: {
-  //       categories: Array.from({ length: 6 }, (_, index) =>
-  //         new Date(
-  //           currentDate.getFullYear(),
-  //           currentDate.getMonth() - index,
-  //           1
-  //         ).toLocaleString("en-us", {
-  //           month: "short",
-  //         })
-  //       ).reverse(),
-  //       labels: {
-  //         style: {
-  //           fontSize: "9px",
-  //         },
-  //       },
-  //     },
-  //     yaxis: {
-  //       labels: {
-  //         formatter: function (value) {
-  //           return "PHP " + value;
-  //         },
-  //       },
-  //     },
-  //   },
-  // };
-
   const [statusPercentages, setStatusPercentages] = useState([]);
 
   useEffect(() => {
@@ -698,27 +636,27 @@ const Reports = () => {
       try {
         const params = { timeRange: timeRange };
 
-        if (timeRange === 'specific') {
+        if (timeRange === "specific") {
           params.specificDate = specificDate;
         }
 
-        if (timeRange === 'weekly' && specificWeek) {
-          const [year, weekNumber] = specificWeek.split('-W');
+        if (timeRange === "weekly" && specificWeek) {
+          const [year, weekNumber] = specificWeek.split("-W");
           const weekStart = moment()
             .isoWeekYear(year)
             .isoWeek(weekNumber)
-            .startOf('isoWeek')
+            .startOf("isoWeek")
             .toISOString();
           params.week = weekStart;
         }
 
-        if (timeRange === 'monthly' && specificMonth) {
-          const [year, month] = specificMonth.split('-');
+        if (timeRange === "monthly" && specificMonth) {
+          const [year, month] = specificMonth.split("-");
           params.year = parseInt(year);
           params.month = parseInt(month);
         }
 
-        if (timeRange === 'annual') {
+        if (timeRange === "annual") {
           params.year = specificYear;
         }
 
@@ -747,7 +685,7 @@ const Reports = () => {
           setTotalMonthlyRevenue(0);
         }
       } catch (error) {
-        console.error('Error fetching monthly fee summary:', error);
+        console.error("Error fetching monthly fee summary:", error);
       }
     };
 
@@ -761,10 +699,9 @@ const Reports = () => {
     brgy,
   ]);
 
-
-   // Monthly Revenue Data Calculation
+  // Monthly Revenue Data Calculation
   // const currentDate = new Date();
-  
+
   const monthlyRevenueData = Array.from({ length: 6 }, (_, index) => {
     const startOfMonth = new Date(
       currentDate.getFullYear(),
@@ -783,7 +720,7 @@ const Reports = () => {
         : requests
             .filter(
               (request) =>
-                request.status === 'Transaction Completed' &&
+                request.status === "Transaction Completed" &&
                 new Date(request.updatedAt) >= startOfMonth &&
                 new Date(request.updatedAt) <= endOfMonth
             )
@@ -792,44 +729,44 @@ const Reports = () => {
     return revenue;
   }).reverse();
 
- // Chart Data
- const chartDataRevenue = {
-  series: [
-    {
-      name: 'Revenue',
-      data: monthlyRevenueData,
-    },
-  ],
-  options: {
-    colors: ['#4b7c80'],
-    chart: {
-      background: 'transparent',
-    },
-    xaxis: {
-      categories: Array.from({ length: 6 }, (_, index) =>
-        new Date(
-          currentDate.getFullYear(),
-          currentDate.getMonth() - index,
-          1
-        ).toLocaleString('en-us', {
-          month: 'short',
-        })
-      ).reverse(),
-      labels: {
-        style: {
-          fontSize: '9px',
+  // Chart Data
+  const chartDataRevenue = {
+    series: [
+      {
+        name: "Revenue",
+        data: monthlyRevenueData,
+      },
+    ],
+    options: {
+      colors: ["#4b7c80"],
+      chart: {
+        background: "transparent",
+      },
+      xaxis: {
+        categories: Array.from({ length: 6 }, (_, index) =>
+          new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth() - index,
+            1
+          ).toLocaleString("en-us", {
+            month: "short",
+          })
+        ).reverse(),
+        labels: {
+          style: {
+            fontSize: "9px",
+          },
+        },
+      },
+      yaxis: {
+        labels: {
+          formatter: function (value) {
+            return "PHP " + value;
+          },
         },
       },
     },
-    yaxis: {
-      labels: {
-        formatter: function (value) {
-          return 'PHP ' + value;
-        },
-      },
-    },
-  },
-};
+  };
 
   const [estimatedRevenuess, setEstimatedRevenuess] = useState(0);
 
@@ -952,6 +889,161 @@ const Reports = () => {
     fetchFeeSummary();
   }, [timeRange, specificDate, specificWeek, specificMonth, specificYear]);
 
+  const [chartDataOverallRevenue, setChartDataOverallRevenue] = useState({
+    series: [
+      {
+        name: "Transaction Completed",
+        data: [],
+      },
+      {
+        name: "Paid",
+        data: [],
+      },
+    ],
+    options: {
+      colors: ["#4b7c80", "#ffa500"],
+      chart: {
+        background: "transparent",
+      },
+      xaxis: {
+        categories: [],
+        labels: {
+          style: {
+            fontSize: "9px",
+          },
+        },
+      },
+      yaxis: {
+        labels: {
+          formatter: function (value) {
+            return "PHP " + value;
+          },
+        },
+      },
+    },
+  });
+
+  useEffect(() => {
+    const fetchRevenueData = async () => {
+      try {
+        const params = { timeRange: timeRange };
+
+        if (timeRange === "specific") {
+          params.specificDate = specificDate;
+        }
+
+        if (timeRange === "weekly" && specificWeek) {
+          const [year, weekNumber] = specificWeek.split("-W");
+          const weekStart = moment()
+            .isoWeekYear(year)
+            .isoWeek(weekNumber)
+            .startOf("isoWeek")
+            .toISOString();
+          params.week = weekStart;
+        }
+
+        if (timeRange === "monthly" && specificMonth) {
+          const [year, month] = specificMonth.split("-");
+          params.year = parseInt(year);
+          params.month = parseInt(month);
+        }
+
+        if (timeRange === "annual") {
+          params.year = specificYear;
+        }
+
+        const response = await axios.get(
+          `${API_LINK}/requests/get_revenue_brgy_requests`,
+          {
+            params: {
+              ...params,
+              brgy: brgy,
+            },
+          }
+        );
+
+        const data = response.data;
+
+        if (data.length > 0) {
+          const categories = data.map((item) => item._id.service_name);
+          const transactionCompletedData = data.map(
+            (item) => item.TransactionCompleted
+          );
+          const paidData = data.map((item) => item.Paid);
+
+          setChartDataOverallRevenue({
+            series: [
+              {
+                name: "Transaction Completed",
+                data: transactionCompletedData,
+              },
+              {
+                name: "Paid",
+                data: paidData,
+              },
+            ],
+            options: {
+              ...chartDataOverallRevenue.options,
+              xaxis: {
+                categories: categories,
+                labels: {
+                  style: {
+                    fontSize: "9px",
+                  },
+                },
+              },
+            },
+          });
+        } else {
+          // If there is no data, set chartDataOverallRevenue to initial state or handle as needed
+          setChartDataOverallRevenue({
+            series: [
+              {
+                name: "Transaction Completed",
+                data: [],
+              },
+              {
+                name: "Paid",
+                data: [],
+              },
+            ],
+            options: {
+              colors: ["#4b7c80", "#ffa500"],
+              chart: {
+                background: "transparent",
+              },
+              xaxis: {
+                categories: [],
+                labels: {
+                  style: {
+                    fontSize: "9px",
+                  },
+                },
+              },
+            },
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching revenue data:", error);
+      }
+    };
+
+    fetchRevenueData();
+
+    const intervalId = setInterval(() => {
+      fetchRevenueData();
+    }, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [
+    timeRange,
+    specificDate,
+    specificWeek,
+    specificMonth,
+    specificYear,
+    brgy,
+  ]);
+
   const [totalServicess, setTotalServicess] = useState(0);
   const [chartDataOverallAvailed, setChartDataOverallAvailed] = useState({
     series: [
@@ -976,7 +1068,6 @@ const Reports = () => {
     },
   });
 
-  // const [totalServicess, setTotalServicess] = useState(0);
   useEffect(() => {
     const fetchFeeSummary = async () => {
       try {
@@ -1058,8 +1149,31 @@ const Reports = () => {
 
           setChartDataOverallAvailed(chartData);
         } else {
-          // If there is no data, set totalServices to 0
+          // If there is no data, set totalServices to 0 and display the message
           setTotalServicess(0);
+          // You can customize the message as needed
+          setChartDataOverallAvailed({
+            series: [
+              {
+                name: "Total Availed",
+                data: [0],
+              },
+            ],
+            options: {
+              colors: ["#4b7c80"],
+              chart: {
+                background: "transparent",
+              },
+              xaxis: {
+                categories: ["No Availed Service for Specific Date"],
+                labels: {
+                  style: {
+                    fontSize: "9px",
+                  },
+                },
+              },
+            },
+          });
         }
       } catch (error) {
         console.error("Error fetching fee summary:", error);
@@ -1292,8 +1406,8 @@ const Reports = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 lg:items-center border border-gray-200 bg-[#2c606d] shadow-sm rounded-xl">
-          <div className="flex flex-col p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 lg:items-center shadow-sm rounded-xl gap-3 ">
+          <div className="flex flex-col p-4 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] rounded-xl">
             <h4 className="text-white mb-1 text-xs lg:text-md">
               TOTAL SERVICES TAKEN
             </h4>
@@ -1307,7 +1421,7 @@ const Reports = () => {
             </div>
           </div>
 
-          <div className="flex flex-col p-4">
+          <div className="flex flex-col p-4 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] rounded-xl">
             <div className="flex justify-between">
               <h4 className="text-white mb-1 text-xs lg:text-md">
                 COMPLETED SERVICES
@@ -1323,7 +1437,7 @@ const Reports = () => {
             </div>
           </div>
 
-          <div className="flex flex-col p-4">
+          <div className="flex flex-col p-4 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] rounded-xl">
             <div className="flex justify-between">
               <h4 className="text-white mb-1 text-xs lg:text-md">
                 ESTIMATED OVERALL REVENUE
@@ -1342,7 +1456,7 @@ const Reports = () => {
             </div>
           </div>
 
-          <div className="flex flex-col p-4">
+          <div className="flex flex-col p-4 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] rounded-xl">
             <h4 className="text-white mb-1 text-xs lg:text-md">
               CURRENT REVENUE FROM SERVICES
             </h4>
@@ -1378,14 +1492,14 @@ const Reports = () => {
 
           <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
             <h1 className="mt-5 ml-5 font-medium text-black">
-              REVENUE FOR THE PAST 6 MONTHS
+              REVENUE FROM SERVICES
             </h1>
             <div className="flex rounded-xl">
               <Chart
-                type="line"
+                type="bar"
                 className="flex w-full rounded-xl"
-                series={chartDataRevenue.series}
-                options={chartDataRevenue.options}
+                series={chartDataOverallRevenue.series}
+                options={chartDataOverallRevenue.options}
               />
             </div>
           </div>

@@ -27,7 +27,6 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
   const id = searchParams.get("id");
   const [statusChanger, setStatusChanger] = useState(false);
   const [newMessage, setNewMessage] = useState({
-    type: "Staff",
     message: "",
     date: new Date(),
   });
@@ -166,7 +165,7 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
 
       const obj = {
         sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
-        type: newMessage.type,
+        type: userData.type,
         message: newMessage.message,
         date: newMessage.date,
         folder_id: inquiry.folder_id,

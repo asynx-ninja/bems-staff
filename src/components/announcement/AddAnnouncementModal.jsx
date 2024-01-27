@@ -169,13 +169,8 @@ function CreateAnnouncementModal({ brgy }) {
                     Logo
                   </label>
                   <div className="flex flex-col items-center space-y-2 relative">
-                    <div
-                      className={`w-full border ${
-                        !logo && !isLogoSelected
-                          ? "border-red-700"
-                          : "border-gray-300"
-                      }`}
-                    >
+                    <div className={`w-full border "border-gray-300"
+                      `}>
                       <img
                         className={`${
                           logo ? "" : "hidden"
@@ -188,7 +183,11 @@ function CreateAnnouncementModal({ brgy }) {
                         className={`${!logo ? "" : "hidden"} mx-auto`}
                       />
                     </div>
-                    <label className="w-full bg-white border border-gray-300">
+                    <label className={`w-full bg-white border ${
+                        emptyFields.includes("logo")
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}>
                       <span className="sr-only">Choose logo photo</span>
                       <input
                         type="file"
@@ -209,13 +208,8 @@ function CreateAnnouncementModal({ brgy }) {
                     Banner
                   </label>
                   <div className="flex flex-col items-center space-y-2 relative">
-                    <div
-                      className={`w-full border ${
-                        !banner && !isBannerSelected
-                          ? "border-red-700"
-                          : "border-gray-300"
-                      }`}
-                    >
+                    <div className={`w-full border "border-gray-300"
+                      `}>
                       <img
                         className={`${
                           banner ? "" : "hidden"
@@ -228,7 +222,11 @@ function CreateAnnouncementModal({ brgy }) {
                         className={`${!banner ? "" : "hidden"} mx-auto`}
                       />
                     </div>
-                    <label className="w-full bg-white border border-gray-300">
+                    <label className={`w-full bg-white border ${
+                        emptyFields.includes("banner")
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}>
                       <span className="sr-only">Choose banner photo</span>
                       <input
                         type="file"

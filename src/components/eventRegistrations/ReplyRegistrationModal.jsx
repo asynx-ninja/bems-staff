@@ -159,7 +159,7 @@ function ReplyRegistrationModal({ application, setApplication }) {
       setSubmitClicked(true);
 
       const obj = {
-        sender: `${userData.firstName} ${userData.lastName} (STAFF)`,
+        sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
         message: newMessage.message,
         status: application.status,
         isRepliable: newMessage.isRepliable,
