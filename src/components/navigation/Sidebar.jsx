@@ -54,7 +54,7 @@ const Sidebar = () => {
     fetchPendingRequest();
   }, []);
 
-  
+
   useEffect(() => {
     const fetchPendingEvents = async () => {
       try {
@@ -274,7 +274,16 @@ const Sidebar = () => {
                         } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
                     >
                       <SiGoogleforms size={15} />
-                      Events Application {pendingEventsCount> 0 && <span className="inline-flex items-center py-0.5 mr-1 px-2 rounded-full text-xs  bg-red-500 text-white">{pendingEventsCount}</span>}
+                      Events Application 
+                      <span className="flex relative">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600" />
+                        {pendingEventsCount > 0 && (
+                          <span className="relative inline-flex text-xs bg-red-500 text-white rounded-full py-0.5 px-1.5">
+                            <text className="mr-[3px]"> {pendingEventsCount} </text>
+                          </span>
+                        )}
+                      </span>
+                     
                     </Link>
 
                   </div>
@@ -389,7 +398,16 @@ const Sidebar = () => {
                         } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
                     >
                       <GoGitPullRequest size={15} />
-                      Service Requests{pendingRequestsCount> 0 && <span className="inline-flex items-center py-0.5 mr-1 px-2 rounded-full text-xs  bg-red-500 text-white">{pendingRequestsCount}</span>}
+                      Service Requests
+                      <span className="flex relative">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600" />
+                        {pendingRequestsCount > 0 && (
+                          <span className="relative inline-flex text-xs bg-red-500 text-white rounded-full py-0.5 px-1.5">
+                             <text className="mr-[2px]"> {pendingRequestsCount } </text>
+                          </span>
+                        )}
+                      </span>
+            
                     </Link>
 
                   </div>
