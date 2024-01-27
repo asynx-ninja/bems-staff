@@ -32,9 +32,43 @@ const Sidebar = () => {
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
   const [selectedOption, setSelectedOption] = useState('');
-
-
+  const [requests, setRequests] = useState([]);
+  const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
+  const [events, setEvents] = useState([]);
+  const [pendingEventsCount, setPendingEventsCount] = useState(0);
   console.log("User: ", userData);
+
+
+  useEffect(() => {
+    const fetchPendingRequest = async () => {
+      try {
+        const response = await fetch(`${API_LINK}/requests/pendingrequest/?isArchived=false&isApproved=Pending`);
+        const data = await response.json();
+        setRequests(data.result);
+        setPendingRequestsCount(data.result.length); // Update the count of pending services
+      } catch (error) {
+        console.error('Error fetching pending services:', error);
+      }
+    };
+
+    fetchPendingRequest();
+  }, []);
+
+  
+  useEffect(() => {
+    const fetchPendingEvents = async () => {
+      try {
+        const response = await fetch(`${API_LINK}/application/pendingevents/?isArchived=false&status=Pending&brgy=${brgy}`);
+        const data = await response.json();
+        setEvents(data.result);
+        setPendingEventsCount(data.result.length);
+      } catch (error) {
+        console.error('Error fetching pending services:', error);
+      }
+    };
+
+    fetchPendingEvents();
+  }, []);
 
   useEffect(() => {
     const fetch = async () => {
@@ -240,7 +274,7 @@ const Sidebar = () => {
                         } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
                     >
                       <SiGoogleforms size={15} />
-                      Events Application
+                      Events Application {pendingEventsCount> 0 && <span className="inline-flex items-center py-0.5 mr-1 px-2 rounded-full text-xs  bg-red-500 text-white">{pendingEventsCount}</span>}
                     </Link>
 
                   </div>
@@ -325,11 +359,9 @@ const Sidebar = () => {
                     <Link
                       to={`/services/?id=${id}&brgy=${brgy}`}
                       onClick={() => {
-                        setSelectedOption('services')
+                        setSelectedOption('services');
                         window.innerWidth >= 320 && window.innerWidth <= 1023
-                          ? document
-                            .querySelector("[data-hs-overlay-backdrop-template]")
-                            .remove()
+                          ? document.querySelector("[data-hs-overlay-backdrop-template]").remove()
                           : null;
                       }}
                       className={`${selectedOption === 'services'
@@ -357,7 +389,7 @@ const Sidebar = () => {
                         } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
                     >
                       <GoGitPullRequest size={15} />
-                      Service Requests
+                      Service Requests{pendingRequestsCount> 0 && <span className="inline-flex items-center py-0.5 mr-1 px-2 rounded-full text-xs  bg-red-500 text-white">{pendingRequestsCount}</span>}
                     </Link>
 
                   </div>
@@ -368,9 +400,9 @@ const Sidebar = () => {
                     <button
                       id="hs-unstyled-collapse"
                       data-hs-collapse="#hs-info-collapse-heading"
-                      className={`hs-collapse-toggle justify-between flex items-center w-full gap-x-3 py-2 px-2.5 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0] ${isClickedInformation && (selectedOption === 'reports' || selectedOption === 'officials'  || selectedOption === 'staff_management'  || selectedOption === 'info') ? "text-[#EFC586]" : ""
-                      }`}
-                    onClick={handleCollapseToggleInformations}
+                      className={`hs-collapse-toggle justify-between flex items-center w-full gap-x-3 py-2 px-2.5 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0] ${isClickedInformation && (selectedOption === 'reports' || selectedOption === 'officials' || selectedOption === 'staff_management' || selectedOption === 'info') ? "text-[#EFC586]" : ""
+                        }`}
+                      onClick={handleCollapseToggleInformations}
                     >
                       <div className="flex items-center gap-x-3">
                         <HiMiniInformationCircle size={15} />
