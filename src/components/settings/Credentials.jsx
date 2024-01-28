@@ -92,7 +92,7 @@ const Credentials = ({
           )}
         </button>
       </div>
-      <div className={!changePass ? "flex flex-col" : "hidden"}>
+      <div className={changePass ? "flex flex-col" : "hidden"}>
         <div className="relative z-0">
           <label
             htmlFor="newpass"

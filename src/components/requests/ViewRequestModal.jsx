@@ -8,8 +8,8 @@ import PrintPDF from "./form/PrintPDF";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 
 function ViewRequestModal({ request }) {
-  const [detail, ] = useState(request);
-  const [empty, ] = useState(false);
+  const [detail] = useState(request);
+  const [empty] = useState(false);
 
   console.log("detail", detail);
 
@@ -91,19 +91,27 @@ function ViewRequestModal({ request }) {
                 )}
                 <PersonalDetails detail={detail} />
                 <OtherDetails detail={detail} returnFile={returnFile} />
-                
               </form>
             </div>
             {/* END OF BODY */}
             {/* BUTTON BELOW */}
             <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
-              <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
+              <div className="sm:space-x-0 lg:space-x-2 sm:space-y-2 lg:space-y-0 w-full flex sm:flex-col lg:flex-row">
+                {request.status === "Transaction Completed" && (
+                  <PDFDownloadLink
+                    document={<PrintPDF detail={detail} />}
+                    fileName="SAMPLE.pdf"
+                    className="h-[2.5rem] flex justify-center items-center w-full py-1 px-6 gap-2 rounded-md border text-xs font-base bg-[#22687a] text-white shadow-sm"
+                  >
+                    GENERATE DOCUMENT REQUEST
+                  </PDFDownloadLink>
+                )}
                 <PDFDownloadLink
                   document={<PrintPDF detail={detail} />}
                   fileName="SAMPLE.pdf"
-                  className="h-[2.5rem] flex justify-center items-center w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
+                  className="h-[2.5rem] flex justify-center items-center w-full py-1 px-6 gap-2 rounded-md border text-sm font-base bg-teal-900 text-white shadow-sm"
                 >
-                  PRINT
+                  GENERATE REQUEST FORM
                 </PDFDownloadLink>
                 <button
                   type="button"

@@ -5,6 +5,8 @@ import { FaArchive, FaPlus } from "react-icons/fa";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { MdFormatListBulletedAdd } from "react-icons/md";
 import { MdOutlineEditNote } from "react-icons/md";
+import { HiDocumentAdd } from "react-icons/hi";
+import { MdEditDocument } from "react-icons/md";
 import ReactPaginate from "react-paginate";
 import GenerateReportsModal from "../components/services/GenerateReportsModal";
 import CreateServiceModal from "../components/services/CreateServiceModal";
@@ -16,6 +18,8 @@ import ManageServiceModal from "../components/services/ManageServiceModal";
 import AddServicesForm from "../components/services/form/add_service/AddServicesForm";
 import EditServicesForm from "../components/services/form/edit_service/EditServicesForm";
 import noData from "../assets/image/no-data.png";
+import AddServicesDocument from "../components/services/document_forms/create_document/AddServicesDocument";
+import EditServicesDocument from "../components/services/document_forms/edit_document/EditServicesDocument";
 
 const Services = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -32,6 +36,8 @@ const Services = () => {
   const [serviceFilter, setServiceFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
+  const [officials, setOfficials] = useState([]);
+
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
     setSortOrder(newSortOrder);
@@ -138,6 +144,35 @@ const Services = () => {
   const handleView = (item) => {
     setService(item);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
+        );
+
+        if (response.status === 200) {
+          const officialsData = response.data.result || [];
+
+          if (officialsData.length > 0) {
+            setOfficials(officialsData);
+          } else {
+            setOfficials([]);
+            console.log(`No officials found for Barangay ${brgy}`);
+          }
+        } else {
+          setOfficials([]);
+          console.error("Failed to fetch officials:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setOfficials([]);
+      }
+    };
+
+    fetchData();
+  }, [currentPage, brgy]); // Add positionFilter dependency
 
   return (
     <div className="mx-4">
@@ -569,6 +604,45 @@ const Services = () => {
                             Edit Service Forms
                           </span>
                         </div>
+                        <div className="hs-tooltip inline-block">
+                          <button
+                            type="button"
+                            data-hs-overlay="#hs-create-serviceDocument-modal"
+                            onClick={() => handleView({ ...item })}
+                            className="hs-tooltip-toggle text-white bg-[#8b1814] font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                          >
+                            <HiDocumentAdd
+                              size={24}
+                              style={{ color: "#ffffff" }}
+                            />
+                          </button>
+                          <span
+                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                            role="tooltip"
+                          >
+                            Create Service Documents
+                          </span>
+                        </div>
+                        <div className="hs-tooltip inline-block">
+                          <button
+                            type="button"
+                            data-hs-overlay="#hs-edit-serviceDocument-modal"
+                            onClick={() => handleView({ ...item })}
+                            className="hs-tooltip-toggle text-white bg-[#144c8b] font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                          >
+                            <MdEditDocument
+                              size={24}
+                              style={{ color: "#ffffff" }}
+                            />
+                          </button>
+                          <span
+                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                            role="tooltip"
+                          >
+                            Edit Service Documents
+                          </span>
+                        </div>
+
                         {/* <button
                         type="button"
                         onClick={() =>
@@ -629,6 +703,8 @@ const Services = () => {
       <GenerateReportsModal />
       <AddServicesForm service_id={service.service_id} brgy={brgy} />
       <EditServicesForm service_id={service.service_id} brgy={brgy} />
+      <AddServicesDocument service_id={service.service_id} brgy={brgy} officials={officials}/>
+      <EditServicesDocument service_id={service.service_id} brgy={brgy} officials={officials}/>
     </div>
   );
 };
