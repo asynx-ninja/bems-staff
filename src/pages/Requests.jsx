@@ -27,11 +27,12 @@ const Requests = () => {
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedReqFilter, setSelectedReqFilter] = useState("all");
 
   //status filter
   const [statusFilter, setStatusFilter] = useState("all");
   //request filter
-  const [requestFilter, setRequestFilter] = useState("all"); // Default is "all"
+  const [requestFilter, setRequestFilter] = useState([]); // Default is "all"
   //pagination
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
@@ -42,15 +43,42 @@ const Requests = () => {
   const [selected, setSelected] = useState("date");
 
   const [officials, setOfficials] = useState([]);
+  
+
+  useEffect(() => {
+    const fetch = async () => {
+       try{
+     const response = await axios.get(
+      `${API_LINK}/services/?brgy=${brgy}&archived=false&page=${currentPage}`
+    );
+      console.log(response.data.result)
+     if (response.status === 200){
+         let arr = [];
+         response.data.result.map((item) => {
+         arr.push(item.name);
+         })
+         setRequestFilter(arr);
+         }
+ 
+       }catch(err){
+     console.log(err)
+       }
+    }
+    fetch()
+ }, [brgy]);
 
   useEffect(() => {
     const fetch = async () => {
       try {
+        console.log("brgy:", brgy);
+        console.log("statusFilter:", statusFilter);
+        console.log("requestFilter:", requestFilter);
         const response = await axios.get(
-          `${API_LINK}/requests/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${requestFilter}&page=${currentPage}`
+          `${API_LINK}/requests/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${selectedReqFilter}&page=${currentPage}`
         );
-
+  
         if (response.status === 200) {
+          console.log("Filtered Requests:", response.data.result);
           setRequests(response.data.result);
           setPageCount(response.data.pageCount);
           setFilteredRequests(response.data.result);
@@ -59,7 +87,7 @@ const Requests = () => {
         console.log(err);
       }
     };
-
+  
     fetch();
   }, [brgy, statusFilter, requestFilter, currentPage]);
 
@@ -99,9 +127,11 @@ const Requests = () => {
   const handleStatusFilter = (selectedStatus) => {
     setStatusFilter(selectedStatus);
   };
-  const handleRequestFilter = (selectedStatus) => {
-    setRequestFilter(selectedStatus);
+  
+  const handleRequestFilter = (selectedType) => {
+    setSelectedReqFilter(selectedType);
   };
+
   const handleResetFilter = () => {
     setStatusFilter("all");
     setRequestFilter("all");
@@ -147,9 +177,9 @@ const Requests = () => {
   };
 
   const tableHeader = [
+    "Control #",
     "SERVICE NAME",
     "SENDER",
-    "TYPE OF SERVICE",
     "DATE",
     "STATUS",
     "ACTIONS",
@@ -178,7 +208,7 @@ const Requests = () => {
           console.log(typeof new Date(item.createdAt), selectedDate);
           return (
             new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
             new Date(item.createdAt).getDate() === selectedDate.getDate()
           );
@@ -193,7 +223,7 @@ const Requests = () => {
         return requests.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-              startDate.getFullYear() &&
+            startDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === startDate.getMonth() &&
             new Date(item.createdAt).getDate() >= startDate.getDate() &&
             new Date(item.createdAt).getDate() <= endDate.getDate()
@@ -202,7 +232,7 @@ const Requests = () => {
         return requests.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -306,9 +336,8 @@ const Requests = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -483,9 +512,8 @@ const Requests = () => {
                 >
                   SERVICE TYPE
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -512,62 +540,16 @@ const Requests = () => {
                     RESET FILTERS
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
-                  <a
-                    onClick={() => handleRequestFilter("Healthcare")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    HEALTHCARE
-                  </a>
-                  <a
-                    onClick={() => handleRequestFilter("Education")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    EDUCATION
-                  </a>
-                  <a
-                    onClick={() => handleRequestFilter("Social Welfare")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    SOCIAL WELFARE
-                  </a>
-                  <a
-                    onClick={() => handleRequestFilter("Security and Safety")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    SECURITY AND SAFETY
-                  </a>
-                  <a
-                    onClick={() => handleRequestFilter("Infrastructure")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    INFRASTRUCTURE
-                  </a>
-                  <a
-                    onClick={() => handleRequestFilter("Community")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    COMMUNITY
-                  </a>
-                  <a
-                    onClick={() => handleRequestFilter("Administrative")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    ADMINISTRATIVE
-                  </a>
-                  <a
-                    onClick={() => handleRequestFilter("Environmental")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    ENVIRONMENTAL
-                  </a>
+                  {requestFilter.map((service_name, index) => (
+                    <a
+                      key={index}
+                      onClick={() => handleRequestFilter(service_name)}
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      href="#"
+                    >
+                      {service_name}
+                    </a>
+                  ))}
                 </ul>
               </div>
             </div>
@@ -603,14 +585,14 @@ const Requests = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    const Requests = requests.filter((item) =>
-                      item.service_name
-                        .toLowerCase()
-                        .includes(e.target.value.toLowerCase())
-                    );
-
+                    const Requests = requests.filter((item) => {
+                        const fullName = `${item.form[0].firstName.value} ${item.form[0].lastName.value}`;
+                        const serviceId = item.service_id.toString(); // Assuming service_id is a number, convert it to string for case-insensitive comparison
+                        return fullName.toLowerCase().includes(e.target.value.toLowerCase()) || serviceId.includes(e.target.value.toLowerCase());
+                    });
+                
                     setFilteredRequests(Requests);
-                  }}
+                }}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
@@ -675,6 +657,11 @@ const Requests = () => {
                       </div>
                     </td>
                     <td className="px-6 py-3">
+                      <span className="text-xs sm:text-sm text-black line-clamp-4">
+                        {item.service_id}
+                      </span>
+                    </td>
+                    <td className="px-6 py-3">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {item.service_name}
                       </span>
@@ -687,13 +674,6 @@ const Requests = () => {
                           " " +
                           item.form[0].middleName.value}
                       </span>
-                    </td>
-                    <td className="px-6 py-3">
-                      <div className="flex justify-center items-center">
-                        <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {item.type}
-                        </span>
-                      </div>
                     </td>
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
