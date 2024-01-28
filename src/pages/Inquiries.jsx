@@ -40,6 +40,25 @@ const Inquiries = () => {
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [selected, setSelected] = useState("date");
   const [filteredInquiries, setFilteredInquiries] = useState([]);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const isLatestResponseResident = (inquiry) => {
+    const { response, isApproved } = inquiry;
+    if (response && response.length > 0) {
+      const latestResponse = response[response.length - 1];
+      return (
+        latestResponse.type === "Resident" &&
+        !["Completed", "Pending"].includes(isApproved)
+      );
+    }
+    return false;
+  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setShowTooltip((prev) => !prev);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     document.title = "Inquiries | Barangay E-Services Management";
@@ -568,6 +587,17 @@ const Inquiries = () => {
                     <td className="xl:px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">
                         <div className="hs-tooltip inline-block">
+                          {isLatestResponseResident(item) && (
+                            <span className="tooltip absolute right-[1.7rem] top-[4.3rem] z-10">
+                              <span className="animate-ping absolute inline-flex h-3 w-3 mt-1 rounded-full bg-red-400 opacity-75 dark:bg-red-600"></span>
+                              <span className="relative inline-flex rounded-full bg-red-500 text-white h-3 w-3"></span>
+                              {showTooltip && (
+                                <span className="tooltiptext bg-red-500 text-white text-xs py-1 px-2 rounded absolute -left-full top-1/2 transform -translate-y-1/2 -translate-x-full whitespace-nowrap">
+                                  You have a new reply
+                                </span>
+                              )}
+                            </span>
+                          )}
                           <button
                             type="button"
                             data-hs-overlay="#hs-modal-viewInquiries"
@@ -577,8 +607,9 @@ const Inquiries = () => {
                             <AiOutlineEye
                               size={24}
                               style={{ color: "#ffffff" }}
-                            />
+                            />                 
                           </button>
+                          
                           <span
                             className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                             role="tooltip"

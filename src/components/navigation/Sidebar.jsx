@@ -31,13 +31,55 @@ const Sidebar = () => {
   const currentPath = location.pathname;
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
+  const to = searchParams.get("to")
   const [selectedOption, setSelectedOption] = useState('');
   const [requests, setRequests] = useState([]);
   const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
   const [events, setEvents] = useState([]);
   const [pendingEventsCount, setPendingEventsCount] = useState(0);
   const [pendingEventsAndApp, setPendingEventsAndApp] = useState(0);
-  console.log("User: ", userData);
+  const [inquiries, setInquiries] = useState(0);
+  const [residentResponseCount, setResidentInquiriesLength] = useState(0);
+
+  useEffect(() => {
+    const fetchInquiries = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/inquiries/staffinquiries/?to=${to}&archived=false&brgy=${brgy}`
+        );
+
+        if (response.status === 200) {
+          const inquiries = response.data.result;
+          setInquiries(inquiries);
+
+          const residentInquiries = inquiries.filter((inquiry) => {
+            const latestResponse = inquiry.response[inquiry.response.length - 1];
+            return (
+              latestResponse &&
+              latestResponse.type === 'Resident' &&
+              (inquiry.isApproved === 'Pending' || inquiry.isApproved === 'In Progress')
+            );
+          });
+
+          const residentInquiriesLength = residentInquiries.length;
+          setResidentInquiriesLength(residentInquiriesLength);
+        } else {
+          console.error('Error fetching inquiries:', response.error);
+        }
+      } catch (err) {
+        console.error('Uncaught error:', err.message);
+      }
+    };
+
+    // Fetch inquiries initially
+    fetchInquiries();
+
+    // Set up a timer to fetch inquiries every 5 minutes (adjust as needed)
+    const intervalId = setInterval(fetchInquiries, 5 * 60 * 1000);
+
+    // Clear the interval when the component is unmounted
+    return () => clearInterval(intervalId);
+  }, [to, brgy]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,7 +87,7 @@ const Sidebar = () => {
         // Fetch pending requests
         const requestResponse = await fetch(`${API_LINK}/requests/getallpending/?isArchived=false&isApproved=Pending&brgy=${brgy}`);
         const requestData = await requestResponse.json();
-        
+
         // Fetch pending events
         const eventResponse = await fetch(`${API_LINK}/application/countpendingevents/?isArchived=false&status=Pending&brgy=${brgy}`);
         const eventData = await eventResponse.json();
@@ -57,7 +99,7 @@ const Sidebar = () => {
         console.error('Error fetching data:', error);
       }
     };
-  
+
     fetchData();
   }, [brgy]);
 
@@ -225,13 +267,13 @@ const Sidebar = () => {
                     <BiSolidDashboard size={15} />
                     Dashboard
                     <span className="flex relative">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600" />
-                        {pendingEventsAndApp > 0 && (
-                          <span className="relative inline-flex text-xs bg-red-500 text-white rounded-full py-0.5 px-1.5">
-                            <text className="mr-[3px]"> {pendingEventsAndApp} </text>
-                          </span>
-                        )}
-                      </span>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600" />
+                      {pendingEventsAndApp > 0 && (
+                        <span className="relative inline-flex text-xs bg-red-500 text-white rounded-full py-0.5 px-1.5">
+                          <text className="mr-[3px]"> {pendingEventsAndApp} </text>
+                        </span>
+                      )}
+                    </span>
                   </Link>
                 </li>
                 <li>
@@ -304,7 +346,7 @@ const Sidebar = () => {
                         } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
                     >
                       <SiGoogleforms size={15} />
-                      Events Application 
+                      Events Application
                       <span className="flex relative">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600" />
                         {pendingEventsCount > 0 && (
@@ -313,19 +355,20 @@ const Sidebar = () => {
                           </span>
                         )}
                       </span>
-                     
+
                     </Link>
 
                   </div>
                 </li>
-
                 <li>
                   <Link
                     to={`/inquiries/?id=${id}&brgy=${brgy}`}
                     onClick={() => {
                       window.innerWidth >= 320 && window.innerWidth <= 1023
                         ? document
-                          .querySelector("[data-hs-overlay-backdrop-template]")
+                          .getQuerySelector(
+                            "[data-hs-overlay-backdrop-template]"
+                          )
                           .remove()
                         : null;
                     }}
@@ -336,8 +379,15 @@ const Sidebar = () => {
                   >
                     <FaRegNoteSticky size={15} />
                     Inquiries
+                    <span className="flex relative">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600" />
+                      {residentResponseCount > 0 && (
+                        <span className="relative inline-flex text-xs bg-red-500 text-white rounded-full py-0.5 px-1.5">
+                          {residentResponseCount}
+                        </span>
+                      )}
+                    </span>
                   </Link>
-
                 </li>
                 <li>
                   <Link
@@ -433,11 +483,11 @@ const Sidebar = () => {
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600" />
                         {pendingRequestsCount > 0 && (
                           <span className="relative inline-flex text-xs bg-red-500 text-white rounded-full py-0.5 px-1.5">
-                             <text className="mr-[2 px]"> {pendingRequestsCount } </text>
+                            <text className="mr-[2 px]"> {pendingRequestsCount} </text>
                           </span>
                         )}
                       </span>
-            
+
                     </Link>
 
                   </div>
