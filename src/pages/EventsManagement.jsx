@@ -143,6 +143,13 @@ const EventsManagement = () => {
     return dateFormat;
   };
 
+  const TimeFormat = (date) => {
+    if (!date) return "";
+  
+    const formattedTime = moment(date).format("hh:mm A");
+    return formattedTime;
+  };
+
   console.log(selectedItems);
 
   const handleResetFilter = () => {
@@ -516,7 +523,7 @@ const EventsManagement = () => {
                     <td className="px-2 py-3 w-2/12">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {DateFormat(item.createdAt) || ""}
+                        {DateFormat(item.createdAt) || ""} - {TimeFormat(item.createdAt) || ""}
                         </span>
                       </div>
                     </td>

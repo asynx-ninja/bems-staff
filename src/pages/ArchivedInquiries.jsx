@@ -125,6 +125,13 @@ const Inquiries = () => {
     return dateFormat;
   };
 
+  const TimeFormat = (date) => {
+    if (!date) return "";
+
+    const formattedTime = moment(date).format("hh:mm A");
+    return formattedTime;
+  };
+
   const handleView = (item) => {
     setInquiry(item);
   };
@@ -512,7 +519,8 @@ const Inquiries = () => {
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {DateFormat(item.compose.date) || ""}
+                        {DateFormat(item.compose.date) || ""} -{" "}
+                          {TimeFormat(item.compose.date) || ""}
                         </span>
                       </div>
                     </td>

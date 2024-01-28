@@ -118,6 +118,14 @@ const EventsRegistrations = () => {
     return dateFormat;
   };
 
+  const TimeFormat = (date) => {
+    if (!date) return "";
+  
+    const formattedTime = moment(date).format("hh:mm A");
+    return formattedTime;
+  };
+
+
   const filters = (choice, selectedDate) => {
     switch (choice) {
       case "date":
@@ -534,7 +542,7 @@ const EventsRegistrations = () => {
                     <td className="lg:px-1 xl:px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {DateFormat(item.createdAt) || ""}
+                        {DateFormat(item.createdAt) || ""} - {TimeFormat(item.createdAt) || ""}
                         </span>
                       </div>
                     </td>

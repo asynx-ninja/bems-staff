@@ -228,6 +228,8 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
                       <option value="Barangay Kagawad">Barangay Kagawad</option>
                       <option value="SK Chairman">SK Chairman</option>
                       <option value="SK Kagawad">SK Kagawad</option>
+                      <option value="Secretary">Secretary</option>
+                      <option value="Treasurer">Treasurer</option>
                     </select>
                   </div>
                   <div className="w-full mt-2">

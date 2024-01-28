@@ -4,10 +4,11 @@ import PersonalDetails from "./PersonalDetails";
 import OtherDetails from "./OtherDetails";
 import PrintForm from "./form/PrintForm";
 import PrintPDF from "./form/PrintPDF";
+import PrintDocumentTypeB from "./form/PrintDocumentTypeB";
 
 import { PDFDownloadLink } from "@react-pdf/renderer";
 
-function ViewRequestModal({ request }) {
+function ViewRequestModal({ request, brgy, officials }) {
   const [detail] = useState(request);
   const [empty] = useState(false);
 
@@ -99,7 +100,7 @@ function ViewRequestModal({ request }) {
               <div className="sm:space-x-0 lg:space-x-2 sm:space-y-2 lg:space-y-0 w-full flex sm:flex-col lg:flex-row">
                 {request.status === "Transaction Completed" && (
                   <PDFDownloadLink
-                    document={<PrintPDF detail={detail} />}
+                    document={<PrintDocumentTypeB detail={detail} officials={officials}/>}
                     fileName="SAMPLE.pdf"
                     className="h-[2.5rem] flex justify-center items-center w-full py-1 px-6 gap-2 rounded-md border text-xs font-base bg-[#22687a] text-white shadow-sm"
                   >
@@ -107,7 +108,7 @@ function ViewRequestModal({ request }) {
                   </PDFDownloadLink>
                 )}
                 <PDFDownloadLink
-                  document={<PrintPDF detail={detail} />}
+                  document={<PrintPDF detail={detail} brgy={brgy}/>}
                   fileName="SAMPLE.pdf"
                   className="h-[2.5rem] flex justify-center items-center w-full py-1 px-6 gap-2 rounded-md border text-sm font-base bg-teal-900 text-white shadow-sm"
                 >
