@@ -36,13 +36,35 @@ const Sidebar = () => {
   const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
   const [events, setEvents] = useState([]);
   const [pendingEventsCount, setPendingEventsCount] = useState(0);
+  const [pendingEventsAndApp, setPendingEventsAndApp] = useState(0);
   console.log("User: ", userData);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch pending requests
+        const requestResponse = await fetch(`${API_LINK}/requests/getallpending/?isArchived=false&isApproved=Pending&brgy=${brgy}`);
+        const requestData = await requestResponse.json();
+        
+        // Fetch pending events
+        const eventResponse = await fetch(`${API_LINK}/application/countpendingevents/?isArchived=false&status=Pending&brgy=${brgy}`);
+        const eventData = await eventResponse.json();
+
+        // Calculate the total count of pending events and requests
+        const totalPendingCount = requestData.result.length + eventData.result.length;
+        setPendingEventsAndApp(totalPendingCount); // Update the count of pending events and requests
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+  
+    fetchData();
+  }, [brgy]);
 
   useEffect(() => {
     const fetchPendingRequest = async () => {
       try {
-        const response = await fetch(`${API_LINK}/requests/pendingrequest/?isArchived=false&isApproved=Pending`);
+        const response = await fetch(`${API_LINK}/requests/getallpending/?isArchived=false&isApproved=Pending&brgy=${brgy}`);
         const data = await response.json();
         setRequests(data.result);
         setPendingRequestsCount(data.result.length); // Update the count of pending services
@@ -58,7 +80,7 @@ const Sidebar = () => {
   useEffect(() => {
     const fetchPendingEvents = async () => {
       try {
-        const response = await fetch(`${API_LINK}/application/pendingevents/?isArchived=false&status=Pending&brgy=${brgy}`);
+        const response = await fetch(`${API_LINK}/application/countpendingevents/?isArchived=false&status=Pending&brgy=${brgy}`);
         const data = await response.json();
         setEvents(data.result);
         setPendingEventsCount(data.result.length);
@@ -202,6 +224,14 @@ const Sidebar = () => {
                   >
                     <BiSolidDashboard size={15} />
                     Dashboard
+                    <span className="flex relative">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600" />
+                        {pendingEventsAndApp > 0 && (
+                          <span className="relative inline-flex text-xs bg-red-500 text-white rounded-full py-0.5 px-1.5">
+                            <text className="mr-[3px]"> {pendingEventsAndApp} </text>
+                          </span>
+                        )}
+                      </span>
                   </Link>
                 </li>
                 <li>
@@ -403,7 +433,7 @@ const Sidebar = () => {
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600" />
                         {pendingRequestsCount > 0 && (
                           <span className="relative inline-flex text-xs bg-red-500 text-white rounded-full py-0.5 px-1.5">
-                             <text className="mr-[2px]"> {pendingRequestsCount } </text>
+                             <text className="mr-[2 px]"> {pendingRequestsCount } </text>
                           </span>
                         )}
                       </span>

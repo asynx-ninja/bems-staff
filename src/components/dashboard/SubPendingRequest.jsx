@@ -15,11 +15,11 @@ const SubPendingRequest = () => {
   const brgy = searchParams.get("brgy");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
-
+  
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/requests/?brgy=${brgy}&archived=false&page=${currentPage}`
+        `${API_LINK}/requests/pendingrequest/?isArchived=false&isApproved=Pending/&brgy=${brgy}&page=${currentPage}`
       );
       if (response.status === 200) {
         setRequests(response.data.result);
