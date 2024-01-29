@@ -587,8 +587,8 @@ const Requests = () => {
                     setSearchQuery(e.target.value);
                     const Requests = requests.filter((item) => {
                         const fullName = `${item.form[0].firstName.value} ${item.form[0].lastName.value}`;
-                        const serviceId = item.service_id.toString(); // Assuming service_id is a number, convert it to string for case-insensitive comparison
-                        return fullName.toLowerCase().includes(e.target.value.toLowerCase()) || serviceId.includes(e.target.value.toLowerCase());
+                        const reqId = item.req_id.toString(); // Assuming service_id is a number, convert it to string for case-insensitive comparison
+                        return fullName.toLowerCase().includes(e.target.value.toLowerCase()) || reqId.includes(e.target.value.toLowerCase());
                     });
                 
                     setFilteredRequests(Requests);
@@ -658,7 +658,7 @@ const Requests = () => {
                     </td>
                     <td className="px-6 py-3">
                       <span className="text-xs sm:text-sm text-black line-clamp-4">
-                        {item.service_id}
+                        {item.req_id}
                       </span>
                     </td>
                     <td className="px-6 py-3">
