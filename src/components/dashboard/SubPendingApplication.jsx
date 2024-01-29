@@ -23,7 +23,7 @@ const SubPendingApplication = () => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/application/?brgy=${brgy}&archived=false&status=${statusFilter}&page=${currentPage}`
+          `${API_LINK}/application/?brgy=${brgy}&archived=false&status=Pending&page=${currentPage}`
         );
 
         if (response.status === 200) {
