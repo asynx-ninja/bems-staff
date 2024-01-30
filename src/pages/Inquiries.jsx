@@ -151,13 +151,13 @@ const Inquiries = () => {
           console.log(typeof new Date(item.compose.date), selectedDate);
           return (
             new Date(item.compose.date).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.compose.date).getMonth() ===
-              selectedDate.getMonth() &&
+            selectedDate.getMonth() &&
             new Date(item.compose.date).getDate() === selectedDate.getDate()
           );
         });
-        
+
       case "week":
         const startDate = selectedDate;
         const endDate = new Date(startDate);
@@ -168,7 +168,7 @@ const Inquiries = () => {
         return inquiries.filter(
           (item) =>
             new Date(item.compose.date).getFullYear() ===
-              startDate.getFullYear() &&
+            startDate.getFullYear() &&
             new Date(item.compose.date).getMonth() === startDate.getMonth() &&
             new Date(item.compose.date).getDate() >= startDate.getDate() &&
             new Date(item.compose.date).getDate() <= endDate.getDate()
@@ -177,7 +177,7 @@ const Inquiries = () => {
         return inquiries.filter(
           (item) =>
             new Date(item.compose.date).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.compose.date).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -607,9 +607,9 @@ const Inquiries = () => {
                             <AiOutlineEye
                               size={24}
                               style={{ color: "#ffffff" }}
-                            />                 
+                            />
                           </button>
-                          
+
                           <span
                             className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                             role="tooltip"
