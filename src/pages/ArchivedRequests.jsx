@@ -26,10 +26,10 @@ const ArchivedRequests = () => {
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all"); // Default is "all"
-  const [requestFilter, setRequestFilter] = useState("all"); // Default is "all"
+  const [requestFilter, setRequestFilter] = useState([]); // Default is "all"
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
-
+  const [selectedReqFilter, setSelectedReqFilter] = useState("all");
   //date filtering
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [filteredRequests, setFilteredRequests] = useState([]);
@@ -37,9 +37,31 @@ const ArchivedRequests = () => {
 
   useEffect(() => {
     const fetch = async () => {
+       try{
+     const response = await axios.get(
+      `${API_LINK}/services/?brgy=${brgy}&archived=false&page=${currentPage}`
+    );
+      console.log(response.data.result)
+     if (response.status === 200){
+         let arr = [];
+         response.data.result.map((item) => {
+         arr.push(item.name);
+         })
+         setRequestFilter(arr);
+         }
+ 
+       }catch(err){
+     console.log(err)
+       }
+    }
+    fetch()
+ }, [brgy]);
+
+  useEffect(() => {
+    const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/requests/?brgy=${brgy}&archived=true&status=${statusFilter}&type=${requestFilter}&page=${currentPage}`
+          `${API_LINK}/requests/?brgy=${brgy}&archived=true&status=${statusFilter}&type=${selectedReqFilter}&page=${currentPage}`
         );
 
         if (response.status === 200) {
@@ -53,7 +75,7 @@ const ArchivedRequests = () => {
     };
 
     fetch();
-  }, [brgy, statusFilter, requestFilter, currentPage]);
+  }, [brgy, statusFilter, selectedReqFilter, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -66,8 +88,8 @@ const ArchivedRequests = () => {
   const handleStatusFilter = (selectedStatus) => {
     setStatusFilter(selectedStatus);
   };
-  const handleRequestFilter = (selectedStatus) => {
-    setRequestFilter(selectedStatus);
+  const handleRequestFilter = (selectedType) => {
+    setSelectedReqFilter(selectedType);
   };
 
   const handleResetFilter = () => {
@@ -107,6 +129,7 @@ const ArchivedRequests = () => {
   };
 
   const tableHeader = [
+    "Control #",
     "SERVICE NAME",
     "SENDER",
     "TYPE OF SERVICE",
@@ -445,62 +468,16 @@ const ArchivedRequests = () => {
                     RESET FILTERS
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
-                  <a
-                    onClick={() => handleRequestFilter("Healthcare")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    HEALTHCARE
-                  </a>
-                  <a
-                    onClick={() => handleRequestFilter("Education")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    EDUCATION
-                  </a>
-                  <a
-                    onClick={() => handleRequestFilter("Social Welfare")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    SOCIAL WELFARE
-                  </a>
-                  <a
-                    onClick={() => handleRequestFilter("Security and Safety")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    SECURITY AND SAFETY
-                  </a>
-                  <a
-                    onClick={() => handleRequestFilter("Infrastructure")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    INFRASTRUCTURE
-                  </a>
-                  <a
-                    onClick={() => handleRequestFilter("Community")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    COMMUNITY
-                  </a>
-                  <a
-                    onClick={() => handleRequestFilter("Administrative")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    ADMINISTRATIVE
-                  </a>
-                  <a
-                    onClick={() => handleRequestFilter("Environmental")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    ENVIRONMENTAL
-                  </a>
+                  {requestFilter.map((service_name, index) => (
+                    <a
+                      key={index}
+                      onClick={() => handleRequestFilter(service_name)}
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      href="#"
+                    >
+                      {service_name}
+                    </a>
+                  ))}
                 </ul>
               </div>
             </div>
@@ -536,14 +513,14 @@ const ArchivedRequests = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    const Requests = requests.filter((item) =>
-                      item.service_name
-                        .toLowerCase()
-                        .includes(e.target.value.toLowerCase())
-                    );
-
+                    const Requests = requests.filter((item) => {
+                        const fullName = `${item.form[0].firstName.value} ${item.form[0].lastName.value}`;
+                        const serviceId = item.req_id.toString(); // Assuming service_id is a number, convert it to string for case-insensitive comparison
+                        return fullName.toLowerCase().includes(e.target.value.toLowerCase()) || serviceId.includes(e.target.value.toLowerCase());
+                    });
+                
                     setFilteredRequests(Requests);
-                  }}
+                }}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
@@ -606,6 +583,11 @@ const ArchivedRequests = () => {
                           onChange={checkboxHandler}
                         />
                       </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <span className="text-xs sm:text-sm text-black line-clamp-4">
+                        {item.req_id}
+                      </span>
                     </td>
                     <td className="px-6 py-3">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
