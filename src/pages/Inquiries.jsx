@@ -665,7 +665,7 @@ const Inquiries = () => {
           />
         </div>
         <ArchiveModal selectedItems={selectedItems} />
-        <ViewInquiriesModal inquiry={inquiry} setInquiry={setInquiry} />
+        <ViewInquiriesModal inquiry={inquiry} setInquiry={setInquiry} brgy={brgy} />
         <Status status={status} setStatus={setStatus} />
       </div>
     </div>

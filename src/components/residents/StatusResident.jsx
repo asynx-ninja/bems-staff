@@ -8,6 +8,17 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
+  const [banner, setBanner] = useState({
+    link: "https://drive.google.com/file/d/1KNgbPSDYIaoDs2Ve644pvCpqdd0K6GXZ/view?usp=drive_link",
+    name: "resident_banner.png",
+    id: "1SM_QPFb_NmyMTLdsjtEd-2M6ersJhBUc",
+  });
+
+  const [logo, setLogo] = useState({
+    link: "https://drive.google.com/file/d/1jKinPMGDMtkRibohcdhVfq0VJt7KUrvO/view?usp=drive_link",
+    name: "resident_logo.png",
+    id: "1SM_QPFb_NmyMTLdsjtEd-2M6ersJhBUc",
+  });
 
   console.log("User: ", user);
 
@@ -40,19 +51,20 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
             category: "One",
             compose: {
               subject: `ACCOUNT ACTIVATION SUCCESSFUL!`,
-              message: `Welcome! Congratulations on successfully activating your account! We're delighted to welcome you to our community. You may need \n\n`,
+              message: `Welcome! Congratulations on successfully activating your account! We're delighted to welcome you to our community. You may now access the system!\n\n`,
               go_to: null,
             },
             target: {
               user_id: user.user_id,
               area: brgy,
             },
-            type: getType(brgy),
-            // banner: announcement.data.collections.banner,
-            // logo: announcement.data.collections.logo,
+            type: "Resident",
+            banner: banner,
+            logo: logo,
           };
   
           console.log("Notify: ", notify);
+          console.log("Result: ", response);
           
   
           const result = await axios.post(`${API_LINK}/notification/`, notify, {

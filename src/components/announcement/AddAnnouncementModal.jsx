@@ -139,7 +139,7 @@ function CreateAnnouncementModal({ brgy }) {
               user_id: null,
               area: null,
             },
-            type: getType(brgy),
+            type: null,
             banner: response.data.collections.banner,
             logo: response.data.collections.logo,
           };
@@ -162,7 +162,7 @@ function CreateAnnouncementModal({ brgy }) {
               user_id: null,
               area: brgy,
             },
-            type: getType(brgy),
+            type: "Resident",
             banner: response.data.collections.banner,
             logo: response.data.collections.logo,
           };

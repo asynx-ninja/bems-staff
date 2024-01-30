@@ -160,7 +160,7 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
               user_id: null,
               area: null,
             },
-            type: getType(brgy),
+            type: null,
             banner: announcement.data.collections.banner,
             logo: announcement.data.collections.logo,
           };
@@ -183,7 +183,7 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
               user_id: null,
               area: brgy,
             },
-            type: getType(brgy),
+            type: "Resident",
             banner: announcement.collections.banner,
             logo: announcement.collections.logo,
           };

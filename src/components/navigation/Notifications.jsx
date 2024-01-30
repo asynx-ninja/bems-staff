@@ -14,15 +14,34 @@ const Notifications = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
   const id = searchParams.get("id");
+  const [userData, setUserData] = useState({});
+
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const res = await axios.get(`${API_LINK}/users/specific/${id}`);
+        const res1 = await axios.get(
+          `${API_LINK}/brgyinfo/?brgy=${brgy}&logo=true`
+        );
+
+        if (res.status === 200 && res1.status === 200) {
+          setUserData(res.data[0]);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetch();
+  }, [id, brgy]);
+
+  // console.log("userData: ",userData);
 
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await axios.get(`${API_LINK}/notification`, {
-          params: {
-            area: brgy,
-          },
-        });
+        const response = await axios.get(
+          `${API_LINK}/notification/?user_id=${userData.user_id}&area=${brgy}&type=Barangay`
+        );
 
         if (response.status === 200) {
           setNotifications(response.data);

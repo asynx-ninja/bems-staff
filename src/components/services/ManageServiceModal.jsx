@@ -143,7 +143,7 @@ function ManageServiceModal({ service, setService, brgy }) {
             user_id: null,
             area: brgy,
           },
-          type: getType(brgy),
+          type: "Resident",
           banner: service.collections.banner,
           logo: service.collections.logo,
         };
