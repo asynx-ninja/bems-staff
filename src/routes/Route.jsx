@@ -27,6 +27,7 @@ import EventsManagement from "../pages/EventsManagement";
 import EventsRegistrations from "../pages/EventsRegistrations";
 import ArchivedEvents from "../pages/ArchivedEvents";
 import ArchivedRegistrations from "../pages/ArchivedRegistrations";
+import ViewNotifications from "../pages/ViewNotifications";
 
 const pages = [
   {
@@ -48,6 +49,10 @@ const pages = [
   {
     path: "/dashboard",
     element: <Navbar comp={<Dashboard />} />,
+  },
+  {
+    path: "/view_notifications",
+    element: <Navbar comp={<ViewNotifications/>} />,
   },
   {
     path: "/events_management",

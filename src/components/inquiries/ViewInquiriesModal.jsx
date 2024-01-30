@@ -11,8 +11,9 @@ import Dropbox from "./Dropbox";
 import ViewDropbox from "./ViewDropbox";
 import EditDropbox from "./EditDropbox";
 import ReplyLoader from "./loaders/ReplyLoader";
+import moment from "moment";
 
-function ViewInquiriesModal({ inquiry, setInquiry }) {
+function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
   const [reply, setReply] = useState(false);
   const [upload, setUpload] = useState(false);
   const [expandedIndexes, setExpandedIndexes] = useState([]);
@@ -29,6 +30,17 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
   const [newMessage, setNewMessage] = useState({
     message: "",
     date: new Date(),
+  });
+  const [banner, setBanner] = useState({
+    link: "https://drive.google.com/file/d/1v009xuRjSNW8OGUyHbAYTJt3ynxjhtGW/view?usp=drive_link",
+    name: "inquiries_banner.jpg",
+    id: "1SM_QPFb_NmyMTLdsjtEd-2M6ersJhBUc",
+  });
+
+  const [logo, setLogo] = useState({
+    link: "https://drive.google.com/file/d/1sh24YL7RQY_cHLcTZ_G3GXCG18Y6_JAL/view?usp=drive_link",
+    name: "inquiries_logo.png",
+    id: "1SM_QPFb_NmyMTLdsjtEd-2M6ersJhBUc",
   });
 
   useEffect(() => {
@@ -126,10 +138,6 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
     }
   };
 
-  console.log("StatusChanger: ", statusChanger);
-
-  console.log("New Message: ", newMessage.message);
-
   const DateFormat = (date) => {
     if (!date) return "";
 
@@ -150,10 +158,18 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
     setCreateFiles([...createFiles, ...e.target.files]);
   };
 
+  const getType = (type) => {
+    switch (type) {
+      case "MUNISIPYO":
+        return "Municipality";
+      default:
+        return "Barangay";
+    }
+  };
+
   const handleOnSend = async (e) => {
     e.preventDefault();
     setSubmitClicked(true);
-    console.log(newMessage);
 
     try {
       if (statusChanger && !inquiry.status) {
@@ -171,6 +187,7 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
         folder_id: inquiry.folder_id,
         status: inquiry.status,
       };
+
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
       for (let i = 0; i < createFiles.length; i++) {
@@ -182,18 +199,62 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
         formData
       );
 
-      setTimeout(() => {
-        setSubmitClicked(false);
-        setReplyStatus("success");
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
-      }, 1000);
+      if (response.status === 200) {
+        const notify = {
+          category: "One",
+          compose: {
+            subject: `INQUIRIES - ${inquiry.compose.subject}`,
+            message: `A barangay staff has responded to your inquiry.\n\n
+            
+            
+            Inquiries Details:\n 
+            - Name: ${inquiry.name}\n
+            - Message: ${inquiry.compose.message}\n
+            - inquiry ID: ${inquiry.inq_id}\n
+            - Date Created: ${moment(inquiry.createdAt).format(
+              "MMM. DD, YYYY h:mm a"
+            )}\n
+            - Status: ${inquiry.isApproved}\n
+            - Staff Handled: ${userData.lastName}, ${userData.firstName} ${
+              userData.middleName
+            }\n\n
+            `,
+            go_to: "Inquiries",
+          },
+          target: {
+            user_id: inquiry.user_id,
+            area: inquiry.brgy,
+          },
+          type: "Resident",
+          banner: banner,
+          logo: logo,
+        };
+
+        console.log("Inquiry: ", inquiry);
+        console.log("Notify: ", notify);
+        console.log("Result: ", response);
+
+        const result = await axios.post(`${API_LINK}/notification/`, notify, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (result.status === 200) {
+          setTimeout(() => {
+            setSubmitClicked(false);
+            setReplyStatus("success");
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+          }, 1000);
+        }
+      }
     } catch (error) {
       console.log(error);
       setSubmitClicked(false);
       setReplyStatus("error");
-      setError(err.message);
+      setError(error.message);
     }
   };
 
@@ -383,7 +444,7 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
                                                     className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                                                     role="tooltip"
                                                   >
-                                                    Change Request Status
+                                                    Change inquiry Status
                                                   </span>
                                                 </button>
                                               </div>
@@ -564,7 +625,8 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
                                             value={
                                               newMessage.message
                                                 ? newMessage.message
-                                                : statusChanger && inquiry.status
+                                                : statusChanger &&
+                                                  inquiry.status
                                                 ? `The status of your inquiry is ${inquiry.status}`
                                                 : ""
                                             }
@@ -617,7 +679,7 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
                                                                 className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                                                                 role="tooltip"
                                                               >
-                                                                Change Request
+                                                                Change inquiry
                                                                 Status
                                                               </span>
                                                             </button>
@@ -649,33 +711,47 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
                                                         </div>
                                                       )}
                                                       <select
-    id="status"
-    name="status"
-    onChange={(e) => {
-      if (
-        statusChanger &&
-        (!newMessage.message ||
-          newMessage.message.trim() === "")
-      ) {
-        setNewMessage((prev) => ({
-          ...prev,
-          message: `The status of your inquiry is ${e.target.value}`,
-        }));
-      }
-      setInquiry((prev) => ({
-        ...prev,
-        status: e.target.value,
-      }));
-    }}
-    className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
-    value={inquiry.status}
-    hidden={!statusChanger}
-  >
-    <option>- Select a Status -</option>
-    <option value="Pending">PENDING</option>
-    <option value="In Progress">IN PROGRESS</option>
-    <option value="Completed">COMPLETED</option>
-  </select>
+                                                        id="status"
+                                                        name="status"
+                                                        onChange={(e) => {
+                                                          if (
+                                                            statusChanger &&
+                                                            (!newMessage.message ||
+                                                              newMessage.message.trim() ===
+                                                                "")
+                                                          ) {
+                                                            setNewMessage(
+                                                              (prev) => ({
+                                                                ...prev,
+                                                                message: `The status of your inquiry is ${e.target.value}`,
+                                                              })
+                                                            );
+                                                          }
+                                                          setInquiry(
+                                                            (prev) => ({
+                                                              ...prev,
+                                                              status:
+                                                                e.target.value,
+                                                            })
+                                                          );
+                                                        }}
+                                                        className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
+                                                        value={inquiry.status}
+                                                        hidden={!statusChanger}
+                                                      >
+                                                        <option>
+                                                          - Select a Status -
+                                                        </option>
+                                                        <option value="Pending">
+                                                          PENDING
+                                                        </option>
+                                                        <option value="In Progress">
+                                                          IN PROGRESS
+                                                        </option>
+                                                        <option value="Completed">
+                                                          COMPLETED
+                                                        </option>
+                                                      </select>
                                                     </div>
                                                   </div>
                                                 </div>

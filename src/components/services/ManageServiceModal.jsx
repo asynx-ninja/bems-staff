@@ -6,7 +6,7 @@ import EditDropbox from "./EditDropbox";
 import API_LINK from "../../config/API";
 import EditLoader from "./loaders/EditLoader";
 
-function ManageServiceModal({ service, setService }) {
+function ManageServiceModal({ service, setService, brgy }) {
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
   const [files, setFiles] = useState([]);
@@ -74,6 +74,15 @@ function ManageServiceModal({ service, setService }) {
     setFiles([...files, ...e.target.files]);
   };
 
+  const getType = (type) => {
+    switch (type) {
+      case "MUNISIPYO":
+        return "Municipality";
+      default:
+        return "Barangay";
+    }
+  };
+
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
@@ -105,12 +114,12 @@ function ManageServiceModal({ service, setService }) {
 
       formData.append("service", JSON.stringify(service));
 
-      const result = await axios.patch(
+      const response = await axios.patch(
         `${API_LINK}/services/${service._id}`,
         formData
       );
 
-      if (result.status === 200) {
+      if (response.status === 200) {
         var logoSrc = document.getElementById("logo");
         logoSrc.src =
           "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
@@ -119,13 +128,44 @@ function ManageServiceModal({ service, setService }) {
         bannerSrc.src =
           "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
 
-        setTimeout(() => {
-          setSubmitClicked(false);
-          setUpdatingStatus("success");
+        const notify = {
+          category: "Many",
+          compose: {
+            subject: `SERVICES - ${service.name}`,
+            message: `Barangay ${brgy} has updated the service: ${service.name}.\n\n
+              
+              Service Details:\n 
+              ${service.details}\n\n
+              `,
+            go_to: "Services",
+          },
+          target: {
+            user_id: null,
+            area: brgy,
+          },
+          type: "Resident",
+          banner: service.collections.banner,
+          logo: service.collections.logo,
+        };
+
+        const result = await axios.post(`${API_LINK}/notification/`, notify, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        console.log("Notify: ", notify);
+        console.log("Result: ", response);
+
+        if (result.status === 200) {
           setTimeout(() => {
-            window.location.reload();
-          }, 3000);
-        }, 1000);
+            setSubmitClicked(false);
+            setUpdatingStatus("success");
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+          }, 1000);
+        }
       }
     } catch (err) {
       console.log(err);

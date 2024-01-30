@@ -34,7 +34,7 @@ function CreateServiceModal({ brgy }) {
     const selectedFile = e.target.files[0];
     setLogo(selectedFile);
 
-    var output = document.getElementById("logo");
+    var output = document.getElementById("add_logo");
     output.src = URL.createObjectURL(selectedFile);
     output.onload = function () {
       URL.revokeObjectURL(output.src); // free memory
@@ -44,7 +44,7 @@ function CreateServiceModal({ brgy }) {
   const handleBannerChange = (e) => {
     setBanner(e.target.files[0]);
 
-    var output = document.getElementById("banner");
+    var output = document.getElementById("add_banner");
     output.src = URL.createObjectURL(e.target.files[0]);
     output.onload = function () {
       URL.revokeObjectURL(output.src); // free memory
@@ -62,6 +62,15 @@ function CreateServiceModal({ brgy }) {
     e.preventDefault();
 
     setFiles([...files, ...e.target.files]);
+  };
+
+  const getType = (type) => {
+    switch (type) {
+      case "MUNISIPYO":
+        return "Municipality";
+      default:
+        return "Barangay";
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -95,9 +104,9 @@ function CreateServiceModal({ brgy }) {
 
       formData.append("service", JSON.stringify(obj));
 
-      const result = await axios.post(`${API_LINK}/services/`, formData);
+      const response = await axios.post(`${API_LINK}/services/`, formData);
 
-      if (result.status === 200) {
+      if (response.status === 200) {
         var logoSrc = document.getElementById("logo");
         logoSrc.src =
           "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
@@ -112,14 +121,46 @@ function CreateServiceModal({ brgy }) {
           fee: "",
           brgy: "",
         });
-        setLogo();
-        setBanner();
-        setFiles([]);
-        setSubmitClicked(false);
-        setCreationStatus("success");
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
+
+        const notify = {
+          category: "Many",
+          compose: {
+            subject: `SERVICES - ${service.name}`,
+            message: `Barangay ${brgy} is now offering a new service named: ${service.name}.\n\n
+            
+            Service Details:\n 
+            ${service.details}\n\n
+            `,
+            go_to: "Services",
+          },
+          target: {
+            user_id: null,
+            area: brgy,
+          },
+          type: "Resident",
+          banner: response.data.collections.banner,
+          logo: response.data.collections.logo,
+        };
+
+        const result = await axios.post(`${API_LINK}/notification/`, notify, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        console.log("Notify: ", notify);
+        console.log("Result: ", response);
+
+        if (result.status === 200) {
+          setLogo();
+          setBanner();
+          setFiles([]);
+          setSubmitClicked(false);
+          setCreationStatus("success");
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        }
       }
     } catch (err) {
       console.log(err);
@@ -182,7 +223,7 @@ function CreateServiceModal({ brgy }) {
                         className={`${
                           logo ? "" : "hidden"
                         } w-[200px] md:w-[250px]  lg:w-full md:h-[140px] lg:h-[250px] object-cover`}
-                        id="logo"
+                        id="add_logo"
                         alt="Current profile photo"
                       />{" "}
                       <CiImageOn
@@ -222,7 +263,7 @@ function CreateServiceModal({ brgy }) {
                         className={`${
                           logo ? "" : "hidden"
                         } w-[200px] md:w-[250px]  lg:w-full md:h-[140px] lg:h-[250px] object-cover`}
-                        id="banner"
+                        id="add_banner"
                         alt="Current profile photo"
                       />{" "}
                       <CiImageOn

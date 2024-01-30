@@ -604,7 +604,7 @@ const Services = () => {
       <ArchiveServicesModal selectedItems={selectedItems} />
       <CreateServiceModal brgy={brgy} />
       {/*<StatusServices status={status} setStatus={setStatus}/>*/}
-      <ManageServiceModal service={service} setService={setService} />
+      <ManageServiceModal service={service} setService={setService} brgy={brgy} />
       <GenerateReportsModal />
       <AddServicesForm service_id={service.service_id} brgy={brgy} />
       <EditServicesForm service_id={service.service_id} brgy={brgy} />
