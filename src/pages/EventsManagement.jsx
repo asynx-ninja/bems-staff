@@ -659,6 +659,7 @@ const EventsManagement = () => {
         <ManageAnnouncementModal
           announcement={announcement}
           setAnnouncement={setAnnouncement}
+          brgy={brgy}
         />
         <AddEventsForm announcement_id={announcement.event_id} brgy={brgy} />
         <EditEventsForm announcement_id={announcement.event_id} brgy={brgy} />

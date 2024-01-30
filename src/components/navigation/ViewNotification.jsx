@@ -7,7 +7,7 @@ function ViewNotification({id, brgy }) {
     <div>
       <div className="">
         <div
-          id="hs-modal-viewEvent"
+          id="hs-modal-viewNotification"
           className="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
         >
           <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
@@ -117,7 +117,7 @@ function ViewNotification({id, brgy }) {
                 <button
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
-                  data-hs-overlay="#hs-modal-viewEvent"
+                  data-hs-overlay="#hs-modal-viewNotification"
                 >
                   CLOSE
                 </button>

@@ -812,7 +812,7 @@ const Requests = () => {
       {Object.hasOwn(request, "service_id") ? (
         <ViewRequestModal request={request} officials={officials}/>
       ) : null}
-      <ReplyServiceModal request={request} setRequest={setRequest} />
+      <ReplyServiceModal request={request} setRequest={setRequest} brgy={brgy} />
       <ArchiveRequestsModal selectedItems={selectedItems} />
       <RequestsReportsModal />
     </div>

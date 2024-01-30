@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import header from "../../assets/image/bg-sidebar.jpg";
 import { FaBars, FaBell } from "react-icons/fa";
 import ViewNotification from "./ViewNotification";
+import API_LINK from "../../config/API";
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -23,6 +24,8 @@ const Notifications = () => {
     };
 
     fetch();
+
+    console.log("Notifications: ", notifications);
   }, [brgy]);
 
   const notificationData = [
@@ -42,7 +45,7 @@ const Notifications = () => {
         className="m-1 ms-0 relative flex justify-center items-center h-[2.875rem] w-[2.875rem] text-sm font-semibold text-white shadow-sm hover:bg-[#3d8da1] hover:rounded-xl disabled:opacity-50 disabled:pointer-events-none"
       >
         <FaBell size={20} />
-        {notifications.length > 0 && (
+        {notifications && notifications.length > 0 && (
           <span className="flex absolute top-0 end-0 h-3 w-3 -mt-1.5 -me-1.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600"></span>
             <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
