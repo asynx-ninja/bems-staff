@@ -142,6 +142,14 @@ const Residents = () => {
     setSearchQuery("");
   };
 
+  const handleCombinedActions = (item) => {
+    handleView({ ...item });
+    handleStatus({
+      id: item._id,
+      status: item.isApproved,
+    });
+  };
+
   return (
     <div className="mx-4 mt-4">
       <div className="flex flex-col ">
@@ -443,12 +451,7 @@ const Residents = () => {
                           <button
                             type="button"
                             data-hs-overlay="#hs-modal-statusResident"
-                            onClick={() =>
-                              handleStatus({
-                                id: item._id,
-                                status: item.isApproved,
-                              })
-                            }
+                            onClick={() => handleCombinedActions(item)}
                             className="hs-tooltip-toggle text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                           >
                             <FiEdit size={24} style={{ color: "#ffffff" }} />
@@ -502,7 +505,7 @@ const Residents = () => {
         <AddResidentsModal brgy={brgy} />
         <ArchiveResidentModal selectedItems={selectedItems} />
         <GenerateReportsModal />
-        <StatusResident status={status} setStatus={setStatus} />
+        <StatusResident user={user} setUser={setUser} brgy={brgy} status={status} setStatus={setStatus} />
         <ManageResidentModal user={user} setUser={setUser} />
       </div>
     </div>

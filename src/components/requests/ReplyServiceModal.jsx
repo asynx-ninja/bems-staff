@@ -224,12 +224,12 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
         const notify = {
           category: "One",
           compose: {
-            subject: `SERVICE REQUEST - ${request.service_name}`,
+            subject: `REQUEST - ${request.service_name}`,
             message: `A barangay staff has updated your request for the barangay service of ${
               request.service_name
             }.\n\n
       
-            Service Request Details:\n
+            Request Details:\n
             - Name: ${
               request.form && request.form[0]
                 ? request.form[0].lastName.value

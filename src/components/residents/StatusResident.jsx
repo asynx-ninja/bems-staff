@@ -4,16 +4,27 @@ import API_LINK from "../../config/API";
 import StatusLoader from "./loaders/StatusLoader";
 import { useState } from "react";
 
-function StatusResident({ status, setStatus }) {
+function StatusResident({ user, setUser, brgy, status, setStatus }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
+
+  console.log("User: ", user);
+
+  const getType = (type) => {
+    switch (type) {
+      case "MUNISIPYO":
+        return "Municipality";
+      default:
+        return "Barangay";
+    }
+  };
 
   const handleSave = async (e) => {
     try {
       e.preventDefault();
       setSubmitClicked(true);
-
+  
       const response = await axios.patch(
         `${API_LINK}/users/status/${status.id}`,
         {
@@ -21,16 +32,57 @@ function StatusResident({ status, setStatus }) {
         },
         { headers: { "Content-Type": "application/json" } }
       );
-
+  
       if (response.status === 200) {
-        setTimeout(() => {
-          setSubmitClicked(false);
-          setUpdatingStatus("success");
+        // Check if the status is "Registered" before sending notification
+        if (status.status === "Registered") {
+          const notify = {
+            category: "One",
+            compose: {
+              subject: `ACCOUNT ACTIVATION SUCCESSFUL!`,
+              message: `Welcome! Congratulations on successfully activating your account! We're delighted to welcome you to our community. You may need \n\n`,
+              go_to: null,
+            },
+            target: {
+              user_id: user.user_id,
+              area: brgy,
+            },
+            type: getType(brgy),
+            // banner: announcement.data.collections.banner,
+            // logo: announcement.data.collections.logo,
+          };
+  
+          console.log("Notify: ", notify);
+          
+  
+          const result = await axios.post(`${API_LINK}/notification/`, notify, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+  
+          if (result.status === 200) {
+            setTimeout(() => {
+              setSubmitClicked(false);
+              setUpdatingStatus("success");
+              setTimeout(() => {
+                window.location.reload();
+              }, 3000);
+            }, 1000);
+          }
+        } else {
+          // Status is not "Registered", proceed without sending notification
           setTimeout(() => {
-            window.location.reload();
-          }, 3000);
-        }, 1000);
-      } else;
+            setSubmitClicked(false);
+            setUpdatingStatus("success");
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+          }, 1000);
+        }
+      } else {
+        // Handle other status codes if needed
+      }
     } catch (err) {
       console.log(err);
       setSubmitClicked(false);

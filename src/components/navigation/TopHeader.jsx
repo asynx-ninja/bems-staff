@@ -59,7 +59,7 @@ const TopHeader = () => {
       </div>
 
       <img
-        className="mx-auto md:mx-0 md:mb-0 h-[50px] md:h-[50px] w-[165px] md:w-[170px] mb-2 md:mb-0"
+        className="mx-auto md:mx-0 md:mb-0 h-[50px] md:h-[50px] w-[165px] md:w-[170px] mb-2"
         src={header}
         alt=""
       />

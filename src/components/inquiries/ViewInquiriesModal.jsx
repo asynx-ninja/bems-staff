@@ -150,6 +150,15 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
     setCreateFiles([...createFiles, ...e.target.files]);
   };
 
+  const getType = (type) => {
+    switch (type) {
+      case "MUNISIPYO":
+        return "Municipality";
+      default:
+        return "Barangay";
+    }
+  };
+
   const handleOnSend = async (e) => {
     e.preventDefault();
     setSubmitClicked(true);
@@ -171,6 +180,7 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
         folder_id: inquiry.folder_id,
         status: inquiry.status,
       };
+
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
       for (let i = 0; i < createFiles.length; i++) {
@@ -182,13 +192,15 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
         formData
       );
 
-      setTimeout(() => {
-        setSubmitClicked(false);
-        setReplyStatus("success");
+      if (response.status === 200) {
         setTimeout(() => {
-          window.location.reload();
-        }, 3000);
-      }, 1000);
+          setSubmitClicked(false);
+          setReplyStatus("success");
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        }, 1000);
+      }
     } catch (error) {
       console.log(error);
       setSubmitClicked(false);
@@ -564,7 +576,8 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
                                             value={
                                               newMessage.message
                                                 ? newMessage.message
-                                                : statusChanger && inquiry.status
+                                                : statusChanger &&
+                                                  inquiry.status
                                                 ? `The status of your inquiry is ${inquiry.status}`
                                                 : ""
                                             }
@@ -649,33 +662,47 @@ function ViewInquiriesModal({ inquiry, setInquiry }) {
                                                         </div>
                                                       )}
                                                       <select
-    id="status"
-    name="status"
-    onChange={(e) => {
-      if (
-        statusChanger &&
-        (!newMessage.message ||
-          newMessage.message.trim() === "")
-      ) {
-        setNewMessage((prev) => ({
-          ...prev,
-          message: `The status of your inquiry is ${e.target.value}`,
-        }));
-      }
-      setInquiry((prev) => ({
-        ...prev,
-        status: e.target.value,
-      }));
-    }}
-    className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
-    value={inquiry.status}
-    hidden={!statusChanger}
-  >
-    <option>- Select a Status -</option>
-    <option value="Pending">PENDING</option>
-    <option value="In Progress">IN PROGRESS</option>
-    <option value="Completed">COMPLETED</option>
-  </select>
+                                                        id="status"
+                                                        name="status"
+                                                        onChange={(e) => {
+                                                          if (
+                                                            statusChanger &&
+                                                            (!newMessage.message ||
+                                                              newMessage.message.trim() ===
+                                                                "")
+                                                          ) {
+                                                            setNewMessage(
+                                                              (prev) => ({
+                                                                ...prev,
+                                                                message: `The status of your inquiry is ${e.target.value}`,
+                                                              })
+                                                            );
+                                                          }
+                                                          setInquiry(
+                                                            (prev) => ({
+                                                              ...prev,
+                                                              status:
+                                                                e.target.value,
+                                                            })
+                                                          );
+                                                        }}
+                                                        className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
+                                                        value={inquiry.status}
+                                                        hidden={!statusChanger}
+                                                      >
+                                                        <option>
+                                                          - Select a Status -
+                                                        </option>
+                                                        <option value="Pending">
+                                                          PENDING
+                                                        </option>
+                                                        <option value="In Progress">
+                                                          IN PROGRESS
+                                                        </option>
+                                                        <option value="Completed">
+                                                          COMPLETED
+                                                        </option>
+                                                      </select>
                                                     </div>
                                                   </div>
                                                 </div>
