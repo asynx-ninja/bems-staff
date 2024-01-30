@@ -89,7 +89,7 @@ const Requests = () => {
     };
   
     fetch();
-  }, [brgy, statusFilter, requestFilter, currentPage]);
+  }, [brgy, statusFilter, selectedReqFilter, currentPage]);
 
   useEffect(() => {
     const fetchData = async () => {
