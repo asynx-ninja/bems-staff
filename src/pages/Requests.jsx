@@ -41,6 +41,8 @@ const Requests = () => {
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [filteredRequests, setFilteredRequests] = useState([]);
   const [selected, setSelected] = useState("date");
+
+  const [officials, setOfficials] = useState([]);
   
 
   useEffect(() => {
@@ -87,7 +89,36 @@ const Requests = () => {
     };
   
     fetch();
-  }, [brgy, statusFilter, selectedReqFilter, currentPage]);
+  }, [brgy, statusFilter, requestFilter, currentPage]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
+        );
+
+        if (response.status === 200) {
+          const officialsData = response.data.result || [];
+
+          if (officialsData.length > 0) {
+            setOfficials(officialsData);
+          } else {
+            setOfficials([]);
+            console.log(`No officials found for Barangay ${brgy}`);
+          }
+        } else {
+          setOfficials([]);
+          console.error("Failed to fetch officials:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setOfficials([]);
+      }
+    };
+
+    fetchData();
+  }, [currentPage, brgy]); // Add positionFilter dependency
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -161,6 +192,13 @@ const Requests = () => {
   const DateFormat = (date) => {
     const dateFormat = date === undefined ? "" : date.substr(0, 10);
     return dateFormat;
+  };
+
+  const TimeFormat = (date) => {
+    if (!date) return "";
+  
+    const formattedTime = moment(date).format("hh:mm A");
+    return formattedTime;
   };
 
   const filters = (choice, selectedDate) => {
@@ -549,8 +587,8 @@ const Requests = () => {
                     setSearchQuery(e.target.value);
                     const Requests = requests.filter((item) => {
                         const fullName = `${item.form[0].firstName.value} ${item.form[0].lastName.value}`;
-                        const serviceId = item.req_id.toString(); // Assuming service_id is a number, convert it to string for case-insensitive comparison
-                        return fullName.toLowerCase().includes(e.target.value.toLowerCase()) || serviceId.includes(e.target.value.toLowerCase());
+                        const reqId = item.req_id.toString(); // Assuming service_id is a number, convert it to string for case-insensitive comparison
+                        return fullName.toLowerCase().includes(e.target.value.toLowerCase()) || reqId.includes(e.target.value.toLowerCase());
                     });
                 
                     setFilteredRequests(Requests);
@@ -640,7 +678,7 @@ const Requests = () => {
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {DateFormat(item.createdAt) || ""}
+                        {DateFormat(item.createdAt) || ""} - {TimeFormat(item.createdAt) || ""}
                         </span>
                       </div>
                     </td>
@@ -772,7 +810,7 @@ const Requests = () => {
         />
       </div>
       {Object.hasOwn(request, "service_id") ? (
-        <ViewRequestModal request={request} />
+        <ViewRequestModal request={request} officials={officials}/>
       ) : null}
       <ReplyServiceModal request={request} setRequest={setRequest} />
       <ArchiveRequestsModal selectedItems={selectedItems} />

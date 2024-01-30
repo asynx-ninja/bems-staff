@@ -2,17 +2,11 @@ import { useState, React, useRef } from "react";
 // FORM DETAILS
 import PersonalDetails from "./PersonalDetails";
 import OtherDetails from "./OtherDetails";
-import PrintForm from "./form/PrintForm";
-import PrintPDF from "./form/PrintPDF";
-import PrintDocumentTypeB from "./form/PrintDocumentTypeB";
+import { Link } from "react-router-dom";
 
-import { PDFDownloadLink } from "@react-pdf/renderer";
-
-function ViewRequestModal({ request, brgy, officials }) {
-  const [detail] = useState(request);
+function ViewRegistrationModal({ application, id, brgy }) {
+  const [detail] = useState(application);
   const [empty] = useState(false);
-
-  console.log("detail", detail);
 
   const returnFile = (string) => {
     for (const item of detail.file) {
@@ -63,7 +57,7 @@ function ViewRequestModal({ request, brgy, officials }) {
   return (
     <div>
       <div
-        id="hs-view-request-modal"
+        id="hs-view-application-modal"
         className="hs-overlay hidden fixed top-0 left-0 z-[80] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center "
       >
         {/* Modal */}
@@ -75,7 +69,7 @@ function ViewRequestModal({ request, brgy, officials }) {
                 className="font-bold text-white mx-auto md:text-xl text-center"
                 style={{ letterSpacing: "0.3em" }}
               >
-                REQUEST SERVICE
+                RESIDENT EVENT REGISTRATION
               </h3>
             </div>
 
@@ -97,27 +91,31 @@ function ViewRequestModal({ request, brgy, officials }) {
             {/* END OF BODY */}
             {/* BUTTON BELOW */}
             <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
-              <div className="sm:space-x-0 lg:space-x-2 sm:space-y-2 lg:space-y-0 w-full flex sm:flex-col lg:flex-row">
-                {request.status === "Transaction Completed" && (
-                  <PDFDownloadLink
-                    document={<PrintDocumentTypeB detail={detail} officials={officials}/>}
-                    fileName="SAMPLE.pdf"
-                    className="h-[2.5rem] flex justify-center items-center w-full py-1 px-6 gap-2 rounded-md border text-xs font-base bg-[#22687a] text-white shadow-sm"
-                  >
-                    GENERATE DOCUMENT REQUEST
-                  </PDFDownloadLink>
-                )}
-                <PDFDownloadLink
-                  document={<PrintPDF detail={detail} brgy={brgy}/>}
-                  fileName="SAMPLE.pdf"
-                  className="h-[2.5rem] flex justify-center items-center w-full py-1 px-6 gap-2 rounded-md border text-sm font-base bg-teal-900 text-white shadow-sm"
+              <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
+                <Link
+                  to={`/events_registrations/?id=${id}&brgy=${brgy}`}
+                  className="w-full"
+                  onClick={() => {
+                    window.innerWidth >= 300 && window.innerWidth <= 1920
+                      ? document
+                          .getQuerySelector(
+                            "[data-hs-overlay-backdrop-template]"
+                          )
+                          .remove()
+                      : null;
+                  }}
                 >
-                  GENERATE REQUEST FORM
-                </PDFDownloadLink>
+                  <button
+                    type="button"
+                    className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-md borde text-sm font-base bg-teal-700 text-white shadow-sm"
+                  >
+                    CHECK EVENTS APPLICATION PAGE
+                  </button>
+                </Link>
                 <button
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
-                  data-hs-overlay="#hs-view-request-modal"
+                  data-hs-overlay="#hs-view-application-modal"
                 >
                   CLOSE
                 </button>
@@ -130,4 +128,4 @@ function ViewRequestModal({ request, brgy, officials }) {
   );
 }
 
-export default ViewRequestModal;
+export default ViewRegistrationModal;

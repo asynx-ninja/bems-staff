@@ -51,6 +51,7 @@ const ArchivedEvents = () => {
             }
           });
   
+          setAnnouncements(announcementsResponse.data.result);
          
           Promise.all(announcementsData).then((announcementsWithCounts) => {
             setAnnouncementWithCounts(announcementsWithCounts);
@@ -128,6 +129,13 @@ const ArchivedEvents = () => {
   const DateFormat = (date) => {
     const dateFormat = date === undefined ? "" : date.substr(0, 10);
     return dateFormat;
+  };
+
+  const TimeFormat = (date) => {
+    if (!date) return "";
+  
+    const formattedTime = moment(date).format("hh:mm A");
+    return formattedTime;
   };
 
   const handleView = (item) => {
@@ -453,7 +461,7 @@ const ArchivedEvents = () => {
                   <td className="px-2 py-3 w-2/12">
                     <div className="flex justify-center items-center">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {DateFormat(item.createdAt) || ""}
+                      {DateFormat(item.createdAt) || ""} - {TimeFormat(item.createdAt) || ""}
                       </span>
                     </div>
                   </td>
