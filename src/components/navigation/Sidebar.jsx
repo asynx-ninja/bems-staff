@@ -31,10 +31,108 @@ const Sidebar = () => {
   const currentPath = location.pathname;
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
+  const to = searchParams.get("to")
   const [selectedOption, setSelectedOption] = useState('');
+  const [requests, setRequests] = useState([]);
+  const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
+  const [events, setEvents] = useState([]);
+  const [pendingEventsCount, setPendingEventsCount] = useState(0);
+  const [pendingEventsAndApp, setPendingEventsAndApp] = useState(0);
+  const [inquiries, setInquiries] = useState(0);
+  const [residentResponseCount, setResidentInquiriesLength] = useState(0);
+
+  useEffect(() => {
+    const fetchInquiries = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/inquiries/staffinquiries/?to=${to}&archived=false&brgy=${brgy}`
+        );
+
+        if (response.status === 200) {
+          const inquiries = response.data.result;
+          setInquiries(inquiries);
+
+          const residentInquiries = inquiries.filter((inquiry) => {
+            const latestResponse = inquiry.response[inquiry.response.length - 1];
+            return (
+              latestResponse &&
+              latestResponse.type === 'Resident' &&
+              (inquiry.isApproved === 'Pending' || inquiry.isApproved === 'In Progress')
+            );
+          });
+
+          const residentInquiriesLength = residentInquiries.length;
+          setResidentInquiriesLength(residentInquiriesLength);
+        } else {
+          console.error('Error fetching inquiries:', response.error);
+        }
+      } catch (err) {
+        console.error('Uncaught error:', err.message);
+      }
+    };
+
+    // Fetch inquiries initially
+    fetchInquiries();
+
+    // Set up a timer to fetch inquiries every 5 minutes (adjust as needed)
+    const intervalId = setInterval(fetchInquiries, 5 * 60 * 1000);
+
+    // Clear the interval when the component is unmounted
+    return () => clearInterval(intervalId);
+  }, [to, brgy]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch pending requests
+        const requestResponse = await fetch(`${API_LINK}/requests/getallpending/?isArchived=false&isApproved=Pending&brgy=${brgy}`);
+        const requestData = await requestResponse.json();
+
+        // Fetch pending events
+        const eventResponse = await fetch(`${API_LINK}/application/countpendingevents/?isArchived=false&status=Pending&brgy=${brgy}`);
+        const eventData = await eventResponse.json();
+
+        // Calculate the total count of pending events and requests
+        const totalPendingCount = requestData.result.length + eventData.result.length;
+        setPendingEventsAndApp(totalPendingCount); // Update the count of pending events and requests
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [brgy]);
+
+  useEffect(() => {
+    const fetchPendingRequest = async () => {
+      try {
+        const response = await fetch(`${API_LINK}/requests/getallpending/?isArchived=false&isApproved=Pending&brgy=${brgy}`);
+        const data = await response.json();
+        setRequests(data.result);
+        setPendingRequestsCount(data.result.length); // Update the count of pending services
+      } catch (error) {
+        console.error('Error fetching pending services:', error);
+      }
+    };
+
+    fetchPendingRequest();
+  }, []);
 
 
-  console.log("User: ", userData);
+  useEffect(() => {
+    const fetchPendingEvents = async () => {
+      try {
+        const response = await fetch(`${API_LINK}/application/countpendingevents/?isArchived=false&status=Pending&brgy=${brgy}`);
+        const data = await response.json();
+        setEvents(data.result);
+        setPendingEventsCount(data.result.length);
+      } catch (error) {
+        console.error('Error fetching pending services:', error);
+      }
+    };
+
+    fetchPendingEvents();
+  }, []);
 
   useEffect(() => {
     const fetch = async () => {
@@ -168,6 +266,14 @@ const Sidebar = () => {
                   >
                     <BiSolidDashboard size={15} />
                     Dashboard
+                    <span className="flex relative">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600" />
+                      {pendingEventsAndApp > 0 && (
+                        <span className="relative inline-flex text-xs bg-red-500 text-white rounded-full py-0.5 px-1.5">
+                          <text className="mr-[3px]"> {pendingEventsAndApp} </text>
+                        </span>
+                      )}
+                    </span>
                   </Link>
                 </li>
                 <li>
@@ -241,18 +347,28 @@ const Sidebar = () => {
                     >
                       <SiGoogleforms size={15} />
                       Events Application
+                      <span className="flex relative">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600" />
+                        {pendingEventsCount > 0 && (
+                          <span className="relative inline-flex text-xs bg-red-500 text-white rounded-full py-0.5 px-1.5">
+                            <text className="mr-[3px]"> {pendingEventsCount} </text>
+                          </span>
+                        )}
+                      </span>
+
                     </Link>
 
                   </div>
                 </li>
-
                 <li>
                   <Link
                     to={`/inquiries/?id=${id}&brgy=${brgy}`}
                     onClick={() => {
                       window.innerWidth >= 320 && window.innerWidth <= 1023
                         ? document
-                          .querySelector("[data-hs-overlay-backdrop-template]")
+                          .getQuerySelector(
+                            "[data-hs-overlay-backdrop-template]"
+                          )
                           .remove()
                         : null;
                     }}
@@ -263,8 +379,15 @@ const Sidebar = () => {
                   >
                     <FaRegNoteSticky size={15} />
                     Inquiries
+                    <span className="flex relative">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600" />
+                      {residentResponseCount > 0 && (
+                        <span className="relative inline-flex text-xs bg-red-500 text-white rounded-full py-0.5 px-1.5">
+                          {residentResponseCount}
+                        </span>
+                      )}
+                    </span>
                   </Link>
-
                 </li>
                 <li>
                   <Link
@@ -325,11 +448,9 @@ const Sidebar = () => {
                     <Link
                       to={`/services/?id=${id}&brgy=${brgy}`}
                       onClick={() => {
-                        setSelectedOption('services')
+                        setSelectedOption('services');
                         window.innerWidth >= 320 && window.innerWidth <= 1023
-                          ? document
-                            .querySelector("[data-hs-overlay-backdrop-template]")
-                            .remove()
+                          ? document.querySelector("[data-hs-overlay-backdrop-template]").remove()
                           : null;
                       }}
                       className={`${selectedOption === 'services'
@@ -358,6 +479,15 @@ const Sidebar = () => {
                     >
                       <GoGitPullRequest size={15} />
                       Service Requests
+                      <span className="flex relative">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600" />
+                        {pendingRequestsCount > 0 && (
+                          <span className="relative inline-flex text-xs bg-red-500 text-white rounded-full py-0.5 px-1.5">
+                            <text className="mr-[2 px]"> {pendingRequestsCount} </text>
+                          </span>
+                        )}
+                      </span>
+
                     </Link>
 
                   </div>
@@ -368,9 +498,9 @@ const Sidebar = () => {
                     <button
                       id="hs-unstyled-collapse"
                       data-hs-collapse="#hs-info-collapse-heading"
-                      className={`hs-collapse-toggle justify-between flex items-center w-full gap-x-3 py-2 px-2.5 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0] ${isClickedInformation && (selectedOption === 'reports' || selectedOption === 'officials'  || selectedOption === 'staff_management'  || selectedOption === 'info') ? "text-[#EFC586]" : ""
-                      }`}
-                    onClick={handleCollapseToggleInformations}
+                      className={`hs-collapse-toggle justify-between flex items-center w-full gap-x-3 py-2 px-2.5 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0] ${isClickedInformation && (selectedOption === 'reports' || selectedOption === 'officials' || selectedOption === 'staff_management' || selectedOption === 'info') ? "text-[#EFC586]" : ""
+                        }`}
+                      onClick={handleCollapseToggleInformations}
                     >
                       <div className="flex items-center gap-x-3">
                         <HiMiniInformationCircle size={15} />

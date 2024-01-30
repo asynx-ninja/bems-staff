@@ -81,6 +81,13 @@ const ArchivedRegistrations = () => {
     return dateFormat;
   };
 
+  const TimeFormat = (date) => {
+    if (!date) return "";
+  
+    const formattedTime = moment(date).format("hh:mm A");
+    return formattedTime;
+  };
+
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
     let value = e.target.value;
@@ -497,7 +504,7 @@ const ArchivedRegistrations = () => {
         </div>
 
         {/* Table */}
-        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_325px)] xxxl:h-[calc(100vh_-_345px)]">
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_325px)] lg:h-[calc(100vh_-_350px)] xxl:h-[calc(100vh_-_320px)] xxxl:h-[calc(100vh_-_345px)]">
           <table className="relative table-auto w-full">
             <thead className="bg-[#21556d] sticky top-0">
               <tr className="">
@@ -553,19 +560,18 @@ const ArchivedRegistrations = () => {
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {DateFormat(item.createdAt) || ""}
+                        {DateFormat(item.createdAt) || ""} - {TimeFormat(item.createdAt) || ""}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-3 xxl:w-3/12">
-                      {item.status === "Transaction Completed" && (
+                    <td className="px-2 xl:px-6 py-3 xxl:w-3/12">
+                      {item.status === "Application Completed" && (
                         <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            TRANSACTION COMPLETED
+                            APPLICATION COMPLETED
                           </span>
                         </div>
                       )}
-
                       {item.status === "Rejected" && (
                         <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
@@ -573,7 +579,6 @@ const ArchivedRegistrations = () => {
                           </span>
                         </div>
                       )}
-
                       {item.status === "Pending" && (
                         <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
@@ -634,12 +639,12 @@ const ArchivedRegistrations = () => {
                 <tr>
                   <td
                     colSpan={tableHeader.length + 1}
-                    className="text-center py-48 lg:py-48 xxl:py-32"
+                    className="text-center  sm:h-[15.8rem] md:h-[17.2rem] xl:py-1 lg:h-[15.7rem] xxl:py-32 xl:h-[15rem]"
                   >
                     <img
                       src={noData}
                       alt=""
-                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                      className=" w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-[13.2rem] xl:w-80 mx-auto"
                     />
                     <strong className="text-[#535353]">NO DATA FOUND</strong>
                   </td>

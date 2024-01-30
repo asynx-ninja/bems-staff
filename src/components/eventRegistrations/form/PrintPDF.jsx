@@ -9,9 +9,57 @@ import {
 } from "@react-pdf/renderer";
 import logo from "../../../assets/header/montalban-logo.png";
 import id_picture from "../../../assets/sample/official.jpg";
+import BALITE from "../../../assets/logo/BALITE.png";
+import BURGOS from "../../../assets/logo/BURGOS.png";
+import GERONIMO from "../../../assets/logo/GERONIMO.png";
+import MACABUD from "../../../assets/logo/MACABUD.png";
+import MANGGAHAN from "../../../assets/logo/MANGGAHAN.png";
+import MASCAP from "../../../assets/logo/MASCAP.png";
+import PURAY from "../../../assets/logo/PURAY.png";
+import ROSARIO from "../../../assets/logo/ROSARIO.png";
+import SAN_ISIDRO from "../../../assets/logo/SAN_ISIDRO.png";
+import SAN_JOSE from "../../../assets/logo/SAN_JOSE.png";
+import SAN_RAFAEL from "../../../assets/logo/SAN_RAFAEL.png";
 
 const PrintPDF = ({ detail }) => {
   const [date, setDate] = useState(new Date());
+
+  const returnLogo = () => {
+    switch (detail.brgy) {
+      case "BALITE":
+        return BALITE;
+
+      case "BURGOS":
+        return BURGOS;
+
+      case "GERONIMO":
+        return GERONIMO;
+
+      case "MACABUD":
+        return MACABUD;
+
+      case "MANGGAHAN":
+        return MANGGAHAN;
+
+      case "MASCAP":
+        return MASCAP;
+
+      case "PURAY":
+        return PURAY;
+
+      case "ROSARIO":
+        return ROSARIO;
+
+      case "SAN ISIDRO":
+        return SAN_ISIDRO;
+
+      case "SAN JOSE":
+        return SAN_JOSE;
+
+      case "SAN RAFAEL":
+        return SAN_RAFAEL;
+    }
+  };
 
   const formatBday = (bday) => {
     const formattedBirthday = bday.toLocaleDateString("en-PH", {
@@ -314,16 +362,23 @@ const PrintPDF = ({ detail }) => {
         </Text>
         <Text style={styles.letterHead.brgy}>BARANGAY {detail.brgy}</Text>
         <Text style={styles.letterHead.address}>
-          Barangay Hall, Dike Street, Rodriguez, Rizal | +63 (2) 8 948 0157
+          Barangay Hall, Rodriguez, Rizal | +63 (20 8 948 0157)
         </Text>
       </View>
-      <Image src={logo} alt="" srcset="" style={styles.letterHead.image} />
+      <Image
+        src={returnLogo()}
+        alt=""
+        srcset=""
+        style={styles.letterHead.image}
+      />
     </View>
   );
 
   const Title = () => (
     <View style={styles.title.view1}>
-      <Text style={styles.title.req}>{detail.event_name.toUpperCase()} REQUEST FORM</Text>
+      <Text style={styles.title.req}>
+        {detail.event_name.toUpperCase()} REQUEST FORM
+      </Text>
       <Text style={styles.title.id}>{detail.event_id}</Text>
     </View>
   );
@@ -332,7 +387,9 @@ const PrintPDF = ({ detail }) => {
     <View style={styles.bodyHead.bodyParent}>
       {/* BODY HEAD */}
       <View style={styles.bodyHead.column}>
-        <Text style={styles.bodyHead.text}>REQUEST ID: {detail.req_id}</Text>
+        <Text style={styles.bodyHead.text}>
+          APPLICATION ID: {detail.application_id}
+        </Text>
         <Text style={styles.bodyHead.text}>
           USER ID: {detail.form && detail.form[0].user_id.value}
         </Text>
@@ -417,10 +474,14 @@ const PrintPDF = ({ detail }) => {
         <Text style={styles.terms.bold}>
           I,{" "}
           <Text style={styles.terms.underline}>
-            OBSEQUIO, RUSSELL AMPOLOQUIO
+            {detail.form && detail.form[0]?.lastName?.value},{" "}
+            {detail.form && detail.form[0]?.firstName?.value}{" "}
+            {detail.form && detail.form[0]?.middleName?.value}
           </Text>
           , a resident of{" "}
-          <Text style={styles.terms.underline}>AREA 5B SITIO CABUYAO</Text>{" "}
+          <Text style={styles.terms.underline}>
+            {detail.form && detail.form[0]?.address?.value}
+          </Text>{" "}
           attest that
         </Text>
         <View style={styles.terms.listParent}>

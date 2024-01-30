@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import API_LINK from "../config/API";
 import axios from "axios";
-import { BsPrinter } from "react-icons/bs";
 import { AiOutlineEye } from "react-icons/ai";
 import { AiOutlineSend } from "react-icons/ai";
 import { MdRestartAlt } from "react-icons/md";
@@ -125,6 +124,13 @@ const ArchivedRequests = () => {
     return dateFormat;
   };
 
+  const TimeFormat = (date) => {
+    if (!date) return "";
+  
+    const formattedTime = moment(date).format("hh:mm A");
+    return formattedTime;
+  };
+
   const filters = (choice, selectedDate) => {
     switch (choice) {
       case "date":
@@ -132,7 +138,7 @@ const ArchivedRequests = () => {
           console.log(typeof new Date(item.createdAt), selectedDate);
           return (
             new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
             new Date(item.createdAt).getDate() === selectedDate.getDate()
           );
@@ -147,7 +153,7 @@ const ArchivedRequests = () => {
         return requests.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-              startDate.getFullYear() &&
+            startDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === startDate.getMonth() &&
             new Date(item.createdAt).getDate() >= startDate.getDate() &&
             new Date(item.createdAt).getDate() <= endDate.getDate()
@@ -156,7 +162,7 @@ const ArchivedRequests = () => {
         return requests.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -215,7 +221,7 @@ const ArchivedRequests = () => {
         <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
-              className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[25px] xxxl:text-3xl xxxl:mt-1 text-white"
+              className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
               ARCHIVED REQUESTS
@@ -235,9 +241,8 @@ const ArchivedRequests = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -388,7 +393,7 @@ const ArchivedRequests = () => {
                       )}
                       {selected === "year" && (
                         <input
-                          className="bg-[#21556d] text-white py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
+                        className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="number"
                           id="year"
                           name="year"
@@ -412,9 +417,8 @@ const ArchivedRequests = () => {
                 >
                   SERVICE TYPE
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -501,7 +505,7 @@ const ArchivedRequests = () => {
               </div>
             </div>
 
-            <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12">
+            <div className="sm:flex-col md:flex-row flex sm:w-full lg:ml-2 xl:ml-0 lg:w-7/12">
               <div className="flex flex-row w-full md:mr-2">
                 <button className=" bg-[#21556d] p-3 rounded-l-md">
                   <div className="w-full overflow-hidden">
@@ -530,7 +534,16 @@ const ArchivedRequests = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    const Requests = requests.filter((item) =>
+                      item.service_name
+                        .toLowerCase()
+                        .includes(e.target.value.toLowerCase())
+                    );
+
+                    setFilteredRequests(Requests);
+                  }}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
@@ -581,149 +594,149 @@ const ArchivedRequests = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-            {filteredRequests.length > 0 ? (
+              {filteredRequests.length > 0 ? (
                 filteredRequests.map((item, index) => (
-                <tr key={index} className="odd:bg-slate-100 text-center">
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <input
-                        type="checkbox"
-                        checked={selectedItems.includes(item._id)}
-                        value={item._id}
-                        onChange={checkboxHandler}
-                      />
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {item.service_name}
-                    </span>
-                  </td>
-                  <td className="px-6 py-3">
-                    <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {item.form[0].lastName.value +
-                        ", " +
-                        item.form[0].firstName.value +
-                        " " +
-                        item.form[0].middleName.value}
-                    </span>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
+                  <tr key={index} className="odd:bg-slate-100 text-center">
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item._id)}
+                          value={item._id}
+                          onChange={checkboxHandler}
+                        />
+                      </div>
+                    </td>
+                    <td className="px-6 py-3">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.type}
+                        {item.service_name}
                       </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
+                    </td>
+                    <td className="px-6 py-3">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {DateFormat(item.createdAt) || ""}
+                        {item.form[0].lastName.value +
+                          ", " +
+                          item.form[0].firstName.value +
+                          " " +
+                          item.form[0].middleName.value}
                       </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3 xxl:w-3/12">
-                    {item.status === "Transaction Completed" && (
-                      <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                          TRANSACTION COMPLETED
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {item.type}
                         </span>
                       </div>
-                    )}
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {DateFormat(item.createdAt) || ""} - {TimeFormat(item.createdAt) || ""}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3 xxl:w-3/12">
+                      {item.status === "Transaction Completed" && (
+                        <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            TRANSACTION COMPLETED
+                          </span>
+                        </div>
+                      )}
 
-                    {item.status === "Rejected" && (
-                      <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                          REJECTED
-                        </span>
-                      </div>
-                    )}
+                      {item.status === "Rejected" && (
+                        <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            REJECTED
+                          </span>
+                        </div>
+                      )}
 
-                    {item.status === "Pending" && (
-                      <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
-                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                          PENDING
-                        </span>
-                      </div>
-                    )}
-                    {item.status === "Paid" && (
-                      <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
-                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                          PAID
-                        </span>
-                      </div>
-                    )}
+                      {item.status === "Pending" && (
+                        <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            PENDING
+                          </span>
+                        </div>
+                      )}
+                      {item.status === "Paid" && (
+                        <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            PAID
+                          </span>
+                        </div>
+                      )}
 
-                    {item.status === "Processing" && (
-                      <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
-                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                          PROCESSING
-                        </span>
-                      </div>
-                    )}
+                      {item.status === "Processing" && (
+                        <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            PROCESSING
+                          </span>
+                        </div>
+                      )}
 
-                    {item.status === "Cancelled" && (
-                      <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
-                        <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                          CANCELLED
-                        </span>
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center space-x-1 sm:space-x-none">
-                      <div className="hs-tooltip inline-block">
-                        <button
-                          type="button"
-                          data-hs-overlay="#hs-view-request-modal"
-                          onClick={() => handleView({ ...item })}
-                          className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                        >
-                          <AiOutlineEye
-                            size={24}
-                            style={{ color: "#ffffff" }}
-                          />
-                        </button>
-                        <span
-                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                          role="tooltip"
-                        >
-                          View Request
-                        </span>
-                      </div>
+                      {item.status === "Cancelled" && (
+                        <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            CANCELLED
+                          </span>
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center space-x-1 sm:space-x-none">
+                        <div className="hs-tooltip inline-block">
+                          <button
+                            type="button"
+                            data-hs-overlay="#hs-view-request-modal"
+                            onClick={() => handleView({ ...item })}
+                            className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                          >
+                            <AiOutlineEye
+                              size={24}
+                              style={{ color: "#ffffff" }}
+                            />
+                          </button>
+                          <span
+                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                            role="tooltip"
+                          >
+                            View Request
+                          </span>
+                        </div>
 
-                      <div className="hs-tooltip inline-block">
-                        <button
-                          type="button"
-                          data-hs-overlay="#hs-reply-modal"
-                          onClick={() => handleView({ ...item })}
-                          className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                        >
-                          <AiOutlineSend
-                            size={24}
-                            style={{ color: "#ffffff" }}
-                          />
-                        </button>
-                        <span
-                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                          role="tooltip"
-                        >
-                          Reply to Request
-                        </span>
+                        <div className="hs-tooltip inline-block">
+                          <button
+                            type="button"
+                            data-hs-overlay="#hs-reply-modal"
+                            onClick={() => handleView({ ...item })}
+                            className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                          >
+                            <AiOutlineSend
+                              size={24}
+                              style={{ color: "#ffffff" }}
+                            />
+                          </button>
+                          <span
+                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                            role="tooltip"
+                          >
+                            Reply to Request
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                </tr>
-              ))) : (
+                    </td>
+                  </tr>
+                ))) : (
                 <tr>
                   <td
                     colSpan={tableHeader.length + 1}
-                    className="text-center py-48 lg:py-48 xxl:py-32"
+                    className="text-center sm:h-[15rem] md:h-[16.5rem] xl:py-1 lg:h-[17rem] xxl:py-32 xl:h-[17rem]"
                   >
                     <img
                       src={noData}
                       alt=""
-                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                      className=" w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-[14rem] xl:w-80 mx-auto"
                     />
                     <strong className="text-[#535353]">NO DATA FOUND</strong>
                   </td>

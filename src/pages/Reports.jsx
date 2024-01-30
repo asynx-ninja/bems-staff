@@ -16,16 +16,9 @@ const Reports = () => {
   const [archivedUsers, setArchivedUsers] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
-  const [isSpecificSelected, setIsSpecificSelected] = useState(false);
-  const [isTodaySelected, setIsTodaySelected] = useState(false);
-  const [isWeeklySelected, setIsWeeklySelected] = useState(false);
-  const [isMonthlySelected, setIsMonthlySelected] = useState(false);
-  const [isAnnualSelected, setIsAnnualSelected] = useState(false);
-  const [dateType, setDateType] = useState("specific");
-  const [startDate, setStartDate] = useState("");
-  const [specifiedDate, setSpecifiedDate] = useState(new Date());
-  const [selected, setSelected] = useState("date");
-
+  const [registeredCount, setRegisteredCount] = useState(0);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [deniedCount, setDeniedCount] = useState(0);
 
   useEffect(() => {
     document.title = "Reports | Barangay E-Services Management";
@@ -71,20 +64,29 @@ const Reports = () => {
         }
 
         // Fetch archived users
-        const archivedUsersResponse = await axios.get(
-          `${API_LINK}/users/showArchived/?brgy=${brgy}&type=Resident`
-        );
-        if (archivedUsersResponse.status === 200) {
-          setArchivedUsers(archivedUsersResponse.data.result);
-        } else {
-          setArchivedUsers([]);
-        }
-
         const announcementsResponse = await axios.get(
           `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
         );
+
         if (announcementsResponse.status === 200) {
           setAnnouncements(announcementsResponse.data.result);
+
+          // Fetch completed counts for each announcement
+          const announcementsData = await Promise.all(
+            announcementsResponse.data.result.map(async (announcement) => {
+              const completedResponse = await axios.get(
+                `${API_LINK}/application/completed?brgy=${brgy}&event_id=${announcement.event_id}`
+              );
+
+              if (completedResponse.status === 200) {
+                const completedCount = completedResponse.data.completedCount;
+                return { ...announcement, completedCount };
+              }
+            })
+          );
+
+          // Use the updated announcementsData with completed counts
+          setAnnouncements(announcementsData);
         } else {
           setAnnouncements([]);
         }
@@ -93,309 +95,62 @@ const Reports = () => {
       }
     };
 
-    // fetchData();
+    fetchData();
+
     const intervalId = setInterval(() => {
       fetchData();
-    }, 3000);
+    }, 10000);
 
     return () => clearInterval(intervalId);
   }, [brgy]);
 
-  const startOfWeek = (date) => {
-    const currentDate = new Date(date);
-    const day = currentDate.getDay();
-    const diff = currentDate.getDate() - day + (day === 0 ? -6 : 1); // Adjust when Sunday is the first day of the week
-    return new Date(currentDate.setDate(diff));
-  };
+  useEffect(() => {
+    // Fetch counts for each status
+    const getStatusCounts = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/users/all_brgy_resident`,
+          {
+            params: {
+              brgy: brgy,
+            },
+          }
+        );
 
-  // Function to get the end of the week
-  const endOfWeek = (date) => {
-    const currentDate = new Date(date);
-    const day = currentDate.getDay();
-    const diff = currentDate.getDate() + (6 - day); // Adjust when Sunday is the first day of the week
-    return new Date(currentDate.setDate(diff));
-  };
+        const data = response.data[0];
 
-  const startOfMonth = (date) => {
-    const currentDate = new Date(date);
-    return new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  };
+        if (data) {
+          const { residents } = data;
+          const registeredCount = residents.filter(
+            (resident) => resident.status === "Registered"
+          ).length;
+          const pendingCount = residents.filter(
+            (resident) => resident.status === "Pending"
+          ).length;
+          const deniedCount = residents.filter(
+            (resident) => resident.status === "Denied"
+          ).length;
 
-  // Function to get the end of the month
-  const endOfMonth = (date) => {
-    const currentDate = new Date(date);
-    return new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-  };
-
-  const startOfYear = (date) => {
-    const currentDate = new Date(date);
-    return new Date(currentDate.getFullYear(), 0, 1);
-  };
-
-  // Function to get the end of the year
-  const endOfYear = (date) => {
-    const currentDate = new Date(date);
-    return new Date(currentDate.getFullYear(), 11, 31);
-  };
-
-  const handleTodayToggle = () => {
-    setIsTodaySelected(false);
-    setIsSpecificSelected(false);
-    setIsWeeklySelected(false);
-    setIsMonthlySelected(false);
-    setIsAnnualSelected(false);
-    setIsTodaySelected(!isTodaySelected);
-  };
-
-  const handleSpecificToggle = () => {
-    setIsSpecificSelected(true);
-    setIsTodaySelected(false);
-    setIsWeeklySelected(false);
-    setIsMonthlySelected(false);
-    setIsAnnualSelected(false);
-    setIsSpecificSelected(!isSpecificSelected);
-  };
-
-  const handleWeeklyToggle = () => {
-    setIsSpecificSelected(false);
-    setIsTodaySelected(false);
-    setIsWeeklySelected(true);
-    setIsMonthlySelected(false);
-    setIsAnnualSelected(false);
-    setIsWeeklySelected(!isWeeklySelected);
-  };
-
-  const handleMonthlyToggle = () => {
-    setIsSpecificSelected(false);
-    setIsTodaySelected(false);
-    setIsWeeklySelected(false);
-    setIsMonthlySelected(true);
-    setIsAnnualSelected(false);
-    setIsMonthlySelected(!isMonthlySelected);
-  };
-
-  const handleAnnualToggle = () => {
-    setIsTodaySelected(false);
-    setIsWeeklySelected(false);
-    setIsMonthlySelected(false);
-    setIsAnnualSelected(true);
-    setIsAnnualSelected(!isAnnualSelected);
-  };
-
-  //Start for Profit
-  const allRequests = [...requests, ...archivedRequests];
-  const getFilteredRequests = () => {
-    if (isTodaySelected) {
-      return requests.filter(
-        (request) =>
-          request.status === "Transaction Completed" &&
-          new Date(request.createdAt).toDateString() ===
-            new Date().toDateString()
-      );
-    } else if (isWeeklySelected) {
-      return requests.filter(
-        (request) =>
-          request.status === "Transaction Completed" &&
-          new Date(request.createdAt) >= startOfWeek(new Date()) &&
-          new Date(request.createdAt) <= endOfWeek(new Date())
-      );
-    } else if (isMonthlySelected) {
-      return requests.filter(
-        (request) =>
-          request.status === "Transaction Completed" &&
-          new Date(request.createdAt) >= startOfMonth(new Date()) &&
-          new Date(request.createdAt) <= endOfMonth(new Date())
-      );
-    } else if (isAnnualSelected) {
-      return requests.filter(
-        (request) =>
-          request.status === "Transaction Completed" &&
-          new Date(request.createdAt) >= startOfYear(new Date()) &&
-          new Date(request.createdAt) <= endOfYear(new Date())
-      );
-    } else {
-      return requests.filter(
-        (request) => request.status === "Transaction Completed"
-      );
-    }
-  };
-
-  const filteredRequests = getFilteredRequests();
-
-  const totalFees = filteredRequests.reduce(
-    (total, request) => total + request.fee,
-    0
-  );
-
-  const estimatedRevenue = requests.reduce(
-    (total, request) =>
-      request.status !== "Cancelled" ? total + request.fee : total,
-    0
-  );
-
-  const filteredTotalServices = isTodaySelected
-    ? requests.filter(
-        (request) =>
-          new Date(request.createdAt).toDateString() ===
-          new Date().toDateString()
-      ).length
-    : isWeeklySelected
-    ? requests.filter(
-        (request) =>
-          new Date(request.createdAt) >= startOfWeek(new Date()) &&
-          new Date(request.createdAt) <= endOfWeek(new Date())
-      ).length
-    : isMonthlySelected
-    ? requests.filter(
-        (request) =>
-          new Date(request.createdAt) >= startOfMonth(new Date()) &&
-          new Date(request.createdAt) <= endOfMonth(new Date())
-      ).length
-    : isAnnualSelected
-    ? requests.filter(
-        (request) =>
-          new Date(request.createdAt) >= startOfYear(new Date()) &&
-          new Date(request.createdAt) <= endOfYear(new Date())
-      ).length
-    : requests.length;
-
-  const filteredCompletedServices = isTodaySelected
-    ? requests.filter(
-        (request) =>
-          request.status === "Transaction Completed" &&
-          new Date(request.createdAt).toDateString() ===
-            new Date().toDateString()
-      ).length
-    : isWeeklySelected
-    ? requests.filter(
-        (request) =>
-          request.status === "Transaction Completed" &&
-          new Date(request.createdAt) >= startOfWeek(new Date()) &&
-          new Date(request.createdAt) <= endOfWeek(new Date())
-      ).length
-    : isMonthlySelected
-    ? requests.filter(
-        (request) =>
-          request.status === "Transaction Completed" &&
-          new Date(request.createdAt) >= startOfMonth(new Date()) &&
-          new Date(request.createdAt) <= endOfMonth(new Date())
-      ).length
-    : isAnnualSelected
-    ? requests.filter(
-        (request) =>
-          request.status === "Transaction Completed" &&
-          new Date(request.createdAt) >= startOfYear(new Date()) &&
-          new Date(request.createdAt) <= endOfYear(new Date())
-      ).length
-    : requests.filter((request) => request.status === "Transaction Completed")
-        .length;
-
-  const filteredEstimatedRevenue = isTodaySelected
-    ? requests
-        .filter(
-          (request) =>
-            new Date(request.createdAt).toDateString() ===
-            new Date().toDateString()
-        )
-        .reduce(
-          (total, request) =>
-            request.status !== "Cancelled" ? total + request.fee : total,
-          0
-        )
-    : isWeeklySelected
-    ? requests
-        .filter(
-          (request) =>
-            new Date(request.createdAt) >= startOfWeek(new Date()) &&
-            new Date(request.createdAt) <= endOfWeek(new Date())
-        )
-        .reduce(
-          (total, request) =>
-            request.status !== "Cancelled" ? total + request.fee : total,
-          0
-        )
-    : isMonthlySelected
-    ? requests
-        .filter(
-          (request) =>
-            new Date(request.createdAt) >= startOfMonth(new Date()) &&
-            new Date(request.createdAt) <= endOfMonth(new Date())
-        )
-        .reduce(
-          (total, request) =>
-            request.status !== "Cancelled" ? total + request.fee : total,
-          0
-        )
-    : isAnnualSelected
-    ? requests
-        .filter(
-          (request) =>
-            new Date(request.createdAt) >= startOfYear(new Date()) &&
-            new Date(request.createdAt) <= endOfYear(new Date())
-        )
-        .reduce(
-          (total, request) =>
-            request.status !== "Cancelled" ? total + request.fee : total,
-          0
-        )
-    : requests.reduce(
-        (total, request) =>
-          request.status !== "Cancelled" ? total + request.fee : total,
-        0
-      );
-
-   // End for Profit
-
-  // Calculate total availed for each service
-  const allServices = [...services, ...archivedServices];
-  const totalAvailed = allServices.map((service) => {
-    const count = requests.filter(
-      (request) => request.service_name === service.name
-    ).length;
-    return {
-      service_name: service.name,
-      count,
+          setRegisteredCount(registeredCount);
+          setPendingCount(pendingCount);
+          setDeniedCount(deniedCount);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
-  });
 
-  const chartDataOverallAvailed = {
-    series: [
-      {
-        name: "Total Availed",
-        data: totalAvailed.map((item) => item.count),
-      },
-    ],
-    options: {
-      colors: ["#4b7c80"],
-      chart: {
-        background: "transparent",
-      },
-      xaxis: {
-        categories: totalAvailed.map((item) => item.service_name),
-        labels: {
-          style: {
-            fontSize: "9px",
-          },
-        },
-      },
-    },
-  };
+    // Initial fetch
+    getStatusCounts();
 
-  const getStatusCounts = () => {
-    const registeredCount = users.filter(
-      (user) => user.isApproved === "Registered"
-    ).length;
-    const pendingCount = users.filter(
-      (user) => user.isApproved === "Pending"
-    ).length;
-    const deniedCount = users.filter(
-      (user) => user.isApproved === "Denied"
-    ).length;
+    // Fetch data every 10 seconds
+    const intervalId = setInterval(() => {
+      getStatusCounts();
+    }, 10000);
 
-    return [registeredCount, pendingCount, deniedCount];
-  };
-
-  const [registeredCount, pendingCount, deniedCount] = getStatusCounts();
+    // Clear the interval when the component is unmounted or when brgy changes
+    return () => clearInterval(intervalId);
+  }, [brgy]); // Dependency on brgy to update counts when barangay changes
 
   const chartDataResidentStatus = {
     series: [registeredCount, pendingCount, deniedCount],
@@ -408,127 +163,202 @@ const Reports = () => {
     },
   };
 
+  const [activeResidentCount, setActiveResidentCount] = useState(0);
+  const [archivedResidentCount, setArchivedResidentCount] = useState(0);
+
+  useEffect(() => {
+    // Fetch data for both isArchived: "true" and isArchived: "false"
+    const getResidentIsArchivedData = async () => {
+      try {
+        const responseTrue = await axios.get(
+          `${API_LINK}/users/brgy_resident_isArchived`,
+          {
+            params: {
+              brgy: brgy,
+              isArchived: "true",
+            },
+          }
+        );
+
+        const responseFalse = await axios.get(
+          `${API_LINK}/users/brgy_resident_isArchived`,
+          {
+            params: {
+              brgy: brgy,
+              isArchived: "false",
+            },
+          }
+        );
+
+        const dataTrue = responseTrue.data[0];
+        const dataFalse = responseFalse.data[0];
+
+        const activeResidentCount = dataFalse ? dataFalse.residents.length : 0;
+        const archivedResidentCount = dataTrue ? dataTrue.residents.length : 0;
+
+        // Update state variables
+        setActiveResidentCount(activeResidentCount);
+        setArchivedResidentCount(archivedResidentCount);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    // Initial fetch
+    getResidentIsArchivedData();
+
+    // Fetch data every 10 seconds
+    const intervalId = setInterval(() => {
+      getResidentIsArchivedData();
+    }, 10000);
+
+    // Clear the interval when the component is unmounted or when brgy changes
+    return () => clearInterval(intervalId);
+  }, [brgy]);
+
+  const chartDataResidentIsArchived = {
+    series: [activeResidentCount, archivedResidentCount],
+    options: {
+      colors: ["#4caf50", "#ac4646"], // Colors for Active, Archived
+      chart: {
+        background: "transparent",
+      },
+      labels: ["Active Residents", "Archived Residents"],
+    },
+  };
+
   const currentDate = new Date();
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(currentDate.getMonth() - 6);
 
-  const monthlyRevenueData = Array.from({ length: 6 }, (_, index) => {
-    const startOfMonth = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth() - index,
-      1
-    );
-    const endOfMonth = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth() - index + 1,
-      0
-    );
+  const [statusPercentages, setStatusPercentages] = useState([]);
 
-    const revenue = requests
-      .filter(
-        (request) =>
-          request.status === "Transaction Completed" &&
-          new Date(request.createdAt) >= startOfMonth &&
-          new Date(request.createdAt) <= endOfMonth
-      )
-      .reduce((total, request) => total + request.fee, 0);
+  useEffect(() => {
+    const fetchTotalStatusRequests = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/requests/all_status_requests`,
+          {
+            params: {
+              brgy: brgy,
+            },
+          }
+        );
 
-    return revenue;
-  }).reverse();
+        const data = response.data;
 
-  const chartDataRevenue = {
-    series: [
-      {
-        name: "Revenue",
-        data: monthlyRevenueData,
-      },
-    ],
-    options: {
-      colors: ["#4b7c80"],
-      chart: {
-        background: "transparent",
-      },
-      xaxis: {
-        categories: Array.from({ length: 6 }, (_, index) =>
-          new Date(
-            currentDate.getFullYear(),
-            currentDate.getMonth() - index,
-            1
-          ).toLocaleString("en-us", {
-            month: "short",
-          })
-        ).reverse(),
-        labels: {
-          style: {
-            fontSize: "9px",
-          },
-        },
-      },
-    },
-  };
+        console.log("data for total status requests: ", data);
 
-  const handleDateTypeChange = (e) => {
-    setDateType(e.target.value);
-  };
+        // Assuming the API response has the structure similar to statusPercentages
+        setStatusPercentages(data);
+      } catch (error) {
+        console.error("Error fetching total status requests:", error);
+      }
+    };
 
-  const getStatusPercentages = () => {
-    const statusCounts = {};
+    // Initial fetch
+    fetchTotalStatusRequests();
 
-    // Initialize counts
-    [
-      "Transaction Completed",
-      "Rejected",
-      "Pending",
-      "Paid",
-      "Processing",
-      "Cancelled",
-    ].forEach((status) => {
-      statusCounts[status] = 0;
-    });
+    // Fetch data every 10 seconds
+    const intervalId = setInterval(() => {
+      fetchTotalStatusRequests();
+    }, 10000);
 
-    // Count occurrences of each status
-    requests.forEach((request) => {
-      statusCounts[request.status]++;
-    });
-
-    // Calculate percentages
-    const totalCount = requests.length;
-    const percentages = Object.fromEntries(
-      Object.entries(statusCounts).map(([status, count]) => [
-        status,
-        (count / totalCount) * 100,
-      ])
-    );
-
-    return percentages;
-  };
-
-  const statusPercentages = getStatusPercentages();
+    // Clear the interval when the component is unmounted or when brgy changes
+    return () => clearInterval(intervalId);
+  }, [brgy]);
 
   const chartDataStatusPercentage = {
-    series: Object.values(statusPercentages),
+    series: statusPercentages.map((percentage) => percentage.totalRequests),
     options: {
-      colors: [
-        "#4caf50",
-        "#ff9800",
-        "#ac4646",
-        "#2196f3",
-        "#ffeb3b",
-        "#9e9e9e",
-      ], // Add more colors if needed
+      colors: statusPercentages.map((percentage) => {
+        switch (percentage._id) {
+          case "Transaction Completed":
+            return "#007069";
+          case "Rejected":
+            return "#99364D";
+          case "Pending":
+            return "#d99c3f";
+          case "Paid":
+            return "#5B21B6";
+          case "Processing":
+            return "#1E40AF";
+          case "Cancelled":
+            return "#9e9e9e";
+          default:
+            return "#000000"; // Default color, modify as needed
+        }
+      }),
       chart: {
         background: "transparent",
       },
-      labels: [
-        "Transaction Completed",
-        "Rejected",
-        "Pending",
-        "Paid",
-        "Processing",
-        "Cancelled",
-      ],
+      labels: statusPercentages.map((percentage) => percentage._id),
     },
   };
+
+  //Inquiries Percentage:
+  const [statusPercentagesInquiries, setStatusPercentagesInquiries] = useState(
+    []
+  );
+
+  const chartDataInquiriesStatusPercentage = {
+    series: statusPercentagesInquiries.map(
+      (percentage) => percentage.totalRequests
+    ),
+    options: {
+      colors: statusPercentagesInquiries.map((percentage) => {
+        switch (percentage._id) {
+          case "Completed":
+            return "#007069";
+          case "Pending":
+            return "#99364D";
+          case "In Progress":
+            return "#d99c3f";
+          default:
+            return "#000000"; // Default color, modify as needed
+        }
+      }),
+      chart: {
+        background: "transparent",
+      },
+      labels: statusPercentagesInquiries.map((percentage) => percentage._id),
+    },
+  };
+
+  useEffect(() => {
+    const fetchTotalStatusInquiries = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/inquiries/all_status_inquiries`,
+          {
+            params: {
+              brgy: brgy,
+            },
+          }
+        );
+
+        const data = response.data;
+
+        console.log("data for total status inquiries: ", data);
+
+        // Assuming the API response has the structure similar to serviceSummary
+        setStatusPercentagesInquiries(data);
+      } catch (error) {
+        console.error("Error fetching total status inquiries:", error);
+      }
+    };
+
+    // Initial fetch
+    fetchTotalStatusInquiries();
+
+    // // Fetch data every 10 seconds
+    const intervalId = setInterval(() => {
+      fetchTotalStatusInquiries();
+    }, 10000);
+
+    // Clear the interval when the component is unmounted or when brgy changes
+    return () => clearInterval(intervalId);
+  }, [brgy]);
 
   const getPopulationGrowthData = () => {
     const currentDate = new Date();
@@ -699,10 +529,10 @@ const Reports = () => {
     },
   };
 
-  // Function to get the total attendees for each announcement
+  // Use completedCount instead of attendees.length
   const totalAttendees = announcements.map((announcement) => ({
     announcement_title: announcement.title,
-    attendees: announcement.attendees.length,
+    attendees: announcement.completedCount || 0, // Use completedCount, default to 0 if undefined
   }));
 
   // Sort the total attendees array in descending order
@@ -786,76 +616,667 @@ const Reports = () => {
     },
   };
 
-  const filters = (choice, selectedDate) => {
-    switch (choice) {
-      case "date":
-        return requests.filter((item) => {
-          console.log(typeof new Date(item.createdAt), selectedDate);
-          console.log(requests);
-          return (
-            new Date(item.createdAt).getFullYear() === selectedDate.getFullYear() &&
-            new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
-            new Date(item.createdAt).getDate() === selectedDate.getDate()
+  const [timeRange, setTimeRange] = useState("today");
+  const [specificDate, setSpecificDate] = useState(() => {
+    return new Date(); // Initializes the state to today's date as a Date object
+  });
+  const [specificWeek, setSpecificWeek] = useState(""); // Default to current date
+  const [specificYear, setSpecificYear] = useState(new Date().getFullYear());
+  const [specificMonth, setSpecificMonth] = useState(
+    `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(
+      2,
+      "0"
+    )}`
+  );
+
+  const [totalMonthlyRevenue, setTotalMonthlyRevenue] = useState(0);
+
+  useEffect(() => {
+    const fetchFeeSummary = async () => {
+      try {
+        const params = { timeRange: timeRange };
+
+        if (timeRange === "specific") {
+          params.specificDate = specificDate;
+        }
+
+        if (timeRange === "weekly" && specificWeek) {
+          const [year, weekNumber] = specificWeek.split("-W");
+          const weekStart = moment()
+            .isoWeekYear(year)
+            .isoWeek(weekNumber)
+            .startOf("isoWeek")
+            .toISOString();
+          params.week = weekStart;
+        }
+
+        if (timeRange === "monthly" && specificMonth) {
+          const [year, month] = specificMonth.split("-");
+          params.year = parseInt(year);
+          params.month = parseInt(month);
+        }
+
+        if (timeRange === "annual") {
+          params.year = specificYear;
+        }
+
+        // Make the API request using the GetMonthlyRevenueBrgy function
+        const response = await axios.get(
+          `${API_LINK}/requests/get_monthly_revenue_brgy`,
+          {
+            params: {
+              ...params,
+              brgy: brgy,
+            },
+          }
+        );
+
+        const data = response.data;
+
+        // Assuming your data structure is an array of objects
+        if (data.length > 0) {
+          // Assuming the totalFee property is present in each object
+          const totalMonthlyRevenue = data.reduce(
+            (total, item) => total + item.totalFee,
+            0
           );
-        });
-      case "week":
-        const startDate = selectedDate;
-        const endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + 6);
+          setTotalMonthlyRevenue(totalMonthlyRevenue);
+        } else {
+          setTotalMonthlyRevenue(0);
+        }
+      } catch (error) {
+        console.error("Error fetching monthly fee summary:", error);
+      }
+    };
 
-        console.log("start and end", startDate, endDate);
+    fetchFeeSummary();
+  }, [
+    timeRange,
+    specificDate,
+    specificWeek,
+    specificMonth,
+    specificYear,
+    brgy,
+  ]);
 
-        return requests.filter(
-          (item) =>
-            new Date(item.createdAt).getFullYear() === startDate.getFullYear() &&
-            new Date(item.createdAt).getMonth() === startDate.getMonth() &&
-            new Date(item.createdAt).getDate() >= startDate.getDate() &&
-            new Date(item.createdAt).getDate() <= endDate.getDate()
+  // Monthly Revenue Data Calculation
+  // const currentDate = new Date();
+
+  const monthlyRevenueData = Array.from({ length: 6 }, (_, index) => {
+    const startOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() - index,
+      1
+    );
+    const endOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() - index + 1,
+      0
+    );
+
+    const revenue =
+      index === 0
+        ? totalMonthlyRevenue // Use totalMonthlyRevenue for the current month
+        : requests
+            .filter(
+              (request) =>
+                request.status === "Transaction Completed" &&
+                new Date(request.updatedAt) >= startOfMonth &&
+                new Date(request.updatedAt) <= endOfMonth
+            )
+            .reduce((total, request) => total + request.fee, 0);
+
+    return revenue;
+  }).reverse();
+
+  // Chart Data
+  const chartDataRevenue = {
+    series: [
+      {
+        name: "Revenue",
+        data: monthlyRevenueData,
+      },
+    ],
+    options: {
+      colors: ["#4b7c80"],
+      chart: {
+        background: "transparent",
+      },
+      xaxis: {
+        categories: Array.from({ length: 6 }, (_, index) =>
+          new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth() - index,
+            1
+          ).toLocaleString("en-us", {
+            month: "short",
+          })
+        ).reverse(),
+        labels: {
+          style: {
+            fontSize: "9px",
+          },
+        },
+      },
+      yaxis: {
+        labels: {
+          formatter: function (value) {
+            return "PHP " + value;
+          },
+        },
+      },
+    },
+  };
+
+  const [estimatedRevenuess, setEstimatedRevenuess] = useState(0);
+
+  useEffect(() => {
+    const fetchFeeSummary = async () => {
+      try {
+        const params = { timeRange: timeRange };
+
+        if (timeRange === "specific") {
+          // specificDate is already in ISO format (YYYY-MM-DD)
+          params.specificDate = specificDate;
+        }
+
+        if (timeRange === "weekly" && specificWeek) {
+          // Send only the start of the week to the backend
+          const [year, weekNumber] = specificWeek.split("-W");
+          const weekStart = moment()
+            .isoWeekYear(year)
+            .isoWeek(weekNumber)
+            .startOf("isoWeek")
+            .toISOString();
+          params.week = weekStart;
+        }
+
+        if (timeRange === "monthly" && specificMonth) {
+          const [year, month] = specificMonth.split("-");
+          params.year = parseInt(year);
+          params.month = parseInt(month);
+        }
+
+        if (timeRange === "annual") {
+          params.year = specificYear;
+        }
+
+        // Make the API request
+        const response = await axios.get(
+          `${API_LINK}/requests/est_brgy_revenue`,
+          {
+            params: params,
+          }
         );
-      case "month":
-        return requests.filter(
-          (item) =>
-            new Date(item.createdAt).getFullYear() === selectedDate.getFullYear() &&
-            new Date(item.createdAt).getMonth() === selectedDate.getMonth()
+
+        const data = response.data;
+
+        // Assuming your data structure is an array with a single object
+        if (data.length > 0) {
+          const { totalFee } = data[0]; // Assuming the totalFee property is present
+          setEstimatedRevenuess(totalFee);
+        } else {
+          // If there is no data, set estimatedRevenuess to 0
+          setEstimatedRevenuess(0);
+        }
+      } catch (error) {
+        console.error("Error fetching fee summary:", error);
+      }
+    };
+
+    fetchFeeSummary();
+  }, [timeRange, specificDate, specificWeek, specificMonth, specificYear]);
+
+  const [totalFees, setTotalFees] = useState(0);
+
+  useEffect(() => {
+    const fetchFeeSummary = async () => {
+      try {
+        const params = { timeRange: timeRange };
+
+        if (timeRange === "specific") {
+          // specificDate is already in ISO format (YYYY-MM-DD)
+          params.specificDate = specificDate;
+        }
+
+        if (timeRange === "weekly" && specificWeek) {
+          // Send only the start of the week to the backend
+          const [year, weekNumber] = specificWeek.split("-W");
+          const weekStart = moment()
+            .isoWeekYear(year)
+            .isoWeek(weekNumber)
+            .startOf("isoWeek")
+            .toISOString();
+          params.week = weekStart;
+        }
+
+        if (timeRange === "monthly" && specificMonth) {
+          const [year, month] = specificMonth.split("-");
+          params.year = parseInt(year);
+          params.month = parseInt(month);
+        }
+
+        if (timeRange === "annual") {
+          params.year = specificYear;
+        }
+
+        // Make the API request using the GetRevenue function
+        const response = await axios.get(
+          `${API_LINK}/requests/get_brgy_revenue`,
+          {
+            params: {
+              ...params,
+              brgy: brgy, // Add your barangay value here
+            },
+          }
         );
-      case "year":
-        return requests.filter(
-          (item) => new Date(item.createdAt).getFullYear() === selectedDate.getFullYear()
+
+        const data = response.data;
+
+        // Assuming your data structure is an array with a single object
+        if (data.length > 0) {
+          const { totalFee } = data[0]; // Assuming the totalFee property is present
+          setTotalFees(totalFee);
+        } else {
+          // If there is no data, set totalFees to 0
+          setTotalFees(0);
+        }
+      } catch (error) {
+        console.error("Error fetching fee summary:", error);
+      }
+    };
+
+    fetchFeeSummary();
+  }, [timeRange, specificDate, specificWeek, specificMonth, specificYear]);
+
+  const [chartDataOverallRevenue, setChartDataOverallRevenue] = useState({
+    series: [
+      {
+        name: "Transaction Completed",
+        data: [],
+      },
+      {
+        name: "Paid",
+        data: [],
+      },
+    ],
+    options: {
+      colors: ["#4b7c80", "#ffa500"],
+      chart: {
+        background: "transparent",
+      },
+      xaxis: {
+        categories: [],
+        labels: {
+          style: {
+            fontSize: "9px",
+          },
+        },
+      },
+      yaxis: {
+        labels: {
+          formatter: function (value) {
+            return "PHP " + value;
+          },
+        },
+      },
+    },
+  });
+
+  useEffect(() => {
+    const fetchRevenueData = async () => {
+      try {
+        const params = { timeRange: timeRange };
+
+        if (timeRange === "specific") {
+          params.specificDate = specificDate;
+        }
+
+        if (timeRange === "weekly" && specificWeek) {
+          const [year, weekNumber] = specificWeek.split("-W");
+          const weekStart = moment()
+            .isoWeekYear(year)
+            .isoWeek(weekNumber)
+            .startOf("isoWeek")
+            .toISOString();
+          params.week = weekStart;
+        }
+
+        if (timeRange === "monthly" && specificMonth) {
+          const [year, month] = specificMonth.split("-");
+          params.year = parseInt(year);
+          params.month = parseInt(month);
+        }
+
+        if (timeRange === "annual") {
+          params.year = specificYear;
+        }
+
+        const response = await axios.get(
+          `${API_LINK}/requests/get_revenue_brgy_requests`,
+          {
+            params: {
+              ...params,
+              brgy: brgy,
+            },
+          }
         );
-    }
+
+        const data = response.data;
+
+        if (data.length > 0) {
+          const categories = data.map((item) => item._id.service_name);
+          const transactionCompletedData = data.map(
+            (item) => item.TransactionCompleted
+          );
+          const paidData = data.map((item) => item.Paid);
+
+          setChartDataOverallRevenue({
+            series: [
+              {
+                name: "Transaction Completed",
+                data: transactionCompletedData,
+              },
+              {
+                name: "Paid",
+                data: paidData,
+              },
+            ],
+            options: {
+              ...chartDataOverallRevenue.options,
+              xaxis: {
+                categories: categories,
+                labels: {
+                  style: {
+                    fontSize: "9px",
+                  },
+                },
+              },
+            },
+          });
+        } else {
+          // If there is no data, set chartDataOverallRevenue to initial state or handle as needed
+          setChartDataOverallRevenue({
+            series: [
+              {
+                name: "Transaction Completed",
+                data: [],
+              },
+              {
+                name: "Paid",
+                data: [],
+              },
+            ],
+            options: {
+              colors: ["#4b7c80", "#ffa500"],
+              chart: {
+                background: "transparent",
+              },
+              xaxis: {
+                categories: [],
+                labels: {
+                  style: {
+                    fontSize: "9px",
+                  },
+                },
+              },
+            },
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching revenue data:", error);
+      }
+    };
+
+    fetchRevenueData();
+
+    const intervalId = setInterval(() => {
+      fetchRevenueData();
+    }, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [
+    timeRange,
+    specificDate,
+    specificWeek,
+    specificMonth,
+    specificYear,
+    brgy,
+  ]);
+
+  const [totalServicess, setTotalServicess] = useState(0);
+  const [chartDataOverallAvailed, setChartDataOverallAvailed] = useState({
+    series: [
+      {
+        name: "Total Availed",
+        data: [],
+      },
+    ],
+    options: {
+      colors: ["#4b7c80"],
+      chart: {
+        background: "transparent",
+      },
+      xaxis: {
+        categories: [],
+        labels: {
+          style: {
+            fontSize: "9px",
+          },
+        },
+      },
+    },
+  });
+
+  useEffect(() => {
+    const fetchFeeSummary = async () => {
+      try {
+        const params = { timeRange: timeRange };
+
+        if (timeRange === "specific") {
+          // specificDate is already in ISO format (YYYY-MM-DD)
+          params.specificDate = specificDate;
+        }
+
+        if (timeRange === "weekly" && specificWeek) {
+          // Send only the start of the week to the backend
+          const [year, weekNumber] = specificWeek.split("-W");
+          const weekStart = moment()
+            .isoWeekYear(year)
+            .isoWeek(weekNumber)
+            .startOf("isoWeek")
+            .toISOString();
+          params.week = weekStart;
+        }
+
+        if (timeRange === "monthly" && specificMonth) {
+          const [year, month] = specificMonth.split("-");
+          params.year = parseInt(year);
+          params.month = parseInt(month);
+        }
+
+        if (timeRange === "annual") {
+          params.year = specificYear;
+        }
+
+        // Make the API request using the GetRevenue function
+        const response = await axios.get(
+          `${API_LINK}/requests/availed_services`,
+          {
+            params: {
+              ...params,
+              brgy: brgy, // Add your barangay value here
+            },
+          }
+        );
+
+        const data = response.data;
+
+        console.log("data for total availed: ", data);
+
+        // Assuming your data structure is an array with multiple objects
+        if (data.length > 0) {
+          // Calculate totalServices by summing up totalRequests for all statuses
+          const totalServices = data.reduce(
+            (acc, statusObj) => acc + statusObj.totalRequests,
+            0
+          );
+          setTotalServicess(totalServices);
+
+          // Create chart data based on the fetched data
+          const chartData = {
+            series: [
+              {
+                name: "Total Availed",
+                data: data.map((item) => item.totalRequests),
+              },
+            ],
+            options: {
+              colors: ["#4b7c80"],
+              chart: {
+                background: "transparent",
+              },
+              xaxis: {
+                categories: data.map((item) => item._id), // Assuming service_name is in _id field
+                labels: {
+                  style: {
+                    fontSize: "9px",
+                  },
+                },
+              },
+            },
+          };
+
+          setChartDataOverallAvailed(chartData);
+        } else {
+          // If there is no data, set totalServices to 0 and display the message
+          setTotalServicess(0);
+          // You can customize the message as needed
+          setChartDataOverallAvailed({
+            series: [
+              {
+                name: "Total Availed",
+                data: [0],
+              },
+            ],
+            options: {
+              colors: ["#4b7c80"],
+              chart: {
+                background: "transparent",
+              },
+              xaxis: {
+                categories: ["No Availed Service for Specific Date"],
+                labels: {
+                  style: {
+                    fontSize: "9px",
+                  },
+                },
+              },
+            },
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching fee summary:", error);
+      }
+    };
+
+    fetchFeeSummary();
+  }, [
+    timeRange,
+    specificDate,
+    specificWeek,
+    specificMonth,
+    specificYear,
+    brgy,
+  ]);
+
+  const [completedRequests, setCompletedRequests] = useState(0);
+  useEffect(() => {
+    const fetchCompletedRequests = async () => {
+      try {
+        const params = { timeRange: timeRange };
+
+        if (timeRange === "specific") {
+          // specificDate is already in ISO format (YYYY-MM-DD)
+          params.specificDate = specificDate;
+        }
+
+        if (timeRange === "weekly" && specificWeek) {
+          // Send only the start of the week to the backend
+          const [year, weekNumber] = specificWeek.split("-W");
+          const weekStart = moment()
+            .isoWeekYear(year)
+            .isoWeek(weekNumber)
+            .startOf("isoWeek")
+            .toISOString();
+          params.week = weekStart;
+        }
+
+        if (timeRange === "monthly" && specificMonth) {
+          const [year, month] = specificMonth.split("-");
+          params.year = parseInt(year);
+          params.month = parseInt(month);
+        }
+
+        if (timeRange === "annual") {
+          params.year = specificYear;
+        }
+
+        // Make the API request using the GetRevenue function
+        const response = await axios.get(
+          `${API_LINK}/requests/completed_requests`,
+          {
+            params: {
+              ...params,
+              brgy: brgy, // Add your barangay value here
+            },
+          }
+        );
+
+        const data = response.data;
+
+        console.log("data for completed requests: ", data);
+
+        // Assuming your data structure is an array with multiple objects
+        if (data.length > 0) {
+          // Calculate totalCompletedRequests by summing up totalRequests for "Transaction Completed" status
+          const totalCompletedRequests = data.reduce(
+            (acc, statusObj) =>
+              acc +
+              (statusObj._id === "Transaction Completed"
+                ? statusObj.totalRequests
+                : 0),
+            0
+          );
+          setCompletedRequests(totalCompletedRequests);
+        } else {
+          // If there is no data, set completedRequests to 0
+          setCompletedRequests(0);
+        }
+      } catch (error) {
+        console.error("Error fetching completed requests:", error);
+      }
+    };
+
+    fetchCompletedRequests();
+  }, [
+    timeRange,
+    specificDate,
+    specificWeek,
+    specificMonth,
+    specificYear,
+    brgy,
+  ]);
+
+  const handleTimeRangeChange = (newTimeRange) => {
+    setTimeRange(newTimeRange);
   };
 
-  const onSelect = (e) => {
-    console.log("select", e.target.value);
-
-    setSelected(e.target.value);
-
-    console.log("specified select", filters(e.target.value, specifiedDate));
+  // Function to handle specific date change
+  const handleSpecificDateChange = (date) => {
+    setSpecificDate(date);
+    // You can perform additional logic here if needed
   };
-
-  const onChangeDate = (e) => {
-    const date = new Date(e.target.value);
-    setSpecifiedDate(date);
-  };
-
-  const onChangeWeek = (e) => {
-    const date = moment(e.target.value).toDate();
-    setSpecifiedDate(date);
-  };
-
-  const onChangeMonth = (e) => {
-    const date = moment(e.target.value).toDate();
-    setSpecifiedDate(date);
-  };
-
-  const onChangeYear = (e) => {
-    if (e.target.value === "") {
-      setRequests(requests); // Replace with your initial data
-    } else {
-      const date = new Date(e.target.value, 0, 1);
-      setSpecifiedDate(date);
-    }
-  }
 
   return (
     <div className="mx-4 mt-4 ">
@@ -864,177 +1285,129 @@ const Reports = () => {
           <div className="flex flex-col w-full lg:w-auto">
             <div
               id="toggle-count"
-              className="flex p-0.5 bg-gray-700 rounded-lg w-full lg:w-auto items-center overflow-y-scroll lg:overflow-y-hidden"
+              className="flex p-0.5 bg-gray-700 rounded-lg w-full lg:w-auto items-center overflow-y-hidden"
             >
-              <label
-                htmlFor="toggle-count-specific"
-                className="relative inline-block py-1.5 md:py-2 px-3 w-full bg-gray-700 lg:w-auto items-center justify-center"
+              <button
+                className={`px-3 py-2 w-full bg-gray-700 text-gray-800 rounded-l-lg font-medium text-sm lg:text-base focus:bg-gray-600 focus:outline-none  ${
+                  timeRange === "specific"
+                    ? "bg-gray-600 text-white"
+                    : "bg-gray-200 text-white"
+                }`}
+                onClick={() => handleTimeRangeChange("specific")}
               >
-                <span
-                  className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
-                    isSpecificSelected
-                      ? "dark:text-white"
-                      : "dark:text-gray-200"
-                  }`}
-                  onClick={handleSpecificToggle}
-                >
-                  Specific
-                </span>
-                <input
-                  id="toggle-count-today"
-                  name="toggle-count"
-                  type="radio"
-                  className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
-                  checked={isSpecificSelected}
-                  onChange={onChangeDate}
-                />
-              </label>
-              <label
-                htmlFor="toggle-count-today"
-                className="relative inline-block py-2 px-3 w-full lg:w-auto flex items-center justify-center"
+                Specific
+              </button>
+              <button
+                className={`px-3 py-2 w-full bg-gray-700 text-gray-800  font-medium text-sm lg:text-base focus:bg-gray-600 focus:outline-none  ${
+                  timeRange === "today"
+                    ? "bg-gray-600 text-white"
+                    : "bg-gray-200 text-white"
+                }`}
+                onClick={() => handleTimeRangeChange("today")}
               >
-                <span
-                  className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
-                    isTodaySelected ? "dark:text-white" : "dark:text-gray-200"
-                  }`}
-                  onClick={handleTodayToggle}
-                >
-                  Today
-                </span>
-                <input
-                  id="toggle-count-today"
-                  name="toggle-count"
-                  type="radio"
-                  className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
-                  checked={isTodaySelected}
-                />
-              </label>
-              <label
-                htmlFor="toggle-count-weekly"
-                className="relative inline-block py-2 px-1 lg:px-3 w-full lg:w-auto flex items-center justify-center"
+                Today
+              </button>
+              <button
+                className={`px-3 py-2 w-full bg-gray-700 text-gray-800  font-medium text-sm lg:text-base focus:bg-gray-600 focus:outline-none  ${
+                  timeRange === "weekly"
+                    ? "bg-gray-600 text-white"
+                    : "bg-gray-200 text-white"
+                }`}
+                onClick={() => handleTimeRangeChange("weekly")}
               >
-                <span
-                  className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
-                    isWeeklySelected ? "dark:text-white" : "dark:text-gray-200"
-                  }`}
-                  onClick={handleWeeklyToggle}
-                >
-                  Weekly
-                </span>
-                <input
-                  id="toggle-count-weekly"
-                  name="toggle-count"
-                  type="radio"
-                  className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
-                  checked={isWeeklySelected}
-                  onChange={onChangeWeek}
-                />
-              </label>
-              <label
-                htmlFor="toggle-count-monthly"
-                className="relative inline-block py-2 px-3 w-full lg:w-auto flex items-center justify-center"
+                Weekly
+              </button>
+              <button
+                className={`px-3 py-2 w-full bg-gray-700 text-gray-800  font-medium text-sm lg:text-base focus:bg-gray-600 focus:outline-none  ${
+                  timeRange === "monthly"
+                    ? "bg-gray-600 text-white"
+                    : "bg-gray-200 text-white"
+                }`}
+                onClick={() => handleTimeRangeChange("monthly")}
               >
-                <span
-                  className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
-                    isMonthlySelected ? "dark:text-white" : "dark:text-gray-200"
-                  }`}
-                  onClick={handleMonthlyToggle}
-                >
-                  Monthly
-                </span>
-                <input
-                  id="toggle-count-monthly"
-                  name="toggle-count"
-                  type="radio"
-                  className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
-                  onChange={onChangeMonth}
-                />
-              </label>
-              <label
-                htmlFor="toggle-count-annual"
-                className="relative inline-block py-2 px-3 w-full lg:w-auto flex items-center justify-center"
+                Monthly
+              </button>
+              <button
+                className={`px-3 py-2 w-full bg-gray-700 text-gray-800  font-medium text-sm lg:text-base focus:bg-gray-600 focus:outline-none  ${
+                  timeRange === "annual"
+                    ? "bg-gray-600 text-white"
+                    : "bg-gray-200 text-white"
+                }`}
+                onClick={() => handleTimeRangeChange("annual")}
               >
-                <span
-                  className={`inline-block relative z-10 text-sm font-medium text-gray-800 cursor-pointer ${
-                    isAnnualSelected ? "dark:text-white" : "dark:text-gray-200"
-                  }`}
-                  onClick={handleAnnualToggle}
-                >
-                  Annual
-                </span>
-                <input
-                  id="toggle-count-annual"
-                  name="toggle-count"
-                  type="radio"
-                  className="absolute top-0 end-0 w-full h-full border-transparent bg-transparent bg-none text-transparent rounded-lg cursor-pointer before:absolute before:inset-0 before:w-full before:h-full before:rounded-lg focus:ring-offset-0 before:bg-slate-700 before:shadow-sm checked:before:bg-slate-800 checked:before:shadow-sm checked:bg-none focus:ring-transparent"
-                  onChange={onChangeYear}
-                  min={1990}
-                  max={new Date().getFullYear() + 10}
-                />
-              </label>
+                Annual
+              </button>
             </div>
 
             {/* DATE INPUTS */}
-            <div className="w-full">
-              {isSpecificSelected && (
-                <div className="flex flex-col">
-                  <select
-                    className="bg-[#f8f8f8] text-gray-600 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
-                    onChange={onSelect}
-                    defaultValue={selected}
-                  >
-                    <option value="date">Specific Date</option>
-                    <option value="week">Week</option>
-                    <option value="month">Month</option>
-                    <option value="year">Year</option>
-                  </select>
-                  {selected === "date" && (
+            <div className="w-full mt-2">
+              {timeRange === "specific" && (
+                <div className="flex flex-col md:flex-row md:justify-center md:items-center bg-gray-200 shadow-sm rounded-lg p-2 ">
+                  <label className="mr-4 text-sm font-medium text-gray-700">
+                    Select Specific Date:
+                  </label>
+                  <input
+                    type="date"
+                    value={specificDate.toISOString().split("T")[0]}
+                    onChange={(e) => setSpecificDate(new Date(e.target.value))}
+                    className="px-2 py-1 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500 text-sm text-gray-700"
+                  />
+                </div>
+              )}
+
+              {timeRange === "weekly" && (
+                <div className="flex flex-col md:flex-row md:justify-center md:items-center bg-gray-200 shadow-sm rounded-lg p-2 ">
+                  <label className="mr-4 text-sm font-medium text-gray-700">
+                    Select Specific Week:
+                  </label>
+                  <div className="relative">
                     <input
-                      className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
-                      type="date"
-                      id="date"
-                      name="date"
-                      onChange={onChangeDate}
-                    />
-                  )}
-                  {selected === "week" && (
-                    <input
-                      className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                       type="week"
-                      id="week"
-                      name="week"
-                      onChange={onChangeWeek}
+                      value={specificWeek}
+                      onChange={(e) => setSpecificWeek(e.target.value)}
+                      className="px-2 py-1 border-2 border-gray-300 w-full rounded-md focus:outline-none focus:border-blue-500 text-sm text-gray-700"
                     />
-                  )}
-                  {selected === "month" && (
-                    <input
-                      className=" text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
-                      type="month"
-                      id="month"
-                      name="month"
-                      onChange={onChangeMonth}
-                    />
-                  )}
-                  {selected === "year" && (
-                    <input
-                      className=" text-black py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
-                      type="number"
-                      id="year"
-                      name="year"
-                      placeholder="YEAR"
-                      onChange={onChangeYear}
-                      min={1990}
-                      max={new Date().getFullYear() + 10}
-                    />
-                  )}
+                  </div>
+                </div>
+              )}
+
+              {timeRange === "monthly" && (
+                <div className="flex flex-col md:flex-row md:justify-center md:items-center bg-gray-200 shadow-sm rounded-lg p-2 ">
+                  <label className="mr-4 text-sm font-medium text-gray-700">
+                    Select Month:
+                  </label>
+                  <input
+                    className="text-gray-400 px-2 py-1 rounded-md font-medium shadow-sm text-sm border border-black"
+                    type="month"
+                    id="month"
+                    name="month"
+                    value={specificMonth} // Directly use specificMonth as value
+                    onChange={(e) => setSpecificMonth(e.target.value)} // Update specificMonth with the input's value directly
+                  />
+                </div>
+              )}
+
+              {timeRange === "annual" && (
+                <div className="flex flex-col md:flex-row md:justify-center md:items-center bg-gray-200 shadow-sm rounded-lg p-2">
+                  <label className="mr-4 text-sm font-medium text-gray-700">
+                    Select Year:
+                  </label>
+                  <input
+                    type="number"
+                    value={specificYear}
+                    min="1950"
+                    max={new Date().getFullYear() + 10}
+                    onChange={(e) => setSpecificYear(parseInt(e.target.value))}
+                    className="px-2 py-1 border-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500 text-sm text-gray-700"
+                  />
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 lg:items-center border border-gray-200 bg-[#2c606d] shadow-sm rounded-xl">
-          <div className="flex flex-col p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 lg:items-center shadow-sm rounded-xl gap-3 ">
+          <div className="flex flex-col p-4 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] rounded-xl">
             <h4 className="text-white mb-1 text-xs lg:text-md">
               TOTAL SERVICES TAKEN
             </h4>
@@ -1043,12 +1416,12 @@ const Reports = () => {
                 data-hs-toggle-count='{"target": "#toggle-count", "min": 19, "max": 29}'
                 className="text-white font-semibold text-xl lg:text-3xl "
               >
-                {filteredTotalServices}
+                {totalServicess}
               </p>
             </div>
           </div>
 
-          <div className="flex flex-col p-4">
+          <div className="flex flex-col p-4 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] rounded-xl">
             <div className="flex justify-between">
               <h4 className="text-white mb-1 text-xs lg:text-md">
                 COMPLETED SERVICES
@@ -1059,12 +1432,12 @@ const Reports = () => {
                 data-hs-toggle-count='{"target": "#toggle-count", "min": 89, "max": 99}'
                 className="text-gray-800 font-semibold text-xl lg:text-3xl dark:text-gray-200"
               >
-                {filteredCompletedServices}
+                {completedRequests}
               </p>
             </div>
           </div>
 
-          <div className="flex flex-col p-4">
+          <div className="flex flex-col p-4 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] rounded-xl">
             <div className="flex justify-between">
               <h4 className="text-white mb-1 text-xs lg:text-md">
                 ESTIMATED OVERALL REVENUE
@@ -1078,12 +1451,12 @@ const Reports = () => {
                 data-hs-toggle-count='{"target": "#toggle-count", "min": 89, "max": 99}'
                 className="text-gray-800 font-semibold text-xl lg:text-3xl dark:text-gray-200"
               >
-                {filteredEstimatedRevenue}
+                {estimatedRevenuess}
               </p>
             </div>
           </div>
 
-          <div className="flex flex-col p-4">
+          <div className="flex flex-col p-4 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] rounded-xl">
             <h4 className="text-white mb-1 text-xs lg:text-md">
               CURRENT REVENUE FROM SERVICES
             </h4>
@@ -1119,14 +1492,14 @@ const Reports = () => {
 
           <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
             <h1 className="mt-5 ml-5 font-medium text-black">
-              REVENUE FOR THE PAST 6 MONTHS
+              REVENUE FROM SERVICES
             </h1>
             <div className="flex rounded-xl">
               <Chart
-                type="line"
+                type="bar"
                 className="flex w-full rounded-xl"
-                series={chartDataRevenue.series}
-                options={chartDataRevenue.options}
+                series={chartDataOverallRevenue.series}
+                options={chartDataOverallRevenue.options}
               />
             </div>
           </div>
@@ -1150,14 +1523,14 @@ const Reports = () => {
 
           <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
             <h1 className="mt-5 ml-5 font-medium text-black">
-              POPULATION GROWTH (FOR THE PAST 6 MONTHS)
+              ACTIVE AND ARCHIVED RESIDENTS
             </h1>
-            <div className="flex rounded-xl">
+            <div className="flex rounded-xl justify-center items-center">
               <Chart
-                type="line"
-                className="flex w-full rounded-xl"
-                series={chartDataPopulationGrowth.series}
-                options={chartDataPopulationGrowth.options}
+                type="pie"
+                className="flex rounded-xl items-center justify-center w-[400px] lg:w-[300px] xl:w-[400px] xxl:w-[540px] my-10"
+                series={chartDataResidentIsArchived.series}
+                options={chartDataResidentIsArchived.options}
               />
             </div>
           </div>
@@ -1172,7 +1545,7 @@ const Reports = () => {
             <div className="flex justify-center items-center rounded-xl">
               <Chart
                 type="pie"
-                className="flex rounded-xl justify-center w-[500px] lg:w-[300px] xl:w-[400px] xxl:w-[600px] my-10"
+                className="flex rounded-xl justify-center w-[500px] lg:w-[300px] xl:w-[400px] xxl:w-[620px] my-10"
                 series={chartDataStatusPercentage.series}
                 options={chartDataStatusPercentage.options}
               />
@@ -1180,6 +1553,20 @@ const Reports = () => {
           </div>
 
           <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+            <h1 className="mt-5 ml-5 font-medium text-black">
+              INQUIRIES PERCENTAGE
+            </h1>
+            <div className="flex justify-center items-center rounded-xl">
+              <Chart
+                type="pie"
+                className="flex rounded-xl justify-center w-[500px] lg:w-[300px] xl:w-[400px] xxl:w-[550px] my-10"
+                series={chartDataInquiriesStatusPercentage.series}
+                options={chartDataInquiriesStatusPercentage.options}
+              />
+            </div>
+          </div>
+
+          {/* <div className="bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
             <h1 className="mt-5 ml-5 font-medium text-black">
               SERVICE REQUEST COMPLETION RATE (FOR THE PAST 6 MONTHS)
             </h1>
@@ -1191,7 +1578,7 @@ const Reports = () => {
                 options={chartDataCompletionRate.options}
               />
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* CHARTS 4 */}
@@ -1210,7 +1597,7 @@ const Reports = () => {
             </div>
           </div>
 
-          <div className="flex flex-col bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
+          {/* <div className="flex flex-col bg-[#e9e9e9] w-full lg:w-1/2 rounded-xl mt-5">
             <h1 className="mt-5 ml-5 font-medium text-black">
               OVERALL NUMBER OF CREATED EVENTS (FOR THE PAST 6 MONTHS)
             </h1>
@@ -1222,7 +1609,7 @@ const Reports = () => {
                 options={chartDataEventsOrganized.options}
               />
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

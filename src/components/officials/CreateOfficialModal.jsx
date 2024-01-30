@@ -277,6 +277,8 @@ function CreateOfficialModal({ brgy }) {
                       <option value="Barangay Kagawad">Barangay Kagawad</option>
                       <option value="SK Chairman">SK Chairman</option>
                       <option value="SK Kagawad">SK Kagawad</option>
+                      <option value="Secretary">Secretary</option>
+                      <option value="Treasurer">Treasurer</option>
                     </select>
                   </div>
                   <div className="w-full mt-2">
@@ -349,7 +351,7 @@ function CreateOfficialModal({ brgy }) {
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
                   onClick={handleSubmit}
                 >
-                  SAVE CHANGES
+                  CREATE
                 </button>
                 <button
                   type="button"

@@ -26,13 +26,16 @@ function CreateAnnouncementModal({ brgy }) {
   const [error, setError] = useState(null);
   const [emptyFields, setEmptyFields] = useState([]);
   const [empty, setEmpty] = useState(false);
+  const [isLogoSelected, setIsLogoSelected] = useState(false);
+  const [isBannerSelected, setIsBannerSelected] = useState(false);
   const navigate = useNavigate();
 
   const handleLogoChange = (e) => {
-    setLogo(e.target.files[0]);
+    const selectedFile = e.target.files[0];
+    setLogo(selectedFile);
 
-    var output = document.getElementById("logo");
-    output.src = URL.createObjectURL(e.target.files[0]);
+    var output = document.getElementById("add_logo");
+    output.src = URL.createObjectURL(selectedFile);
     output.onload = function () {
       URL.revokeObjectURL(output.src); // free memory
     };
@@ -41,7 +44,7 @@ function CreateAnnouncementModal({ brgy }) {
   const handleBannerChange = (e) => {
     setBanner(e.target.files[0]);
 
-    var output = document.getElementById("banner");
+    var output = document.getElementById("add_banner");
     output.src = URL.createObjectURL(e.target.files[0]);
     output.onload = function () {
       URL.revokeObjectURL(output.src); // free memory
@@ -74,6 +77,15 @@ function CreateAnnouncementModal({ brgy }) {
     setFiles([]);
   };
 
+  const getType = (type) => {
+    switch (type) {
+      case "MUNISIPYO":
+        return "Municipality";
+      default:
+        return "Barangay";
+    }
+  };
+
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
@@ -103,15 +115,76 @@ function CreateAnnouncementModal({ brgy }) {
 
       formData.append("announcement", JSON.stringify(obj));
 
-      const result = await axios.post(`${API_LINK}/announcement/`, formData);
+      const response = await axios.post(`${API_LINK}/announcement/`, formData);
 
-      if (result.status === 200) {
-        clearForm();
-        setSubmitClicked(false);
-        setCreationStatus("success");
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
+      if (response.status === 200) {
+        let notify;
+
+        if (announcement.isOpen) {
+          notify = {
+            category: "All",
+            compose: {
+              subject: `EVENT - ${announcement.title}`,
+              message: `Barangay ${brgy} has posted a new event named: ${announcement.title}.\n\n
+              
+              Event Details:\n 
+              ${announcement.details}\n\n
+  
+              Event Date:
+              ${announcement.date}\n\n
+              `,
+              go_to: "Events",
+            },
+            target: {
+              user_id: null,
+              area: null,
+            },
+            type: getType(brgy),
+            banner: response.data.collections.banner,
+            logo: response.data.collections.logo,
+          };
+        } else {
+          notify = {
+            category: "Many",
+            compose: {
+              subject: `EVENT - ${announcement.title}`,
+              message: `Barangay ${brgy} has posted a new event named: ${announcement.title}.\n\n
+              
+              Event Details:\n 
+              ${announcement.details}\n\n
+  
+              Event Date:
+              ${announcement.date}\n\n
+              `,
+              go_to: "Events",
+            },
+            target: {
+              user_id: null,
+              area: brgy,
+            },
+            type: getType(brgy),
+            banner: response.data.collections.banner,
+            logo: response.data.collections.logo,
+          };
+        }
+
+        console.log("Notify: ", notify);
+        console.log("Result: ", response);
+
+        const result = await axios.post(`${API_LINK}/notification/`, notify, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (result.status === 200) {
+          clearForm();
+          setSubmitClicked(false);
+          setCreationStatus("success");
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        }
       }
     } catch (err) {
       console.error(err);
@@ -123,9 +196,13 @@ function CreateAnnouncementModal({ brgy }) {
 
   const checkEmptyFieldsForAnnouncement = () => {
     let arr = [];
-    const keysToCheck = ["title", "details", "date"];
+    const keysToCheck = ["title", "details", "date", "logo", "banner"]; // Add "logo" and "banner" to the list of keys
     for (const key of keysToCheck) {
-      if (announcement[key] === "") {
+      if (key === "logo" && !logo) {
+        arr.push(key);
+      } else if (key === "banner" && !banner) {
+        arr.push(key);
+      } else if (announcement[key] === "") {
         arr.push(key);
       }
     }
@@ -162,12 +239,15 @@ function CreateAnnouncementModal({ brgy }) {
                     Logo
                   </label>
                   <div className="flex flex-col items-center space-y-2 relative">
-                    <div className="w-full border border-gray-300">
+                    <div
+                      className={`w-full border "border-gray-300"
+                      `}
+                    >
                       <img
                         className={`${
                           logo ? "" : "hidden"
                         } w-[200px] md:w-[250px]  lg:w-full md:h-[140px] lg:h-[250px] object-cover`}
-                        id="logo"
+                        id="add_logo"
                         alt="Current profile photo"
                       />{" "}
                       <CiImageOn
@@ -175,7 +255,13 @@ function CreateAnnouncementModal({ brgy }) {
                         className={`${!logo ? "" : "hidden"} mx-auto`}
                       />
                     </div>
-                    <label className="w-full bg-white border border-gray-300">
+                    <label
+                      className={`w-full bg-white border ${
+                        emptyFields.includes("logo")
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                    >
                       <span className="sr-only">Choose logo photo</span>
                       <input
                         type="file"
@@ -196,12 +282,15 @@ function CreateAnnouncementModal({ brgy }) {
                     Banner
                   </label>
                   <div className="flex flex-col items-center space-y-2 relative">
-                    <div className="w-full border border-gray-300">
+                    <div
+                      className={`w-full border "border-gray-300"
+                      `}
+                    >
                       <img
                         className={`${
                           banner ? "" : "hidden"
                         } w-[200px] md:w-[250px]  lg:w-full md:h-[140px] lg:h-[250px] object-cover`}
-                        id="banner"
+                        id="add_banner"
                         alt="Current profile photo"
                       />{" "}
                       <CiImageOn
@@ -209,7 +298,13 @@ function CreateAnnouncementModal({ brgy }) {
                         className={`${!banner ? "" : "hidden"} mx-auto`}
                       />
                     </div>
-                    <label className="w-full bg-white border border-gray-300">
+                    <label
+                      className={`w-full bg-white border ${
+                        emptyFields.includes("banner")
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                    >
                       <span className="sr-only">Choose banner photo</span>
                       <input
                         type="file"
@@ -328,9 +423,7 @@ function CreateAnnouncementModal({ brgy }) {
             </div>
           </div>
         </div>
-        {empty && (
-        <ErrorPopup />
-        )}
+        {empty && <ErrorPopup />}
         {/* <AddLoader /> */}
         {submitClicked && <AddLoader creationStatus="creating" />}
         {creationStatus && (

@@ -104,6 +104,7 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
                         <img
                           src={selectedOfficial.picture?.link || ""}
                           alt=""
+                          id="edit_pfp"
                           className="w-[250px] h-[250px] md:w-full md:h-[350px] lg:max-w-[450px] lg:h-[350px] mx-auto rounded-t-xl object-cover"
                         />
                       </div>
@@ -227,6 +228,8 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
                       <option value="Barangay Kagawad">Barangay Kagawad</option>
                       <option value="SK Chairman">SK Chairman</option>
                       <option value="SK Kagawad">SK Kagawad</option>
+                      <option value="Secretary">Secretary</option>
+                      <option value="Treasurer">Treasurer</option>
                     </select>
                   </div>
                   <div className="w-full mt-2">

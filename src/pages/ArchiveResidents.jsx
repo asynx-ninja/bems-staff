@@ -125,15 +125,7 @@ const Residents = () => {
     }
   };
 
-  const tableHeader = [
-    "NAME",
-    "EMAIL",
-    "AGE",
-    "GENDER",
-    "CONTACT",
-    "STATUS",
-    "ACTIONS",
-  ];
+  const tableHeader = ["NAME", "EMAIL", "AGE", "CONTACT", "STATUS", "ACTIONS"];
 
   useEffect(() => {
     document.title = "Archived Residents | Barangay E-Services Management";
@@ -283,7 +275,7 @@ const Residents = () => {
         </div>
 
         {/* Table */}
-        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_320px)] xxxl:h-[calc(100vh_-_345px)]">
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_330px)] xl:h-[calc(100vh_-_350px)] xxl:h-[calc(100vh_-_320px)] xxxl:h-[calc(100vh_-_300px)]">
           <table className="w-full relative table-auto">
             <thead className="bg-[#21556d] sticky top-0">
               <tr className="">
@@ -324,30 +316,24 @@ const Residents = () => {
                       </div>
                     </td>
                     <td className="py-3">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2 ">
+                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
                         {item.lastName +
                           ", " +
                           item.firstName +
-                          " " +
-                          item.middleName}
+                          (item.middleName !== undefined
+                            ? " " + item.middleName
+                            : "")}
                       </span>
                     </td>
                     <td className="py-3">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2 ">
+                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2 ">
                         {item.email}
                       </span>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="xl:px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                           {item.age}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="py-3">
-                      <div className="flex justify-center items-center">
-                        <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {item.sex}
                         </span>
                       </div>
                     </td>
@@ -360,22 +346,22 @@ const Residents = () => {
                     </td>
                     <td className="py-3">
                       {item.isApproved === "Registered" && (
-                        <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                        <div className="flex w-full items-center justify-center bg-custom-green-button3 xl:m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
                             REGISTERED
                           </span>
                         </div>
                       )}
                       {item.isApproved === "Denied" && (
-                        <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                        <div className="flex w-full items-center justify-center bg-custom-red-button xl:m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
                             DENIED
                           </span>
                         </div>
                       )}
                       {item.isApproved === "Pending" && (
-                        <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                        <div className="flex w-full items-center justify-center bg-custom-amber xl:m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
                             PENDING
                           </span>
                         </div>
@@ -410,12 +396,12 @@ const Residents = () => {
                 <tr>
                   <td
                     colSpan={tableHeader.length + 1}
-                    className="text-center py-48 lg:py-48 xxl:py-32"
+                    className="text-center sm:h-[16.2rem] xl:py-1 lg:h-[16rem] xxl:py-32 xl:h-[15rem]"
                   >
                     <img
                       src={noData}
                       alt=""
-                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                      className=" w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-[12rem] xl:w-80 mx-auto"
                     />
                     <strong className="text-[#535353]">NO DATA FOUND</strong>
                   </td>

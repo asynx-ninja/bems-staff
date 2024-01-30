@@ -11,8 +11,9 @@ import ViewDropbox from "./ViewDropbox";
 import EditDropbox from "./EditDropbox";
 import { useSearchParams } from "react-router-dom";
 import ReplyLoader from "./loaders/ReplyLoader";
+import moment from "moment";
 
-function ReplyServiceModal({ request, setRequest }) {
+function ReplyServiceModal({ request, setRequest, brgy }) {
   const [reply, setReply] = useState(false);
   const [statusChanger, setStatusChanger] = useState(false);
   const [upload, setUpload] = useState(false);
@@ -30,6 +31,12 @@ function ReplyServiceModal({ request, setRequest }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [replyingStatus, setReplyingStatus] = useState(null);
   const [error, setError] = useState(null);
+  const [service, setService] = useState([]);
+  const [eventWithCounts, setEventWithCounts] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
+  const [specificEvent, setSpecificEvent] = useState(null);
 
   useEffect(() => {
     setFiles(request.length === 0 ? [] : request.file);
@@ -49,6 +56,32 @@ function ReplyServiceModal({ request, setRequest }) {
     };
     fetch();
   }, [id]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (!request.service_id) {
+          // If there is no event_id in the application, do not fetch events
+          return;
+        }
+        const serviceResponse = await axios.get(
+          `${API_LINK}/services/?brgy=${brgy}&service_id=${request.service_id}&archived=false`
+        );
+
+        if (serviceResponse.status === 200) {
+          setService(serviceResponse.data.result[0]);
+        } else {
+          // setEventWithCounts([]);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        console.error("Error response data:", error.response?.data);
+        console.error("Error response status:", error.response?.status);
+      }
+    };
+
+    fetchData();
+  }, [currentPage, brgy, request.service_id]);
 
   useEffect(() => {
     if (request && request.response.length !== 0) {
@@ -151,6 +184,15 @@ function ReplyServiceModal({ request, setRequest }) {
     setStatusChanger(!statusChanger);
   };
 
+  const getType = (type) => {
+    switch (type) {
+      case "MUNISIPYO":
+        return "Municipality";
+      default:
+        return "Barangay";
+    }
+  };
+
   const handleOnSend = async (e) => {
     try {
       e.preventDefault();
@@ -178,13 +220,70 @@ function ReplyServiceModal({ request, setRequest }) {
         formData
       );
   
-      setTimeout(() => {
-        setSubmitClicked(false);
-        setReplyingStatus("success");
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
-      }, 1000);
+      if (response.status === 200) {
+        const notify = {
+          category: "One",
+          compose: {
+            subject: `SERVICE REQUEST - ${request.service_name}`,
+            message: `A barangay staff has updated your request for the barangay service of ${
+              request.service_name
+            }.\n\n
+      
+            Service Request Details:\n
+            - Name: ${
+              request.form && request.form[0]
+                ? request.form[0].lastName.value
+                : ""
+            }, ${
+              request.form && request.form[0]
+                ? request.form[0].firstName.value
+                : ""
+            } ${
+              request.form && request.form[0]
+                ? request.form[0].middleName.value
+                : ""
+            }
+            - Service Applied: ${request.service_name}\n
+            - Request ID: ${request.request_id}\n
+            - Date Created: ${moment(request.createdAt).format(
+              "MMM. DD, YYYY h:mm a"
+            )}\n
+            - Status: ${request.status}\n
+            - Staff Handled: ${userData.lastName}, ${userData.firstName} ${
+              userData.middleName
+            }\n\n
+            Please update this service request as you've seen this notification!\n\n
+            Thank you!!,`,
+            go_to: "Requests",
+          },
+          target: {
+            user_id: request.form[0].user_id.value,
+            area: request.brgy,
+          },
+          type: "Resident",
+          banner: service.collections.banner,
+          logo: service.collections.logo,
+        };
+
+        console.log("Notify: ", notify);
+
+        const result = await axios.post(`${API_LINK}/notification/`, notify, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (result.status === 200) {
+          setTimeout(() => {
+            setSubmitClicked(false);
+            setReplyingStatus("success");
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+          }, 1000);
+        }
+      }
+
     } catch (error) {
       console.log(error);
       setSubmitClicked(false);

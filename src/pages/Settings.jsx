@@ -15,35 +15,15 @@ import API_LINK from "../config/API";
 import banner from "../assets/image/1.png";
 import OccupationList from "../components/occupations/OccupationList";
 import EditLoader from "../components/settings/loaders/EditLoader";
-import Credentials from "../components/settings/Credentials";
-
 const Settings = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const id = searchParams.get("id");
-  const fileInputRef = useRef();
+  const [isLoading, setIsLoading] = useState(false);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
-  const [isSmallerThanLG, setIsSmallerThanLG] = useState(
-    window.innerWidth <= 640
-  );
-  const [isBiggerThanMD, setIsBiggerThanMD] = useState(
-    window.innerWidth >= 1024
-  );
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsSmallerThanLG(window.innerWidth <= 640);
-      setIsBiggerThanMD(window.innerWidth >= 1024);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
+  const [timerId, setTimerId] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const id = searchParams.get("id");
+  const fileInputRef = useRef();
   const handleAdd = (e) => {
     e.preventDefault();
 
@@ -52,6 +32,7 @@ const Settings = () => {
   const [activeButton, setActiveButton] = useState({
     personal: true,
     credential: false,
+    pass: false,
   });
   const [editButton, setEditButton] = useState(true);
   const [pfp, setPfp] = useState();
@@ -117,6 +98,7 @@ const Settings = () => {
         const res = await axios.get(`${API_LINK}/users/specific/${id}`);
         if (res.status === 200) {
           setUserData(res.data[0]);
+          console.log(res.data[0].profile.link);
           setUserAddress({
             street: res.data[0].address.street,
             brgy: res.data[0].address.brgy,
@@ -213,7 +195,18 @@ const Settings = () => {
   // console.log(userSocials)
 
   const saveChanges = async (e) => {
-    setSubmitClicked(true);
+    if (
+      !userData.firstName.trim() ||
+      !userData.lastName.trim() ||
+      !userData.firstName.trim() ||
+      !userData.birthday.trim() ||
+      !userData.email.trim() ||
+      !userData.contact.trim() ||
+      !userAddress.street.trim()
+    ) {
+      setError("Please fill out all required fields.");
+      return; // Prevent further execution of handleSubmit
+    }
 
     const obj = {
       firstName: userData.firstName,
@@ -246,7 +239,6 @@ const Settings = () => {
     };
 
     try {
-      console.log(pfp);
       var formData = new FormData();
       formData.append("users", JSON.stringify(obj));
       formData.append("file", pfp);
@@ -255,29 +247,47 @@ const Settings = () => {
         formData
       );
 
-      // CHANGE USER CREDENTIALS
-
       // CHANGE USERNAME
-      if (userCred.username !== userData.username) {
-        changeCredentials(
-          userData.username,
-          userCred.username,
-          userCred.oldPass,
-          userCred.newPass
-        );
-      }
-
-      // CHANGE PASSWORD
-      if (userCred.newPass !== "") {
-        changeCredentials(
-          userData.username,
-          userCred.username,
-          userCred.oldPass,
-          userCred.newPass
-        );
-      }
-
-      if (response.status === 200) {
+      if (activeButton.credential === true) {
+        if (
+          userData.username &&
+          userCred.username &&
+          userData.username !== userCred.username
+          
+        ) {
+          if (!userCred.username || !userCred.oldPass) {
+            setMessage({
+              display: false,
+            });
+            setError("Please provide both the new username and password.");
+            return; // Prevent further execution
+          }
+          changeCredentials(
+            userData.username,
+            userCred.username,
+            userCred.oldPass,
+            userCred.newPass
+          );
+        }
+      } else if (activeButton.pass === true) {
+        if (userCred.newPass !== "" || userCred.oldPass !== "") {
+          if (!userCred.newPass || !userCred.oldPass) {
+            setMessage({
+              display: false,
+            });
+            setError("Please provide both the new username and password.");
+            return; // Prevent further execution
+          }
+          changeCredentials(
+            userData.username,
+            userCred.username,
+            userCred.oldPass,
+            userCred.newPass
+          );
+        }
+      } else if (response.status === 200) {
+        setSubmitClicked(true);
+        setError(null);
         console.log("Update successful:", response);
         setUserData(response.data);
         setUserAddress({
@@ -304,28 +314,36 @@ const Settings = () => {
     } catch (error) {
       console.error("Error saving changes:", error);
       setSubmitClicked(false);
-      setUpdatingStatus("error");
-      setError(err.message);
+      setUpdatingStatus(null);
+      setError(
+        error.response
+          ? error.response.data.message
+          : "An unknown error occurred"
+      );
     }
   };
-
+  
   const changeCredentials = async (
     oldUsername,
     newUsername,
     oldPassword,
     newPassword
   ) => {
-    const user = {
-      username: newUsername !== oldUsername ? newUsername : oldUsername,
-      password: newPassword !== "" ? newPassword : oldPassword,
-    };
-
     try {
+      const user = {
+        username: newUsername !== oldUsername ? newUsername : oldUsername,
+        password: newPassword !== "" ? newPassword : oldPassword,
+      };
+
       const response = await axios.get(
         `${API_LINK}/auth/${oldUsername}/${oldPassword}`
       );
 
+      console.log("mm", user);
+      console.log(response);
       if (response.status === 200) {
+        setSubmitClicked(true);
+        setError(null);
         await axios.patch(`${API_LINK}/auth/${id}`, user);
         setMessage({
           display: true,
@@ -333,19 +351,25 @@ const Settings = () => {
           error: false,
           message: "Success!",
         });
-        setUserCred({
-          username: "",
-          oldPass: "",
-          newPass: "",
-        });
+        setTimeout(() => {
+          setSubmitClicked(false);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        }, 1000);
       }
     } catch (err) {
+      setError(null);
       setMessage({
         display: true,
         success: false,
         error: true,
         message: "The password you entered is incorrect",
       });
+      setSubmitClicked(false);
+      setUpdatingStatus(null);
+      // setError("The password you entered is incorrect");
     }
   };
 
@@ -374,11 +398,23 @@ const Settings = () => {
       setActiveButton({
         personal: true,
         credential: false,
+        pass: false,
       });
-    } else {
+    }
+
+    if (e.target.name === "credential") {
       setActiveButton({
         personal: false,
         credential: true,
+        pass: false,
+      });
+    }
+
+    if (e.target.name === "pass") {
+      setActiveButton({
+        personal: false,
+        credential: false,
+        pass: true,
       });
     }
   };
@@ -390,29 +426,124 @@ const Settings = () => {
       setEditButton(true);
     }
   };
-
+  const resetForm = (e) => {
+    setError(null);
+  };
   return (
-    <div className="mx-4 overflow-y-auto scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb h-[calc(100vh_-_80px)] lg:h-[calc(100vh_-_80px)]">
-      <div>
-        <div className="flex flex-col w-full justify-center items-center ">
-          <div className="w-full relative">
-            <img
-              className="h-[200px] w-full obj object-cover bg-black opacity-[80%]"
-              src={banner}
-              alt=""
-            />
-            <div className="absolute inset-0 flex items-center justify-center bg-black transition-opacity duration-300 opacity-[50%]"></div>
+    <div>
+      <div className="mx-4 overflow-y-auto lg:mt-[1rem] mt-0 scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb h-[calc(100vh_-_100px)] lg:h-[calc(100vh_-_100px)]">
+        <div className="flex flex-col">
+          <div className="relative w-full">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gray-900 opacity-40"></div>
+              <img
+                className="h-[230px] w-full object-cover"
+                src={banner}
+                alt=""
+              />
+            </div>
+            <div className="absolute md:top-[56%] lg:top-[55%] transform -translate-y-1/2 flex justify-center w-full">
+              <div className="flex flex-col items-center">
+                <div className="relative lg:w-40 lg:h-40 sm:w-32 md:w-36">
+                  <label
+                    htmlFor="file_input"
+                    onClick={handleAdd}
+                    className={
+                      editButton
+                        ? "hidden"
+                        : "absolute inset-0 flex items-center justify-center bg-gray-200 rounded-full cursor-pointer opacity-0 hover:opacity-100 transition-opacity hover:bg-[#295141] hover:bg-opacity-60 "
+                    }
+                  >
+                    <FaCamera size={32} style={{ color: "#ffffff" }} />
+                  </label>
+                  <input
+                    disabled={editButton}
+                    type="file"
+                    name="file"
+                    onChange={handleFileChange}
+                    ref={fileInputRef}
+                    accept="image/*"
+                    multiple="multiple"
+                    className="hidden"
+                  />
+                  <div className="lg:w-full lg:h-full w-[130px] h-[130px] lg:mt-0 mt-8 flex mx-auto justify-center overflow-hidden rounded-full object-cover border-[5px] border-[#295141]">
+                    <img
+                      id="pfp"
+                      className="w-full h-full object-cover"
+                      alt="Profile"
+                    />
+                  </div>
+                </div>
+                <h6 className="font-bold mt-2 lg:text-normal">
+                  {userData.firstName} {userData.lastName}
+                </h6>
+                <p className="text-sm lg:text-[14px] py-2 leading-[10px]">
+                  {userData.username}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col bg-white lg:py-0 py-4 text-black justify-center items-center mx-auto rounded-md mt-28 lg:p-4 lg:mt-36 lg:w-11/12 text-center">
+              <div className="border-b-[2px] w-full mb-2 border-b-gray-200">
+                <h6 className="font-bold mb-2 uppercase text-normal sm:text-sm">
+                  Socials
+                </h6>
+              </div>
+              <div className="lg:flex sm:grid lg:px-0 px-8 lg:py-0 py-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-center items-center mx-auto">
+                {userSocials.facebook && userSocials.facebook.name && (
+                  <button className="flex justify-center gap-2 items-center bg-white rounded-md p-2 hover:bg-[#1d4c8a] hover:text-white  transition-all ease-in-out duration-300">
+                    <FaFacebook />
+                    <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
+                      {userSocials.facebook.name}
+                    </p>
+                  </button>
+                )}
+                {userSocials.twitter && userSocials.twitter.name && (
+                  <button className="flex justify-center gap-2 items-center bg-white rounded-md p-2 hover:bg-[#1d4c8a] hover:text-white  transition-all ease-in-out duration-300">
+                    <FaTwitter />
+                    <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
+                      {userSocials.twitter.name}
+                    </p>
+                  </button>
+                )}
+                {userSocials.instagram && userSocials.instagram.name && (
+                  <button className="flex justify-center gap-2 items-center bg-white rounded-md p-2 hover:bg-[#1d4c8a] hover:text-white  transition-all ease-in-out duration-300">
+                    <FaInstagram />
+                    <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
+                      {userSocials.instagram.name}
+                    </p>
+                  </button>
+                )}
+                {userData.contact && (
+                  <button className="flex justify-center gap-2 items-center bg-white rounded-md p-2 hover:bg-[#1d4c8a] hover:text-white  transition-all ease-in-out duration-300">
+                    <FaPhone />
+                    <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
+                      {userData.contact}
+                    </p>
+                  </button>
+                )}
+                {userData.email && (
+                  <button className="flex justify-center gap-2 items-center bg-white rounded-md p-2  hover:bg-[#1d4c8a] hover:text-white  transition-all ease-in-out duration-300">
+                    <FaEnvelope />
+                    <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
+                      {userData.email}
+                    </p>
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
-          <div className="flex flex-col-reverse sm:px-[5px] px-[20px] justify-center items-center mb-[20px] sm:w-[95%] lg:w-full">
-            <div className="flex flex-col sm:w-full md:w-[95%] mx-auto">
+
+          <div className="flex sm:flex-col-reverse lg:flex-row-reverse sm:px-[5px] px-[20px] justify-center mb-[20px]">
+            <div className="flex flex-col sm:w-full lg:w-11/12 mx-auto">
               <div className="flex gap-[10px] my-5 pb-[10px] border-b-[2px] border-b-gray-200 px-[10px]">
                 <button
                   name="personal"
                   onClick={handleOnActive}
                   className={
                     activeButton.personal
-                      ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-[#2f4da5] text-white font-medium"
-                      : "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-white text-black font-medium transition-all ease-in-out hover:bg-[#2f4da5] hover:text-white"
+                      ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-[#1d4c8a] text-white font-medium"
+                      : "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-white text-black font-medium transition-all ease-in-out hover:bg-[#1d4c8a]  hover:text-white"
                   }
                 >
                   Personal Info
@@ -422,23 +553,61 @@ const Settings = () => {
                   onClick={handleOnActive}
                   className={
                     activeButton.credential
-                      ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-[#2f4da5] text-white font-medium"
-                      : "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-white text-black font-medium transition-all ease-in-out hover:bg-[#2f4da5] hover:text-white"
+                      ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-[#1d4c8a]  text-white font-medium"
+                      : "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-white text-black font-medium transition-all ease-in-out hover:bg-[#1d4c8a]  hover:text-white"
                   }
                 >
                   Account Info
                 </button>
+
+                <button
+                  name="pass"
+                  onClick={handleOnActive}
+                  className={
+                    activeButton.pass
+                      ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-[#1d4c8a]  text-white font-medium"
+                      : "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-white text-black font-medium transition-all ease-in-out hover:bg-[#1d4c8a] hover:text-white"
+                  }
+                >
+                  Change Password
+                </button>
               </div>
 
               <div className={activeButton.personal ? "block" : "hidden"}>
-                <div className="h-full w-full shadow-lg px-[30px] pb-[30px]">
+                {error && (
+                  <div
+                    className="max-w-full border-2 mb-4 border-[#bd4444] rounded-xl shadow-lg bg-red-300"
+                    role="alert"
+                  >
+                    <div className="flex p-4">
+                      <div className="flex-shrink-0">
+                        <svg
+                          className="flex-shrink-0 h-4 w-4 text-red-600 mt-0.5"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width={16}
+                          height={16}
+                          fill="currentColor"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+                        </svg>
+                      </div>
+                      <div className="ms-3">
+                        <p className="text-sm text-gray-700 font-medium ">
+                          {error}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div className="h-full w-full px-4 lg:px-0 pb-[30px]">
                   {/* PERSONAL DATA */}
 
                   <div>
                     <div className="w-full border-b-[2px] border-black mb-5">
                       <h6 className="font-bold">PERSONAL DATA</h6>
                     </div>
-                    <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3">
+                    <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3 px-4">
                       <div>
                         <label
                           htmlFor="fistName"
@@ -449,14 +618,21 @@ const Settings = () => {
                         <input
                           disabled={editButton}
                           type="text"
-                          id="fistName"
-                          className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
+                          id="firstname"
+                          className={`py-3 px-4 block w-full  rounded-md text-sm bg-white border ${
+                            error && !userData.firstName ? "border-red-500" : ""
+                          }`}
                           placeholder="First name"
                           value={userData.firstName || ""}
                           onChange={(e) =>
                             handleUserDataChange("firstName", e.target.value)
                           }
                         />
+                        {error && !userData.firstName && (
+                          <p className="text-red-500 text-xs italic">
+                            Please enter a first name.
+                          </p>
+                        )}
                       </div>
                       <div>
                         <label
@@ -469,7 +645,7 @@ const Settings = () => {
                           disabled={editButton}
                           type="text"
                           id="middleName"
-                          className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
+                          className="py-3 px-4 block w-full border-gray-200 border text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                           placeholder="First name"
                           value={userData.middleName || ""}
                           onChange={(e) =>
@@ -488,7 +664,9 @@ const Settings = () => {
                           disabled={editButton}
                           id="lastName"
                           type="text"
-                          className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
+                          className={`py-3 px-4 block w-full  rounded-md text-sm bg-white border ${
+                            error && !userData.lastName ? "border-red-500" : ""
+                          }`}
                           placeholder="Last name"
                           aria-describedby="hs-input-helper-text"
                           value={userData.lastName || ""}
@@ -496,6 +674,11 @@ const Settings = () => {
                             handleUserDataChange("lastName", e.target.value)
                           }
                         />
+                        {error && !userData.lastName && (
+                          <p className="text-red-500 text-xs italic">
+                            Please enter a last name.
+                          </p>
+                        )}
                       </div>
 
                       <div>
@@ -509,7 +692,7 @@ const Settings = () => {
                           disabled={editButton}
                           id="suffix"
                           type="text"
-                          className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
+                          className="py-3 px-4 block w-full border-gray-200 border text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                           placeholder="Suffix"
                           aria-describedby="hs-input-helper-text"
                           value={userData.suffix || ""}
@@ -527,7 +710,7 @@ const Settings = () => {
                         </label>
                         <select
                           disabled={editButton}
-                          className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
+                          className="py-3 px-4 block w-full border-gray-200 border text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                           placeholder="Suffix"
                           aria-describedby="hs-input-helper-text"
                           id="gender"
@@ -552,7 +735,7 @@ const Settings = () => {
                           type="date"
                           disabled={editButton}
                           id="birthday"
-                          className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
+                          className="py-3 px-4 block w-full border-gray-200 border text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                           placeholder="Birthday"
                           aria-describedby="hs-input-helper-text"
                           value={birthdayFormat(userData.birthday) || ""}
@@ -573,7 +756,7 @@ const Settings = () => {
                           disabled={editButton}
                           readOnly
                           id="age"
-                          className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
+                          className="py-3 px-4 block w-full border-gray-200 border text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                           placeholder="Suffix"
                           aria-describedby="hs-input-helper-text"
                           value={calculateAge(userData.birthday) || ""}
@@ -590,7 +773,7 @@ const Settings = () => {
                           type="text"
                           disabled={editButton}
                           id="phone"
-                          className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
+                          className="py-3 px-4 block w-full border-gray-200 border text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                           placeholder="#"
                           aria-describedby="hs-input-helper-text"
                           value={userData.contact || ""}
@@ -610,7 +793,9 @@ const Settings = () => {
                           disabled={editButton}
                           type="email"
                           id="email"
-                          className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
+                          className={`py-3 px-4 block w-full  rounded-md text-sm bg-white border ${
+                            error && !userData.email ? "border-red-500" : ""
+                          }`}
                           placeholder="you@example.com"
                           aria-describedby="hs-input-helper-text"
                           value={userData.email || ""}
@@ -618,6 +803,11 @@ const Settings = () => {
                             handleUserDataChange("email", e.target.value)
                           }
                         />
+                        {error && !userData.email && (
+                          <p className="text-red-500 text-xs italic">
+                            Please enter an email.
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -628,7 +818,7 @@ const Settings = () => {
                     <div className="w-full border-b-[2px] border-black my-5">
                       <h6 className="font-bold">ADDRESS DETAILS</h6>
                     </div>
-                    <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3">
+                    <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3 px-4">
                       <div>
                         <label
                           htmlFor="street"
@@ -640,7 +830,9 @@ const Settings = () => {
                           type="text"
                           disabled={editButton}
                           id="street"
-                          className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
+                          className={`py-3 px-4 block w-full  rounded-md text-sm bg-white border ${
+                            error && !userAddress.street ? "border-red-500" : ""
+                          }`}
                           placeholder="Street"
                           aria-describedby="hs-input-helper-text"
                           value={userAddress.street || ""}
@@ -648,6 +840,11 @@ const Settings = () => {
                             handleUserChangeAdd("street", e.target.value)
                           }
                         />
+                        {error && !userAddress.street && (
+                          <p className="text-red-500 text-xs italic">
+                            Please enter your address.
+                          </p>
+                        )}
                       </div>
                       <div>
                         <label
@@ -664,7 +861,7 @@ const Settings = () => {
                           onChange={(e) =>
                             handleUserChangeAdd("brgy", e.target.value)
                           }
-                          className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
+                          className="py-3 px-4 block w-full border-gray-200 border text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                         >
                           <option selected>{userAddress.brgy}</option>
                           <option>Balite</option>
@@ -696,7 +893,7 @@ const Settings = () => {
                           onChange={(e) =>
                             handleUserChangeAdd("city", e.target.value)
                           }
-                          className="py-3 px-4 block w-full border-gray-200 text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
+                          className="py-3 px-4 block w-full border-gray-200 border text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                         >
                           <option selected>Montalban</option>
                         </select>
@@ -710,7 +907,7 @@ const Settings = () => {
                     <div className="w-full border-b-[2px] border-black my-5">
                       <h6 className="font-bold">OTHER PERSONAL DATA</h6>
                     </div>
-                    <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3">
+                    <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-3 px-4">
                       <div>
                         <label
                           htmlFor="occupation"
@@ -721,7 +918,7 @@ const Settings = () => {
                         <div className="relative z-0 w-full mb-3 group">
                           <OccupationList
                             handleUserDataChange={handleUserDataChange}
-                            occupation={userData.occ}
+                            occupation={userData.occupation}
                             editButton={editButton}
                           />
                         </div>
@@ -809,13 +1006,13 @@ const Settings = () => {
                       <div className="flex flex-col gap-3 p-2">
                         <div>
                           <label
-                            htmlFor="facebookName"
+                            htmlFor="facebook-name"
                             className="block sm:text-xs lg:text-sm font-medium mb-2"
                           >
                             Facebook Name
                           </label>
                           <input
-                            id="facebookName"
+                            id="facebook-name"
                             type="text"
                             value={userSocials.facebook.name || ""}
                             disabled={editButton}
@@ -833,14 +1030,14 @@ const Settings = () => {
                         </div>
                         <div>
                           <label
-                            htmlFor="facebookLink"
+                            htmlFor="facebook-link"
                             className="block sm:text-xs lg:text-sm font-medium mb-2"
                           >
                             Facebook Link
                           </label>
                           <input
                             type="text"
-                            id="facebookLink"
+                            id="facebook-name"
                             value={userSocials.facebook.link || ""}
                             disabled={editButton}
                             onChange={(e) => {
@@ -859,13 +1056,13 @@ const Settings = () => {
                       <div className="flex flex-col gap-3 p-2 sm:border-[0px] sm:border-t-[1px] sm:border-b-[1px] md:border-t-[0px] md:border-b-[0px] md:border-l-[1px] md:border-r-[1px] border-green-300">
                         <div>
                           <label
-                            htmlFor="instagramName"
+                            htmlFor="instagram-name"
                             className="block sm:text-xs lg:text-sm font-medium mb-2"
                           >
                             Instagram Name
                           </label>
                           <input
-                            id="instagramName"
+                            id="instagram-name"
                             type="text"
                             value={userSocials.instagram.name || ""}
                             disabled={editButton}
@@ -883,13 +1080,13 @@ const Settings = () => {
                         </div>
                         <div>
                           <label
-                            htmlFor="instagramLink"
+                            htmlFor="instagram-link"
                             className="block sm:text-xs lg:text-sm font-medium mb-2"
                           >
                             Instagram Link
                           </label>
                           <input
-                            id="instagramLink"
+                            id="instagram-link"
                             type="text"
                             value={userSocials.instagram.link || ""}
                             disabled={editButton}
@@ -909,13 +1106,13 @@ const Settings = () => {
                       <div className="flex flex-col gap-3 p-2">
                         <div>
                           <label
-                            htmlFor="twitterName"
+                            htmlFor="twitter-name"
                             className="block sm:text-xs lg:text-sm font-medium mb-2"
                           >
                             Twitter Name
                           </label>
                           <input
-                            id="twitterName"
+                            id="twitter-name"
                             type="text"
                             value={userSocials.twitter.name || ""}
                             disabled={editButton}
@@ -933,13 +1130,12 @@ const Settings = () => {
                         </div>
                         <div>
                           <label
-                            htmlFor="twitterLink"
+                            htmlFor="facebook"
                             className="block sm:text-xs lg:text-sm font-medium mb-2"
                           >
                             Twitter Link
                           </label>
                           <input
-                            id="twitterLink"
                             type="text"
                             value={userSocials.twitter.link || ""}
                             disabled={editButton}
@@ -960,162 +1156,362 @@ const Settings = () => {
                   </div>
                 </div>
               </div>
+
               <div
-              className={
-                activeButton.credential
-                  ? "shadow-lg px-[30px] pb-[30px]"
-                  : "hidden"
-              }
-            >
-              {/* CREDENTIALS */}
-              <Credentials userCred={userCred} handleUserChangeCred={handleUserChangeCred} editButton={editButton} message={message} passwordStrengthError={passwordStrengthError} passwordStrengthSuccess={passwordStrengthSuccess} passwordStrength={passwordStrength} />
-            </div>
-            </div>
-            <div className="sm:w-full lg:w-[95%] relative mt-[-150px] mb-[20px]">
-              <div className="flex flex-col justify-center items-center">
-                <div>
-                  <div className="relative lg:w-full flex flex-col m-auto justify-center items-center">
-                    <div className="absolute top-[100px] left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                      <label
-                        htmlFor="file_input"
-                        onClick={handleAdd}
-                        className={
-                          editButton
-                            ? "hidden"
-                            : "block text-transparent p-[70px] font-medium rounded-full text-sm text-center opacity-0 hover:opacity-100 transition-opacity hover:bg-[#295141] hover:bg-opacity-60 cursor-pointer"
-                        }
-                      >
-                        <FaCamera
-                          size={50}
-                          style={{ color: "#ffffff" }}
-                          className="cursor-none"
-                        />
-                      </label>
-                      <input
-                        disabled={editButton}
-                        type="file"
-                        name="file"
-                        onChange={handleFileChange}
-                        ref={fileInputRef}
-                        accept="image/*"
-                        multiple="multiple"
-                        className="hidden"
-                      />
+                className={
+                  activeButton.credential
+                    ? "shadow-lg px-[30px] pb-[30px]"
+                    : "hidden"
+                }
+              >
+                <div className="flex flex-col w-[80%] justify-center mx-auto gap-4">
+                  {error && (
+                    <div
+                      className="max-w-full border-2 mb-4 border-[#bd4444] rounded-xl shadow-lg bg-red-300"
+                      role="alert"
+                    >
+                      <div className="flex p-4">
+                        <div className="flex-shrink-0">
+                          <svg
+                            className="flex-shrink-0 h-4 w-4 text-red-600 mt-0.5"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width={16}
+                            height={16}
+                            fill="currentColor"
+                            viewBox="0 0 16 16"
+                          >
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+                          </svg>
+                        </div>
+                        <div className="ms-3">
+                          <p className="text-sm text-gray-700 font-medium ">
+                            {error}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                    <img
-                      id="pfp"
-                      className="w-[200px] h-[200px] rounded-full sm:mb-3 lg:mb-0 border-[5px] border-[#295141] object-cover"
-                    />
-                    {/* <button className="relative bottom-[25px] w-[40px] h-[40px] flex justify-center items-center rounded-full bg-[#295141] text-white px-3 py-2">
-                                    <FaCamera size={20} className="cursor-none" />
-                                </button> */}
+                  )}
+                  <div className={message.display ? "block" : "hidden"}>
+                    <div
+                      className={
+                        message.success
+                          ? "w-[100%] bg-green-400 rounded-md flex"
+                          : "hidden"
+                      }
+                    >
+                      <p className="py-[10px] text-[12px] px-[20px] text-white font-medium">
+                        {message.message}
+                      </p>
+                    </div>
+                    <div
+                      className={
+                        message.error
+                          ? "w-[100%] bg-red-500 rounded-md flex"
+                          : "hidden"
+                      }
+                    >
+                      <p className="py-[10px] text-[12px] px-[20px] text-white font-medium">
+                        {message.message}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex flex-col justify-center items-center mt-1">
-                    <h6 className="font-bold">
-                      {userData.firstName} {userData.lastName}
-                    </h6>
-                    <p className="text-[12px] leading-[10px]">
-                      {userData.username}
-                    </p>
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="username"
+                      className="block sm:text-xs lg:text-sm font-medium mb-2"
+                    >
+                      Username
+                    </label>
+                    <input
+                      type="text"
+                      disabled={editButton}
+                      id="username"
+                      className={`py-3 px-4 block w-full border-2 text-black rounded-md text-sm  bg-white ${
+                        error && !userCred.username.trim()
+                          ? "border-red-500"
+                          : "border-gray-200"
+                      }`}
+                      placeholder="username"
+                      aria-describedby="hs-input-helper-text"
+                      value={userCred.username || ""}
+                      onChange={(e) =>
+                        handleUserChangeCred("username", e.target.value)
+                      }
+                    />
+                    {error && !userCred.username.trim() && (
+                      <p className="text-red-500 text-xs italic">
+                        Please enter a username.
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="relative z-0">
+                    <label
+                      htmlFor="oldpass"
+                      className="block sm:text-xs lg:text-sm font-medium mb-2"
+                    >
+                      Enter your current password
+                    </label>
+                    <input
+                      type={oldpasswordShown ? "text" : "password"}
+                      disabled={editButton}
+                      id="oldpass"
+                      className={`py-3 px-4 block w-full  text-black rounded-md text-sm border-2 bg-white ${
+                        error && !userCred.oldPass.trim()
+                          ? "border-red-500"
+                          : "border-gray-200"
+                      }`}
+                      placeholder="password"
+                      aria-describedby="hs-input-helper-text"
+                      onChange={(e) =>
+                        handleUserChangeCred("oldPass", e.target.value)
+                      }
+                    />
+                    {error && !userCred.oldPass.trim() && (
+                      <p className="text-red-500 text-xs italic">
+                        Please enter a old password.
+                      </p>
+                    )}
+                    <button
+                      name="old"
+                      type="button"
+                      onClick={toggleOldPassword}
+                      className="absolute right-2 sm:top-5 lg:top-7 p-2.5 mt-1 text-sm font-medium text-white"
+                    >
+                      {oldpasswordShown ? (
+                        <AiOutlineEye style={{ color: "green" }} size={20} />
+                      ) : (
+                        <AiOutlineEyeInvisible
+                          style={{ color: "green" }}
+                          size={20}
+                        />
+                      )}
+                    </button>
+                  </div>
+
+                  {/* <div className={editButton ? "hidden" : "mx-auto"}>
+                    <button
+                      className={
+                        changePass
+                          ? "bg-custom-green-button text-white mx-auto w-[200px] font-medium px-[20px] py-[5px] rounded-md"
+                          : "hidden"
+                      }
+                      onClick={() => setChangePass(!changePass)}
+                    >
+                      Change Username
+                    </button>
+                    <button
+                      className={
+                        changePass
+                          ? "hidden"
+                          : "bg-custom-green-button text-white mx-auto w-[200px] font-medium px-[20px] py-[5px] rounded-md"
+                      }
+                      onClick={() => setChangePass(!changePass)}
+                    >
+                      Change Password
+                    </button>
+                  </div> */}
+                </div>
+              </div>
+              <div className={activeButton.pass ? "flex flex-col" : "hidden"}>
+                <div className=" shadow-lg px-[30px] pb-[30px] ">
+                <div className="flex flex-col w-[80%] justify-center mx-auto gap-4">
+                  {error && (
+                    <div
+                      className="max-w-full border-2 mb-4 border-[#bd4444] rounded-xl shadow-lg bg-red-300"
+                      role="alert"
+                    >
+                      <div className="flex p-4">
+                        <div className="flex-shrink-0">
+                          <svg
+                            className="flex-shrink-0 h-4 w-4 text-red-600 mt-0.5"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width={16}
+                            height={16}
+                            fill="currentColor"
+                            viewBox="0 0 16 16"
+                          >
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+                          </svg>
+                        </div>
+                        <div className="ms-3">
+                          <p className="text-sm text-gray-700 font-medium ">
+                            {error}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <div className="relative z-0">
+                    <label
+                      htmlFor="oldpass"
+                      className="block sm:text-xs lg:text-sm font-medium mb-2"
+                    >
+                      Enter your old password
+                    </label>
+                    <input
+                      type={oldpasswordShown ? "text" : "password"}
+                      disabled={editButton}
+                      id="oldpass"
+                      className={`py-3 px-4 block w-full  text-black rounded-md text-sm border-2 bg-white ${
+                        error && !userCred.oldPass.trim()
+                          ? "border-red-500"
+                          : "border-gray-200"
+                      }`}
+                      placeholder="password"
+                      aria-describedby="hs-input-helper-text"
+                      onChange={(e) =>
+                        handleUserChangeCred("oldPass", e.target.value)
+                      }
+                    />
+                    {error && !userCred.oldPass.trim() && (
+                      <p className="text-red-500 text-xs italic">
+                        Please enter a old password.
+                      </p>
+                    )}
+                    <button
+                      name="old"
+                      type="button"
+                      onClick={toggleOldPassword}
+                      className="absolute right-2 sm:top-5 lg:top-7 p-2.5 mt-1 text-sm font-medium text-white"
+                    >
+                      {oldpasswordShown ? (
+                        <AiOutlineEye style={{ color: "green" }} size={20} />
+                      ) : (
+                        <AiOutlineEyeInvisible
+                          style={{ color: "green" }}
+                          size={20}
+                        />
+                      )}
+                    </button>
+                  </div>
+                  <div className="relative z-0 mt-2">
+                    <label
+                      htmlFor="newpass"
+                      className="block sm:text-xs lg:text-sm font-medium mb-2"
+                    >
+                      Enter your new password
+                    </label>
+                    <input
+                      type={newpasswordShown ? "text" : "password"}
+                      disabled={editButton}
+                      readOnly={userCred.oldPass === ""}
+                      id="newpass"
+                      className={`py-3 px-4 block w-full  text-black rounded-md text-sm border-2 bg-white ${
+                        error && !userCred.newPass.trim()
+                          ? "border-red-500"
+                          : "border-gray-200"
+                      }`}
+                      placeholder="password"
+                      aria-describedby="hs-input-helper-text"
+                      onChange={(e) =>
+                        handleUserChangeCred("newPass", e.target.value)
+                      }
+                    />
+                    {error && !userCred.newPass.trim() && (
+                      <p className="text-red-500 text-xs italic">
+                        Please enter a new password.
+                      </p>
+                    )}
+                    <button
+                      name="new"
+                      type="button"
+                      onClick={toggleNewPassword}
+                      className="absolute right-2 sm:top-5 lg:top-7 p-2.5 mt-1 text-sm font-medium text-white"
+                    >
+                      {newpasswordShown ? (
+                        <AiOutlineEye style={{ color: "green" }} size={20} />
+                      ) : (
+                        <AiOutlineEyeInvisible
+                          style={{ color: "green" }}
+                          size={20}
+                        />
+                      )}
+                    </button>
+                  </div>
+                  <div>
+                    {userCred.newPass && (
+                      <div className="flex w-full h-1.5 bg-gray-200 rounded-full overflow-hidden dark:bg-gray-700">
+                        <div
+                          className={`flex flex-col justify-center overflow-hidden ${
+                            passwordStrength < 25
+                              ? "bg-red-500"
+                              : passwordStrength < 50
+                              ? "bg-yellow-500"
+                              : passwordStrength < 75
+                              ? "bg-amber-500"
+                              : passwordStrength < 100
+                              ? "bg-blue-500"
+                              : "bg-green-500"
+                          }`}
+                          role="progressbar"
+                          style={{ width: `${passwordStrength}%` }}
+                          aria-valuenow={passwordStrength}
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                        />
+                      </div>
+                    )}
+                    {passwordStrengthSuccess && (
+                      <div
+                        className="bg-green-50 border border-green-200 text-sm text-green-600 rounded-md p-4 mt-2"
+                        role="alert"
+                      >
+                        <span className="font-bold">Sucess:</span> Password is
+                        already strong
+                      </div>
+                    )}
+                    {passwordStrengthError && passwordStrength < 100 && (
+                      <div
+                        className="bg-orange-50 border border-orange-200 text-sm text-orange-600 rounded-md p-4 mt-2"
+                        role="alert"
+                      >
+                        <span className="font-bold">Warning:</span> Password
+                        must contain at least 8 characters, one uppercase
+                        letter, one lowercase letter, one number, and one
+                        special character
+                      </div>
+                    )}
                   </div>
                 </div>
-                <div className="flex flex-col justify-center sm:w-[80%] md:w-[95%] lg:w-full items-center mx-auto mt-5 rounded-md p-[10px]">
-  {userSocials.facebook.name || userSocials.instagram.name || userSocials.twitter.name || userData.contact || userData.email ? (
-    <>
-      <div className="flex justify-center items-center border-b-[1px] border-gray-300 w-full pb-[10px]">
-        <h6 className="font-bold text-black">SOCIALS</h6>
-      </div>
-      <div className="p-[10px] flex sm:flex-col md:flex-row gap-5">
-        {userSocials.facebook.name && (
-          <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
-            <FaFacebook />
-            <p className="text-left truncate text-[14px]">
-              {userSocials.facebook.name}
-            </p>
-          </button>
-        )}
-        {userSocials.instagram.name && (
-          <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
-            <FaInstagram />
-            <p className="text-left truncate text-[14px]">
-              {userSocials.instagram.name}
-            </p>
-          </button>
-        )}
-        {userSocials.twitter.name && (
-          <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
-            <FaTwitter />
-            <p className="text-left truncate text-[14px]">
-              {userSocials.twitter.name}
-            </p>
-          </button>
-        )}
-        {userData.contact && (
-          <button className="flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
-            <FaPhone />
-            <p className="text-left truncate text-[14px]">
-              {userData.contact}
-            </p>
-          </button>
-        )}
-        {userData.email && (
-          <button className=" flex gap-2 justify-left items-center transition-all ease-in-out hover:bg-custom-green-header hover:rounded-full hover:text-white text-black hover:p-2">
-            <FaEnvelope />
-            <p className="text-left truncate text-[14px]">
-              {userData.email}
-            </p>
-          </button>
-        )}
-      </div>
-    </>
-  ) : null}
-</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="flex flex-col justify-center items-center py-2 lg:py-6 text-white gap-2 mb-[20px]">
-          {/* Sm to md screen loader */}
-          {/* {isSmallerThanLG && (
-            <div className="flex w-full justify-center items-center px-1 md:px-5 xl:px-8 xxl:px-[320px] xxxl:px-[415px]">
-              {submitClicked && <EditLoader updatingStatus="updating" />}
-              {updatingStatus && !isBiggerThanMD && (
-                <EditLoader updatingStatus={updatingStatus} error={error} />
-              )}
-            </div>
-          )} */}
-
-          <div className="flex flex-col lg:flex-row gap-2 w-full xxl:w-1/2 justify-center items-center px-2 md:px-5 xl:px-8 ">
-            {editButton ? (
+        <div className="mb-[20px] flex justify-center items-center gap-5">
+          {editButton ? (
+            <button
+              name="edit"
+              onClick={handleOnEdit}
+              className="bg-[#1d4c8a] text-white font-medium px-20 py-2 rounded-md"
+            >
+              Edit
+            </button>
+          ) : (
+            <div className="flex gap-2">
               <button
-                name="edit"
-                onClick={handleOnEdit}
-                className="bg-[#2f4da5] text-white font-medium px-[20px] py-[5px] rounded-md"
+                name="save"
+                onClick={saveChanges}
+                className="bg-custom-green-button2 text-white font-medium px-16 py-2 rounded-md"
               >
-                Edit
+                Save
               </button>
-            ) : (
-              <div className="flex gap-5">
-                <button
-                  type="submit"
-                  name="save"
-                  onClick={saveChanges}
-                  className="bg-custom-green-button text-white font-medium px-[20px] py-[5px] rounded-md"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={handleOnEdit}
-                  name="cancel"
-                  className="bg-custom-red-button text-white font-medium px-[20px] py-[5px] rounded-md"
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
-          </div>
+              <button
+                onClick={() => {
+                  handleOnEdit({ target: { name: "cancel" } });
+                  resetForm();
+                }}
+                name="cancel"
+                className="bg-custom-red-button text-white font-medium px-14 py-2 rounded-md"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
         </div>
       </div>
+
       {submitClicked && <EditLoader updatingStatus="updating" />}
       {updatingStatus && (
         <EditLoader updatingStatus={updatingStatus} error={error} />

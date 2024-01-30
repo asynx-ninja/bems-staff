@@ -6,7 +6,7 @@ import EditDropbox from "./EditDropbox";
 import API_LINK from "../../config/API";
 import EditLoader from "./loaders/EditLoader";
 
-function ManageAnnouncementModal({ announcement, setAnnouncement }) {
+function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
   const [files, setFiles] = useState([]);
@@ -83,6 +83,15 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
     setFiles([...files, ...e.target.files]);
   };
 
+  const getType = (type) => {
+    switch (type) {
+      case "MUNISIPYO":
+        return "Municipality";
+      default:
+        return "Barangay";
+    }
+  };
+
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
@@ -116,12 +125,12 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
 
       formData.append("announcement", JSON.stringify(announcement));
 
-      const result = await axios.patch(
+      const response = await axios.patch(
         `${API_LINK}/announcement/${announcement._id}`,
         formData
       );
 
-      if (result.status === 200) {
+      if (response.status === 200) {
         var logoSrc = document.getElementById("logo");
         logoSrc.src =
           "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
@@ -130,14 +139,75 @@ function ManageAnnouncementModal({ announcement, setAnnouncement }) {
         bannerSrc.src =
           "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
 
-        setTimeout(() => {
-          // HSOverlay.close(document.getElementById("hs-modal-editAnnouncement"));
-          setSubmitClicked(false);
-          setUpdatingStatus("success");
+        let notify;
+
+        if (announcement.isOpen) {
+          notify = {
+            category: "All",
+            compose: {
+              subject: `EVENT - ${announcement.title}`,
+              message: `Barangay ${brgy} has updated an event named: ${announcement.title}.\n\n
+              
+              Event Details:\n 
+              ${announcement.details}\n\n
+  
+              Event Date:
+              ${announcement.date}\n\n
+              `,
+              go_to: "Events",
+            },
+            target: {
+              user_id: null,
+              area: null,
+            },
+            type: getType(brgy),
+            banner: announcement.data.collections.banner,
+            logo: announcement.data.collections.logo,
+          };
+        } else {
+          notify = {
+            category: "Many",
+            compose: {
+              subject: `EVENT - ${announcement.title}`,
+              message: `Barangay ${brgy} has updated an event named: ${announcement.title}.\n\n
+              
+              Event Details:\n 
+              ${announcement.details}\n\n
+  
+              Event Date:
+              ${announcement.date}\n\n
+              `,
+              go_to: "Events",
+            },
+            target: {
+              user_id: null,
+              area: brgy,
+            },
+            type: getType(brgy),
+            banner: announcement.collections.banner,
+            logo: announcement.collections.logo,
+          };
+        }
+
+        console.log("Notify: ", notify);
+        console.log("Result: ", response);
+
+        const result = await axios.post(`${API_LINK}/notification/`, notify, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (result.status === 200) {
           setTimeout(() => {
-            window.location.reload();
-          }, 3000);
-        }, 1000);
+            // HSOverlay.close(document.getElementById("hs-modal-editAnnouncement"));
+            setSubmitClicked(false);
+            setUpdatingStatus("success");
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+          }, 1000);
+        }
       }
     } catch (err) {
       console.log(err);

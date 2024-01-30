@@ -21,15 +21,21 @@ function CreateServiceModal({ brgy }) {
     brgy: brgy,
   });
 
+  console.log(emptyFields);
+
+  const [isLogoSelected, setIsLogoSelected] = useState(false);
+  const [isBannerSelected, setIsBannerSelected] = useState(false);
+
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
   const [files, setFiles] = useState([]);
 
   const handleLogoChange = (e) => {
-    setLogo(e.target.files[0]);
+    const selectedFile = e.target.files[0];
+    setLogo(selectedFile);
 
     var output = document.getElementById("logo");
-    output.src = URL.createObjectURL(e.target.files[0]);
+    output.src = URL.createObjectURL(selectedFile);
     output.onload = function () {
       URL.revokeObjectURL(output.src); // free memory
     };
@@ -119,27 +125,19 @@ function CreateServiceModal({ brgy }) {
       console.log(err);
       setSubmitClicked(false);
       setCreationStatus("error");
-      setError("An error occurred while creating the announcement.");
+      setError("An error occurred while creating the service.");
     }
-  };
-
-  const checkEmptyFields = () => {
-    let arr = [];
-    const keysToCheck = ["name", "type", "details", "fee"];
-    for (const key of keysToCheck) {
-      if (service[key] === "") {
-        arr.push(key);
-      }
-    }
-    setEmptyFields(arr);
-    return arr;
   };
 
   const checkEmptyFieldsForService = () => {
     let arr = [];
-    const keysToCheck = ["name", "type", "details", "fee"];
+    const keysToCheck = ["name", "details", "date", "logo", "banner", "fee"]; // Add "logo" and "banner" to the list of keys
     for (const key of keysToCheck) {
-      if (service[key] === "") {
+      if (key === "logo" && !logo) {
+        arr.push(key);
+      } else if (key === "banner" && !banner) {
+        arr.push(key);
+      } else if (service[key] === "") {
         arr.push(key);
       }
     }
@@ -176,7 +174,10 @@ function CreateServiceModal({ brgy }) {
                     Logo
                   </label>
                   <div className="flex flex-col items-center space-y-2 relative">
-                    <div className="w-full border border-gray-300">
+                    <div
+                      className={`w-full border "border-gray-300"
+                      `}
+                    >
                       <img
                         className={`${
                           logo ? "" : "hidden"
@@ -189,7 +190,13 @@ function CreateServiceModal({ brgy }) {
                         className={`${!logo ? "" : "hidden"} mx-auto`}
                       />
                     </div>
-                    <label className="w-full bg-white border border-gray-300">
+                    <label
+                      className={`w-full bg-white border ${
+                        emptyFields.includes("logo")
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                    >
                       <span className="sr-only">Choose logo photo</span>
                       <input
                         type="file"
@@ -210,7 +217,7 @@ function CreateServiceModal({ brgy }) {
                     Banner
                   </label>
                   <div className="flex flex-col items-center space-y-2 relative">
-                    <div className="w-full border border-gray-300">
+                    <div className={`w-full border `}>
                       <img
                         className={`${
                           logo ? "" : "hidden"
@@ -223,7 +230,13 @@ function CreateServiceModal({ brgy }) {
                         className={`${!logo ? "" : "hidden"} mx-auto`}
                       />
                     </div>
-                    <label className="w-full bg-white border border-gray-300">
+                    <label
+                      className={`w-full bg-white border ${
+                        emptyFields.includes("banner")
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                    >
                       <span className="sr-only">Choose banner photo</span>
                       <input
                         type="file"

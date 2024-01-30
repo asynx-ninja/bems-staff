@@ -125,6 +125,13 @@ const Inquiries = () => {
     return dateFormat;
   };
 
+  const TimeFormat = (date) => {
+    if (!date) return "";
+
+    const formattedTime = moment(date).format("hh:mm A");
+    return formattedTime;
+  };
+
   const handleView = (item) => {
     setInquiry(item);
   };
@@ -218,7 +225,7 @@ const Inquiries = () => {
         <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
           <div className="flex justify-center items-center sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
-              className="mx-auto font-bold text-xs md:text-xl lg:text-[17px] xl:text-[26px] xxxl:text-4xl text-white"
+              className="mx-auto font-bold text-xs md:text-xl lg:text-[17px] xl:text-[20px] xxxl:text-4xl text-white"
               style={{ letterSpacing: "0.2em" }}
             >
               ARCHIVED INQUIRIES
@@ -450,7 +457,7 @@ const Inquiries = () => {
           </div>
         </div>
 
-        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_320px)] xxxl:h-[calc(100vh_-_340px)]">
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_320px)] xl:h-[calc(100vh_-_315px)] xxl:h-[calc(100vh_-_320px)] xxxl:h-[calc(100vh_-_340px)]">
           <table className="w-full relative table-auto">
             <thead className="bg-[#21556d] sticky top-0">
               <tr className="">
@@ -512,7 +519,8 @@ const Inquiries = () => {
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {DateFormat(item.compose.date) || ""}
+                        {DateFormat(item.compose.date) || ""} -{" "}
+                          {TimeFormat(item.compose.date) || ""}
                         </span>
                       </div>
                     </td>
@@ -570,12 +578,12 @@ const Inquiries = () => {
                 <tr>
                   <td
                     colSpan={tableHeader.length + 1}
-                    className="text-center py-48 lg:py-48 xxl:py-32"
+                    className="text-center sm:h-[17.5rem] xl:py-1 lg:h-[17.5rem] xxl:py-32 xl:h-[17rem]"
                   >
                     <img
                       src={noData}
                       alt=""
-                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                      className=" w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-[15rem] xl:w-80 mx-auto"
                     />
                     <strong className="text-[#535353]">NO DATA FOUND</strong>
                   </td>

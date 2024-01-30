@@ -20,44 +20,45 @@ import ROSARIO from "../../../assets/logo/ROSARIO.png";
 import SAN_ISIDRO from "../../../assets/logo/SAN_ISIDRO.png";
 import SAN_JOSE from "../../../assets/logo/SAN_JOSE.png";
 import SAN_RAFAEL from "../../../assets/logo/SAN_RAFAEL.png";
+import BAGONG_PILIPINAS from "../../../assets/image/bagong-pilipinas-logo.jpg";
 
-const PrintPDF = ({ detail }) => {
+const PrintDocumentTypeA = ({ detail }) => {
   const [date, setDate] = useState(new Date());
-  
+
   const returnLogo = () => {
     switch (detail.brgy) {
-      case "BALITE": 
-      return BALITE
+      case "BALITE":
+        return BALITE;
 
-      case "BURGOS": 
-      return BURGOS
+      case "BURGOS":
+        return BURGOS;
 
-      case "GERONIMO": 
-      return GERONIMO
+      case "GERONIMO":
+        return GERONIMO;
 
-      case "MACABUD": 
-      return MACABUD
+      case "MACABUD":
+        return MACABUD;
 
-      case "MANGGAHAN": 
-      return MANGGAHAN
+      case "MANGGAHAN":
+        return MANGGAHAN;
 
-      case "MASCAP": 
-      return MASCAP
+      case "MASCAP":
+        return MASCAP;
 
-      case "PURAY": 
-      return PURAY
+      case "PURAY":
+        return PURAY;
 
-      case "ROSARIO": 
-      return ROSARIO
+      case "ROSARIO":
+        return ROSARIO;
 
-      case "SAN ISIDRO": 
-      return SAN_ISIDRO
+      case "SAN ISIDRO":
+        return SAN_ISIDRO;
 
-      case "SAN JOSE": 
-      return SAN_JOSE
+      case "SAN JOSE":
+        return SAN_JOSE;
 
-      case "SAN RAFAEL": 
-      return SAN_RAFAEL
+      case "SAN RAFAEL":
+        return SAN_RAFAEL;
     }
   };
 
@@ -134,7 +135,10 @@ const PrintPDF = ({ detail }) => {
 
   const styles = StyleSheet.create({
     body: {
-      padding: 35,
+      paddingTop: 5,
+      paddingLeft: 35,
+      paddingRight: 35,
+      paddingBottom: 35,
     },
     letterHead: {
       view1: {
@@ -154,11 +158,11 @@ const PrintPDF = ({ detail }) => {
       },
       republic: {
         fontFamily: "Times-Roman",
-        fontSize: 14,
+        fontSize: 12,
       },
       municipality: {
         fontFamily: "Times-Roman",
-        fontSize: 14,
+        fontSize: 12,
         lineHeight: 1,
       },
       brgy: {
@@ -348,144 +352,158 @@ const PrintPDF = ({ detail }) => {
         fontWeight: 700,
       },
     },
+    backgroundImage: {
+      position: 'absolute',
+      height: "100%",
+      width: "100%",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      opacity: 0.1, // Set the opacity of the background image
+    },
   });
 
-  console.log("detail: ", detail)
-
-  const LetterHead = () => (
-    <View style={styles.letterHead.view1}>
-      <Image src={logo} alt="" srcset="" style={styles.letterHead.image} />
-      <View style={styles.letterHead.view2}>
-        <Text style={styles.letterHead.republic}>
-          Republic of the Philippines
-        </Text>
-        <Text style={styles.letterHead.municipality}>
-          Municipality of Rodriguez, Rizal
-        </Text>
-        <Text style={styles.letterHead.brgy}>BARANGAY {detail.brgy}</Text>
-        <Text style={styles.letterHead.address}>
-          Barangay Hall, Dike Street, Rodriguez, Rizal | +63 (2) 8 948 0157
-        </Text>
-      </View>
-      <Image src={returnLogo()} alt="" srcset="" style={styles.letterHead.image} />
-    </View>
+  const Divider = () => (
+    <View
+      style={{
+        borderBottomWidth: 2,
+        borderBottomColor: "#000000",
+        marginTop: 10,
+        marginBottom: 10,
+      }}
+    />
   );
 
-  const Title = () => (
-    <View style={styles.title.view1}>
-      <Text style={styles.title.req}>{detail.service_name.toUpperCase()} REQUEST FORM</Text>
-      <Text style={styles.title.id}>{detail.service_id}</Text>
+  const LetterHead = () => (
+    <View>
+      <View style={{ alignItems: "center", justifyContent: "center" }}>
+        <Image
+          src={BAGONG_PILIPINAS}
+          alt=""
+          srcset=""
+          style={styles.letterHead.image}
+        />
+      </View>
+      <View style={styles.letterHead.view1}>
+        <Image src={logo} alt="" srcset="" style={styles.letterHead.image} />
+        <View style={styles.letterHead.view2}>
+          <Text style={styles.letterHead.republic}>
+            Republic of the Philippines
+          </Text>
+          <Text style={styles.letterHead.municipality}>
+            Municipality of Rodriguez, Rizal
+          </Text>
+          <Text style={styles.letterHead.brgy}>BARANGAY {detail.brgy}</Text>
+          <Text style={styles.letterHead.address}>
+            Barangay Hall, Dike Street, Rodriguez, Rizal
+          </Text>
+          <Text style={styles.letterHead.address}>
+            E-mail Address: montalbanpublicinformation@gmail.com
+          </Text>
+          <Text style={styles.letterHead.address}>
+            Telephone: 0967-291-5669
+          </Text>
+        </View>
+        <Image
+          src={returnLogo()}
+          alt=""
+          srcset=""
+          style={styles.letterHead.image}
+        />
+      </View>
     </View>
   );
 
   const Body = () => (
-    <View style={styles.bodyHead.bodyParent}>
+    <View>
+      <Image src={returnLogo()} style={styles.backgroundImage} />
       {/* BODY HEAD */}
       <View style={styles.bodyHead.column}>
-        <Text style={styles.bodyHead.text}>REQUEST ID: {detail.req_id}</Text>
-        <Text style={styles.bodyHead.text}>
-          USER ID: {detail.form && detail.form[0].user_id.value}
-        </Text>
-        <Text style={styles.bodyHead.text}>
-          DATE AND TIME OF ACCOMPLISHED FORM: {formattedDate} {formattedTime}
+        <Text style={{ ...styles.bodyHead.text, marginTop: 10 }}>
+          Control Number: {detail.req_id}
         </Text>
       </View>
       {/* END OF BODY HEAD */}
 
-      {/* PERSONAL INFORMATION */}
-      <View style={styles.info.parent}>
-        <Text style={styles.info.header}>I. PERSONAL INFORMATION</Text>
-
-        <View style={styles.info.table}>
-          {detail.form &&
-            Object.entries(filterPersonalInformation(detail.form[0])).map(
-              ([key, value], idx) => {
-                return value.display !== "address" ? (
-                  <View key={idx} style={styles.info.tableCell}>
-                    <Text style={styles.info.label}>
-                      {value.display.toUpperCase() + ":"}
-                    </Text>
-                    <Text style={styles.info.value}>{value.value}</Text>
-                  </View>
-                ) : (
-                  <View
-                    key={idx}
-                    style={{
-                      flex: "1 0 100%",
-                      padding: 8,
-                      borderTop: 1,
-                      borderColor: "#000000",
-                      outlineWidth: 1,
-                    }}
-                  >
-                    <Text style={styles.info.label}>
-                      {value.display.toUpperCase() + ":"}
-                    </Text>
-                    <Text style={styles.info.value}>{value.value}</Text>
-                  </View>
-                );
-              }
-            )}
-        </View>
-      </View>
-      {/* END OF PERSONAL INFORMATION */}
-
-      {/* CUSTOMIZED INFORMATION */}
-      {detail.form &&
-        detail.form[1].map((item, idx) => (
-          <View key={idx} style={styles.info.parent}>
-            <Text style={styles.info.header}>
-              {`${romanize(idx + 2)}. ${item.section_title}`}
-            </Text>
-            <View style={styles.info.table}>
-              {item.form.map((form, idx) => {
-                return form.type !== "file" ? (
-                  <View
-                    key={idx}
-                    style={{
-                      flex: "1 0 50%",
-                      padding: 8,
-                      borderTop: 1,
-                      borderColor: "#000000",
-                      outlineWidth: 1,
-                    }}
-                  >
-                    <Text style={styles.info.label}>
-                      {form.display.toUpperCase() + ":"}
-                    </Text>
-                    <Text style={styles.info.value}>{form.value}</Text>
-                  </View>
-                ) : null;
-              })}
-            </View>
-          </View>
-        ))}
-      {/* END OF CUSTOMIZED INFORMATION */}
-
       {/* TERMS */}
-      <View style={styles.terms.parent}>
-        <Text style={styles.terms.bold}>
-          I,{" "}
-          <Text style={styles.terms.underline}>
-          {detail.form && detail.form[0].lastName.value}, {detail.form && detail.form[0].firstName.value} {detail.form && detail.form[0].middleName.value}
-          </Text>
-          , a resident of{" "}
-          <Text style={styles.terms.underline}>{detail.form && detail.form[0].address.value}</Text>{" "}
-          attest that
+      <View style={{ marginLeft: 10, marginRight: 10 }}>
+        <Text
+          style={{
+            ...styles.terms.bold,
+            textAlign: "center",
+            fontSize: 16,
+            marginTop: 30,
+          }}
+        >
+          {detail.service_name.toUpperCase()}
         </Text>
-        <View style={styles.terms.listParent}>
-          {terms.map((term, idx) => (
-            <View key={idx} style={styles.terms.listChild}>
-              <Text>•</Text>
-              <Text style={styles.terms.text}>{term}</Text>
-            </View>
-          ))}
-        </View>
+        <Text style={{ fontSize: 10, marginTop: 10 }}>
+          To Whom It May Concern:
+        </Text>
+        <Text
+          style={{
+            marginTop: 20,
+            textAlign: "justify",
+            fontSize: 10,
+            lineHeight: 2, // Adjust the lineHeight as needed
+          }}
+        >
+          THIS IS TO CERTIFY THAT{" "}
+          <Text style={styles.terms.bold}>
+            {detail.form && detail.form[0].firstName.value}{" "}
+            {detail.form && detail.form[0].middleName.value}{" "}
+            {detail.form && detail.form[0].lastName.value}
+          </Text>
+          , of legal age, residing at{" "}
+          {detail.form && detail.form[0].address.value} is a bona-fide resident
+          of Barangay {detail.brgy}, Rodriguez, Rizal.
+        </Text>
+        <Text
+          style={{
+            fontSize: 10,
+            marginTop: 15,
+            textAlign: "justify",
+            lineHeight: 2, // Adjust the lineHeight as needed
+          }}
+        >
+          This further certifies that he/she belongs to the many indigent
+          families living in this Barangay. He/she is considered one among the
+          families living below the poverty line or indigent family.
+        </Text>
+        <Text
+          style={{
+            fontSize: 10,
+            marginTop: 15,
+            textAlign: "justify",
+            lineHeight: 2, // Adjust the lineHeight as needed
+          }}
+        >
+          This certification is issued to subject individual for DSWD Financial
+          Assistance (Department of Social Welfare and development) for whatever
+          legal purpose it may serve him/her best.
+        </Text>
+        <Text
+          style={{
+            fontSize: 10,
+            marginTop: 15,
+            marginBottom: 30,
+            textAlign: "justify",
+            lineHeight: 2, // Adjust the lineHeight as needed
+          }}
+        >
+          Issued this at <Text style={styles.terms.bold}>{formattedDate}</Text>{" "}
+          at the Barangay 830 Hall, Zone 90, District VI, City of Manila.
+        </Text>
+
         <View style={styles.terms.parentSign}>
           <View style={styles.terms.half}>
             <Text style={styles.terms.bold}>AFFIANT</Text>
             <View alt="" style={styles.terms.imageStyle}></View>
             <View style={styles.terms.signText}>
+              <Text style={styles.terms.center}>Witnessed By: Kagawad</Text>
+            </View>
+            <View style={{ ...styles.terms.signText, marginTop: 40 }}>
               <Text style={styles.terms.center}>
                 Resident's Signature over Printed Name
               </Text>
@@ -497,6 +515,9 @@ const PrintPDF = ({ detail }) => {
             >{`ASSISTED BY: (For Residents below 18 years old)`}</Text>
             <View alt="" style={styles.terms.imageStyle}></View>
             <View style={styles.terms.signText}>
+              <Text style={styles.terms.center}>Punong Barangay: </Text>
+            </View>
+            <View style={{ ...styles.terms.signText, marginTop: 40 }}>
               <Text style={styles.terms.center}>
                 Parent/Guardian's Signature over Printed Name
               </Text>
@@ -509,7 +530,7 @@ const PrintPDF = ({ detail }) => {
   );
 
   const Footer = () => (
-    <View style={styles.footer.view}>
+    <View style={{ ...styles.footer.view, marginTop: 30 }}>
       <Text style={styles.footer.text}>THIS FORM IS NOT FOR SALE</Text>
       <Text style={styles.footer.text}>{detail.version}</Text>
     </View>
@@ -519,7 +540,7 @@ const PrintPDF = ({ detail }) => {
     <Document>
       <Page size="LEGAL" style={styles.body}>
         <LetterHead />
-        <Title />
+        <Divider />
         <Body />
         <Footer />
       </Page>
@@ -527,4 +548,4 @@ const PrintPDF = ({ detail }) => {
   );
 };
 
-export default PrintPDF;
+export default PrintDocumentTypeA;

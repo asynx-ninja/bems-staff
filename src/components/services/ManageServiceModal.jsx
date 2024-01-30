@@ -221,23 +221,6 @@ function ManageServiceModal({ service, setService }) {
                   className="block text-gray-700 text-sm font-bold mb-2"
                   htmlFor="username"
                 >
-                  Document ID
-                </label>
-                <input
-                  className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                  id="username"
-                  type="text"
-                  disabled
-                  placeholder="Username"
-                  value={service && service._id}
-                />
-              </div>
-
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="username"
-                >
                   Service ID
                 </label>
                 <input

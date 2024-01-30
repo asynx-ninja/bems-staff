@@ -5,6 +5,8 @@ import { FaArchive, FaPlus } from "react-icons/fa";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { MdFormatListBulletedAdd } from "react-icons/md";
 import { MdOutlineEditNote } from "react-icons/md";
+import { HiDocumentAdd } from "react-icons/hi";
+import { MdEditDocument } from "react-icons/md";
 import ReactPaginate from "react-paginate";
 import GenerateReportsModal from "../components/services/GenerateReportsModal";
 import CreateServiceModal from "../components/services/CreateServiceModal";
@@ -16,6 +18,8 @@ import ManageServiceModal from "../components/services/ManageServiceModal";
 import AddServicesForm from "../components/services/form/add_service/AddServicesForm";
 import EditServicesForm from "../components/services/form/edit_service/EditServicesForm";
 import noData from "../assets/image/no-data.png";
+import AddServicesDocument from "../components/services/document_forms/create_document/AddServicesDocument";
+import EditServicesDocument from "../components/services/document_forms/edit_document/EditServicesDocument";
 
 const Services = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -32,6 +36,8 @@ const Services = () => {
   const [serviceFilter, setServiceFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
+  const [officials, setOfficials] = useState([]);
+
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
     setSortOrder(newSortOrder);
@@ -106,7 +112,6 @@ const Services = () => {
   const handleResetFilter = () => {
     setStatusFilter("all");
     setServiceFilter("all");
-    setDateFilter(null);
     setSearchQuery("");
   };
   const checkAllHandler = () => {
@@ -139,6 +144,35 @@ const Services = () => {
   const handleView = (item) => {
     setService(item);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
+        );
+
+        if (response.status === 200) {
+          const officialsData = response.data.result || [];
+
+          if (officialsData.length > 0) {
+            setOfficials(officialsData);
+          } else {
+            setOfficials([]);
+            console.log(`No officials found for Barangay ${brgy}`);
+          }
+        } else {
+          setOfficials([]);
+          console.error("Failed to fetch officials:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setOfficials([]);
+      }
+    };
+
+    fetchData();
+  }, [currentPage, brgy]); // Add positionFilter dependency
 
   return (
     <div className="mx-4">
@@ -269,102 +303,7 @@ const Services = () => {
                 </ul>
               </div>
 
-              {/* Service Type Sort */}
-              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
-                <button
-                  id="hs-dropdown"
-                  type="button"
-                  className="bg-[#21556d] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
-                >
-                  SERVICE TYPE
-                  <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </button>
-                <ul
-                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
-                  aria-labelledby="hs-dropdown"
-                >
-                  <a
-                    onClick={handleResetFilter}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    RESET FILTERS
-                  </a>
-                  <hr className="border-[#4e4e4e] my-1" />
-                  <a
-                    onClick={() => handleServiceFilter("Healthcare")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    HEALTHCARE
-                  </a>
-                  <a
-                    onClick={() => handleServiceFilter("Education")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    EDUCATION
-                  </a>
-                  <a
-                    onClick={() => handleServiceFilter("Social Welfare")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    SOCIAL WELFARE
-                  </a>
-                  <a
-                    onClick={() => handleServiceFilter("Security and Safety")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    SECURITY AND SAFETY
-                  </a>
-                  <a
-                    onClick={() => handleServiceFilter("Infrastructure")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    INFRASTRUCTURE
-                  </a>
-                  <a
-                    onClick={() => handleServiceFilter("Community")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    COMMUNITY
-                  </a>
-                  <a
-                    onClick={() => handleServiceFilter("Administrative")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    ADMINISTRATIVE
-                  </a>
-                  <a
-                    onClick={() => handleServiceFilter("Environmental")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    ENVIRONMENTAL
-                  </a>
-                </ul>
-              </div>
+         
             </div>
 
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12">
@@ -570,6 +509,45 @@ const Services = () => {
                             Edit Service Forms
                           </span>
                         </div>
+                        <div className="hs-tooltip inline-block">
+                          <button
+                            type="button"
+                            data-hs-overlay="#hs-create-serviceDocument-modal"
+                            onClick={() => handleView({ ...item })}
+                            className="hs-tooltip-toggle text-white bg-[#8b1814] font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                          >
+                            <HiDocumentAdd
+                              size={24}
+                              style={{ color: "#ffffff" }}
+                            />
+                          </button>
+                          <span
+                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                            role="tooltip"
+                          >
+                            Create Service Documents
+                          </span>
+                        </div>
+                        <div className="hs-tooltip inline-block">
+                          <button
+                            type="button"
+                            data-hs-overlay="#hs-edit-serviceDocument-modal"
+                            onClick={() => handleView({ ...item })}
+                            className="hs-tooltip-toggle text-white bg-[#144c8b] font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                          >
+                            <MdEditDocument
+                              size={24}
+                              style={{ color: "#ffffff" }}
+                            />
+                          </button>
+                          <span
+                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                            role="tooltip"
+                          >
+                            Edit Service Documents
+                          </span>
+                        </div>
+
                         {/* <button
                         type="button"
                         onClick={() =>
@@ -591,12 +569,12 @@ const Services = () => {
                 <tr>
                   <td
                     colSpan={tableHeader.length + 1}
-                    className="text-center py-48 lg:py-48 xxl:py-32"
+                    className="text-center sm:h-[18.7rem] xl:py-1 lg:h-[20rem] xxl:py-32 xl:h-[20rem]"
                   >
                     <img
                       src={noData}
                       alt=""
-                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                      className=" w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-[14rem] xl:w-80 mx-auto"
                     />
                     <strong className="text-[#535353]">NO DATA FOUND</strong>
                   </td>
@@ -630,6 +608,8 @@ const Services = () => {
       <GenerateReportsModal />
       <AddServicesForm service_id={service.service_id} brgy={brgy} />
       <EditServicesForm service_id={service.service_id} brgy={brgy} />
+      <AddServicesDocument service_id={service.service_id} brgy={brgy} officials={officials}/>
+      <EditServicesDocument service_id={service.service_id} brgy={brgy} officials={officials}/>
     </div>
   );
 };

@@ -7,6 +7,7 @@ import { useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import TopHeader from "../components/navigation/TopHeader";
 import Sidebar from "../components/navigation/Sidebar";
+import SubPendingApplication from "../components/dashboard/SubPendingApplication";
 
 const Dashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -19,8 +20,9 @@ const Dashboard = () => {
     <div className="mx-4 my-4 overflow-y-auto lg:h-[calc(100vh_-_105px)]">
       <StatisticsDashboard />
       <div className="flex flex-col lg:flex-row lg:space-x-4 space-y-4 lg:space-y-0">
+        <SubPendingApplication />
         <SubPendingRequest />
-        <EventsCalendar />
+        {/* <EventsCalendar /> */}
       </div>
     </div>
   );

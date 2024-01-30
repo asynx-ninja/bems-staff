@@ -6,53 +6,62 @@ import { useSearchParams } from "react-router-dom";
 import { AiOutlineEye } from "react-icons/ai";
 import ViewRequestModal from "./ViewRequestModal";
 import ReactPaginate from "react-paginate";
+import ViewRegistrationModal from "./ViewRegistrationModal";
 
-const SubPendingRequest = () => {
-  const [requests, setRequests] = useState([]);
-  const [request, setRequest] = useState({ response: [{ file: [] }] });
+const SubPendingApplication = () => {
+  const [applications, setApplications] = useState([]);
+  const [application, setApplication] = useState({ response: [{ file: [] }] });
+  const [filteredApplications, setFilteredApplications] = useState([]);
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
-  
+  const [statusFilter, setStatusFilter] = useState("all");
+
   useEffect(() => {
     const fetch = async () => {
-      const response = await axios.get(
-        `${API_LINK}/requests/pendingrequest/?isArchived=false&isApproved=Pending/&brgy=${brgy}&page=${currentPage}`
-      );
-      if (response.status === 200) {
-        setRequests(response.data.result);
-        setPageCount(response.data.pageCount);
-      } else setRequests([]);
+      try {
+        const response = await axios.get(
+          `${API_LINK}/application/?brgy=${brgy}&archived=false&status=Pending&page=${currentPage}`
+        );
+
+        if (response.status === 200) {
+          setApplications(response.data.result);
+          setPageCount(response.data.pageCount);
+          setFilteredApplications(response.data.result);
+        } else setApplications([]);
+      } catch (err) {
+        console.log(err);
+      }
     };
 
     fetch();
-  }, [currentPage]);
+  }, [brgy, statusFilter, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
 
   const handleView = (item) => {
-    setRequest(item);
+    setApplication(item);
   };
 
   return (
     <div className="w-full lg:w-6/12 flex flex-col h-full ">
       <div className="flex flex-col max-h-screen">
         <b className="border-solid border-0 border-black border-b-2 pb-2 uppercase font-heavy text-lg md:text-xl mb-4 shrink-0">
-          PENDING REQUESTS
+          PENDING EVENT APPLICATIONS
         </b>
         <div className="relative scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-auto lg:h-[calc(100vh_-_480px)] xxl:h-[calc(100vh_-_465px)] xxxl:h-[calc(100vh_-_410px)] w-full">
           <table className="table-auto w-full">
             <thead className="uppercase text-xs md:text-sm bg-gray-100 sticky top-0">
               <tr>
                 <th className="px-4 py-1 md:px-5 md:py-2 lg:px-6 lg:py-3">
-                  Name
+                  Event Name
                 </th>
                 <th className="px-4 py-1 md:px-5 md:py-2 lg:px-6 lg:py-3">
-                  Service Type
+                  Sender
                 </th>
                 <th className="px-4 py-1 md:px-5 md:py-2 lg:px-6 lg:py-3">
                   Requested Date
@@ -63,13 +72,17 @@ const SubPendingRequest = () => {
               </tr>
             </thead>
             <tbody className="text-sm text-center">
-              {requests.map((item, index) => (
+              {applications.map((item, index) => (
                 <tr key={index} className="even:bg-gray-100">
                   <td className="px-4 py-1 md:px-5 md:py-2 lg:px-6 lg:py-3">
-                    {item.service_name}
+                    {item.event_name}
                   </td>
                   <td className="px-4 py-1 md:px-5 md:py-2 lg:px-6 lg:py-3">
-                    {item.type}
+                    {item.form[0].lastName.value +
+                      ", " +
+                      item.form[0].firstName.value +
+                      " " +
+                      item.form[0].middleName.value}
                   </td>
                   <td className="px-4 py-1 md:px-5 md:py-2 lg:px-6 lg:py-3">
                     {new Date(item.createdAt).toISOString().split("T")[0]}
@@ -77,7 +90,7 @@ const SubPendingRequest = () => {
                   <td className="px-4 py-1 md:px-5 md:py-2 lg:px-6 lg:py-3">
                     <button
                       type="button"
-                      data-hs-overlay="#hs-view-request-modal"
+                      data-hs-overlay="#hs-view-application-modal"
                       onClick={() => handleView({ ...item })}
                       className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                     >
@@ -87,7 +100,7 @@ const SubPendingRequest = () => {
                       className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                       role="tooltip"
                     >
-                      View Request
+                      View Application
                     </span>
                   </td>
                 </tr>
@@ -113,11 +126,11 @@ const SubPendingRequest = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      {Object.hasOwn(request, "service_id") ? (
-        <ViewRequestModal request={request} id={id} brgy={brgy} />
+      {Object.hasOwn(application, "application_id") ? (
+        <ViewRegistrationModal application={application} id={id} brgy={brgy} />
       ) : null}
     </div>
   );
 };
 
-export default SubPendingRequest;
+export default SubPendingApplication;

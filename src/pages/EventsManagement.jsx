@@ -26,8 +26,9 @@ const EventsManagement = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
+  
   const [announcement, setAnnouncement] = useState([]);
-
+  const [announcementWithCounts, setAnnouncementWithCounts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
@@ -38,19 +39,47 @@ const EventsManagement = () => {
   const [selected, setSelected] = useState("date");
 
   useEffect(() => {
-    const fetch = async () => {
-      const response = await axios.get(
-        `${API_LINK}/announcement/?brgy=${brgy}&archived=false&page=${currentPage}`
-      );
-      if (response.status === 200) {
-        setAnnouncements(response.data.result);
-        setFilteredAnnouncements(response.data.result);
-        setPageCount(response.data.pageCount);
-      } else setAnnouncements([]);
+    const fetchData = async () => {
+      try {
+        const announcementsResponse = await axios.get(
+          `${API_LINK}/announcement/?brgy=${brgy}&archived=false&page=${currentPage}`
+        );
+
+        if (announcementsResponse.status === 200) {
+          const announcementsData = announcementsResponse.data.result.map(
+            async (announcement) => {
+              const completedResponse = await axios.get(
+                `${API_LINK}/application/completed?brgy=${brgy}&event_id=${announcement.event_id}`
+              );
+
+              if (completedResponse.status === 200) {
+                const completedCount = completedResponse.data.completedCount;
+                return { ...announcement, completedCount };
+              }
+            }
+          );
+
+          setAnnouncements(announcementsResponse.data.result);
+
+          Promise.all(announcementsData).then((announcementsWithCounts) => {
+            setAnnouncementWithCounts(announcementsWithCounts);
+            setFilteredAnnouncements(announcementsWithCounts);
+          });
+
+          setPageCount(announcementsResponse.data.pageCount);
+        } else {
+          setAnnouncementWithCounts([]);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+
+        console.error("Error response data:", error.response?.data);
+        console.error("Error response status:", error.response?.status);
+      }
     };
 
-    fetch();
-  }, [currentPage]);
+    fetchData();
+  }, [currentPage, brgy]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -80,7 +109,7 @@ const EventsManagement = () => {
   const checkAllHandler = () => {
     const announcementsToCheck =
       Announcements.length > 0 ? Announcements : announcements;
-
+    console.log("Checked", announcementsToCheck)
     if (announcementsToCheck.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
@@ -112,6 +141,13 @@ const EventsManagement = () => {
   const DateFormat = (date) => {
     const dateFormat = date === undefined ? "" : date.substr(0, 10);
     return dateFormat;
+  };
+
+  const TimeFormat = (date) => {
+    if (!date) return "";
+  
+    const formattedTime = moment(date).format("hh:mm A");
+    return formattedTime;
   };
 
   console.log(selectedItems);
@@ -457,117 +493,115 @@ const EventsManagement = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100 ">
-            {filteredAnnouncements.length > 0 ? (
+              {filteredAnnouncements.length > 0 ? (
                 filteredAnnouncements.map((item, index) => (
-                <tr key={index} className="odd:bg-slate-100 text-center">
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <input
-                        type="checkbox"
-                        checked={selectedItems.includes(item._id)}
-                        value={item._id}
-                        onChange={checkboxHandler}
-                        id=""
-                      />
-                    </div>
-                  </td>
-                  <td className="px-3 py-3 w-4/12">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                        {item.title}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3 w-4/12">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2 text-left">
-                        {item.details}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-2 py-3 w-2/12">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {DateFormat(item.createdAt) || ""}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3 w-4/12">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {DateFormat(item.date) || ""}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.attendees.length}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center space-x-1 sm:space-x-none">
-                      <div className="hs-tooltip inline-block">
-                        <button
-                          type="button"
-                          data-hs-overlay="#hs-modal-editAnnouncement"
-                          onClick={() => handleView({ ...item })}
-                          className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                        >
-                          <AiOutlineEye
-                            size={24}
-                            style={{ color: "#ffffff" }}
-                          />
+                  <tr key={index} className="odd:bg-slate-100 text-center">
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item._id)}
+                          value={item._id}
+                          onChange={checkboxHandler}
+                        />
+                      </div>
+                    </td>
+                    <td className="px-1 xl:px-3 py-3 w-4/12">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
+                          {item.title}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-2 xl:px-6 py-3 w-4/12">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2 text-left">
+                          {item.details}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-2 py-3 w-2/12">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {DateFormat(item.createdAt) || ""} - {TimeFormat(item.createdAt) || ""}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3 w-4/12">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {DateFormat(item.date) || ""}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {item.completedCount}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-2 xl:px-6 py-3">
+                      <div className="flex justify-center space-x-1 sm:space-x-none">
+                        <div className="hs-tooltip inline-block">
+                          <button
+                            type="button"
+                            data-hs-overlay="#hs-modal-editAnnouncement"
+                            onClick={() => handleView({ ...item })}
+                            className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                          >
+                            <AiOutlineEye
+                              size={24}
+                              style={{ color: "#ffffff" }}
+                            />
+                            <span
+                              className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                              role="tooltip"
+                            >
+                              View Announcement
+                            </span>
+                          </button>
+                        </div>
+                        <div className="hs-tooltip inline-block">
+                          <button
+                            type="button"
+                            data-hs-overlay="#hs-create-eventsForm-modal"
+                            onClick={() => handleView({ ...item })}
+                            className="hs-tooltip-toggle text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                          >
+                            <MdFormatListBulletedAdd
+                              size={24}
+                              style={{ color: "#ffffff" }}
+                            />
+                          </button>
                           <span
                             className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                             role="tooltip"
                           >
-                            View Announcement
+                            Create Event Forms
                           </span>
-                        </button>
-                      </div>
-                      <div className="hs-tooltip inline-block">
-                        <button
-                          type="button"
-                          data-hs-overlay="#hs-create-eventsForm-modal"
-                          onClick={() => handleView({ ...item })}
-                          className="hs-tooltip-toggle text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                        >
-                          <MdFormatListBulletedAdd
-                            size={24}
-                            style={{ color: "#ffffff" }}
-                          />
-                        </button>
-                        <span
-                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                          role="tooltip"
-                        >
-                          Create Event Forms
-                        </span>
-                      </div>
-                      <div className="hs-tooltip inline-block">
-                        <button
-                          type="button"
-                          data-hs-overlay="#hs-edit-eventsForm-modal"
-                          onClick={() => handleView({ ...item })}
-                          className="hs-tooltip-toggle text-white bg-purple-700 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                        >
-                          <MdOutlineEditNote
-                            size={24}
-                            style={{ color: "#ffffff" }}
-                          />
-                        </button>
-                        <span
-                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                          role="tooltip"
-                        >
-                          Edit Event Forms
-                        </span>
-                      </div>
+                        </div>
+                        <div className="hs-tooltip inline-block">
+                          <button
+                            type="button"
+                            data-hs-overlay="#hs-edit-eventsForm-modal"
+                            onClick={() => handleView({ ...item })}
+                            className="hs-tooltip-toggle text-white bg-purple-700 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                          >
+                            <MdOutlineEditNote
+                              size={24}
+                              style={{ color: "#ffffff" }}
+                            />
+                          </button>
+                          <span
+                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                            role="tooltip"
+                          >
+                            Edit Event Forms
+                          </span>
+                        </div>
 
-                      
-                      {/* <button
+                        {/* <button
                         type="button"
                         onClick={() =>
                           handleStatus({
@@ -580,20 +614,20 @@ const EventsManagement = () => {
                       >
                         <FiEdit size={24} style={{ color: "#ffffff" }} />
                       </button> */}
-                    </div>
-                  </td>
-                </tr>
-              ))
+                      </div>
+                    </td>
+                  </tr>
+                ))
               ) : (
                 <tr>
                   <td
                     colSpan={tableHeader.length + 1}
-                    className="text-center py-48 lg:py-48 xxl:py-32"
+                    className="text-center sm:h-[18.7rem] xl:py-1 lg:h-[20rem] xxl:py-32 xl:h-[20rem]"
                   >
                     <img
                       src={noData}
                       alt=""
-                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                      className=" w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-[14rem] xl:w-80 mx-auto"
                     />
                     <strong className="text-[#535353]">NO DATA FOUND</strong>
                   </td>
@@ -625,6 +659,7 @@ const EventsManagement = () => {
         <ManageAnnouncementModal
           announcement={announcement}
           setAnnouncement={setAnnouncement}
+          brgy={brgy}
         />
         <AddEventsForm announcement_id={announcement.event_id} brgy={brgy} />
         <EditEventsForm announcement_id={announcement.event_id} brgy={brgy} />

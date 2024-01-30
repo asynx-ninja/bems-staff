@@ -27,11 +27,12 @@ const Requests = () => {
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedReqFilter, setSelectedReqFilter] = useState("all");
 
   //status filter
   const [statusFilter, setStatusFilter] = useState("all");
   //request filter
-  const [requestFilter, setRequestFilter] = useState("all"); // Default is "all"
+  const [requestFilter, setRequestFilter] = useState([]); // Default is "all"
   //pagination
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
@@ -41,14 +42,43 @@ const Requests = () => {
   const [filteredRequests, setFilteredRequests] = useState([]);
   const [selected, setSelected] = useState("date");
 
+  const [officials, setOfficials] = useState([]);
+  
+
+  useEffect(() => {
+    const fetch = async () => {
+       try{
+     const response = await axios.get(
+      `${API_LINK}/services/?brgy=${brgy}&archived=false&page=${currentPage}`
+    );
+      console.log(response.data.result)
+     if (response.status === 200){
+         let arr = [];
+         response.data.result.map((item) => {
+         arr.push(item.name);
+         })
+         setRequestFilter(arr);
+         }
+ 
+       }catch(err){
+     console.log(err)
+       }
+    }
+    fetch()
+ }, [brgy]);
+
   useEffect(() => {
     const fetch = async () => {
       try {
+        console.log("brgy:", brgy);
+        console.log("statusFilter:", statusFilter);
+        console.log("requestFilter:", requestFilter);
         const response = await axios.get(
-          `${API_LINK}/requests/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${requestFilter}&page=${currentPage}`
+          `${API_LINK}/requests/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${selectedReqFilter}&page=${currentPage}`
         );
-
+  
         if (response.status === 200) {
+          console.log("Filtered Requests:", response.data.result);
           setRequests(response.data.result);
           setPageCount(response.data.pageCount);
           setFilteredRequests(response.data.result);
@@ -57,9 +87,38 @@ const Requests = () => {
         console.log(err);
       }
     };
-
+  
     fetch();
   }, [brgy, statusFilter, requestFilter, currentPage]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
+        );
+
+        if (response.status === 200) {
+          const officialsData = response.data.result || [];
+
+          if (officialsData.length > 0) {
+            setOfficials(officialsData);
+          } else {
+            setOfficials([]);
+            console.log(`No officials found for Barangay ${brgy}`);
+          }
+        } else {
+          setOfficials([]);
+          console.error("Failed to fetch officials:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setOfficials([]);
+      }
+    };
+
+    fetchData();
+  }, [currentPage, brgy]); // Add positionFilter dependency
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -68,9 +127,11 @@ const Requests = () => {
   const handleStatusFilter = (selectedStatus) => {
     setStatusFilter(selectedStatus);
   };
-  const handleRequestFilter = (selectedStatus) => {
-    setRequestFilter(selectedStatus);
+  
+  const handleRequestFilter = (selectedType) => {
+    setSelectedReqFilter(selectedType);
   };
+
   const handleResetFilter = () => {
     setStatusFilter("all");
     setRequestFilter("all");
@@ -116,9 +177,9 @@ const Requests = () => {
   };
 
   const tableHeader = [
+    "Control #",
     "SERVICE NAME",
     "SENDER",
-    "TYPE OF SERVICE",
     "DATE",
     "STATUS",
     "ACTIONS",
@@ -133,6 +194,13 @@ const Requests = () => {
     return dateFormat;
   };
 
+  const TimeFormat = (date) => {
+    if (!date) return "";
+  
+    const formattedTime = moment(date).format("hh:mm A");
+    return formattedTime;
+  };
+
   const filters = (choice, selectedDate) => {
     switch (choice) {
       case "date":
@@ -140,7 +208,7 @@ const Requests = () => {
           console.log(typeof new Date(item.createdAt), selectedDate);
           return (
             new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
             new Date(item.createdAt).getDate() === selectedDate.getDate()
           );
@@ -155,7 +223,7 @@ const Requests = () => {
         return requests.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-              startDate.getFullYear() &&
+            startDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === startDate.getMonth() &&
             new Date(item.createdAt).getDate() >= startDate.getDate() &&
             new Date(item.createdAt).getDate() <= endDate.getDate()
@@ -164,7 +232,7 @@ const Requests = () => {
         return requests.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -222,7 +290,7 @@ const Requests = () => {
         <div className="flex flex-row mt-5 sm:flex-col-reverse lg:flex-row w-full">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
             <h1
-              className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[25px] xxxl:text-3xl xxxl:mt-1 text-white"
+              className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
               SERVICE REQUESTS
@@ -268,9 +336,8 @@ const Requests = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -445,9 +512,8 @@ const Requests = () => {
                 >
                   SERVICE TYPE
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -474,67 +540,21 @@ const Requests = () => {
                     RESET FILTERS
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
-                  <a
-                    onClick={() => handleRequestFilter("Healthcare")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    HEALTHCARE
-                  </a>
-                  <a
-                    onClick={() => handleRequestFilter("Education")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    EDUCATION
-                  </a>
-                  <a
-                    onClick={() => handleRequestFilter("Social Welfare")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    SOCIAL WELFARE
-                  </a>
-                  <a
-                    onClick={() => handleRequestFilter("Security and Safety")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    SECURITY AND SAFETY
-                  </a>
-                  <a
-                    onClick={() => handleRequestFilter("Infrastructure")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    INFRASTRUCTURE
-                  </a>
-                  <a
-                    onClick={() => handleRequestFilter("Community")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    COMMUNITY
-                  </a>
-                  <a
-                    onClick={() => handleRequestFilter("Administrative")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    ADMINISTRATIVE
-                  </a>
-                  <a
-                    onClick={() => handleRequestFilter("Environmental")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    ENVIRONMENTAL
-                  </a>
+                  {requestFilter.map((service_name, index) => (
+                    <a
+                      key={index}
+                      onClick={() => handleRequestFilter(service_name)}
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      href="#"
+                    >
+                      {service_name}
+                    </a>
+                  ))}
                 </ul>
               </div>
             </div>
 
-            <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12">
+            <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12 lg:ml-2 xl:ml-0">
               <div className="flex flex-row w-full md:mr-2">
                 <button className=" bg-[#21556d] p-3 rounded-l-md">
                   <div className="w-full overflow-hidden">
@@ -565,14 +585,14 @@ const Requests = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    const Requests = requests.filter((item) =>
-                      item.service_name
-                        .toLowerCase()
-                        .includes(e.target.value.toLowerCase())
-                    );
-
+                    const Requests = requests.filter((item) => {
+                        const fullName = `${item.form[0].firstName.value} ${item.form[0].lastName.value}`;
+                        const reqId = item.req_id.toString(); // Assuming service_id is a number, convert it to string for case-insensitive comparison
+                        return fullName.toLowerCase().includes(e.target.value.toLowerCase()) || reqId.includes(e.target.value.toLowerCase());
+                    });
+                
                     setFilteredRequests(Requests);
-                  }}
+                }}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
@@ -597,7 +617,7 @@ const Requests = () => {
         </div>
 
         {/* Table */}
-        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_280px)] xl:h-[calc(100vh_-_300px)] xxl:h-[calc(100vh_-_280px)] xxxl:h-[calc(100vh_-_300px)]">
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_280px)] xl:h-[calc(100vh_-_280px)] xxl:h-[calc(100vh_-_280px)] xxxl:h-[calc(100vh_-_300px)]">
           <table className="relative table-auto w-full">
             <thead className="bg-[#21556d] sticky top-0">
               <tr className="">
@@ -637,6 +657,11 @@ const Requests = () => {
                       </div>
                     </td>
                     <td className="px-6 py-3">
+                      <span className="text-xs sm:text-sm text-black line-clamp-4">
+                        {item.req_id}
+                      </span>
+                    </td>
+                    <td className="px-6 py-3">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {item.service_name}
                       </span>
@@ -653,42 +678,35 @@ const Requests = () => {
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {item.type}
+                        {DateFormat(item.createdAt) || ""} - {TimeFormat(item.createdAt) || ""}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-3">
-                      <div className="flex justify-center items-center">
-                        <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {DateFormat(item.createdAt) || ""}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-3 xxl:w-3/12">
+                    <td className="px-2 xl:px-6 py-3 xxl:w-3/12">
                       {item.status === "Transaction Completed" && (
                         <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
                             TRANSACTION COMPLETED
                           </span>
                         </div>
                       )}
                       {item.status === "Rejected" && (
                         <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
                             REJECTED
                           </span>
                         </div>
                       )}
                       {item.status === "Pending" && (
                         <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
                             PENDING
                           </span>
                         </div>
                       )}
                       {item.status === "Paid" && (
                         <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
                             PAID
                           </span>
                         </div>
@@ -696,7 +714,7 @@ const Requests = () => {
 
                       {item.status === "Processing" && (
                         <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
                             PROCESSING
                           </span>
                         </div>
@@ -704,13 +722,13 @@ const Requests = () => {
 
                       {item.status === "Cancelled" && (
                         <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
                             CANCELLED
                           </span>
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="px-2 xl:px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">
                         <div className="hs-tooltip inline-block">
                           <button
@@ -759,12 +777,12 @@ const Requests = () => {
                 <tr>
                   <td
                     colSpan={tableHeader.length + 1}
-                    className="text-center py-48 lg:py-48 xxl:py-32"
+                    className="text-center sm:h-[18.7rem] xl:py-1 lg:h-[20rem] xxl:py-32 xl:h-[20rem]"
                   >
                     <img
                       src={noData}
                       alt=""
-                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                      className=" w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-[14rem] xl:w-80 mx-auto"
                     />
                     <strong className="text-[#535353]">NO DATA FOUND</strong>
                   </td>
@@ -792,9 +810,9 @@ const Requests = () => {
         />
       </div>
       {Object.hasOwn(request, "service_id") ? (
-        <ViewRequestModal request={request} />
+        <ViewRequestModal request={request} officials={officials}/>
       ) : null}
-      <ReplyServiceModal request={request} setRequest={setRequest} />
+      <ReplyServiceModal request={request} setRequest={setRequest} brgy={brgy} />
       <ArchiveRequestsModal selectedItems={selectedItems} />
       <RequestsReportsModal />
     </div>

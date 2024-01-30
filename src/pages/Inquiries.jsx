@@ -40,6 +40,25 @@ const Inquiries = () => {
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [selected, setSelected] = useState("date");
   const [filteredInquiries, setFilteredInquiries] = useState([]);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const isLatestResponseResident = (inquiry) => {
+    const { response, isApproved } = inquiry;
+    if (response && response.length > 0) {
+      const latestResponse = response[response.length - 1];
+      return (
+        latestResponse.type === "Resident" &&
+        !["Completed", "Pending"].includes(isApproved)
+      );
+    }
+    return false;
+  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setShowTooltip((prev) => !prev);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     document.title = "Inquiries | Barangay E-Services Management";
@@ -111,6 +130,13 @@ const Inquiries = () => {
     return dateFormat;
   };
 
+  const TimeFormat = (date) => {
+    if (!date) return "";
+
+    const formattedTime = moment(date).format("hh:mm A");
+    return formattedTime;
+  };
+
   const handleView = (item) => {
     setInquiry(item);
   };
@@ -138,6 +164,7 @@ const Inquiries = () => {
             new Date(item.compose.date).getDate() === selectedDate.getDate()
           );
         });
+
       case "week":
         const startDate = selectedDate;
         const endDate = new Date(startDate);
@@ -500,7 +527,7 @@ const Inquiries = () => {
               {filteredInquiries.length > 0 ? (
                 filteredInquiries.map((item, index) => (
                   <tr key={index} className="odd:bg-slate-100 text-center">
-                    <td className="px-6 py-3">
+                    <td className="xl:px-6 py-3">
                       <div className="flex justify-center items-center">
                         <input
                           type="checkbox"
@@ -511,52 +538,53 @@ const Inquiries = () => {
                         />
                       </div>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="xl:px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                           {item.name}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="xl:px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                           {item.email}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="px-2 xl:px-6 py-3">
                       <span className="text-xs sm:text-sm text-black line-clamp-2 ">
                         {item.compose.message}
                       </span>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="xl:px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {DateFormat(item.compose.date) || ""}
+                          {DateFormat(item.compose.date) || ""} -{" "}
+                          {TimeFormat(item.compose.date) || ""}
                         </span>
                       </div>
                     </td>
 
-                    <td className="px-6 py-3 xxl:w-2/12">
+                    <td className="xl:px-6 py-3 xxl:w-2/12">
                       <div className="flex justify-center items-center">
                         {item.isApproved === "Completed" && (
                           <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                            <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                            <span className="text-xs sm:text-sm font-bold text-white p-3 xl:mx-5">
                               COMPLETED
                             </span>
                           </div>
                         )}
                         {item.isApproved === "Pending" && (
                           <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                            <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                            <span className="text-xs sm:text-sm font-bold text-white p-3 xl:mx-5">
                               PENDING
                             </span>
                           </div>
                         )}
                         {item.isApproved === "In Progress" && (
                           <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
-                            <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                            <span className="text-xs sm:text-sm font-bold text-white p-3 xl:mx-5">
                               IN PROGRESS
                             </span>
                           </div>
@@ -564,9 +592,20 @@ const Inquiries = () => {
                       </div>
                     </td>
 
-                    <td className="px-6 py-3">
+                    <td className="xl:px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">
                         <div className="hs-tooltip inline-block">
+                          {isLatestResponseResident(item) && (
+                            <span className="tooltip absolute right-[1.7rem] top-[4.3rem] z-10">
+                              <span className="animate-ping absolute inline-flex h-3 w-3 mt-1 rounded-full bg-red-400 opacity-75 dark:bg-red-600"></span>
+                              <span className="relative inline-flex rounded-full bg-red-500 text-white h-3 w-3"></span>
+                              {showTooltip && (
+                                <span className="tooltiptext bg-red-500 text-white text-xs py-1 px-2 rounded absolute -left-full top-1/2 transform -translate-y-1/2 -translate-x-full whitespace-nowrap">
+                                  You have a new reply
+                                </span>
+                              )}
+                            </span>
+                          )}
                           <button
                             type="button"
                             data-hs-overlay="#hs-modal-viewInquiries"
@@ -576,8 +615,9 @@ const Inquiries = () => {
                             <AiOutlineEye
                               size={24}
                               style={{ color: "#ffffff" }}
-                            />
+                            />                 
                           </button>
+                          
                           <span
                             className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                             role="tooltip"
@@ -593,12 +633,12 @@ const Inquiries = () => {
                 <tr>
                   <td
                     colSpan={tableHeader.length + 1}
-                    className="text-center py-48 lg:py-48 xxl:py-32"
+                    className="text-center sm:h-[18.7rem] xl:py-1 lg:h-[20rem] xxl:py-32 xl:h-[20rem]"
                   >
                     <img
                       src={noData}
                       alt=""
-                      className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
+                      className=" w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-[15rem] xl:w-80 mx-auto"
                     />
                     <strong className="text-[#535353]">NO DATA FOUND</strong>
                   </td>
