@@ -47,11 +47,12 @@ const Inquiries = () => {
       const latestResponse = response[response.length - 1];
       return (
         latestResponse.type === "Resident" &&
-        !["Completed", "Pending"].includes(isApproved)
+        !["Completed"].includes(isApproved)
       );
     }
     return false;
   };
+  
   useEffect(() => {
     const interval = setInterval(() => {
       setShowTooltip((prev) => !prev);
@@ -65,7 +66,7 @@ const Inquiries = () => {
 
     const fetchInquiries = async () => {
       const response = await axios.get(
-        `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=false&status=${statusFilter}&page=${currentPage}`
+        `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=false&status=${statusFilter}&page=${currentPage}&label=Staff`
       );
       console.log("API URL:");
 
@@ -596,7 +597,7 @@ const Inquiries = () => {
                       <div className="flex justify-center space-x-1 sm:space-x-none">
                         <div className="hs-tooltip inline-block">
                           {isLatestResponseResident(item) && (
-                            <span className="tooltip absolute right-[1.7rem] top-[4.3rem] z-10">
+                            <span className="tooltip absolute right-[2.3rem] top-[3.7rem] z-10">
                               <span className="animate-ping absolute inline-flex h-3 w-3 mt-1 rounded-full bg-red-400 opacity-75 dark:bg-red-600"></span>
                               <span className="relative inline-flex rounded-full bg-red-500 text-white h-3 w-3"></span>
                               {showTooltip && (

@@ -45,7 +45,7 @@ const Sidebar = () => {
     const fetchInquiries = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/inquiries/staffinquiries/?to=${to}&archived=false&brgy=${brgy}`
+          `${API_LINK}/inquiries/staffinquiries/?label=Staff&archived=false&brgy=${brgy}`
         );
 
         if (response.status === 200) {
