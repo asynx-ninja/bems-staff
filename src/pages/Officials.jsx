@@ -14,6 +14,17 @@ import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import API_LINK from "../config/API";
 import noData from "../assets/image/no-data.png";
+import BALITE from "../assets/officials/BALITE.png";
+import BURGOS from "../assets/officials/BURGOS.png";
+import GERONIMO from "../assets/officials/GERONIMO.png";
+import MACABUD from "../assets/officials/MACABUD.png";
+import MANGGAHAN from "../assets/officials/MANGGAHAN.png";
+import MASCAP from "../assets/officials/MASCAP.png";
+import PURAY from "../assets/officials/PURAY.png";
+import ROSARIO from "../assets/officials/ROSARIO.png";
+import SAN_ISIDRO from "../assets/officials/SAN_ISIDRO.png";
+import SAN_JOSE from "../assets/officials/SAN_JOSE.png";
+import SAN_RAFAEL from "../assets/officials/SAN_RAFAEL.png";
 
 const Officials = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -28,6 +39,46 @@ const Officials = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [positionFilter, setPositionFilter] = useState("all");
   const [pageCount, setPageCount] = useState(0);
+
+  const returnLogo = () => {
+    switch (brgy) {
+      case "BALITE":
+        return BALITE;
+
+      case "BURGOS":
+        return BURGOS;
+
+      case "GERONIMO":
+        return GERONIMO;
+
+      case "MACABUD":
+        return MACABUD;
+
+      case "MANGGAHAN":
+        return MANGGAHAN;
+
+      case "MASCAP":
+        return MASCAP;
+
+      case "PURAY":
+        return PURAY;
+
+      case "ROSARIO":
+        return ROSARIO;
+
+      case "SAN ISIDRO":
+        return SAN_ISIDRO;
+
+      case "SAN JOSE":
+        return SAN_JOSE;
+
+      case "SAN RAFAEL":
+        return SAN_RAFAEL;
+    }
+  };
+
+
+
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
     setSortOrder(newSortOrder);
@@ -409,7 +460,7 @@ const Officials = () => {
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         <div className="py-2 xl:px-6 xl:py-2">
                           <img
-                            src={item.picture.link}
+                            src={item.picture.link || returnLogo()}
                             alt=""
                             className="w-[70px] h-[70px] md:w-[80px] md:h-[80px] xl:h-28 xl:w-28 bg-cover rounded-full mx-auto border-[5px] border-[#295141] object-cover"
                           />
