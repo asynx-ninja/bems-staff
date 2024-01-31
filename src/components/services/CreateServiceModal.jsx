@@ -136,8 +136,10 @@ function CreateServiceModal({ brgy }) {
             category: "Many",
             compose: {
               subject: `SERVICES - ${service.name}`,
-              message: `Barangay ${brgy} is now offering a new service named: ${service.name}.\n\n
+              message: `Barangay ${brgy} is trying to publish a new service named: ${service.name}.\n\n
             
+            Please review the new service!\n
+
             Service Details:\n 
             ${service.details}\n\n
             `,
@@ -147,7 +149,7 @@ function CreateServiceModal({ brgy }) {
               user_id: null,
               area: brgy,
             },
-            type: "Resident",
+            type: "Municipality",
             banner: response.data.collections.banner,
             logo: response.data.collections.logo,
           };

@@ -169,8 +169,8 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
                 area: null,
               },
               type: null,
-              banner: announcement.data.collections.banner,
-              logo: announcement.data.collections.logo,
+              banner: response.data.collections.banner,
+              logo: response.data.collections.logo,
             };
           } else {
             notify = {
@@ -192,8 +192,8 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
                 area: brgy,
               },
               type: "Resident",
-              banner: announcement.collections.banner,
-              logo: announcement.collections.logo,
+              banner: response.data.collections.banner,
+              logo: response.data.collections.logo,
             };
           }
 

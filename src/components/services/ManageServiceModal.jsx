@@ -152,8 +152,8 @@ function ManageServiceModal({ service, setService, brgy }) {
               area: brgy,
             },
             type: "Resident",
-            banner: service.collections.banner,
-            logo: service.collections.logo,
+            banner: response.data.collections.banner,
+            logo: response.data.collections.logo,
           };
 
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
