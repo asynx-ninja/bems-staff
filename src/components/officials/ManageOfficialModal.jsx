@@ -54,18 +54,29 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
       if (pfp) formData.append("file", pfp);
       formData.append("official", JSON.stringify(selectedOfficial));
 
-      const result = await axios.patch(
-        `${API_LINK}/brgyofficial/?brgy=${brgy}&doc_id=${selectedOfficial._id}`,
-        formData
+      const res_folder = await axios.get(
+        `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-      setTimeout(() => {
-        setSubmitClicked(false);
-        setUpdatingStatus("success");
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
-      }, 1000);
+      console.log("brgy: ", brgy);
+      console.log("res_folder: ", res_folder);
+
+      if (res_folder.status === 200) {
+        const result = await axios.patch(
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&doc_id=${selectedOfficial._id}&folder_id=${res_folder.data[0].official}`,
+          formData
+        );
+
+        if (result.status === 200) {
+          setTimeout(() => {
+            setSubmitClicked(false);
+            setUpdatingStatus("success");
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+          }, 1000);
+        }
+      }
     } catch (error) {
       console.error(error);
       setSubmitClicked(false);

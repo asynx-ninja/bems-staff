@@ -125,88 +125,97 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
 
       formData.append("announcement", JSON.stringify(announcement));
 
-      const response = await axios.patch(
-        `${API_LINK}/announcement/${announcement._id}`,
-        formData
+      const res_folder = await axios.get(
+        `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-      if (response.status === 200) {
-        var logoSrc = document.getElementById("logo");
-        logoSrc.src =
-          "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+      console.log("brgy: ", brgy);
+      console.log("res_folder: ", res_folder);
 
-        var bannerSrc = document.getElementById("banner");
-        bannerSrc.src =
-          "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+      if (res_folder.status === 200) {
+        const response = await axios.patch(
+          `${API_LINK}/announcement/${announcement._id}`,
+          formData
+        );
 
-        let notify;
+        if (response.status === 200) {
+          var logoSrc = document.getElementById("logo");
+          logoSrc.src =
+            "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
 
-        if (announcement.isOpen) {
-          notify = {
-            category: "All",
-            compose: {
-              subject: `EVENT - ${announcement.title}`,
-              message: `Barangay ${brgy} has updated an event named: ${announcement.title}.\n\n
-              
-              Event Details:\n 
-              ${announcement.details}\n\n
-  
-              Event Date:
-              ${announcement.date}\n\n
-              `,
-              go_to: "Events",
+          var bannerSrc = document.getElementById("banner");
+          bannerSrc.src =
+            "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+
+          let notify;
+
+          if (announcement.isOpen) {
+            notify = {
+              category: "All",
+              compose: {
+                subject: `EVENT - ${announcement.title}`,
+                message: `Barangay ${brgy} has updated an event named: ${announcement.title}.\n\n
+                
+                Event Details:\n 
+                ${announcement.details}\n\n
+    
+                Event Date:
+                ${announcement.date}\n\n
+                `,
+                go_to: "Events",
+              },
+              target: {
+                user_id: null,
+                area: null,
+              },
+              type: null,
+              banner: announcement.data.collections.banner,
+              logo: announcement.data.collections.logo,
+            };
+          } else {
+            notify = {
+              category: "Many",
+              compose: {
+                subject: `EVENT - ${announcement.title}`,
+                message: `Barangay ${brgy} has updated an event named: ${announcement.title}.\n\n
+                
+                Event Details:\n 
+                ${announcement.details}\n\n
+    
+                Event Date:
+                ${announcement.date}\n\n
+                `,
+                go_to: "Events",
+              },
+              target: {
+                user_id: null,
+                area: brgy,
+              },
+              type: "Resident",
+              banner: announcement.collections.banner,
+              logo: announcement.collections.logo,
+            };
+          }
+
+          console.log("Notify: ", notify);
+          console.log("Result: ", response);
+
+          const result = await axios.post(`${API_LINK}/notification/`, notify, {
+            headers: {
+              "Content-Type": "application/json",
             },
-            target: {
-              user_id: null,
-              area: null,
-            },
-            type: null,
-            banner: announcement.data.collections.banner,
-            logo: announcement.data.collections.logo,
-          };
-        } else {
-          notify = {
-            category: "Many",
-            compose: {
-              subject: `EVENT - ${announcement.title}`,
-              message: `Barangay ${brgy} has updated an event named: ${announcement.title}.\n\n
-              
-              Event Details:\n 
-              ${announcement.details}\n\n
-  
-              Event Date:
-              ${announcement.date}\n\n
-              `,
-              go_to: "Events",
-            },
-            target: {
-              user_id: null,
-              area: brgy,
-            },
-            type: "Resident",
-            banner: announcement.collections.banner,
-            logo: announcement.collections.logo,
-          };
-        }
+          });
 
-        console.log("Notify: ", notify);
-        console.log("Result: ", response);
-
-        const result = await axios.post(`${API_LINK}/notification/`, notify, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (result.status === 200) {
-          setTimeout(() => {
-            // HSOverlay.close(document.getElementById("hs-modal-editAnnouncement"));
-            setSubmitClicked(false);
-            setUpdatingStatus("success");
+          if (result.status === 200) {
             setTimeout(() => {
-              window.location.reload();
-            }, 3000);
-          }, 1000);
+              // HSOverlay.close(document.getElementById("hs-modal-editAnnouncement"));
+              setSubmitClicked(false);
+              setUpdatingStatus("success");
+              setTimeout(() => {
+                window.location.reload();
+              }, 3000);
+            }, 1000);
+          }
         }
       }
     } catch (err) {

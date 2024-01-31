@@ -66,29 +66,38 @@ function CreateOfficialModal({ brgy }) {
 
       formData.append("official", JSON.stringify(obj));
 
-      const result = await axios.post(
-        `${API_LINK}/brgyofficial/?brgy=${brgy}`,
-        formData
+      const res_folder = await axios.get(
+        `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-      if (result.status === 200) {
-        console.log("Official added successfully!");
-        setOfficial({
-          firstName: "",
-          middleName: "",
-          lastName: "",
-          suffix: "",
-          position: "",
-          fromYear: "",
-          toYear: "",
-          brgy: "",
-        });
-        setPfp(null);
-        setSubmitClicked(false);
-        setCreationStatus("success");
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
+      console.log("brgy: ", brgy);
+      console.log("res_folder: ", res_folder);
+
+      if (res_folder.status === 200) {
+        const result = await axios.post(
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&folder_id=${res_folder.data[0].official}`,
+          formData
+        );
+
+        if (result.status === 200) {
+          console.log("Official added successfully!");
+          setOfficial({
+            firstName: "",
+            middleName: "",
+            lastName: "",
+            suffix: "",
+            position: "",
+            fromYear: "",
+            toYear: "",
+            brgy: "",
+          });
+          setPfp(null);
+          setSubmitClicked(false);
+          setCreationStatus("success");
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        }
       }
     } catch (err) {
       console.error("Error adding official:", err);

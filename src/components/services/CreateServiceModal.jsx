@@ -104,62 +104,73 @@ function CreateServiceModal({ brgy }) {
 
       formData.append("service", JSON.stringify(obj));
 
-      const response = await axios.post(`${API_LINK}/services/`, formData);
+      const res_folder = await axios.get(
+        `${API_LINK}/folder/specific/?brgy=${brgy}`
+      );
 
-      if (response.status === 200) {
-        var logoSrc = document.getElementById("logo");
-        logoSrc.src =
-          "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+      console.log("brgy: ", brgy);
+      console.log("res_folder: ", res_folder);
 
-        var bannerSrc = document.getElementById("banner");
-        bannerSrc.src =
-          "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
-        setService({
-          name: "",
-          type: "",
-          details: "",
-          fee: "",
-          brgy: "",
-        });
+      if (res_folder.status === 200) {
+        const response = await axios.post(`${API_LINK}/services/?service_folder_id=${res_folder.data[0].service}`, formData);
 
-        const notify = {
-          category: "Many",
-          compose: {
-            subject: `APPROVAL SERVICE - ${service.name}`,
-            message: `Barangay ${brgy} created a new service named: ${service.name}. Review it now!\n\n
+        console.log("response: ", response);
+
+        if (response.status === 200) {
+          var logoSrc = document.getElementById("logo");
+          logoSrc.src =
+            "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+
+          var bannerSrc = document.getElementById("banner");
+          bannerSrc.src =
+            "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+          setService({
+            name: "",
+            type: "",
+            details: "",
+            fee: "",
+            brgy: "",
+          });
+
+          const notify = {
+            category: "Many",
+            compose: {
+              subject: `SERVICES - ${service.name}`,
+              message: `Barangay ${brgy} is now offering a new service named: ${service.name}.\n\n
             
             Service Details:\n 
             ${service.details}\n\n
             `,
-            go_to: "Services",
-          },
-          target: {
-            user_id: null,
-            area: "MUNISIPYO",
-          },
-          type: "Municipality",
-          banner: response.data.collections.banner,
-          logo: response.data.collections.logo,
-        };
+              go_to: "Services",
+            },
+            target: {
+              user_id: null,
+              area: brgy,
+            },
+            type: "Resident",
+            banner: response.data.collections.banner,
+            logo: response.data.collections.logo,
+          };
 
-        const result = await axios.post(`${API_LINK}/notification/`, notify, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+          const result = await axios.post(`${API_LINK}/notification/`, notify, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
 
-        console.log("Notify: ", notify);
-        console.log("Result: ", response);
+          console.log("Notify: ", notify);
+          console.log("Result: ", response);
 
-        if (result.status === 200) {
-          setLogo();
-          setBanner();
-          setFiles([]);
-          setSubmitClicked(false);
-          setCreationStatus("success");
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
+          if (result.status === 200) {
+            setLogo();
+            setBanner();
+            setFiles([]);
+            setSubmitClicked(false);
+            setCreationStatus("success");
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+          }
         }
       }
     } catch (err) {

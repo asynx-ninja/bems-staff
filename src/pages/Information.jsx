@@ -24,8 +24,12 @@ const Information = () => {
     return newFile;
   };
 
-  const [isSmallerThanLG, setIsSmallerThanLG] = useState(window.innerWidth <= 640);
-  const [isBiggerThanMD, setIsBiggerThanMD] = useState(window.innerWidth >= 1024);
+  const [isSmallerThanLG, setIsSmallerThanLG] = useState(
+    window.innerWidth <= 640
+  );
+  const [isBiggerThanMD, setIsBiggerThanMD] = useState(
+    window.innerWidth >= 1024
+  );
 
   useEffect(() => {
     const handleResize = () => {
@@ -80,24 +84,29 @@ const Information = () => {
 
       formData.append("brgyinfo", JSON.stringify(information));
 
-      const result = await axios.patch(
-        `${API_LINK}/brgyinfo/${brgy}`,
-        formData
+      const res_folder = await axios.get(
+        `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-      // if (!response.ok) {
-      //   throw new Error("Info is not updated");
-      // }
+      console.log("brgy: ", brgy);
+      console.log("res_folder: ", res_folder);
 
-      console.log(result);
-      setTimeout(() => {
-        setSubmitClicked(false);
-        setUpdatingStatus("success");
+      if (res_folder.status === 200) {
+        const result = await axios.patch(
+          `${API_LINK}/brgyinfo/${brgy}`,
+          formData
+        );
+
+        console.log(result);
         setTimeout(() => {
-          window.location.reload();
-        }, 3000);
-      }, 1000);
-      // setBrgyInformation({});
+          setSubmitClicked(false);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        }, 1000);
+        // setBrgyInformation({});
+      }
     } catch (error) {
       console.error(error);
       setSubmitClicked(false);
@@ -289,15 +298,17 @@ const Information = () => {
                 </div>
               </div>
               <div className="flex flex-col justify-center items-center py-6 text-white gap-2">
-
                 {/* Sm to md screen loader */}
                 {isSmallerThanLG && (
-                <div className="flex w-full justify-center items-center px-1 md:px-5 xl:px-8 xxl:px-[320px] xxxl:px-[415px]">
-                  {submitClicked && <EditLoader updatingStatus="updating" />}
-                  {updatingStatus && !isBiggerThanMD && (
-                    <EditLoader updatingStatus={updatingStatus} error={error} />
-                  )}
-                </div>
+                  <div className="flex w-full justify-center items-center px-1 md:px-5 xl:px-8 xxl:px-[320px] xxxl:px-[415px]">
+                    {submitClicked && <EditLoader updatingStatus="updating" />}
+                    {updatingStatus && !isBiggerThanMD && (
+                      <EditLoader
+                        updatingStatus={updatingStatus}
+                        error={error}
+                      />
+                    )}
+                  </div>
                 )}
 
                 <div className="flex flex-col lg:flex-row gap-2 w-full xxl:w-1/2 justify-center items-center px-2 md:px-5 xl:px-8 ">

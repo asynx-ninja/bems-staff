@@ -115,17 +115,25 @@ function CreateAnnouncementModal({ brgy }) {
 
       formData.append("announcement", JSON.stringify(obj));
 
-      const response = await axios.post(`${API_LINK}/announcement/`, formData);
+      const res_folder = await axios.get(
+        `${API_LINK}/folder/specific/?brgy=${brgy}`
+      );
 
-      if (response.status === 200) {
-        let notify;
+      console.log("brgy: ", brgy);
+      console.log("res_folder: ", res_folder);
 
-        if (announcement.isOpen) {
-          notify = {
-            category: "All",
-            compose: {
-              subject: `EVENT - ${announcement.title}`,
-              message: `Barangay ${brgy} has posted a new event named: ${announcement.title}.\n\n
+      if (res_folder.status === 200) {
+        const response = await axios.post(`${API_LINK}/announcement/?event_folder_id=${res_folder.data[0].events}`, formData);
+
+        if (response.status === 200) {
+          let notify;
+
+          if (announcement.isOpen) {
+            notify = {
+              category: "All",
+              compose: {
+                subject: `EVENT - ${announcement.title}`,
+                message: `Barangay ${brgy} has posted a new event named: ${announcement.title}.\n\n
               
               Event Details:\n 
               ${announcement.details}\n\n
@@ -133,22 +141,22 @@ function CreateAnnouncementModal({ brgy }) {
               Event Date:
               ${announcement.date}\n\n
               `,
-              go_to: "Events",
-            },
-            target: {
-              user_id: null,
-              area: null,
-            },
-            type: null,
-            banner: response.data.collections.banner,
-            logo: response.data.collections.logo,
-          };
-        } else {
-          notify = {
-            category: "Many",
-            compose: {
-              subject: `EVENT - ${announcement.title}`,
-              message: `Barangay ${brgy} has posted a new event named: ${announcement.title}.\n\n
+                go_to: "Events",
+              },
+              target: {
+                user_id: null,
+                area: null,
+              },
+              type: null,
+              banner: response.data.collections.banner,
+              logo: response.data.collections.logo,
+            };
+          } else {
+            notify = {
+              category: "Many",
+              compose: {
+                subject: `EVENT - ${announcement.title}`,
+                message: `Barangay ${brgy} has posted a new event named: ${announcement.title}.\n\n
               
               Event Details:\n 
               ${announcement.details}\n\n
@@ -156,34 +164,35 @@ function CreateAnnouncementModal({ brgy }) {
               Event Date:
               ${announcement.date}\n\n
               `,
-              go_to: "Events",
+                go_to: "Events",
+              },
+              target: {
+                user_id: null,
+                area: brgy,
+              },
+              type: "Resident",
+              banner: response.data.collections.banner,
+              logo: response.data.collections.logo,
+            };
+          }
+
+          console.log("Notify: ", notify);
+          console.log("Result: ", response);
+
+          const result = await axios.post(`${API_LINK}/notification/`, notify, {
+            headers: {
+              "Content-Type": "application/json",
             },
-            target: {
-              user_id: null,
-              area: brgy,
-            },
-            type: "Resident",
-            banner: response.data.collections.banner,
-            logo: response.data.collections.logo,
-          };
-        }
+          });
 
-        console.log("Notify: ", notify);
-        console.log("Result: ", response);
-
-        const result = await axios.post(`${API_LINK}/notification/`, notify, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (result.status === 200) {
-          clearForm();
-          setSubmitClicked(false);
-          setCreationStatus("success");
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
+          if (result.status === 200) {
+            clearForm();
+            setSubmitClicked(false);
+            setCreationStatus("success");
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+          }
         }
       }
     } catch (err) {
