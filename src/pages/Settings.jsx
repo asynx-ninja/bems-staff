@@ -15,6 +15,7 @@ import API_LINK from "../config/API";
 import banner from "../assets/image/1.png";
 import OccupationList from "../components/occupations/OccupationList";
 import EditLoader from "../components/settings/loaders/EditLoader";
+
 const Settings = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [submitClicked, setSubmitClicked] = useState(false);
@@ -22,6 +23,7 @@ const Settings = () => {
   const [error, setError] = useState(null);
   const [timerId, setTimerId] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
+  const brgy = searchParams.get("brgy");
   const id = searchParams.get("id");
   const fileInputRef = useRef();
   const handleAdd = (e) => {
@@ -242,74 +244,82 @@ const Settings = () => {
       var formData = new FormData();
       formData.append("users", JSON.stringify(obj));
       formData.append("file", pfp);
-      const response = await axios.patch(
-        `${API_LINK}/users/?doc_id=${id}`,
-        formData
+      const res_folder = await axios.get(
+        `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-      // CHANGE USERNAME
-      if (activeButton.credential === true) {
-        if (
-          userData.username &&
-          userCred.username &&
-          userData.username !== userCred.username
-          
-        ) {
-          if (!userCred.username || !userCred.oldPass) {
-            setMessage({
-              display: false,
-            });
-            setError("Please provide both the new username and password.");
-            return; // Prevent further execution
+      console.log("brgy: ", brgy);
+      console.log("res_folder: ", res_folder);
+
+      if (res_folder.status === 200) {
+        const response = await axios.patch(
+          `${API_LINK}/users/?doc_id=${id}&folder_id=${res_folder.data[0].pfp}`,
+          formData
+        );
+
+        // CHANGE USERNAME
+        if (activeButton.credential === true) {
+          if (
+            userData.username &&
+            userCred.username &&
+            userData.username !== userCred.username
+          ) {
+            if (!userCred.username || !userCred.oldPass) {
+              setMessage({
+                display: false,
+              });
+              setError("Please provide both the new username and password.");
+              return; // Prevent further execution
+            }
+            changeCredentials(
+              userData.username,
+              userCred.username,
+              userCred.oldPass,
+              userCred.newPass
+            );
           }
-          changeCredentials(
-            userData.username,
-            userCred.username,
-            userCred.oldPass,
-            userCred.newPass
-          );
-        }
-      } else if (activeButton.pass === true) {
-        if (userCred.newPass !== "" || userCred.oldPass !== "") {
-          if (!userCred.newPass || !userCred.oldPass) {
-            setMessage({
-              display: false,
-            });
-            setError("Please provide both the new username and password.");
-            return; // Prevent further execution
+        } else if (activeButton.pass === true) {
+          if (userCred.newPass !== "" || userCred.oldPass !== "") {
+            if (!userCred.newPass || !userCred.oldPass) {
+              setMessage({
+                display: false,
+              });
+              setError("Please provide both the new username and password.");
+              return; // Prevent further execution
+            }
+            changeCredentials(
+              userData.username,
+              userCred.username,
+              userCred.oldPass,
+              userCred.newPass
+            );
           }
-          changeCredentials(
-            userData.username,
-            userCred.username,
-            userCred.oldPass,
-            userCred.newPass
-          );
-        }
-      } else if (response.status === 200) {
-        setSubmitClicked(true);
-        setError(null);
-        console.log("Update successful:", response);
-        setUserData(response.data);
-        setUserAddress({
-          street: response.data.address.street,
-          brgy: response.data.address.brgy,
-          city: response.data.address.city,
-        });
-        setUserSocials({
-          facebook: response.data.socials.facebook,
-          instagram: response.data.socials.instagram,
-          twitter: response.data.socials.twitter,
-        });
-        setEditButton(true);
-        setTimeout(() => {
-          setSubmitClicked(false);
-          setUpdatingStatus("success");
+        } else if (response.status === 200) {
+          setSubmitClicked(true);
+          setError(null);
+          console.log("Update successful:", response);
+          setUserData(response.data);
+          setUserAddress({
+            street: response.data.address.street,
+            brgy: response.data.address.brgy,
+            city: response.data.address.city,
+          });
+          setUserSocials({
+            facebook: response.data.socials.facebook,
+            instagram: response.data.socials.instagram,
+            twitter: response.data.socials.twitter,
+          });
+          setEditButton(true);
           setTimeout(() => {
-            window.location.reload();
-          }, 3000);
-        }, 1000);
-      } else {
-        console.error("Update failed. Status:", response.status);
+            setSubmitClicked(false);
+            setUpdatingStatus("success");
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+          }, 1000);
+        } else {
+          console.error("Update failed. Status:", response.status);
+        }
       }
     } catch (error) {
       console.error("Error saving changes:", error);
@@ -322,7 +332,7 @@ const Settings = () => {
       );
     }
   };
-  
+
   const changeCredentials = async (
     oldUsername,
     newUsername,
@@ -1315,165 +1325,165 @@ const Settings = () => {
               </div>
               <div className={activeButton.pass ? "flex flex-col" : "hidden"}>
                 <div className=" shadow-lg px-[30px] pb-[30px] ">
-                <div className="flex flex-col w-[80%] justify-center mx-auto gap-4">
-                  {error && (
-                    <div
-                      className="max-w-full border-2 mb-4 border-[#bd4444] rounded-xl shadow-lg bg-red-300"
-                      role="alert"
-                    >
-                      <div className="flex p-4">
-                        <div className="flex-shrink-0">
-                          <svg
-                            className="flex-shrink-0 h-4 w-4 text-red-600 mt-0.5"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width={16}
-                            height={16}
-                            fill="currentColor"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
-                          </svg>
-                        </div>
-                        <div className="ms-3">
-                          <p className="text-sm text-gray-700 font-medium ">
-                            {error}
-                          </p>
+                  <div className="flex flex-col w-[80%] justify-center mx-auto gap-4">
+                    {error && (
+                      <div
+                        className="max-w-full border-2 mb-4 border-[#bd4444] rounded-xl shadow-lg bg-red-300"
+                        role="alert"
+                      >
+                        <div className="flex p-4">
+                          <div className="flex-shrink-0">
+                            <svg
+                              className="flex-shrink-0 h-4 w-4 text-red-600 mt-0.5"
+                              xmlns="http://www.w3.org/2000/svg"
+                              width={16}
+                              height={16}
+                              fill="currentColor"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+                            </svg>
+                          </div>
+                          <div className="ms-3">
+                            <p className="text-sm text-gray-700 font-medium ">
+                              {error}
+                            </p>
+                          </div>
                         </div>
                       </div>
+                    )}
+                    <div className="relative z-0">
+                      <label
+                        htmlFor="oldpass"
+                        className="block sm:text-xs lg:text-sm font-medium mb-2"
+                      >
+                        Enter your old password
+                      </label>
+                      <input
+                        type={oldpasswordShown ? "text" : "password"}
+                        disabled={editButton}
+                        id="oldpass"
+                        className={`py-3 px-4 block w-full  text-black rounded-md text-sm border-2 bg-white ${
+                          error && !userCred.oldPass.trim()
+                            ? "border-red-500"
+                            : "border-gray-200"
+                        }`}
+                        placeholder="password"
+                        aria-describedby="hs-input-helper-text"
+                        onChange={(e) =>
+                          handleUserChangeCred("oldPass", e.target.value)
+                        }
+                      />
+                      {error && !userCred.oldPass.trim() && (
+                        <p className="text-red-500 text-xs italic">
+                          Please enter a old password.
+                        </p>
+                      )}
+                      <button
+                        name="old"
+                        type="button"
+                        onClick={toggleOldPassword}
+                        className="absolute right-2 sm:top-5 lg:top-7 p-2.5 mt-1 text-sm font-medium text-white"
+                      >
+                        {oldpasswordShown ? (
+                          <AiOutlineEye style={{ color: "green" }} size={20} />
+                        ) : (
+                          <AiOutlineEyeInvisible
+                            style={{ color: "green" }}
+                            size={20}
+                          />
+                        )}
+                      </button>
                     </div>
-                  )}
-                  <div className="relative z-0">
-                    <label
-                      htmlFor="oldpass"
-                      className="block sm:text-xs lg:text-sm font-medium mb-2"
-                    >
-                      Enter your old password
-                    </label>
-                    <input
-                      type={oldpasswordShown ? "text" : "password"}
-                      disabled={editButton}
-                      id="oldpass"
-                      className={`py-3 px-4 block w-full  text-black rounded-md text-sm border-2 bg-white ${
-                        error && !userCred.oldPass.trim()
-                          ? "border-red-500"
-                          : "border-gray-200"
-                      }`}
-                      placeholder="password"
-                      aria-describedby="hs-input-helper-text"
-                      onChange={(e) =>
-                        handleUserChangeCred("oldPass", e.target.value)
-                      }
-                    />
-                    {error && !userCred.oldPass.trim() && (
-                      <p className="text-red-500 text-xs italic">
-                        Please enter a old password.
-                      </p>
-                    )}
-                    <button
-                      name="old"
-                      type="button"
-                      onClick={toggleOldPassword}
-                      className="absolute right-2 sm:top-5 lg:top-7 p-2.5 mt-1 text-sm font-medium text-white"
-                    >
-                      {oldpasswordShown ? (
-                        <AiOutlineEye style={{ color: "green" }} size={20} />
-                      ) : (
-                        <AiOutlineEyeInvisible
-                          style={{ color: "green" }}
-                          size={20}
-                        />
+                    <div className="relative z-0 mt-2">
+                      <label
+                        htmlFor="newpass"
+                        className="block sm:text-xs lg:text-sm font-medium mb-2"
+                      >
+                        Enter your new password
+                      </label>
+                      <input
+                        type={newpasswordShown ? "text" : "password"}
+                        disabled={editButton}
+                        readOnly={userCred.oldPass === ""}
+                        id="newpass"
+                        className={`py-3 px-4 block w-full  text-black rounded-md text-sm border-2 bg-white ${
+                          error && !userCred.newPass.trim()
+                            ? "border-red-500"
+                            : "border-gray-200"
+                        }`}
+                        placeholder="password"
+                        aria-describedby="hs-input-helper-text"
+                        onChange={(e) =>
+                          handleUserChangeCred("newPass", e.target.value)
+                        }
+                      />
+                      {error && !userCred.newPass.trim() && (
+                        <p className="text-red-500 text-xs italic">
+                          Please enter a new password.
+                        </p>
                       )}
-                    </button>
-                  </div>
-                  <div className="relative z-0 mt-2">
-                    <label
-                      htmlFor="newpass"
-                      className="block sm:text-xs lg:text-sm font-medium mb-2"
-                    >
-                      Enter your new password
-                    </label>
-                    <input
-                      type={newpasswordShown ? "text" : "password"}
-                      disabled={editButton}
-                      readOnly={userCred.oldPass === ""}
-                      id="newpass"
-                      className={`py-3 px-4 block w-full  text-black rounded-md text-sm border-2 bg-white ${
-                        error && !userCred.newPass.trim()
-                          ? "border-red-500"
-                          : "border-gray-200"
-                      }`}
-                      placeholder="password"
-                      aria-describedby="hs-input-helper-text"
-                      onChange={(e) =>
-                        handleUserChangeCred("newPass", e.target.value)
-                      }
-                    />
-                    {error && !userCred.newPass.trim() && (
-                      <p className="text-red-500 text-xs italic">
-                        Please enter a new password.
-                      </p>
-                    )}
-                    <button
-                      name="new"
-                      type="button"
-                      onClick={toggleNewPassword}
-                      className="absolute right-2 sm:top-5 lg:top-7 p-2.5 mt-1 text-sm font-medium text-white"
-                    >
-                      {newpasswordShown ? (
-                        <AiOutlineEye style={{ color: "green" }} size={20} />
-                      ) : (
-                        <AiOutlineEyeInvisible
-                          style={{ color: "green" }}
-                          size={20}
-                        />
+                      <button
+                        name="new"
+                        type="button"
+                        onClick={toggleNewPassword}
+                        className="absolute right-2 sm:top-5 lg:top-7 p-2.5 mt-1 text-sm font-medium text-white"
+                      >
+                        {newpasswordShown ? (
+                          <AiOutlineEye style={{ color: "green" }} size={20} />
+                        ) : (
+                          <AiOutlineEyeInvisible
+                            style={{ color: "green" }}
+                            size={20}
+                          />
+                        )}
+                      </button>
+                    </div>
+                    <div>
+                      {userCred.newPass && (
+                        <div className="flex w-full h-1.5 bg-gray-200 rounded-full overflow-hidden dark:bg-gray-700">
+                          <div
+                            className={`flex flex-col justify-center overflow-hidden ${
+                              passwordStrength < 25
+                                ? "bg-red-500"
+                                : passwordStrength < 50
+                                ? "bg-yellow-500"
+                                : passwordStrength < 75
+                                ? "bg-amber-500"
+                                : passwordStrength < 100
+                                ? "bg-blue-500"
+                                : "bg-green-500"
+                            }`}
+                            role="progressbar"
+                            style={{ width: `${passwordStrength}%` }}
+                            aria-valuenow={passwordStrength}
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                          />
+                        </div>
                       )}
-                    </button>
-                  </div>
-                  <div>
-                    {userCred.newPass && (
-                      <div className="flex w-full h-1.5 bg-gray-200 rounded-full overflow-hidden dark:bg-gray-700">
+                      {passwordStrengthSuccess && (
                         <div
-                          className={`flex flex-col justify-center overflow-hidden ${
-                            passwordStrength < 25
-                              ? "bg-red-500"
-                              : passwordStrength < 50
-                              ? "bg-yellow-500"
-                              : passwordStrength < 75
-                              ? "bg-amber-500"
-                              : passwordStrength < 100
-                              ? "bg-blue-500"
-                              : "bg-green-500"
-                          }`}
-                          role="progressbar"
-                          style={{ width: `${passwordStrength}%` }}
-                          aria-valuenow={passwordStrength}
-                          aria-valuemin={0}
-                          aria-valuemax={100}
-                        />
-                      </div>
-                    )}
-                    {passwordStrengthSuccess && (
-                      <div
-                        className="bg-green-50 border border-green-200 text-sm text-green-600 rounded-md p-4 mt-2"
-                        role="alert"
-                      >
-                        <span className="font-bold">Sucess:</span> Password is
-                        already strong
-                      </div>
-                    )}
-                    {passwordStrengthError && passwordStrength < 100 && (
-                      <div
-                        className="bg-orange-50 border border-orange-200 text-sm text-orange-600 rounded-md p-4 mt-2"
-                        role="alert"
-                      >
-                        <span className="font-bold">Warning:</span> Password
-                        must contain at least 8 characters, one uppercase
-                        letter, one lowercase letter, one number, and one
-                        special character
-                      </div>
-                    )}
+                          className="bg-green-50 border border-green-200 text-sm text-green-600 rounded-md p-4 mt-2"
+                          role="alert"
+                        >
+                          <span className="font-bold">Sucess:</span> Password is
+                          already strong
+                        </div>
+                      )}
+                      {passwordStrengthError && passwordStrength < 100 && (
+                        <div
+                          className="bg-orange-50 border border-orange-200 text-sm text-orange-600 rounded-md p-4 mt-2"
+                          role="alert"
+                        >
+                          <span className="font-bold">Warning:</span> Password
+                          must contain at least 8 characters, one uppercase
+                          letter, one lowercase letter, one number, and one
+                          special character
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
                 </div>
               </div>
             </div>

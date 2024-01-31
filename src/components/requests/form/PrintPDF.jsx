@@ -470,8 +470,8 @@ const PrintPDF = ({ detail }) => {
           {detail.form && detail.form[0].lastName.value}, {detail.form && detail.form[0].firstName.value} {detail.form && detail.form[0].middleName.value}
           </Text>
           , a resident of{" "}
-          <Text style={styles.terms.underline}>{detail.form && detail.form[0].address.value}</Text>{" "}
-          attest that
+          <Text style={styles.terms.underline}>Barangay {detail.brgy} of Rodriguez, Rizal</Text>
+          {" "}attest that
         </Text>
         <View style={styles.terms.listParent}>
           {terms.map((term, idx) => (

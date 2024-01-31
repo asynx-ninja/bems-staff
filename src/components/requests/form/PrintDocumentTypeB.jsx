@@ -22,7 +22,7 @@ import SAN_JOSE from "../../../assets/logo/SAN_JOSE.png";
 import SAN_RAFAEL from "../../../assets/logo/SAN_RAFAEL.png";
 import BAGONG_PILIPINAS from "../../../assets/image/bagong-pilipinas-logo.jpg";
 
-const PrintDocumentTypeB = ({ detail, officials = { officials } }) => {
+const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
   const [date, setDate] = useState(new Date());
 
   const returnLogo = () => {
@@ -633,8 +633,7 @@ const PrintDocumentTypeB = ({ detail, officials = { officials } }) => {
                 {detail.form && detail.form[0].lastName.value}
               </Text>
               , of legal age, residing at{" "}
-              {detail.form && detail.form[0].address.value} is a bona-fide
-              resident of Barangay {detail.brgy}, Rodriguez, Rizal.
+              Barangay {detail.brgy}, Rodriguez, Rizal.
             </Text>
             <Text
               style={{

@@ -22,7 +22,7 @@ import SAN_JOSE from "../../../assets/logo/SAN_JOSE.png";
 import SAN_RAFAEL from "../../../assets/logo/SAN_RAFAEL.png";
 import BAGONG_PILIPINAS from "../../../assets/image/bagong-pilipinas-logo.jpg";
 
-const PrintDocumentTypeA = ({ detail }) => {
+const PrintDocumentTypeA = ({ detail, officials = { officials }, brgy }) => {
   const [date, setDate] = useState(new Date());
 
   const returnLogo = () => {
@@ -456,8 +456,8 @@ const PrintDocumentTypeA = ({ detail }) => {
             {detail.form && detail.form[0].lastName.value}
           </Text>
           , of legal age, residing at{" "}
-          {detail.form && detail.form[0].address.value} is a bona-fide resident
-          of Barangay {detail.brgy}, Rodriguez, Rizal.
+          Barangay {brgy}, Rodriguez, Rizal is a bona-fide resident
+          of Barangay {brgy}, Rodriguez, Rizal.
         </Text>
         <Text
           style={{
@@ -515,7 +515,7 @@ const PrintDocumentTypeA = ({ detail }) => {
             >{`ASSISTED BY: (For Residents below 18 years old)`}</Text>
             <View alt="" style={styles.terms.imageStyle}></View>
             <View style={styles.terms.signText}>
-              <Text style={styles.terms.center}>Punong Barangay: </Text>
+              <Text style={styles.terms.center}>Punong Barangay</Text>
             </View>
             <View style={{ ...styles.terms.signText, marginTop: 40 }}>
               <Text style={styles.terms.center}>

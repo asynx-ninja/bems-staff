@@ -210,79 +210,90 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
       console.log("obj", obj);
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
-  
-      for (let i = 0; i < createFiles.length; i++) {
-        formData.append("files", createFiles[i]);
-      }
-  
-      const response = await axios.patch(
-        `${API_LINK}/requests/?req_id=${request._id}`,
-        formData
+
+      const res_folder = await axios.get(
+        `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
+
+      console.log("brgy: ", brgy);
+      console.log("res_folder: ", res_folder);
+
+      if (res_folder.status === 200) {
+        for (let i = 0; i < createFiles.length; i++) {
+          formData.append("files", createFiles[i]);
+        }
+    
+        const response = await axios.patch(
+          `${API_LINK}/requests/?req_id=${request._id}&?request_folder_id=${res_folder.data[0].request}`,
+          formData
+        );
+    
+        if (response.status === 200) {
+          const notify = {
+            category: "One",
+            compose: {
+              subject: `REQUEST - ${request.service_name}`,
+              message: `A barangay staff has updated your request for the barangay service of ${
+                request.service_name
+              }.\n\n
+        
+              Request Details:\n
+              - Name: ${
+                request.form && request.form[0]
+                  ? request.form[0].lastName.value
+                  : ""
+              }, ${
+                request.form && request.form[0]
+                  ? request.form[0].firstName.value
+                  : ""
+              } ${
+                request.form && request.form[0]
+                  ? request.form[0].middleName.value
+                  : ""
+              }
+              - Service Applied: ${request.service_name}\n
+              - Request ID: ${request.request_id}\n
+              - Date Created: ${moment(request.createdAt).format(
+                "MMM. DD, YYYY h:mm a"
+              )}\n
+              - Status: ${request.status}\n
+              - Staff Handled: ${userData.lastName}, ${userData.firstName} ${
+                userData.middleName
+              }\n\n
+              Please update this service request as you've seen this notification!\n\n
+              Thank you!!,`,
+              go_to: "Requests",
+            },
+            target: {
+              user_id: request.form[0].user_id.value,
+              area: request.brgy,
+            },
+            type: "Resident",
+            banner: service.collections.banner,
+            logo: service.collections.logo,
+          };
   
-      if (response.status === 200) {
-        const notify = {
-          category: "One",
-          compose: {
-            subject: `REQUEST - ${request.service_name}`,
-            message: `A barangay staff has updated your request for the barangay service of ${
-              request.service_name
-            }.\n\n
-      
-            Request Details:\n
-            - Name: ${
-              request.form && request.form[0]
-                ? request.form[0].lastName.value
-                : ""
-            }, ${
-              request.form && request.form[0]
-                ? request.form[0].firstName.value
-                : ""
-            } ${
-              request.form && request.form[0]
-                ? request.form[0].middleName.value
-                : ""
-            }
-            - Service Applied: ${request.service_name}\n
-            - Request ID: ${request.request_id}\n
-            - Date Created: ${moment(request.createdAt).format(
-              "MMM. DD, YYYY h:mm a"
-            )}\n
-            - Status: ${request.status}\n
-            - Staff Handled: ${userData.lastName}, ${userData.firstName} ${
-              userData.middleName
-            }\n\n
-            Please update this service request as you've seen this notification!\n\n
-            Thank you!!,`,
-            go_to: "Requests",
-          },
-          target: {
-            user_id: request.form[0].user_id.value,
-            area: request.brgy,
-          },
-          type: "Resident",
-          banner: service.collections.banner,
-          logo: service.collections.logo,
-        };
-
-        console.log("Notify: ", notify);
-
-        const result = await axios.post(`${API_LINK}/notification/`, notify, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (result.status === 200) {
-          setTimeout(() => {
-            setSubmitClicked(false);
-            setReplyingStatus("success");
+          console.log("Notify: ", notify);
+  
+          const result = await axios.post(`${API_LINK}/notification/`, notify, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+  
+          if (result.status === 200) {
             setTimeout(() => {
-              window.location.reload();
-            }, 3000);
-          }, 1000);
+              setSubmitClicked(false);
+              setReplyingStatus("success");
+              setTimeout(() => {
+                window.location.reload();
+              }, 3000);
+            }, 1000);
+          }
         }
       }
+  
+      
 
     } catch (error) {
       console.log(error);

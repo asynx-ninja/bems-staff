@@ -101,7 +101,7 @@ function ViewRequestModal({ request, brgy, officials }) {
               <div className="sm:space-x-0 lg:space-x-2 sm:space-y-2 lg:space-y-0 w-full flex sm:flex-col lg:flex-row">
                 {request.status === "Transaction Completed" && (
                   <PDFDownloadLink
-                    document={<PrintDocumentTypeA detail={detail} officials={officials}/>}
+                    document={<PrintDocumentTypeA detail={detail} officials={officials} brgy={brgy}/>}
                     fileName="SAMPLE.pdf"
                     className="h-[2.5rem] flex text-center justify-center items-center w-full py-1 px-6 gap-2 rounded-md border text-xs font-base bg-[#22687a] text-white shadow-sm"
                   >
@@ -110,7 +110,7 @@ function ViewRequestModal({ request, brgy, officials }) {
                 )}
                 {request.status === "Transaction Completed" && (
                   <PDFDownloadLink
-                    document={<PrintDocumentTypeB detail={detail} officials={officials}/>}
+                    document={<PrintDocumentTypeB detail={detail} officials={officials} brgy={brgy}/>}
                     fileName="SAMPLE.pdf"
                     className="h-[2.5rem] flex justify-center text-center items-center w-full py-1 px-6 gap-2 rounded-md border text-xs font-base bg-[#22687a] text-white shadow-sm"
                   >
