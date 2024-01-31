@@ -9,13 +9,13 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
   const [banner, setBanner] = useState({
-    link: "https://drive.google.com/file/d/1KNgbPSDYIaoDs2Ve644pvCpqdd0K6GXZ/view?usp=drive_link",
+    link: "https://drive.google.com/thumbnail?id=1KNgbPSDYIaoDs2Ve644pvCpqdd0K6GXZ&sz=w1000",
     name: "resident_banner.png",
     id: "1SM_QPFb_NmyMTLdsjtEd-2M6ersJhBUc",
   });
 
   const [logo, setLogo] = useState({
-    link: "https://drive.google.com/file/d/1jKinPMGDMtkRibohcdhVfq0VJt7KUrvO/view?usp=drive_link",
+    link: "https://drive.google.com/thumbnail?id=1jKinPMGDMtkRibohcdhVfq0VJt7KUrvO&sz=w1000",
     name: "resident_logo.png",
     id: "1SM_QPFb_NmyMTLdsjtEd-2M6ersJhBUc",
   });

@@ -125,8 +125,8 @@ function CreateServiceModal({ brgy }) {
         const notify = {
           category: "Many",
           compose: {
-            subject: `SERVICES - ${service.name}`,
-            message: `Barangay ${brgy} is now offering a new service named: ${service.name}.\n\n
+            subject: `APPROVAL SERVICE - ${service.name}`,
+            message: `Barangay ${brgy} created a new service named: ${service.name}. Review it now!\n\n
             
             Service Details:\n 
             ${service.details}\n\n
@@ -135,9 +135,9 @@ function CreateServiceModal({ brgy }) {
           },
           target: {
             user_id: null,
-            area: brgy,
+            area: "MUNISIPYO",
           },
-          type: "Resident",
+          type: "Municipality",
           banner: response.data.collections.banner,
           logo: response.data.collections.logo,
         };

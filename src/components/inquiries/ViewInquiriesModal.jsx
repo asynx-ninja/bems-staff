@@ -32,13 +32,13 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
     date: new Date(),
   });
   const [banner, setBanner] = useState({
-    link: "https://drive.google.com/file/d/1v009xuRjSNW8OGUyHbAYTJt3ynxjhtGW/view?usp=drive_link",
+    link: "https://drive.google.com/thumbnail?id=1v009xuRjSNW8OGUyHbAYTJt3ynxjhtGW&sz=w1000",
     name: "inquiries_banner.jpg",
     id: "1SM_QPFb_NmyMTLdsjtEd-2M6ersJhBUc",
   });
 
   const [logo, setLogo] = useState({
-    link: "https://drive.google.com/file/d/1sh24YL7RQY_cHLcTZ_G3GXCG18Y6_JAL/view?usp=drive_link",
+    link: "https://drive.google.com/thumbnail?id=1sh24YL7RQY_cHLcTZ_G3GXCG18Y6_JAL&sz=w1000",
     name: "inquiries_logo.png",
     id: "1SM_QPFb_NmyMTLdsjtEd-2M6ersJhBUc",
   });
