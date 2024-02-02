@@ -256,7 +256,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
               - Date Created: ${moment(request.createdAt).format(
                 "MMM. DD, YYYY h:mm a"
               )}\n
-              - Status: ${request.status}\n
+              - Status: ${response.data.status}\n
               - Staff Handled: ${userData.lastName}, ${userData.firstName} ${
                 userData.middleName
               }\n\n

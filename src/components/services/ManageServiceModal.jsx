@@ -139,11 +139,11 @@ function ManageServiceModal({ service, setService, brgy }) {
           const notify = {
             category: "Many",
             compose: {
-              subject: `SERVICES - ${service.name}`,
-              message: `Barangay ${brgy} has updated the service: ${service.name}.\n\n
+              subject: `SERVICES - ${response.data.name}`,
+              message: `Barangay ${brgy} has updated the service: ${response.data.name}.\n\n
                 
                 Service Details:\n 
-                ${service.details}\n\n
+                ${response.data.details}\n\n
                 `,
               go_to: "Services",
             },

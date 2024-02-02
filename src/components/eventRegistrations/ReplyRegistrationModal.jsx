@@ -254,7 +254,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
             - Date Created: ${moment(application.createdAt).format(
               "MMM. DD, YYYY h:mm a"
             )}\n
-            - Status: ${application.status}\n
+            - Status: ${response.data.status}\n
             - Staff Handled: ${userData.lastName}, ${userData.firstName} ${
               userData.middleName
             }\n\n

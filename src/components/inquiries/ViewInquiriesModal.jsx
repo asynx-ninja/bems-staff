@@ -214,7 +214,7 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
             - Date Created: ${moment(inquiry.createdAt).format(
               "MMM. DD, YYYY h:mm a"
             )}\n
-            - Status: ${inquiry.isApproved}\n
+            - Status: ${response.data.isApproved}\n
             - Staff Handled: ${userData.lastName}, ${userData.firstName} ${
               userData.middleName
             }\n\n

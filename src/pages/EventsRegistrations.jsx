@@ -107,7 +107,7 @@ const EventsRegistrations = () => {
     }
   };
 
-  const tableHeader = ["EVENT NAME", "SENDER", "DATE", "STATUS", "ACTIONS"];
+  const tableHeader = ["APP ID","EVENT NAME", "SENDER", "DATE", "STATUS", "ACTIONS"];
 
   const handleView = (item) => {
     setApplication(item);
@@ -457,6 +457,9 @@ const EventsRegistrations = () => {
                     const Application = applications.filter((item) =>
                       item.event_name
                         .toLowerCase()
+                        .includes(e.target.value.toLowerCase()) ||
+                        item.application_id
+                        .toLowerCase()
                         .includes(e.target.value.toLowerCase())
                     );
 
@@ -524,6 +527,11 @@ const EventsRegistrations = () => {
                           onChange={checkboxHandler}
                         />
                       </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {item.application_id}
+                      </span>
                     </td>
                     <td className="px-6 py-3">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">

@@ -153,14 +153,14 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
             notify = {
               category: "All",
               compose: {
-                subject: `EVENT - ${announcement.title}`,
-                message: `Barangay ${brgy} has updated an event named: ${announcement.title}.\n\n
+                subject: `EVENT - ${response.data.title}`,
+                message: `Barangay ${brgy} has updated an event named: ${response.data.title}.\n\n
                 
                 Event Details:\n 
-                ${announcement.details}\n\n
+                ${response.data.details}\n\n
     
                 Event Date:
-                ${announcement.date}\n\n
+                ${response.data.date}\n\n
                 `,
                 go_to: "Events",
               },
@@ -176,14 +176,14 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
             notify = {
               category: "Many",
               compose: {
-                subject: `EVENT - ${announcement.title}`,
-                message: `Barangay ${brgy} has updated an event named: ${announcement.title}.\n\n
+                subject: `EVENT - ${response.data.title}`,
+                message: `Barangay ${brgy} has updated an event named: ${response.data.title}.\n\n
                 
                 Event Details:\n 
-                ${announcement.details}\n\n
+                ${response.data.details}\n\n
     
                 Event Date:
-                ${announcement.date}\n\n
+                ${response.data.date}\n\n
                 `,
                 go_to: "Events",
               },

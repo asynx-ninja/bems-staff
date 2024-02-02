@@ -126,7 +126,7 @@ const EventsManagement = () => {
     "details",
     "creation date",
     "event date",
-    "# of attendees",
+    "# of applicants",
     "actions",
   ];
 
