@@ -68,20 +68,20 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
   });
 
   const [section, setSection] = useState([
-    {
-      section_title: "",
-      section_variable: "",
-      form: [
-        {
-          variable: "",
-          display: "",
-          type: "text",
-          accept: "",
-          value: null,
-          children: [],
-        },
-      ],
-    },
+    // {
+    //   section_title: "",
+    //   section_variable: "",
+    //   form: [
+    //     {
+    //       variable: "",
+    //       display: "",
+    //       type: "text",
+    //       accept: "",
+    //       value: null,
+    //       children: [],
+    //     },
+    //   ],
+    // },
   ]);
 
   const [checked, setChecked] = useState(false);

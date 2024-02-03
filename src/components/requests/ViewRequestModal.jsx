@@ -13,6 +13,13 @@ function ViewRequestModal({ request, brgy, officials }) {
   const [detail] = useState(request);
   const [empty] = useState(false);
 
+  const fileName =
+    detail.form[0] && detail.form[0].lastName
+      ? `${detail.form[0].lastName.value.toUpperCase()}, ${detail.form[0].firstName.value.toUpperCase()} ${detail.form[0].middleName.value.toUpperCase()}-${detail.type.toUpperCase()}-${
+          detail.req_id
+        }.pdf`
+      : "SAMPLE.pdf";
+
   console.log("detail", detail);
 
   const returnFile = (string) => {
@@ -101,8 +108,14 @@ function ViewRequestModal({ request, brgy, officials }) {
               <div className="sm:space-x-0 lg:space-x-2 sm:space-y-2 lg:space-y-0 w-full flex sm:flex-col lg:flex-row">
                 {request.status === "Transaction Completed" && (
                   <PDFDownloadLink
-                    document={<PrintDocumentTypeA detail={detail} officials={officials} brgy={brgy}/>}
-                    fileName="SAMPLE.pdf"
+                    document={
+                      <PrintDocumentTypeA
+                        detail={detail}
+                        officials={officials}
+                        brgy={brgy}
+                      />
+                    }
+                    fileName={fileName}
                     className="h-[2.5rem] flex text-center justify-center items-center w-full py-1 px-6 gap-2 rounded-md border text-xs font-base bg-[#22687a] text-white shadow-sm"
                   >
                     GENERATE DOCUMENT REQUEST (TYPE A)
@@ -110,16 +123,22 @@ function ViewRequestModal({ request, brgy, officials }) {
                 )}
                 {request.status === "Transaction Completed" && (
                   <PDFDownloadLink
-                    document={<PrintDocumentTypeB detail={detail} officials={officials} brgy={brgy}/>}
-                    fileName="SAMPLE.pdf"
+                    document={
+                      <PrintDocumentTypeB
+                        detail={detail}
+                        officials={officials}
+                        brgy={brgy}
+                      />
+                    }
+                    fileName={fileName}
                     className="h-[2.5rem] flex justify-center text-center items-center w-full py-1 px-6 gap-2 rounded-md border text-xs font-base bg-[#22687a] text-white shadow-sm"
                   >
                     GENERATE DOCUMENT REQUEST (TYPE B)
                   </PDFDownloadLink>
                 )}
                 <PDFDownloadLink
-                  document={<PrintPDF detail={detail} brgy={brgy}/>}
-                  fileName="SAMPLE.pdf"
+                  document={<PrintPDF detail={detail} brgy={brgy} />}
+                  fileName={fileName}
                   className="h-[2.5rem] flex text-center justify-center items-center w-full py-1 px-6 gap-2 rounded-md border text-xs font-base bg-teal-900 text-white shadow-sm"
                 >
                   GENERATE REQUEST FORM

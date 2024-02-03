@@ -129,11 +129,12 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
   }, [request]);
 
   const handleChange = (e) => {
-    e.preventDefault();
-  
     const inputValue = e.target.value;
   
-    if (statusChanger && (!newMessage.message || newMessage.message.trim() === "")) {
+    if (
+      statusChanger &&
+      (!newMessage.message || newMessage.message.trim() === "")
+    ) {
       setNewMessage((prev) => ({
         ...prev,
         message: `The status of your service request is ${inputValue}`,
@@ -141,7 +142,8 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     } else {
       setNewMessage((prev) => ({
         ...prev,
-        [e.target.name]: e.target.name === "isRepliable" ? e.target.checked : inputValue,
+        [e.target.name]:
+          e.target.name === "isRepliable" ? e.target.checked : inputValue,
       }));
     }
   };
@@ -467,7 +469,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                     <input
                                       type="checkbox"
                                       name="isRepliable"
-                                      defaultChecked={newMessage.isRepliable}
+                                      checked={newMessage.isRepliable}
                                       onChange={handleChange}
                                       className="hs-tooltip-toggle sr-only peer"
                                     />
@@ -730,9 +732,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                                 <input
                                                   type="checkbox"
                                                   name="isRepliable"
-                                                  defaultChecked={
-                                                    newMessage.isRepliable
-                                                  }
+                                                  checked={newMessage.isRepliable}
                                                   onChange={handleChange}
                                                   className="hs-tooltip-toggle sr-only peer"
                                                 />

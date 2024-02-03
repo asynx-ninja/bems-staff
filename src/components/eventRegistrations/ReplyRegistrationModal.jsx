@@ -132,14 +132,9 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
   // };
 
   const handleChange = (e) => {
-    e.preventDefault();
-
     const inputValue = e.target.value;
-
-    if (
-      statusChanger &&
-      (!newMessage.message || newMessage.message.trim() === "")
-    ) {
+  
+    if (statusChanger && (!newMessage.message || newMessage.message.trim() === "")) {
       setNewMessage((prev) => ({
         ...prev,
         message: `The status of your event application is ${inputValue}`,
@@ -147,8 +142,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
     } else {
       setNewMessage((prev) => ({
         ...prev,
-        [e.target.name]:
-          e.target.name === "isRepliable" ? e.target.checked : inputValue,
+        [e.target.name]: e.target.name === "isRepliable" ? e.target.checked : inputValue,
       }));
     }
   };
@@ -464,7 +458,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
                                     <input
                                       type="checkbox"
                                       name="isRepliable"
-                                      defaultChecked={newMessage.isRepliable}
+                                      checked={newMessage.isRepliable}
                                       onChange={handleChange}
                                       className="hs-tooltip-toggle sr-only peer"
                                     />
@@ -728,9 +722,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
                                                 <input
                                                   type="checkbox"
                                                   name="isRepliable"
-                                                  defaultChecked={
-                                                    newMessage.isRepliable
-                                                  }
+                                                  checked={newMessage.isRepliable}
                                                   onChange={handleChange}
                                                   className="hs-tooltip-toggle sr-only peer"
                                                 />

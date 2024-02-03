@@ -68,20 +68,20 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
   });
 
   const [section, setSection] = useState([
-    {
-      section_title: "",
-      section_variable: "",
-      form: [
-        {
-          variable: "",
-          display: "",
-          type: "text",
-          accept: "",
-          value: null,
-          children: [],
-        },
-      ],
-    },
+    // {
+    //   section_title: "",
+    //   section_variable: "",
+    //   form: [
+    //     {
+    //       variable: "",
+    //       display: "",
+    //       type: "text",
+    //       accept: "",
+    //       value: null,
+    //       children: [],
+    //     },
+    //   ],
+    // },
   ]);
 
   const [checked, setChecked] = useState(false);
@@ -214,8 +214,10 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         // onChange={handleChange}
                         className="shadow  border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
-                        <option value="Type A">Type A</option>
-                        <option value="Type B">Type B</option>
+                        <option value="Type A">Type A - CERTIFICATION WITHOUT BARANGAY OFFICIALS</option>
+                        <option value="Type B">Type B - CERTIFICATION WITH BARANGAY OFFICIALS</option>
+                        <option value="Type B">Type C - BARANGAY ID</option>
+                        <option value="Type B">Type D - CEDULA</option>
                       </select>
                     </div>
 
