@@ -114,7 +114,7 @@ const EditServicesForm = ({ service_id, brgy }) => {
                   {details &&
                     details.map((item, idx) => (
                       <option key={idx} value={idx}>
-                        {item.version}
+                        {item.form_name}
                       </option>
                     ))}
                 </select>

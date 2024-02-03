@@ -67,6 +67,12 @@ const AddServicesForm = ({ service_id, brgy }) => {
     },
   });
 
+  const [titleName, setTitleName] = useState("");
+
+  const handleChange = (e) => {
+    setTitleName(e.target.value);
+  };
+
   const [section, setSection] = useState([
     // {
     //   section_title: "",
@@ -100,6 +106,7 @@ const AddServicesForm = ({ service_id, brgy }) => {
       const response = await axios.post(
         `http://localhost:8800/api/forms/?brgy=${brgy}&service_id=${service_id}&checked=${checked}`,
         {
+          form_name: titleName,
           form: form,
           section: section,
         },
@@ -159,6 +166,23 @@ const AddServicesForm = ({ service_id, brgy }) => {
                     />
                     <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-400 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
                   </label>
+                </div>
+                <div className="my-4">
+                  <label
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                    htmlFor="name"
+                  >
+                    NAME OF EVENT FORM
+                  </label>
+                  <input
+                    id="titleName"
+                    className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                    name="titleName"
+                    type="text"
+                    value={titleName} // Use the updated form_name state here
+                    onChange={handleChange}
+                    placeholder="Event Form Title"
+                  />
                 </div>
                 {/* PERSONAL INFORMATION */}
                 <fieldset className="border-2 border-black">
