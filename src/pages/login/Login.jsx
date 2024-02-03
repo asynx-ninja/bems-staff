@@ -213,6 +213,7 @@ const Login = () => {
           </div>
           <div className="hs-tooltip sm:hidden md:inline-block">
             <Link
+            to="/tooltip"
               type="button"
               class="hs-tooltip-toggle w-10 h-10 absolute md:bottom-3 right-[1rem] bg-gradient-to-r from-[#4b7c80] to-[#21556d] inline-flex justify-center items-center gap-2 rounded-full border border-gray-200 text-white font-bold "
             >
@@ -221,7 +222,7 @@ const Login = () => {
                 class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-10 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                 role="tooltip"
               >
-                Tooltip on top
+                Bagong Montalban Barangay Application
               </span>
             </Link>
           </div>
