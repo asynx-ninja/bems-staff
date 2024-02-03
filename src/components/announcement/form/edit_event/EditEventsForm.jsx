@@ -12,10 +12,7 @@ const EditEventsForm = ({ announcement_id, brgy }) => {
   const [detail, setDetail] = useState({});
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
-  const [error, setError] = useState(null);
-  const [titleName, setTitleName] = useState("");
-
- 
+  const [error, setError] = useState(null); 
 
   useEffect(() => {
     // function to filter
@@ -121,9 +118,9 @@ const EditEventsForm = ({ announcement_id, brgy }) => {
   };
 
   const handleChange = (e) => {
-    console.log(e.target.name);
     setDetail((prev) => ({
       ...prev,
+      title: e.target.value,
     }));
   };
 
