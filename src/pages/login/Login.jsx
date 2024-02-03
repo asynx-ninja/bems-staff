@@ -212,7 +212,7 @@ const Login = () => {
             </div>
           </div>
           <div className="hs-tooltip sm:hidden md:inline-block">
-            <button
+            <Link
               type="button"
               class="hs-tooltip-toggle w-10 h-10 absolute md:bottom-3 right-[1rem] bg-gradient-to-r from-[#4b7c80] to-[#21556d] inline-flex justify-center items-center gap-2 rounded-full border border-gray-200 text-white font-bold "
             >
@@ -223,7 +223,7 @@ const Login = () => {
               >
                 Tooltip on top
               </span>
-            </button>
+            </Link>
           </div>
         </div>
       </div>

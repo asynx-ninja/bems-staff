@@ -122,6 +122,7 @@ const EventsManagement = () => {
   };
 
   const tableHeader = [
+    "Event id",
     "title",
     "details",
     "creation date",
@@ -440,6 +441,9 @@ const EventsManagement = () => {
                     const Announcements = announcements.filter((item) =>
                       item.title
                         .toLowerCase()
+                        .includes(e.target.value.toLowerCase()) ||
+                        item.event_id
+                        .toLowerCase()
                         .includes(e.target.value.toLowerCase())
                     );
                     setFilteredAnnouncements(Announcements);
@@ -504,6 +508,13 @@ const EventsManagement = () => {
                           value={item._id}
                           onChange={checkboxHandler}
                         />
+                      </div>
+                    </td>
+                    <td className="px-1 xl:px-3 py-3 w-4/12">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
+                          {item.event_id}
+                        </span>
                       </div>
                     </td>
                     <td className="px-1 xl:px-3 py-3 w-4/12">
