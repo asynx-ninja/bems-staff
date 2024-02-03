@@ -124,6 +124,7 @@ const EditEventsForm = ({ announcement_id, brgy }) => {
     console.log(e.target.name);
     setDetail((prev) => ({
       ...prev,
+      title: e.target.value
     }));
   };
 

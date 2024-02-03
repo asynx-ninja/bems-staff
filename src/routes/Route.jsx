@@ -11,6 +11,7 @@ import Officials from "../pages/Officials";
 import Information from "../pages/Information";
 import Settings from "../pages/Settings";
 import Login from "../pages/login/Login";
+import Tooltip from "../pages/login/Tooltip";
 import ForgotPassword from "../pages/login/ForgotPassword";
 import SecurityPin from "../pages/login/SecurityPin";
 import ChangePassword from "../pages/login/ChangePassword";
@@ -37,6 +38,10 @@ const pages = [
   {
     path: "/forgot",
     element: <ForgotPassword />,
+  },
+  {
+    path: "/tooltip",
+    element: <Tooltip />,
   },
   {
     path: "/pin/:email",
