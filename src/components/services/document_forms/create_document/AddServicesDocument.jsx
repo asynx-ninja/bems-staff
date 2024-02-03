@@ -207,17 +207,19 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         className="block text-gray-700 text-sm font-bold mb-2"
                         htmlFor="type"
                       >
-                        TYPE OF DOCUMENT LAYOUT:
+                        Type of Document Layout:
                       </label>
                       <select
                         name="type"
                         // onChange={handleChange}
                         className="shadow  border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
-                        <option value="Type A">Type A - CERTIFICATION WITHOUT BARANGAY OFFICIALS</option>
-                        <option value="Type B">Type B - CERTIFICATION WITH BARANGAY OFFICIALS</option>
-                        <option value="Type B">Type C - BARANGAY ID</option>
-                        <option value="Type B">Type D - CEDULA</option>
+                        <option value="Type A">Barangay Certificate without Officials</option>
+                        <option value="Type B">Barangay Certificate with Officials</option>
+                        <option value="Type B">Cedula</option>
+                        <option value="Type B">Barangay ID</option>
+                        <option value="Type B">First Time Job Seeker with Oath of Undertaking</option>
+                        <option value="Type B">Barangay Clearance</option>
                       </select>
                     </div>
 

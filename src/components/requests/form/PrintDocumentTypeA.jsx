@@ -438,14 +438,14 @@ const PrintDocumentTypeA = ({ detail, officials = { officials }, brgy }) => {
         >
           {detail.service_name.toUpperCase()}
         </Text>
-        <Text style={{ fontSize: 10, marginTop: 10 }}>
+        <Text style={{ fontSize: 12, marginTop: 10 }}>
           To Whom It May Concern:
         </Text>
         <Text
           style={{
             marginTop: 20,
             textAlign: "justify",
-            fontSize: 10,
+            fontSize: 12,
             lineHeight: 2, // Adjust the lineHeight as needed
           }}
         >
@@ -461,7 +461,7 @@ const PrintDocumentTypeA = ({ detail, officials = { officials }, brgy }) => {
         </Text>
         <Text
           style={{
-            fontSize: 10,
+            fontSize: 12,
             marginTop: 15,
             textAlign: "justify",
             lineHeight: 2, // Adjust the lineHeight as needed
@@ -473,7 +473,7 @@ const PrintDocumentTypeA = ({ detail, officials = { officials }, brgy }) => {
         </Text>
         <Text
           style={{
-            fontSize: 10,
+            fontSize: 12,
             marginTop: 15,
             textAlign: "justify",
             lineHeight: 2, // Adjust the lineHeight as needed
@@ -485,7 +485,7 @@ const PrintDocumentTypeA = ({ detail, officials = { officials }, brgy }) => {
         </Text>
         <Text
           style={{
-            fontSize: 10,
+            fontSize: 12,
             marginTop: 15,
             marginBottom: 30,
             textAlign: "justify",
