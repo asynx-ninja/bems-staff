@@ -67,22 +67,26 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
     },
   });
 
-  const [section, setSection] = useState([
-    // {
-    //   section_title: "",
-    //   section_variable: "",
-    //   form: [
-    //     {
-    //       variable: "",
-    //       display: "",
-    //       type: "text",
-    //       accept: "",
-    //       value: null,
-    //       children: [],
-    //     },
-    //   ],
-    // },
-  ]);
+  const [document, setDocument] = useState({
+    doc_title: "",
+    details: "",
+    type: "",
+    punong_brgy: "",
+    witnessed_by: "",
+    inputs: "",
+    email: "",
+    address: "",
+    tel: "",
+  });
+
+  const handleChange = (e) => {
+    setDocument((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const [section, setSection] = useState([]);
 
   const [checked, setChecked] = useState(false);
 
@@ -98,10 +102,19 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
       setSubmitClicked(true);
 
       const response = await axios.post(
-        `http://localhost:8800/api/forms/?brgy=${brgy}&service_id=${service_id}&checked=${checked}`,
+        `http://localhost:8800/api/documents/?brgy=${brgy}&form_id=${form_id}&checked=${checked}`,
         {
           form: form,
           section: section,
+          doc_title: document.doc_title,
+          details: document.details,
+          type: document.type,
+          punong_brgy: document.punong_brgy,
+          witnessed_by: document.witnessed_by,
+          inputs: document.inputs,
+          email: document.email,
+          address: document.address,
+          tel: document.tel,
         },
         {
           headers: {
@@ -124,6 +137,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
   };
 
   console.log("Section in Add Service", section);
+  console.log("Document: ", document);
 
   return (
     <div>
@@ -174,13 +188,13 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         Document Title
                       </label>
                       <input
-                        id="name"
+                        id="doc_title"
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                        name="name"
+                        name="doc_title"
                         type="text"
                         // value={service.name}
-                        // onChange={handleChange}
-                        placeholder="Service Name"
+                        onChange={handleChange}
+                        placeholder="Document Name"
                       />
                     </div>
 
@@ -196,7 +210,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         rows={7}
                         name="details"
                         // value={service.details}
-                        // onChange={handleChange}
+                        onChange={handleChange}
                         className="shadow appearance-none border w-full p-2.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         placeholder="Enter service details..."
                       />
@@ -211,14 +225,21 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                       </label>
                       <select
                         name="type"
-                        // onChange={handleChange}
+                        onChange={handleChange}
                         className="shadow  border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
-                        <option value="Type A">Barangay Certificate without Officials</option>
-                        <option value="Type B">Barangay Certificate with Officials</option>
+                        <option>-- Select a Document Type --</option>
+                        <option value="Type A">
+                          Barangay Certificate without Officials
+                        </option>
+                        <option value="Type B">
+                          Barangay Certificate with Officials
+                        </option>
                         <option value="Type B">Cedula</option>
                         <option value="Type B">Barangay ID</option>
-                        <option value="Type B">First Time Job Seeker with Oath of Undertaking</option>
+                        <option value="Type B">
+                          First Time Job Seeker with Oath of Undertaking
+                        </option>
                         <option value="Type B">Barangay Clearance</option>
                       </select>
                     </div>
@@ -231,10 +252,11 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         Punong Barangay
                       </label>
                       <select
-                        name="type"
-                        // onChange={handleChange}
+                        name="punong_brgy"
+                        onChange={handleChange}
                         className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
+                        <option>-- Select an Official --</option>
                         {/* Map filtered officials with position "Barangay Chairman" to options */}
                         {officials
                           .filter(
@@ -261,10 +283,11 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         Witnessed By:
                       </label>
                       <select
-                        name="type"
-                        // onChange={handleChange}
+                        name="witnessed_by"
+                        onChange={handleChange}
                         className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
+                        <option>-- Select an Official --</option>
                         {/* Map filtered officials with position "Barangay Chairman" to options */}
                         {officials
                           .filter(
@@ -281,6 +304,60 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                             </option>
                           ))}
                       </select>
+                    </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="name"
+                      >
+                        E-mail
+                      </label>
+                      <input
+                        id="email"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="email"
+                        type="text"
+                        // value={service.name}
+                        onChange={handleChange}
+                        placeholder="E-mail"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="name"
+                      >
+                        Address
+                      </label>
+                      <input
+                        id="address"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="address"
+                        type="text"
+                        // value={service.name}
+                        onChange={handleChange}
+                        placeholder="Address"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="name"
+                      >
+                        Telephone Number
+                      </label>
+                      <input
+                        id="tel"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="tel"
+                        type="number"
+                        // value={service.name}
+                        onChange={handleChange}
+                        placeholder="Telephone Number"
+                      />
                     </div>
                   </div>
                 </fieldset>

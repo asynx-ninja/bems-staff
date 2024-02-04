@@ -27,7 +27,7 @@ function EditLoader({ updatingStatus, error }) {
   return (
     <div className="absolute bottom-0 lg:bottom-0 lg:end-0 mb-20 lg:mr-10">
       {updatingStatus === "error" ? (
-        <div className="w-screen md:w-80 rounded-xl shadow-lg" role="alert">
+        <div className="w-screen md:w-80 rounded-xl shadow-lg" role="alert" style={{ animation: "slideIn 0.3s ease-out" }}>
           <div className="flex flex-row bg-[#e05353]  items-center p-3 rounded-xl space-x-3">
             <MdError size={25} className="text-white" />
             <div className="flex flex-row w-full">
@@ -44,6 +44,7 @@ function EditLoader({ updatingStatus, error }) {
         <div
           className="w-screen md:w-80 bg-[#0d4b75] border border-gray-200 rounded-xl shadow-lg"
           role="alert"
+          style={{ animation: "slideIn 0.3s ease-out" }}
         >
           <div className="flex items-center p-4 space-x-3">
             <div role="status" className="inline">

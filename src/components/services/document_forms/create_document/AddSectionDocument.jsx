@@ -82,7 +82,7 @@ const AddSectionDocument = ({ section, setSection, brgy, service_id }) => {
       section_variable: "",
       form: [
         {
-          variable: "",
+          index: "",
           display: "",
           type: "text",
           accept: "",
@@ -261,8 +261,10 @@ const AddSectionDocument = ({ section, setSection, brgy, service_id }) => {
 
                     <select
                       name="type"
-                      // onChange={handleChange}
-                      className="shadow uppercase placeholder-gray-400 font-medium appearance-none border w-full p-1 text-sm bg-white border-green-500 text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                      onChange={(e) =>
+                        handleInputChange(e, sectionIndex, formIndex)
+                      }
+                      className="shadow uppercase placeholder-gray-400 font-medium appearance-none border w-1/2 p-1 text-sm bg-white border-green-500 text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                     >
                       <option value="" disabled>
                         -- Select Type --
@@ -281,6 +283,18 @@ const AddSectionDocument = ({ section, setSection, brgy, service_id }) => {
                           </option>
                         ))}
                     </select>
+
+                    <div className="items-center w-1/2">
+                      <input
+                        id="value"
+                        className="shadow appearance-none border w-full py-1 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="value"
+                        type="text"
+                        // value={service.name}
+                        // onChange={handleChange}
+                        placeholder="Document Name"
+                      />
+                    </div>
 
                     <button
                       onClick={() => removeSectionField(sectionIndex)}
