@@ -58,6 +58,50 @@ select:-webkit-autofill:focus {
   color: black;
 }
 
+/* loader */
+
+.loaders {
+  display: flex;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+.loader {
+  width: 15px; /* Adjust as needed */
+  height: 15px; /* Adjust as needed */
+  margin-right: 10px;
+  border-radius: 50%;
+  border: 8px solid red;
+  background-color: transparent;
+  animation: bounce 2s ease-in-out infinite alternate;
+}
+
+.loader:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.loader:nth-child(3) {
+  animation-delay: 0.8s;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px); /* Adjust bounce distance */
+  }
+}
+
+
+@keyframes slideIn {
+  from {
+      transform: translateX(100%);
+  }
+  to {
+      transform: translateX(0);
+  }
+}
+
 @layer base {
   @font-face {
     font-family: Gilmer Regular;

@@ -1,13 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import { FaCamera } from "react-icons/fa";
-import banner from "../assets/image/1.png";
+// import banner from "../assets/image/1.png";
 import { useLocation } from "react-router-dom";
 import header from "../assets/image/notif-header-1.png";
 import { Link } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import moment from "moment";
+import axios from "axios";
+import API_LINK from "../config/API";
 
-const ViewNotifications = ({ setNotification }) => {
+
+const ViewNotifications = ({ setNotification}) => {
   const location = useLocation();
   const [searchParams2, setSearchParams2] = useSearchParams();
   const brgy = searchParams2.get("brgy");
@@ -30,6 +33,57 @@ const ViewNotifications = ({ setNotification }) => {
     const formattedTime = moment(date).format("hh:mm A");
     return formattedTime;
   };
+
+
+  useEffect(() => {
+    const getSpecificID = async () => {
+      try {
+        const id = notification._id; // Replace with the actual notification ID
+
+        const response = await axios.get(`${API_LINK}/notification/get_id/?id=${id}`);
+
+        console.log("itoba", response.data[0]);
+        // Handle the response data here
+      } catch (error) {
+        console.error(error);
+        // Handle the error here
+      }
+    };
+
+    getSpecificID();
+  }, []);
+
+  useEffect(() => {
+    const updateReadBy = async () => {
+      try {
+        const response = await axios.get(`${API_LINK}/notification/check/?user_id=${id}&notification_id=${notification._id}`);
+  
+        console.log("itoulit", response.data);
+  
+        if (response.status === 200) {
+          const isUserRead = response.data.length > 0;
+
+          if (!isUserRead) {
+            // Proceed with updating the 'read_by' array
+            const updateResponse = await axios.patch(`${API_LINK}/notification/?notification_id=${notification._id}`, {
+              readerId: id,
+            });
+  
+            console.log("Update response", updateResponse.data);
+            // Handle the update response data here
+          } else {
+            // User has already read the notification, do nothing
+            console.log("User has already read the notification");
+          }
+        }
+      } catch (error) {
+        console.error(error);
+        // Handle the error here
+      }
+    };
+  
+    updateReadBy();
+  }, [id, notification._id]);
 
   return (
     <div>

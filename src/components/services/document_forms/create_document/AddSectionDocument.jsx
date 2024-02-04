@@ -54,15 +54,15 @@ const AddSectionDocument = ({ section, setSection, brgy, service_id }) => {
     fetch();
   }, [brgy, service_id, selectedForm]);
 
-  const handleFormChange = (e, key) => {
-    const newState = detail.form[0];
-    newState[key].checked = e.target.checked;
+  // const handleFormChange = (e, key) => {
+  //   const newState = detail.form[0];
+  //   newState[key].checked = e.target.checked;
 
-    setDetail((prev) => ({
-      ...prev,
-      form: [newState, detail.form[1]],
-    }));
-  };
+  //   setDetail((prev) => ({
+  //     ...prev,
+  //     form: [newState, detail.form[1]],
+  //   }));
+  // };
 
   const handleSelectChange = (e) => {
     const selectedIndex = e.target.value;
@@ -78,54 +78,38 @@ const AddSectionDocument = ({ section, setSection, brgy, service_id }) => {
   const addSectionField = () => {
     const updatedData = [...section];
     updatedData.push({
-      section_title: "",
-      section_variable: "",
-      form: [
-        {
-          index: "",
-          display: "",
-          type: "text",
-          accept: "",
-          value: null,
-          children: [],
-        },
-      ],
+      type: "",
+      value: "",
     });
     setSection(updatedData);
   };
 
-  const handleSectionChange = (e, index) => {
-    const updatedSectionFields = [...section];
+  console.log("Section: ", section);
 
-    updatedSectionFields[index] = {
-      ...updatedSectionFields[index],
-      section_title: e.target.value,
-      section_variable: formatVariable(e.target.value),
-    };
-
-    setSection(updatedSectionFields);
+  const handleChange = (e) => {
+    setSection((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
+
+  // const handleSectionChange = (e, index) => {
+  //   const updatedSectionFields = [...section];
+
+  //   updatedSectionFields[index] = {
+  //     ...updatedSectionFields[index],
+  //     section_title: e.target.value,
+  //     section_variable: formatVariable(e.target.value),
+  //   };
+
+  //   setSection(updatedSectionFields);
+  // };
 
   const removeSectionField = (index) => {
     const updatedSectionFields = [...section];
     updatedSectionFields.splice(index, 1);
 
     setSection(updatedSectionFields);
-  };
-
-  // INPUT FIELDS
-
-  const addInputField = (index) => {
-    const updatedData = [...section];
-    updatedData[index].form.push({
-      variable: "",
-      display: "",
-      type: "text",
-      accept: "",
-      value: null,
-      children: [],
-    });
-    setSection(updatedData);
   };
 
   const handleInputChange = (e, sectionIndex, formIndex) => {
@@ -164,43 +148,6 @@ const AddSectionDocument = ({ section, setSection, brgy, service_id }) => {
     }
 
     setSection(updatedInputFields);
-  };
-
-  const removeInputField = (sectionIndex, formIndex) => {
-    const updatedData = [...section];
-    updatedData[sectionIndex].form.splice(formIndex, 1);
-    setSection(updatedData);
-  };
-
-  // OPTION FIELD
-
-  const addOptionField = (sectionIndex, formIndex) => {
-    const updatedData = [...section];
-    updatedData[sectionIndex].form[formIndex].children.push({
-      value: "",
-      option: "",
-    });
-    setSection(updatedData);
-  };
-
-  const removeOptionField = (sectionIndex, formIndex, childrenIndex) => {
-    const updatedData = [...section];
-    updatedData[sectionIndex].form[formIndex].children.splice(childrenIndex, 1);
-    setSection(updatedData);
-  };
-
-  const handleOptionChange = (e, sectionIndex, formIndex, childrenIndex) => {
-    const updatedData = [...section];
-    const updatedChildren = [
-      ...updatedData[sectionIndex].form[formIndex].children,
-    ];
-    updatedChildren[childrenIndex] = {
-      ...updatedChildren[childrenIndex],
-      [e.target.name]: e.target.value,
-    };
-    updatedData[sectionIndex].form[formIndex].children = updatedChildren;
-
-    setSection(updatedData);
   };
 
   return (

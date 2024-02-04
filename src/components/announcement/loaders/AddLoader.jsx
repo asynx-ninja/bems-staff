@@ -44,6 +44,7 @@ function AddLoader({ creationStatus, error }) {
         <div
           className="w-screen md:w-80 bg-[#0d4b75] border border-gray-200 rounded-xl shadow-lg"
           role="alert"
+          style={{ animation: "slideIn 0.3s ease-out" }}
         >
           <div className="flex items-center p-4 space-x-3">
             <div role="status" className="inline">
