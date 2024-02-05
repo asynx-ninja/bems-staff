@@ -18,24 +18,38 @@ const ForgotPassword = () => {
       setError("Please provide an email address.");
       return;
     }
-
+  
     try {
-      const resetResponse = await axios.patch(`${API_LINK}/auth/send_pin/${email}`, {type: "Staff"});
+      const checkEmailResponse = await axios.get(`${API_LINK}/auth/findemail?email=${email}`);
+      const { exists, type } = checkEmailResponse.data;
+  
+      if (!exists) {
+        setError("Email does not exist");
+        return;
+      }
+  
+      if (type !== "Staff" && type !== "Brgy Admin") {
+        setError("Access denied: Only Staff and Brgy Admin accounts can proceed.");
+        return;
+      }
+  
+      const resetResponse = await axios.patch(`${API_LINK}/auth/send_pin/${email}`, { type });
       const encodedEmail = btoa(email);
-
+  
       if (resetResponse.status === 200) {
         setSuccessMessage("Password reset initiated. Check your email for instructions.");
-        console.log(email)
-        navigate(`/pin/${encodedEmail}`)
+        console.log(email);
+        navigate(`/pin/${encodedEmail}`);
       } else {
-        setError({ error });
-
+        setError("Error sending PIN");
+        console.error(resetResponse.data.error); // Log the detailed error message
       }
     } catch (error) {
-      setError("Email does not exist");
+      setError("Error checking email");
       console.log(error.message);
     }
   };
+  
 
   return (
     <div className='bg-[url("/imgs/login-bg.jpg")] bg-cover bg-center bg-no-repeat md:px-[3rem] md:py-[3rem] lg:px-[7rem] lg:py-[4rem] h-screen flex sm:flex-col md:flex-row sm:space-y-5 md:space-y-0'>
