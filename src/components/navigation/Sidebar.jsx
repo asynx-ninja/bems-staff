@@ -51,15 +51,17 @@ const Sidebar = () => {
         if (response.status === 200) {
           const inquiries = response.data.result;
           setInquiries(inquiries);
-
+         
           const residentInquiries = inquiries.filter((inquiry) => {
             const latestResponse = inquiry.response[inquiry.response.length - 1];
+            console.log(latestResponse)
             return (
               latestResponse &&
               latestResponse.type === 'Resident' &&
               (inquiry.isApproved === 'Pending' || inquiry.isApproved === 'In Progress')
             );
-          });
+            
+          }); 
 
           const residentInquiriesLength = residentInquiries.length;
           setResidentInquiriesLength(residentInquiriesLength);
