@@ -1,107 +1,86 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import AddSectionDocument from "./EditSectionDocument";
-import AddFormLoader from "../../loaders/EditFormLoader";
+import API_LINK from "../../../../config/API";
+import EditSectionDocument from "./EditSectionDocument";
+import EditFormLoader from "../../loaders/EditFormLoader";
 
-const EditServicesDocument = ({ service_id, brgy, officials }) => {
+const EditServicesDocument = ({ service_id, brgy, officials}) => {
+  const [details, setDetails] = useState([]);
+  const [detail, setDetail] = useState({});
+  const [docDetails, setDocDetails] = useState([]);
+  const [docDetail, setDocDetail] = useState({});
   const [submitClicked, setSubmitClicked] = useState(false);
-  const [creationStatus, setCreationStatus] = useState(null);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
-  const [form, setForm] = useState({
-    user_id: { display: "user id", checked: true, type: "text", value: "" },
-    firstName: {
-      display: "first name",
-      checked: true,
-      type: "text",
-      value: "",
-    },
-    middleName: {
-      display: "middle name",
-      checked: true,
-      type: "text",
-      value: "",
-    },
-    lastName: { display: "last name", checked: true, type: "text", value: "" },
-    suffix: { display: "suffix", checked: true, type: "text", value: "" },
-    birthday: { display: "birthday", checked: false, type: "date", value: "" },
-    age: { display: "age", checked: false, type: "number", value: 1 },
-    sex: { display: "sex", checked: false, type: "radio", value: "" },
-    contact: { display: "contact", checked: false, type: "text", value: "" },
-    civil_status: {
-      display: "civil status",
-      checked: false,
-      type: "select",
-      value: "",
-    },
-    height: {
-      display: "height (ft)",
-      checked: false,
-      type: "text",
-      value: "",
-    },
-    weight: {
-      display: "weight (kg)",
-      checked: false,
-      type: "number",
-      value: 0,
-    },
-    address: {
-      display: "address",
-      checked: false,
-      type: "text",
-      value: "",
-    },
-    religion: {
-      display: "religion",
-      checked: false,
-      type: "select",
-      value: "",
-    },
-    email: { display: "email", checked: false, type: "email", value: "" },
-    occupation: {
-      display: "occupation",
-      checked: false,
-      type: "select",
-      value: "",
-    },
+  const [document, setDocument] = useState({
+    form_id: "",
+    doc_title: "",
+    details: "",
+    type: "",
+    punong_brgy: "",
+    witnessed_by: "",
+    inputs: [""],
+    email: "",
+    address: "",
+    tel: "",
   });
 
-  const [section, setSection] = useState([
-    {
-      section_title: "",
-      section_variable: "",
-      form: [
-        {
-          variable: "",
-          display: "",
-          type: "text",
-          accept: "",
-          value: null,
-          children: [],
-        },
-      ],
-    },
-  ]);
+  useEffect(() => {
+    // function to filter
+    const fetch = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/forms/?brgy=${brgy}&service_id=${service_id}`
+        );
 
-  const [checked, setChecked] = useState(false);
+        // filter
+        setDetails(response.data);
+      } catch (err) {
+        console.log(err.message);
+      }
+    };
+
+    fetch();
+  }, [brgy, service_id]);
+
+  useEffect(() => {
+    // function to filter
+    const fetch = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/document/?brgy=${brgy}&service_id=${service_id}`
+        );
+
+        // filter
+        setDocDetails(response.data);
+      } catch (err) {
+        console.log(err.message);
+      }
+    };
+
+    fetch();
+  }, [brgy, service_id]);
+
 
   const handleFormChange = (e, key) => {
-    const newState = { ...form };
+    const newState = detail.form[0];
     newState[key].checked = e.target.checked;
 
-    setForm(newState);
+    setDetail((prev) => ({
+      ...prev,
+      form: [newState, detail.form[1]],
+    }));
   };
 
   const handleSubmit = async (e) => {
     try {
       setSubmitClicked(true);
 
-      const response = await axios.post(
-        `http://localhost:8800/api/forms/?brgy=${brgy}&service_id=${service_id}&checked=${checked}`,
+      const response = await axios.patch(
+        `http://localhost:8800/api/document/`,
         {
-          form: form,
-          section: section,
+          document: docDetail,
         },
         {
           headers: {
@@ -110,20 +89,37 @@ const EditServicesDocument = ({ service_id, brgy, officials }) => {
         }
       );
 
-      setSubmitClicked(false);
-      setCreationStatus("success");
+      console.log(response);
       setTimeout(() => {
-        window.location.reload();
-      }, 3000);
+        setSubmitClicked(false);
+        setUpdatingStatus("success");
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      }, 1000);
     } catch (err) {
-      console.log(err.message);
       setSubmitClicked(false);
-      setCreationStatus("error");
+      setUpdatingStatus("error");
       setError(err.message);
     }
   };
 
-  console.log("Section in Add Service", section);
+  const handleSelectChange = (e) => {
+    setDocDetail(docDetails[e.target.value]);
+  };
+
+  const handleChange = (e) => {
+    setDocDetail((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  
+  console.log("Edit document: ", document);
+  console.log("details: ", details);
+  console.log("Doc details: ", docDetails);
+  console.log("Doc detail: ", docDetail);
 
   return (
     <div>
@@ -151,31 +147,37 @@ const EditServicesDocument = ({ service_id, brgy, officials }) => {
                 <select
                   name="form"
                   className="border border-1 border-gray-300 shadow bg-white w-full md:w-6/12 mt-2 md:mt-0 border p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                  // onChange={handleSelectChange}
+                  onChange={handleSelectChange}
                   defaultValue={""}
                 >
                   <option value="" disabled>
                     Select Document
                   </option>
-                  {/* {details &&
-                    details.map((item, idx) => (
+                  {docDetails &&
+                    docDetails.map((item, idx) => (
                       <option key={idx} value={idx}>
-                        {item.version}
+                        {item.doc_title}
                       </option>
-                    ))} */}
+                    ))}
                 </select>
               </div>
               <div className="px-4 pb-4">
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-black font-medium">
-                    SERVE AS ACTIVE DOCUMENT?
+                <div className="flex items-center justify-between mb-4">
+                  <label className="block  text-black font-bold">
+                    SERVE AS ACTIVE FORM?
                   </label>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
                       name="isOpen"
-                      onChange={(e) => setChecked(e.target.checked)}
-                      checked={checked}
+                      onChange={(e) =>
+                        setDocDetail((prev) => ({
+                          ...prev,
+                          isActive: e.target.checked,
+                        }))
+                      }
+                      checked={detail.isActive}
+                      disabled={detail.isArchived}
                       className="sr-only peer"
                     />
                     <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-400 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
@@ -195,12 +197,12 @@ const EditServicesDocument = ({ service_id, brgy, officials }) => {
                         Document Title
                       </label>
                       <input
-                        id="name"
+                        id="doc_title"
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                        name="name"
+                        name="doc_title"
                         type="text"
-                        // value={service.name}
-                        // onChange={handleChange}
+                        value={docDetail.doc_title}
+                        onChange={handleChange}
                         placeholder="Service Name"
                       />
                     </div>
@@ -213,11 +215,11 @@ const EditServicesDocument = ({ service_id, brgy, officials }) => {
                         Details
                       </label>
                       <textarea
-                        id="message"
+                        id="details"
                         rows={7}
                         name="details"
-                        // value={service.details}
-                        // onChange={handleChange}
+                        value={docDetail.details}
+                        onChange={handleChange}
                         className="shadow appearance-none border w-full p-2.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         placeholder="Enter service details..."
                       />
@@ -232,11 +234,23 @@ const EditServicesDocument = ({ service_id, brgy, officials }) => {
                       </label>
                       <select
                         name="type"
-                        // onChange={handleChange}
+                        onChange={handleChange}
+                        value={docDetail.type}
                         className="shadow  border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
-                        <option value="Type A">Type A</option>
-                        <option value="Type B">Type B</option>
+                        <option>-- Select a Document Type --</option>
+                        <option value="Type A">
+                          Barangay Certificate without Officials
+                        </option>
+                        <option value="Type B">
+                          Barangay Certificate with Officials
+                        </option>
+                        <option value="Type C">Cedula</option>
+                        <option value="Type D">Barangay ID</option>
+                        <option value="Type E">
+                          First Time Job Seeker with Oath of Undertaking
+                        </option>
+                        <option value="Type F">Barangay Clearance</option>
                       </select>
                     </div>
 
@@ -248,10 +262,12 @@ const EditServicesDocument = ({ service_id, brgy, officials }) => {
                         Punong Barangay
                       </label>
                       <select
-                        name="type"
-                        // onChange={handleChange}
+                        name="punong_brgy"
+                        onChange={handleChange}
+                        value={docDetail.punong_brgy}
                         className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
+                        <option>-- Select an Official --</option>
                         {/* Map filtered officials with position "Barangay Chairman" to options */}
                         {officials
                           .filter(
@@ -278,10 +294,12 @@ const EditServicesDocument = ({ service_id, brgy, officials }) => {
                         Witnessed By:
                       </label>
                       <select
-                        name="type"
-                        // onChange={handleChange}
+                        name="witnessed_by"
+                        onChange={handleChange}
+                        value={docDetail.witnessed_by}
                         className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
+                        <option>-- Select an Official --</option>
                         {/* Map filtered officials with position "Barangay Chairman" to options */}
                         {officials
                           .filter(
@@ -299,6 +317,60 @@ const EditServicesDocument = ({ service_id, brgy, officials }) => {
                           ))}
                       </select>
                     </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="name"
+                      >
+                        E-mail
+                      </label>
+                      <input
+                        id="email"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="email"
+                        type="text"
+                        value={docDetail.email}
+                        onChange={handleChange}
+                        placeholder="E-mail"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="name"
+                      >
+                        Address
+                      </label>
+                      <input
+                        id="address"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="address"
+                        type="text"
+                        value={docDetail.address}
+                        onChange={handleChange}
+                        placeholder="Address"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="name"
+                      >
+                        Telephone Number
+                      </label>
+                      <input
+                        id="tel"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="tel"
+                        type="number"
+                        value={docDetail.tel}
+                        onChange={handleChange}
+                        placeholder="Telephone Number"
+                      />
+                    </div>
                   </div>
                 </fieldset>
               </div>
@@ -309,11 +381,13 @@ const EditServicesDocument = ({ service_id, brgy, officials }) => {
                   <legend className=" ml-2 px-2 text-lg font-bold">
                     CUSTOMIZE FIELDS
                   </legend>
-                  <AddSectionDocument
-                    section={section}
-                    setSection={setSection}
+                  <EditSectionDocument
                     brgy={brgy}
                     service_id={service_id}
+                    document={document}
+                    setDocument={setDocument}
+                    docDetail={docDetail}
+                    setDocDetail={setDocDetail}
                   />
                 </fieldset>
               </div>
@@ -332,7 +406,7 @@ const EditServicesDocument = ({ service_id, brgy, officials }) => {
                 <button
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
-                  data-hs-overlay="#hs-create-serviceDocument-modal"
+                  data-hs-overlay="#hs-edit-serviceDocument-modal"
                 >
                   CLOSE
                 </button>
@@ -340,9 +414,9 @@ const EditServicesDocument = ({ service_id, brgy, officials }) => {
             </div>
           </div>
         </div>
-        {submitClicked && <AddFormLoader creationStatus="creating" />}
-        {creationStatus && (
-          <AddFormLoader creationStatus={creationStatus} error={error} />
+        {submitClicked && <EditFormLoader updatingStatus="updating" />}
+        {updatingStatus && (
+          <EditFormLoader updatingStatus={updatingStatus} error={error} />
         )}
       </div>
     </div>

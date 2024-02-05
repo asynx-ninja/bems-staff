@@ -116,7 +116,7 @@ function ViewRequestModal({ request, brgy, officials }) {
                       />
                     }
                     fileName={fileName}
-                    className="h-[2.5rem] flex text-center justify-center items-center w-full py-1 px-6 gap-2 rounded-md border text-xs font-base bg-[#22687a] text-white shadow-sm"
+                    className="h-[2.5rem] flex text-center justify-center items-center w-full py-1 px-6 gap-2 rounded-md border text-[9px] xxl:text-xs font-base bg-[#22687a] text-white shadow-sm"
                   >
                     GENERATE DOCUMENT REQUEST (TYPE A)
                   </PDFDownloadLink>
@@ -131,7 +131,7 @@ function ViewRequestModal({ request, brgy, officials }) {
                       />
                     }
                     fileName={fileName}
-                    className="h-[2.5rem] flex justify-center text-center items-center w-full py-1 px-6 gap-2 rounded-md border text-xs font-base bg-[#22687a] text-white shadow-sm"
+                    className="h-[2.5rem] flex justify-center text-center items-center w-full py-1 px-6 gap-2 rounded-md border text-[9px] xxl:text-xs font-base bg-[#22687a] text-white shadow-sm"
                   >
                     GENERATE DOCUMENT REQUEST (TYPE B)
                   </PDFDownloadLink>
@@ -139,7 +139,7 @@ function ViewRequestModal({ request, brgy, officials }) {
                 <PDFDownloadLink
                   document={<PrintPDF detail={detail} brgy={brgy} />}
                   fileName={fileName}
-                  className="h-[2.5rem] flex text-center justify-center items-center w-full py-1 px-6 gap-2 rounded-md border text-xs font-base bg-teal-900 text-white shadow-sm"
+                  className="h-[2.5rem] flex text-center justify-center items-center w-full py-1 px-6 gap-2 rounded-md border text-[9px] xxl:text-xs font-base bg-teal-900 text-white shadow-sm"
                 >
                   GENERATE REQUEST FORM
                 </PDFDownloadLink>

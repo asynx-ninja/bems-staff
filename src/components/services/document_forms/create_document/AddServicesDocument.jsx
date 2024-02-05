@@ -8,76 +8,6 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
-  const [form, setForm] = useState({
-    user_id: { display: "user id", checked: true, type: "text", value: "" },
-    firstName: {
-      display: "first name",
-      checked: true,
-      type: "text",
-      value: "",
-    },
-    middleName: {
-      display: "middle name",
-      checked: true,
-      type: "text",
-      value: "",
-    },
-    lastName: { display: "last name", checked: true, type: "text", value: "" },
-    suffix: { display: "suffix", checked: true, type: "text", value: "" },
-    birthday: { display: "birthday", checked: false, type: "date", value: "" },
-    age: { display: "age", checked: false, type: "number", value: 1 },
-    sex: { display: "sex", checked: false, type: "radio", value: "" },
-    contact: { display: "contact", checked: false, type: "text", value: "" },
-    civil_status: {
-      display: "civil status",
-      checked: false,
-      type: "select",
-      value: "",
-    },
-    height: {
-      display: "height (ft)",
-      checked: false,
-      type: "text",
-      value: "",
-    },
-    weight: {
-      display: "weight (kg)",
-      checked: false,
-      type: "number",
-      value: 0,
-    },
-    address: {
-      display: "address",
-      checked: false,
-      type: "text",
-      value: "",
-    },
-    religion: {
-      display: "religion",
-      checked: false,
-      type: "select",
-      value: "",
-    },
-    email: { display: "email", checked: false, type: "email", value: "" },
-    occupation: {
-      display: "occupation",
-      checked: false,
-      type: "select",
-      value: "",
-    },
-  });
-
-  const [document, setDocument] = useState({
-    doc_title: "",
-    details: "",
-    type: "",
-    punong_brgy: "",
-    witnessed_by: "",
-    inputs: "",
-    email: "",
-    address: "",
-    tel: "",
-  });
 
   const handleChange = (e) => {
     setDocument((prev) => ({
@@ -97,15 +27,28 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
     setForm(newState);
   };
 
+  const [document, setDocument] = useState({
+    form_id: "",
+    service_id: "",
+    doc_title: "",
+    details: "",
+    type: "",
+    punong_brgy: "",
+    witnessed_by: "",
+    inputs: [""],
+    email: "",
+    address: "",
+    tel: "",
+  });
+
   const handleSubmit = async (e) => {
     try {
       setSubmitClicked(true);
 
       const response = await axios.post(
-        `http://localhost:8800/api/documents/?brgy=${brgy}&form_id=${form_id}&checked=${checked}`,
+        `http://localhost:8800/api/document/?brgy=${brgy}&form_id=${document.form_id}&checked=${checked}`,
         {
-          form: form,
-          section: section,
+          service_id: service_id,
           doc_title: document.doc_title,
           details: document.details,
           type: document.type,
@@ -136,7 +79,6 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
     }
   };
 
-  console.log("Section in Add Service", section);
   console.log("Document: ", document);
 
   return (
@@ -206,7 +148,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         Details
                       </label>
                       <textarea
-                        id="message"
+                        id="details"
                         rows={7}
                         name="details"
                         // value={service.details}
@@ -235,12 +177,12 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         <option value="Type B">
                           Barangay Certificate with Officials
                         </option>
-                        <option value="Type B">Cedula</option>
-                        <option value="Type B">Barangay ID</option>
-                        <option value="Type B">
+                        <option value="Type C">Cedula</option>
+                        <option value="Type D">Barangay ID</option>
+                        <option value="Type E">
                           First Time Job Seeker with Oath of Undertaking
                         </option>
-                        <option value="Type B">Barangay Clearance</option>
+                        <option value="Type F">Barangay Clearance</option>
                       </select>
                     </div>
 
@@ -374,6 +316,8 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                     setSection={setSection}
                     brgy={brgy}
                     service_id={service_id}
+                    document={document}
+                    setDocument={setDocument}
                   />
                 </fieldset>
               </div>

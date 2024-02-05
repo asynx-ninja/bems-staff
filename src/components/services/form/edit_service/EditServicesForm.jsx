@@ -86,6 +86,9 @@ const EditServicesForm = ({ service_id, brgy }) => {
     }));
   };
 
+  console.log("details: ", details);
+  console.log("detail: ", detail);
+
   return (
     <div>
       <div

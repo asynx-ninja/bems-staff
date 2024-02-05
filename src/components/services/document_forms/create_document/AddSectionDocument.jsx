@@ -7,7 +7,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import API_LINK from "../../../../config/API";
 
-const AddSectionDocument = ({ section, setSection, brgy, service_id }) => {
+const AddSectionDocument = ({ section, setSection, brgy, service_id, document, setDocument }) => {
   const [details, setDetails] = useState([]);
   const [detail, setDetail] = useState({});
   const [selectedForm, setSelectedForm] = useState(null);
@@ -28,10 +28,14 @@ const AddSectionDocument = ({ section, setSection, brgy, service_id }) => {
             ([key, value], idx) => ({
               key,
               value: value.display,
+              checked: value.checked, // Include the checked property
             })
           );
 
-          setFormOptions(formOptions);
+          // Filter formOptions to include only options with checked: true
+          const filteredFormOptions = formOptions.filter(({ checked }) => checked);
+
+          setFormOptions(filteredFormOptions);
 
           const formOptions2 = [].concat(
             ...selectedForm.form[1].map((item, idx) =>
@@ -54,19 +58,21 @@ const AddSectionDocument = ({ section, setSection, brgy, service_id }) => {
     fetch();
   }, [brgy, service_id, selectedForm]);
 
-  // const handleFormChange = (e, key) => {
-  //   const newState = detail.form[0];
-  //   newState[key].checked = e.target.checked;
-
-  //   setDetail((prev) => ({
-  //     ...prev,
-  //     form: [newState, detail.form[1]],
-  //   }));
-  // };
-
   const handleSelectChange = (e) => {
     const selectedIndex = e.target.value;
-    setSelectedForm(details[selectedIndex]);
+  
+    // Ensure that a valid index is selected
+    if (selectedIndex >= 0 && selectedIndex < details.length) {
+      const selectedForm = details[selectedIndex];
+  
+      // Set the form_id in the document state to the value of {item.version}
+      setDocument((prev) => ({
+        ...prev,
+        form_id: selectedForm.version, // Assuming version is the key for the form version
+      }));
+  
+      setSelectedForm(selectedForm);
+    }
   };
 
   const formatVariable = (value) => {
@@ -79,76 +85,39 @@ const AddSectionDocument = ({ section, setSection, brgy, service_id }) => {
     const updatedData = [...section];
     updatedData.push({
       type: "",
-      value: "",
     });
     setSection(updatedData);
   };
 
   console.log("Section: ", section);
 
-  const handleChange = (e) => {
-    setSection((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
-  // const handleSectionChange = (e, index) => {
-  //   const updatedSectionFields = [...section];
-
-  //   updatedSectionFields[index] = {
-  //     ...updatedSectionFields[index],
-  //     section_title: e.target.value,
-  //     section_variable: formatVariable(e.target.value),
-  //   };
-
-  //   setSection(updatedSectionFields);
-  // };
-
-  const removeSectionField = (index) => {
+  const handleSectionChange = (e, index) => {
     const updatedSectionFields = [...section];
-    updatedSectionFields.splice(index, 1);
 
+    updatedSectionFields[index] = {
+      ...updatedSectionFields[index],
+      [e.target.name]: e.target.value,
+    };
+
+    // Update the selected type in the document.inputs array
+    const updatedDocument = { ...document };
+    updatedDocument.inputs = updatedSectionFields.map((field) => field.inputs);
+    
+    setDocument(updatedDocument);
     setSection(updatedSectionFields);
   };
 
-  const handleInputChange = (e, sectionIndex, formIndex) => {
-    const updatedInputFields = [...section];
-    updatedInputFields[sectionIndex].form[formIndex] = {
-      ...updatedInputFields[sectionIndex].form[formIndex],
-      [e.target.name]:
-        e.target.name === "variable"
-          ? formatVariable(e.target.value)
-          : e.target.value,
-    };
+  const removeSectionField = (index) => {
+  const updatedSectionFields = [...section];
+  updatedSectionFields.splice(index, 1);
 
-    if (
-      updatedInputFields[sectionIndex].form[formIndex].type !== "radio" &&
-      updatedInputFields[sectionIndex].form[formIndex].type !== "select" &&
-      updatedInputFields[sectionIndex].form[formIndex].type !== "checkbox"
-    ) {
-      updatedInputFields[sectionIndex].form[formIndex] = {
-        ...updatedInputFields[sectionIndex].form[formIndex],
-        children: [],
-      };
-    }
+  // Remove the corresponding input from the document.inputs array
+  const updatedDocument = { ...document };
+  updatedDocument.inputs = updatedSectionFields.map((field) => field.inputs);
 
-    if (updatedInputFields[sectionIndex].form[formIndex].type === "checkbox") {
-      updatedInputFields[sectionIndex].form[formIndex] = {
-        ...updatedInputFields[sectionIndex].form[formIndex],
-        value: [],
-      };
-    }
-
-    if (updatedInputFields[sectionIndex].form[formIndex].type !== "file") {
-      updatedInputFields[sectionIndex].form[formIndex] = {
-        ...updatedInputFields[sectionIndex].form[formIndex],
-        accept: "",
-      };
-    }
-
-    setSection(updatedInputFields);
-  };
+  setDocument(updatedDocument);
+  setSection(updatedSectionFields);
+};
 
   return (
     <div>
@@ -207,11 +176,9 @@ const AddSectionDocument = ({ section, setSection, brgy, service_id }) => {
                     </label>
 
                     <select
-                      name="type"
-                      onChange={(e) =>
-                        handleInputChange(e, sectionIndex, formIndex)
-                      }
-                      className="shadow uppercase placeholder-gray-400 font-medium appearance-none border w-1/2 p-1 text-sm bg-white border-green-500 text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                      name="inputs"
+                      onChange={(e) => handleSectionChange(e, sectionIndex)}
+                      className="shadow uppercase placeholder-gray-400 font-medium appearance-none border w-full p-1 text-sm bg-white border-green-500 text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                     >
                       <option value="" disabled>
                         -- Select Type --
@@ -230,18 +197,6 @@ const AddSectionDocument = ({ section, setSection, brgy, service_id }) => {
                           </option>
                         ))}
                     </select>
-
-                    <div className="items-center w-1/2">
-                      <input
-                        id="value"
-                        className="shadow appearance-none border w-full py-1 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                        name="value"
-                        type="text"
-                        // value={service.name}
-                        // onChange={handleChange}
-                        placeholder="Document Name"
-                      />
-                    </div>
 
                     <button
                       onClick={() => removeSectionField(sectionIndex)}
