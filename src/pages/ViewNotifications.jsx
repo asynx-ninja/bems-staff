@@ -61,9 +61,8 @@ const ViewNotifications = ({ setNotification}) => {
         console.log("itoulit", response.data);
   
         if (response.status === 200) {
-          const isUserRead = response.data.length > 0;
 
-          if (!isUserRead) {
+          if (!response.data.length > 0) {
             // Proceed with updating the 'read_by' array
             const updateResponse = await axios.patch(`${API_LINK}/notification/?notification_id=${notification._id}`, {
               readerId: id,

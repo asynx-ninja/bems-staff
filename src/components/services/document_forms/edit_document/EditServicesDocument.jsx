@@ -176,8 +176,8 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
                           isActive: e.target.checked,
                         }))
                       }
-                      checked={detail.isActive}
-                      disabled={detail.isArchived}
+                      checked={docDetail.isActive}
+                      disabled={docDetail.isArchived}
                       className="sr-only peer"
                     />
                     <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-400 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
@@ -401,7 +401,7 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
                   onClick={handleSubmit}
                 >
-                  CREATE
+                  UPDATE
                 </button>
                 <button
                   type="button"

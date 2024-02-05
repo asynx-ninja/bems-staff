@@ -22,7 +22,7 @@ import SAN_JOSE from "../../../assets/logo/SAN_JOSE.png";
 import SAN_RAFAEL from "../../../assets/logo/SAN_RAFAEL.png";
 import BAGONG_PILIPINAS from "../../../assets/image/bagong-pilipinas-logo.jpg";
 
-const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
+const PrintDocumentTypeD = ({ detail, officials = { officials }, brgy }) => {
   const [date, setDate] = useState(new Date());
 
   const returnLogo = () => {
@@ -136,8 +136,8 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
   const styles = StyleSheet.create({
     body: {
       paddingTop: 5,
-      paddingLeft: 15,
-      paddingRight: 15,
+      paddingLeft: 35,
+      paddingRight: 35,
       paddingBottom: 35,
     },
     letterHead: {
@@ -353,11 +353,11 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
       },
     },
     backgroundImage: {
-      position: "absolute",
-      height: "410px",
+      position: 'absolute',
+      height: "100%",
       width: "100%",
-      top: 50,
-      left: 10,
+      top: 0,
+      left: 0,
       right: 0,
       bottom: 0,
       opacity: 0.1, // Set the opacity of the background image
@@ -373,12 +373,6 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
         marginBottom: 10,
       }}
     />
-  );
-
-  const TwoColumns = ({ children }) => (
-    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-      {children}
-    </View>
   );
 
   const LetterHead = () => (
@@ -423,167 +417,7 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
 
   const Body = () => (
     <View>
-      <TwoColumns>
-        <View style={{ width: "26%", borderRightWidth: 2, borderRightColor: "#000000" }}>
-          <Text
-            style={{
-              ...styles.terms.bold,
-              textAlign: "center",
-              fontSize: 12,
-              marginTop: 30,
-            }}
-          >
-            BARANGAY {detail.brgy.toUpperCase()}
-          </Text>
-
-          <Text
-            style={{
-              ...styles.terms.bold,
-              textAlign: "center",
-              fontSize: 10,
-              marginTop: 30,
-            }}
-          >
-            BARANGAY CHAIRMAN
-          </Text>
-
-          {officials
-            .filter((official) => official.position === "Barangay Chairman")
-            .map((official) => (
-              <Text
-                key={official.user_id}
-                style={{
-                  ...styles.terms.bold,
-                  textAlign: "center",
-                  marginTop: 5,
-                  marginLeft: 12,
-                  marginRight: 12,
-                  fontSize: 8,
-                }}
-              >
-                {official.lastName}, {official.firstName} {official.middleName}
-              </Text>
-            ))}
-
-          <Text
-            style={{
-              ...styles.terms.bold,
-              textAlign: "center",
-              fontSize: 10,
-              marginTop: 30,
-            }}
-          >
-            BARANGAY KAGAWAD
-          </Text>
-
-          {officials
-            .filter((official) => official.position === "Barangay Kagawad")
-            .map((official) => (
-              <Text
-                key={official.user_id}
-                style={{
-                  ...styles.terms.bold,
-                  textAlign: "center",
-                  marginTop: 5,
-                  marginLeft: 12,
-                  marginRight: 12,
-                  fontSize: 8,
-                }}
-              >
-                {official.lastName}, {official.firstName} {official.middleName}
-              </Text>
-            ))}
-
-          <Text
-            style={{
-              ...styles.terms.bold,
-              textAlign: "center",
-              fontSize: 10,
-              marginTop: 30,
-            }}
-          >
-            SK CHAIRMAN
-          </Text>
-
-          {officials
-            .filter((official) => official.position === "SK Chairman")
-            .map((official) => (
-              <Text
-                key={official.user_id}
-                style={{
-                  ...styles.terms.bold,
-                  textAlign: "center",
-                  marginTop: 10,
-                  marginLeft: 12,
-                  marginRight: 12,
-                  fontSize: 8,
-                }}
-              >
-                {official.lastName}, {official.firstName} {official.middleName}
-              </Text>
-            ))}
-
-          <Text
-            style={{
-              ...styles.terms.bold,
-              textAlign: "center",
-              fontSize: 10,
-              marginTop: 30,
-            }}
-          >
-            SECRETARY
-          </Text>
-
-          {officials
-            .filter((official) => official.position === "Secretary")
-            .map((official) => (
-              <Text
-                key={official.user_id}
-                style={{
-                  ...styles.terms.bold,
-                  textAlign: "center",
-                  marginTop: 10,
-                  marginLeft: 12,
-                  marginRight: 12,
-                  fontSize: 8,
-                }}
-              >
-                {official.lastName}, {official.firstName} {official.middleName}
-              </Text>
-            ))}
-
-          <Text
-            style={{
-              ...styles.terms.bold,
-              textAlign: "center",
-              fontSize: 10,
-              marginTop: 30,
-            }}
-          >
-            TREASURER
-          </Text>
-
-          {officials
-            .filter((official) => official.position === "Treasurer")
-            .map((official) => (
-              <Text
-                key={official.user_id}
-                style={{
-                  ...styles.terms.bold,
-                  textAlign: "center",
-                  marginTop: 10,
-                  marginLeft: 12,
-                  marginRight: 12,
-                  fontSize: 8,
-                }}
-              >
-                {official.lastName}, {official.firstName} {official.middleName}
-              </Text>
-            ))}
-        </View>
-
-        <View style={{ ...styles.bodyHead.column, width: "74%" }}>
-        <Image src={returnLogo()} style={styles.backgroundImage} />
+      <Image src={returnLogo()} style={styles.backgroundImage} />
       {/* BODY HEAD */}
       <View style={styles.bodyHead.column}>
         <Text style={{ ...styles.bodyHead.text, marginTop: 10 }}>
@@ -602,7 +436,7 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
             marginTop: 30,
           }}
         >
-          BARANGAY CLEARANCE
+          {detail.service_name.toUpperCase()}
         </Text>
         <Text style={{ fontSize: 12, marginTop: 10 }}>
           To Whom It May Concern:
@@ -615,21 +449,15 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
             lineHeight: 2, // Adjust the lineHeight as needed
           }}
         >
-          This is to certify that the person whose name and right thumb mark
-          appear hereon has requested a RECORD CLEARANCE from this office and
-          the result(s) is/are listed below:
-        </Text>
-        <Text
-          style={{
-            fontSize: 12,
-            marginTop: 25,
-            textAlign: "justify",
-            lineHeight: 2, // Adjust the lineHeight as needed
-          }}
-        >
-          NAME : {detail.form && detail.form[0].firstName.value}{" "}
-          {detail.form && detail.form[0].middleName.value}{" "}
-          {detail.form && detail.form[0].lastName.value}
+          THIS IS TO CERTIFY THAT{" "}
+          <Text style={styles.terms.bold}>
+            {detail.form && detail.form[0].firstName.value}{" "}
+            {detail.form && detail.form[0].middleName.value}{" "}
+            {detail.form && detail.form[0].lastName.value}
+          </Text>
+          , of legal age, residing at{" "}
+          Barangay {brgy}, Rodriguez, Rizal is a bona-fide resident
+          of Barangay {brgy}, Rodriguez, Rizal.
         </Text>
         <Text
           style={{
@@ -639,10 +467,9 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
             lineHeight: 2, // Adjust the lineHeight as needed
           }}
         >
-          AGE :{" "}
-          {detail.form && detail.form[0].age && detail.form[0].age.value
-            ? detail.form[0].age.value
-            : ""}
+          This further certifies that he/she belongs to the many indigent
+          families living in this Barangay. He/she is considered one among the
+          families living below the poverty line or indigent family.
         </Text>
         <Text
           style={{
@@ -652,116 +479,52 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
             lineHeight: 2, // Adjust the lineHeight as needed
           }}
         >
-          SEX/CIVIL STATUS :{" "}
-          {detail.form && detail.form[0].sex && detail.form[0].sex.value
-            ? detail.form[0].sex.value
-            : ""}{" "}
-          /{" "}
-          {detail.form &&
-          detail.form[0].age &&
-          detail.form[0].civil_status.value
-            ? detail.form[0].civil_status.value
-            : ""}
+          This certification is issued to subject individual for DSWD Financial
+          Assistance (Department of Social Welfare and development) for whatever
+          legal purpose it may serve him/her best.
         </Text>
         <Text
           style={{
             fontSize: 12,
             marginTop: 15,
+            marginBottom: 30,
             textAlign: "justify",
             lineHeight: 2, // Adjust the lineHeight as needed
           }}
         >
-          BIRTH DATE:{" "}
-          {detail.form && detail.form[0].birthday && detail.form[0].birthday.value
-            ? detail.form[0].birthday.value
-            : ""}{" "}
-          / {detail.form && detail.form[0].address && detail.form[0].address.value
-            ? detail.form[0].address.value
-            : ""}{" "}
+          Issued this at <Text style={styles.terms.bold}>{formattedDate}</Text>{" "}
+          at the Barangay 830 Hall, Zone 90, District VI, City of Manila.
         </Text>
 
-        <Text
-          style={{
-            fontSize: 12,
-            marginTop: 15,
-            textAlign: "justify",
-            lineHeight: 2, // Adjust the lineHeight as needed
-          }}
-        >
-          ADDRESS:{" "}
-          {detail.form && detail.form[0].address && detail.form[0].address.value
-            ? detail.form[0].address.value
-            : ""}{" "}
-        </Text>
-
-        <Text
-          style={{
-            fontSize: 12,
-            marginTop: 15,
-            textAlign: "justify",
-            lineHeight: 2, // Adjust the lineHeight as needed
-          }}
-        >
-          REMARKS:  {detail.form && detail.form[1].remarks && detail.form[1].remarks.value
-            ? detail.form[1].remarks.value
-            : ""}{" "}
-        </Text>
-
-        <Text
-          style={{
-            fontSize: 12,
-            marginTop: 15,
-
-            textAlign: "justify",
-            lineHeight: 2, // Adjust the lineHeight as needed
-          }}
-        >
-          PURPOSE:  {detail.form && detail.form[1].purpose && detail.form[1].purpose.value
-            ? detail.form[1].purpose.value
-            : ""}{" "}
-        </Text>
-
-        <View
-          style={{ ...styles.terms.parentSign, justifyContent: "flex-end" }}
-        >
+        <View style={styles.terms.parentSign}>
           <View style={styles.terms.half}>
-            {officials
-              .filter((official) => official.position === "Barangay Chairman")
-              .map((official) => (
-                <Text
-                  style={{
-                    fontSize: 12,
-                    textAlign: "center",
-                    lineHeight: 2, // Adjust the lineHeight as needed
-                  }}
-                >
-                  {official.lastName}, {official.firstName}{" "}
-                  {official.middleName}
-                </Text>
-              ))}
+            <Text style={styles.terms.bold}>AFFIANT</Text>
+            <View alt="" style={styles.terms.imageStyle}></View>
+            <View style={styles.terms.signText}>
+              <Text style={styles.terms.center}>Witnessed By: Kagawad</Text>
+            </View>
+            <View style={{ ...styles.terms.signText, marginTop: 40 }}>
+              <Text style={styles.terms.center}>
+                Resident's Signature over Printed Name
+              </Text>
+            </View>
+          </View>
+          <View style={styles.terms.half}>
+            <Text
+              style={styles.terms.bold}
+            >{`ASSISTED BY: (For Residents below 18 years old)`}</Text>
+            <View alt="" style={styles.terms.imageStyle}></View>
             <View style={styles.terms.signText}>
               <Text style={styles.terms.center}>Punong Barangay</Text>
+            </View>
+            <View style={{ ...styles.terms.signText, marginTop: 40 }}>
+              <Text style={styles.terms.center}>
+                Parent/Guardian's Signature over Printed Name
+              </Text>
             </View>
           </View>
         </View>
       </View>
-
-      <View>
-        <Text
-          style={{
-            fontSize: 10,
-            marginTop: 30,
-            marginBottom: 5,
-            textAlign: "justify",
-            lineHeight: 2, // Adjust the lineHeight as needed
-          }}
-        >
-          Note: Not valid without Official Barangay dry seal
-        </Text>
-      </View>
-      {/* END OF TERMS */}
-        </View>
-      </TwoColumns>
       {/* END OF TERMS */}
     </View>
   );
@@ -775,7 +538,7 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
 
   return (
     <Document>
-      <Page size="A4" style={styles.body}>
+      <Page size="LEGAL" style={styles.body}>
         <LetterHead />
         <Divider />
         <Body />
@@ -785,4 +548,4 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
   );
 };
 
-export default PrintDocumentTypeB;
+export default PrintDocumentTypeD;

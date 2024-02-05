@@ -147,7 +147,7 @@ function CreateServiceModal({ brgy }) {
             },
             target: {
               user_id: null,
-              area: brgy,
+              area: "MUNISIPYO",
             },
             type: "Municipality",
             banner: response.data.collections.banner,

@@ -7,7 +7,14 @@ import axios from "axios";
 import { useEffect } from "react";
 import API_LINK from "../../../../config/API";
 
-const AddSectionDocument = ({ section, setSection, brgy, service_id, document, setDocument }) => {
+const AddSectionDocument = ({
+  section,
+  setSection,
+  brgy,
+  service_id,
+  document,
+  setDocument,
+}) => {
   const [details, setDetails] = useState([]);
   const [detail, setDetail] = useState({});
   const [selectedForm, setSelectedForm] = useState(null);
@@ -33,7 +40,9 @@ const AddSectionDocument = ({ section, setSection, brgy, service_id, document, s
           );
 
           // Filter formOptions to include only options with checked: true
-          const filteredFormOptions = formOptions.filter(({ checked }) => checked);
+          const filteredFormOptions = formOptions.filter(
+            ({ checked }) => checked
+          );
 
           setFormOptions(filteredFormOptions);
 
@@ -60,17 +69,17 @@ const AddSectionDocument = ({ section, setSection, brgy, service_id, document, s
 
   const handleSelectChange = (e) => {
     const selectedIndex = e.target.value;
-  
+
     // Ensure that a valid index is selected
     if (selectedIndex >= 0 && selectedIndex < details.length) {
       const selectedForm = details[selectedIndex];
-  
+
       // Set the form_id in the document state to the value of {item.version}
       setDocument((prev) => ({
         ...prev,
         form_id: selectedForm.version, // Assuming version is the key for the form version
       }));
-  
+
       setSelectedForm(selectedForm);
     }
   };
@@ -102,22 +111,24 @@ const AddSectionDocument = ({ section, setSection, brgy, service_id, document, s
     // Update the selected type in the document.inputs array
     const updatedDocument = { ...document };
     updatedDocument.inputs = updatedSectionFields.map((field) => field.inputs);
-    
+
     setDocument(updatedDocument);
     setSection(updatedSectionFields);
   };
 
   const removeSectionField = (index) => {
-  const updatedSectionFields = [...section];
-  updatedSectionFields.splice(index, 1);
+    const updatedSectionFields = [...section];
+    const removedSection = updatedSectionFields.splice(index, 1)[0]; // Remove the specific section
 
-  // Remove the corresponding input from the document.inputs array
-  const updatedDocument = { ...document };
-  updatedDocument.inputs = updatedSectionFields.map((field) => field.inputs);
+    // Remove the corresponding input from the document.inputs array
+    const updatedDocument = { ...document };
+    updatedDocument.inputs = updatedDocument.inputs.filter(
+      (input) => input !== removedSection.inputs
+    );
 
-  setDocument(updatedDocument);
-  setSection(updatedSectionFields);
-};
+    setDocument(updatedDocument);
+    setSection(updatedSectionFields);
+  };
 
   return (
     <div>
@@ -178,6 +189,7 @@ const AddSectionDocument = ({ section, setSection, brgy, service_id, document, s
                     <select
                       name="inputs"
                       onChange={(e) => handleSectionChange(e, sectionIndex)}
+                      value={section.inputs}
                       className="shadow uppercase placeholder-gray-400 font-medium appearance-none border w-full p-1 text-sm bg-white border-green-500 text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                     >
                       <option value="" disabled>

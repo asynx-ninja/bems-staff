@@ -15,46 +15,6 @@ const EditSectionDocument = ({brgy, service_id, document, setDocument, docDetail
   const [formOptions2, setFormOptions2] = useState([]);
   const [section, setSection] = useState([]);
 
-  // useEffect(() => {
-  //   const fetch = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `${API_LINK}/document/?brgy=${brgy}`
-  //       );
-
-  //       setDetails(response.data);
-
-  //       if (selectedForm) {
-  //         const formOptions = Object.entries(selectedForm.form[0]).map(
-  //           ([key, value], idx) => ({
-  //             key,
-  //             value: value.display,
-  //           })
-  //         );
-
-  //         setFormOptions(formOptions);
-
-  //         const formOptions2 = [].concat(
-  //           ...selectedForm.form[1].map((item, idx) =>
-  //             item.form.map((formItem, formIdx) => ({
-  //               key: `${idx}-${formIdx}`,
-  //               value: formItem.display,
-  //             }))
-  //           )
-  //         );
-
-  //         // console.log("formOptions2:", formOptions2);
-
-  //         setFormOptions2(formOptions2);
-  //       }
-  //     } catch (err) {
-  //       console.log(err.message);
-  //     }
-  //   };
-
-  //   fetch();
-  // }, [brgy, service_id, selectedForm]);
-
   useEffect(() => {
     const fetch = async () => {
       try {
@@ -64,34 +24,15 @@ const EditSectionDocument = ({brgy, service_id, document, setDocument, docDetail
 
         setDetails(response.data);
 
-        if (selectedForm) {
-          const formOptions = Object.entries(selectedForm.form[0]).map(
-            ([key, value], idx) => ({
-              key,
-              value: value.display,
-              checked: value.checked, // Include the checked property
-            })
-          );
+        // Check if the form_id is already present in the docDetail
+        if (docDetail.form_id) {
+          const selectedForm = details.find((item) => item.version === docDetail.form_id);
 
-          // Filter formOptions to include only options with checked: true
-          const filteredFormOptions = formOptions.filter(
-            ({ checked }) => checked
-          );
+          // Update the selected form in the state
+          setSelectedForm(selectedForm);
 
-          setFormOptions(filteredFormOptions);
-
-          const formOptions2 = [].concat(
-            ...selectedForm.form[1].map((item, idx) =>
-              item.form.map((formItem, formIdx) => ({
-                key: `${idx}-${formIdx}`,
-                value: formItem.display,
-              }))
-            )
-          );
-
-          console.log("formOptions2:", formOptions2);
-
-          setFormOptions2(formOptions2);
+          // Update the form options based on the selectedForm
+          updateFormOptions(selectedForm);
         }
       } catch (err) {
         console.log(err.message);
@@ -99,7 +40,9 @@ const EditSectionDocument = ({brgy, service_id, document, setDocument, docDetail
     };
 
     fetch();
-  }, [brgy, service_id, selectedForm]);
+  }, [brgy, service_id, docDetail.form_id]); 
+
+
 
   const handleSelectChange = (e) => {
     const selectedVersion = e.target.value;
@@ -115,6 +58,9 @@ const EditSectionDocument = ({brgy, service_id, document, setDocument, docDetail
   
     // Update the selected form in the state
     setSelectedForm(selectedForm);
+
+    // Update form options based on the selected form
+    updateFormOptions(selectedForm);
   };
 
   const formatVariable = (value) => {
@@ -124,41 +70,84 @@ const EditSectionDocument = ({brgy, service_id, document, setDocument, docDetail
   };
 
   const addSectionField = () => {
-    const updatedData = [...section];
-    updatedData.push({
-      type: "",
-    });
+    const updatedData = [...section, { inputs: "" }];
     setSection(updatedData);
+
+    // Also update the document state to include the new section
+    const updatedDocument = {
+      ...docDetail,
+      inputs: [...docDetail.inputs, ""],
+    };
+    setDocDetail(updatedDocument);
   };
 
-  const handleSectionChange = (e, index) => {
+  const handleSectionChange = (e, sectionIndex) => {
     const updatedSectionFields = [...section];
-
-    updatedSectionFields[index] = {
-      ...updatedSectionFields[index],
-      [e.target.name]: e.target.value,
+    updatedSectionFields[sectionIndex] = {
+      ...updatedSectionFields[sectionIndex],
+      inputs: e.target.value,
     };
 
     // Update the selected type in the document.inputs array
-    const updatedDocument = { ...document };
-    updatedDocument.inputs = updatedSectionFields.map((field) => field.inputs);
+    const updatedDocument = {
+      ...docDetail,
+      inputs: docDetail.inputs.map((field, index) =>
+        index === sectionIndex ? e.target.value : field
+      ),
+    };
 
-    setDocument(updatedDocument);
+    setDocDetail(updatedDocument);
     setSection(updatedSectionFields);
   };
 
-  const removeSectionField = (index) => {
+  const removeSectionField = (sectionIndex) => {
     const updatedSectionFields = [...section];
-    updatedSectionFields.splice(index, 1);
+    updatedSectionFields.splice(sectionIndex, 1);
 
     // Remove the corresponding input from the document.inputs array
-    const updatedDocument = { ...document };
-    updatedDocument.inputs = updatedSectionFields.map((field) => field.inputs);
+    const updatedDocument = {
+      ...docDetail,
+      inputs: docDetail.inputs.filter((_, index) => index !== sectionIndex),
+    };
 
-    setDocument(updatedDocument);
+    setDocDetail(updatedDocument);
     setSection(updatedSectionFields);
   };
 
+  const updateFormOptions = (selectedForm) => {
+    if (selectedForm) {
+      const formOptions = Object.entries(selectedForm.form[0]).map(
+        ([key, value], idx) => ({
+          key,
+          value: value.display,
+          checked: value.checked, // Include the checked property
+        })
+      );
+
+      // Filter formOptions to include only options with checked: true
+      const filteredFormOptions = formOptions.filter(({ checked }) => checked);
+
+      setFormOptions(filteredFormOptions);
+
+      const formOptions2 = [].concat(
+        ...selectedForm.form[1].map((item, idx) =>
+          item.form.map((formItem, formIdx) => ({
+            key: `${idx}-${formIdx}`,
+            value: formItem.display,
+          }))
+        )
+      );
+
+      console.log("formOptions2:", formOptions2);
+
+      setFormOptions2(formOptions2);
+    } else {
+      // If selectedForm is null, reset form options
+      setFormOptions([]);
+      setFormOptions2([]);
+    }
+  };
+  
   return (
     <div>
       <div className="flex justify-between w-full my-2">
