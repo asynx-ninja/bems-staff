@@ -4,7 +4,6 @@ import axios from "axios";
 import API_LINK from "../../config/API";
 import { useSearchParams } from "react-router-dom";
 import { AiOutlineEye } from "react-icons/ai";
-import ViewRequestModal from "./ViewRequestModal";
 import ReactPaginate from "react-paginate";
 import ViewRegistrationModal from "./ViewRegistrationModal";
 
@@ -109,7 +108,7 @@ const SubPendingApplication = () => {
           </table>
         </div>
       </div>
-      <div className="md:py-4 md:px-4 bg-[#21556d] flex items-center rounded-b-xl justify-between sm:flex-col-reverse md:flex-row sm:py-3">
+      <div className="md:py-4 md:px-4 bg-[#21556d] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
         <span className="font-medium text-white sm:text-xs text-sm">
           Showing {currentPage + 1} out of {pageCount} pages
         </span>

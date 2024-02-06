@@ -141,6 +141,7 @@ const Requests = () => {
 
   const Requests = requests.filter((item) =>
     item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
+    
   );
 
   useEffect(() => {
