@@ -235,7 +235,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
             category: "One",
             compose: {
               subject: `REQUEST - ${request.service_name}`,
-              message: `A barangay staff has updated your request for the barangay service of ${
+              message: `A barangay staff has updated/replied your request for the barangay service of ${
                 request.service_name
               }.\n\n
         
@@ -254,7 +254,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                   : ""
               }
               - Service Applied: ${request.service_name}\n
-              - Request ID: ${request.request_id}\n
+              - Request ID: ${request.req_id}\n
               - Date Created: ${moment(request.createdAt).format(
                 "MMM. DD, YYYY h:mm a"
               )}\n

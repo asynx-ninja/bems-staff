@@ -225,7 +225,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
           category: "One",
           compose: {
             subject: `APPLICATION - ${application.event_name}`,
-            message: `A barangay staff has updated your event application form for the event of ${
+            message: `A barangay staff has updated/replied your event application form for the event of ${
               application.event_name
             }.\n\n
       
