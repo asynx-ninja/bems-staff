@@ -623,10 +623,10 @@ const EventsRegistrations = () => {
                           item.form[0].middleName.value}
                       </span>
                     </td>
-                    <td className="lg:px-1 xl:px-6 py-3">
+                    <td className="lg:px-1 xl:px-6 py-3 w-full">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {DateFormat(item.createdAt) || ""} - {TimeFormat(item.createdAt) || ""}
+                        {moment(item.createdAt).format("MMMM DD, YYYY")} - {TimeFormat(item.createdAt) || ""}
                         </span>
                       </div>
                     </td>
