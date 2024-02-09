@@ -35,7 +35,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
     collections: {
       banner: {},
       logo: {},
-    }
+    },
   });
   const [eventWithCounts, setEventWithCounts] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
@@ -134,15 +134,24 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
   const handleChange = (e) => {
     const inputValue = e.target.value;
   
-    if (statusChanger && (!newMessage.message || newMessage.message.trim() === "")) {
+    if (e.target.name === "isRepliable" && e.target.checked) {
+      // If isRepliable is checked, update only isRepliable
+      setNewMessage((prev) => ({
+        ...prev,
+        [e.target.name]: e.target.checked,
+      }));
+    } else if (statusChanger && (!newMessage.message || newMessage.message.trim() === "")) {
+      // If statusChanger is true and message is not set, update message with status
       setNewMessage((prev) => ({
         ...prev,
         message: `The status of your event application is ${inputValue}`,
+        [e.target.name]: inputValue,
       }));
     } else {
+      // Otherwise, update the input value normally
       setNewMessage((prev) => ({
         ...prev,
-        [e.target.name]: e.target.name === "isRepliable" ? e.target.checked : inputValue,
+        [e.target.name]: inputValue,
       }));
     }
   };
@@ -293,7 +302,8 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
     }
   };
 
-
+  console.log("newMessage:", newMessage);
+  console.log("status:", application.status);
   return (
     <div>
       <div
@@ -722,7 +732,9 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
                                                 <input
                                                   type="checkbox"
                                                   name="isRepliable"
-                                                  checked={newMessage.isRepliable}
+                                                  checked={
+                                                    newMessage.isRepliable
+                                                  }
                                                   onChange={handleChange}
                                                   className="hs-tooltip-toggle sr-only peer"
                                                 />
