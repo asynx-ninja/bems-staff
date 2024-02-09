@@ -23,7 +23,7 @@ const StatisticsDashboard = () => {
   const [officials, setOfficials] = useState([]);
   const [archivedOfficials, setArchivedOfficials] = useState([]);
   const [inquiries, setInquiries] = useState(0);
-  const [archivedInquiries, setArchivedInquiries] = useState([]);
+  const [archivedInquiries, setArchivedInquiries] = useState(0);
   const [requests, setRequests] = useState([]);
   const [archivedRequests, setArchivedRequests] = useState([]);
   const [userData, setUserData] = useState({});
@@ -157,17 +157,16 @@ const StatisticsDashboard = () => {
         }
 
         try {
-          const inquiriesResponse = await axios.get(
-            `${API_LINK}/inquiries/staffinquiries/?brgy=${brgy}&archived=false`
+          const InquiriesResponse = await axios.get(
+            `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=false`
           );
-        
-          if (inquiriesResponse.status === 200) {
-            setInquiries(inquiriesResponse.data.total);
-          } else {
-            console.error("Failed to fetch inquiries");
-          }
+          setInquiries(
+            InquiriesResponse.status === 200
+              ? InquiriesResponse.data.total
+              : 0
+          );console.log("inquiries", InquiriesResponse)
         } catch (err) {
-          console.error("Error fetching inquiries:", err.message);
+          console.log("err", err.message);
         }
 
         try {
@@ -176,8 +175,8 @@ const StatisticsDashboard = () => {
           );
           setArchivedInquiries(
             archivedInquiriesResponse.status === 200
-              ? archivedInquiriesResponse.data
-              : []
+              ? archivedInquiriesResponse.data.total
+              : 0
           );
         } catch (err) {
           console.log("err", err.message);
@@ -223,7 +222,7 @@ const StatisticsDashboard = () => {
     {
       title: "Inquiries",
       active: inquiries,
-      archived: archivedInquiries?.result?.length,
+      archived: archivedInquiries,
       activeLink: `/inquiries/?id=${id}&brgy=${brgy}`,
       archivedLink: `/archivedinquiries/?id=${id}&brgy=${brgy}`,
       icon: <FaRegNoteSticky size={15} className="sm:block md:hidden" />,
