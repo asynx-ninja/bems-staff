@@ -14,15 +14,15 @@ import { FaPeopleGroup } from "react-icons/fa6";
 import { GoGitPullRequest } from "react-icons/go";
 
 const StatisticsDashboard = () => {
-  const [announcements, setAnnouncements] = useState([]);
-  const [archivedAnnouncements, setArchivedAnnouncements] = useState([]);
-  const [users, setUsers] = useState([]);
+  const [announcements, setAnnouncements] = useState(0);
+  const [archivedAnnouncements, setArchivedAnnouncements] = useState(0);
+  const [users, setUsers] = useState(0);
   const [archivedUsers, setArchivedUsers] = useState([]);
   const [services, setServices] = useState([]);
   const [archivedServices, setArchivedServices] = useState([]);
   const [officials, setOfficials] = useState([]);
   const [archivedOfficials, setArchivedOfficials] = useState([]);
-  const [inquiries, setInquiries] = useState([]);
+  const [inquiries, setInquiries] = useState(0);
   const [archivedInquiries, setArchivedInquiries] = useState([]);
   const [requests, setRequests] = useState([]);
   const [archivedRequests, setArchivedRequests] = useState([]);
@@ -42,8 +42,8 @@ const StatisticsDashboard = () => {
           );
           setAnnouncements(
             announcementsResponse.status === 200
-              ? announcementsResponse.data
-              : []
+              ? announcementsResponse.data.total
+              : 0
           );
         } catch (err) {
           console.log("err", err.message);
@@ -53,7 +53,7 @@ const StatisticsDashboard = () => {
           const usersResponse = await axios.get(
             `${API_LINK}/users/?brgy=${brgy}&type=Resident`
           );
-          setUsers(usersResponse.status === 200 ? usersResponse.data : []);
+          setUsers(usersResponse.status === 200 ? usersResponse.data.total : []);
         } catch (err) {
           console.log("err", err.message);
         }
@@ -136,8 +136,8 @@ const StatisticsDashboard = () => {
           );
           setArchivedAnnouncements(
             archivedAnnouncementsResponse.status === 200
-              ? archivedAnnouncementsResponse.data
-              : []
+              ? archivedAnnouncementsResponse.data.total
+              : 0
           );
         } catch (err) {
           console.log("err", err.message);
@@ -158,13 +158,16 @@ const StatisticsDashboard = () => {
 
         try {
           const inquiriesResponse = await axios.get(
-            `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=false`
+            `${API_LINK}/inquiries/staffinquiries/?brgy=${brgy}&archived=false`
           );
-          setInquiries(
-            inquiriesResponse.status === 200 ? inquiriesResponse.data : []
-          );
+        
+          if (inquiriesResponse.status === 200) {
+            setInquiries(inquiriesResponse.data.total);
+          } else {
+            console.error("Failed to fetch inquiries");
+          }
         } catch (err) {
-          console.log("err", err.message);
+          console.error("Error fetching inquiries:", err.message);
         }
 
         try {
@@ -211,15 +214,15 @@ const StatisticsDashboard = () => {
   const titles = [
     {
       title: "Events",
-      active: announcements?.result?.length,
-      archived: archivedAnnouncements?.result?.length,
+      active: announcements,
+      archived: archivedAnnouncements,
       activeLink: `/events_management/?id=${id}&brgy=${brgy}`,
       archivedLink: `/archived_events/?id=${id}&brgy=${brgy}&archived=true`,
       icon: <BsMegaphone size={15} className="sm:block md:hidden" />,
     },
     {
       title: "Inquiries",
-      active: inquiries?.result?.length,
+      active: inquiries,
       archived: archivedInquiries?.result?.length,
       activeLink: `/inquiries/?id=${id}&brgy=${brgy}`,
       archivedLink: `/archivedinquiries/?id=${id}&brgy=${brgy}`,
@@ -227,7 +230,7 @@ const StatisticsDashboard = () => {
     },
     {
       title: "Residents",
-      active: users?.result?.length,
+      active: users,
       archived: archivedUsers?.result?.length,
       activeLink: `/residents/?id=${id}&brgy=${brgy}`,
       archivedLink: `/archivedresidents/?id=${id}&brgy=${brgy}`,
