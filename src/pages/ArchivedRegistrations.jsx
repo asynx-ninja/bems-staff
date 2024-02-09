@@ -501,6 +501,7 @@ const ArchivedRegistrations = () => {
                     RESET FILTERS
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
+                  <div className="flex flex-col scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll h-44">
                   {eventFilter.map((title, index) => (
                     <a
                       key={index}
@@ -511,6 +512,7 @@ const ArchivedRegistrations = () => {
                       {title}
                     </a>
                   ))}
+                  </div>
                 </ul>
               </div>
             </div>

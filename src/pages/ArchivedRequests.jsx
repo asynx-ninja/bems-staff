@@ -468,6 +468,7 @@ const ArchivedRequests = () => {
                     RESET FILTERS
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
+                  <div className="flex flex-col scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll h-44">
                   {requestFilter.map((service_name, index) => (
                     <a
                       key={index}
@@ -478,6 +479,7 @@ const ArchivedRequests = () => {
                       {service_name}
                     </a>
                   ))}
+                  </div>
                 </ul>
               </div>
             </div>

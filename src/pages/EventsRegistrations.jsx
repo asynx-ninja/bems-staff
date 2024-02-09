@@ -35,6 +35,7 @@ const EventsRegistrations = () => {
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [selected, setSelected] = useState("date");
 
+  const [officials, setOfficials] = useState([]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -42,20 +43,19 @@ const EventsRegistrations = () => {
         const response = await axios.get(
           `${API_LINK}/announcement/?brgy=${brgy}&archived=false&page=${currentPage}`
         );
-        console.log(response.data.result)
+        console.log(response.data.result);
         if (response.status === 200) {
           let arr = [];
           response.data.result.map((item) => {
             arr.push(item.title);
-          })
+          });
           setEventFilter(arr);
         }
-
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
-    }
-    fetch()
+    };
+    fetch();
   }, [brgy]);
 
   const handleEventFilter = (selectedType) => {
@@ -68,19 +68,49 @@ const EventsRegistrations = () => {
         const response = await axios.get(
           `${API_LINK}/application/?brgy=${brgy}&archived=false&status=${statusFilter}&title=${selecteEventFilter}&page=${currentPage}`
         );
-          console.log(selecteEventFilter)
+        console.log(selecteEventFilter);
         if (response.status === 200) {
           setApplications(response.data.result);
           setPageCount(response.data.pageCount);
           setFilteredApplications(response.data.result);
-        } else setApplications([]); console.log(response.data.result)
+        } else setApplications([]);
+        console.log(response.data.result);
       } catch (err) {
         console.log(err);
       }
-    }; 
+    };
 
     fetch();
   }, [brgy, statusFilter, selecteEventFilter, currentPage]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
+        );
+
+        if (response.status === 200) {
+          const officialsData = response.data.result || [];
+
+          if (officialsData.length > 0) {
+            setOfficials(officialsData);
+          } else {
+            setOfficials([]);
+            console.log(`No officials found for Barangay ${brgy}`);
+          }
+        } else {
+          setOfficials([]);
+          console.error("Failed to fetch officials:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setOfficials([]);
+      }
+    };
+
+    fetchData();
+  }, [currentPage, brgy]); // Add positionFilter dependency
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -94,7 +124,7 @@ const EventsRegistrations = () => {
     setStatusFilter("all");
     setApplications();
     setSearchQuery("");
-    setEventFilter("all")
+    setEventFilter("all");
   };
 
   useEffect(() => {
@@ -135,7 +165,14 @@ const EventsRegistrations = () => {
     }
   };
 
-  const tableHeader = ["APP ID", "EVENT NAME", "SENDER", "DATE", "STATUS", "ACTIONS"];
+  const tableHeader = [
+    "APP ID",
+    "EVENT NAME",
+    "SENDER",
+    "DATE",
+    "STATUS",
+    "ACTIONS",
+  ];
 
   const handleView = (item) => {
     setApplication(item);
@@ -153,7 +190,6 @@ const EventsRegistrations = () => {
     return formattedTime;
   };
 
-
   const filters = (choice, selectedDate) => {
     switch (choice) {
       case "date":
@@ -161,7 +197,7 @@ const EventsRegistrations = () => {
           console.log(typeof new Date(item.createdAt), selectedDate);
           return (
             new Date(item.createdAt).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
             new Date(item.createdAt).getDate() === selectedDate.getDate()
           );
@@ -176,7 +212,7 @@ const EventsRegistrations = () => {
         return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-            startDate.getFullYear() &&
+              startDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === startDate.getMonth() &&
             new Date(item.createdAt).getDate() >= startDate.getDate() &&
             new Date(item.createdAt).getDate() <= endDate.getDate()
@@ -185,7 +221,7 @@ const EventsRegistrations = () => {
         return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -289,8 +325,9 @@ const EventsRegistrations = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -457,8 +494,9 @@ const EventsRegistrations = () => {
                 >
                   EVENT TYPE
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -485,16 +523,18 @@ const EventsRegistrations = () => {
                     RESET FILTERS
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
-                  {eventFilter.map((title, index) => (
-                    <a
-                      key={index}
-                      onClick={() => handleEventFilter(title)}
-                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                      href="#"
-                    >
-                      {title}
-                    </a>
-                  ))}
+                  <div className="flex flex-col scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll h-44">
+                    {eventFilter.map((title, index) => (
+                      <a
+                        key={index}
+                        onClick={() => handleEventFilter(title)}
+                        className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                        href="#"
+                      >
+                        {title}
+                      </a>
+                    ))}
+                  </div>
                 </ul>
               </div>
             </div>
@@ -530,13 +570,14 @@ const EventsRegistrations = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    const Application = applications.filter((item) =>
-                      item.event_name
-                        .toLowerCase()
-                        .includes(e.target.value.toLowerCase()) ||
-                      item.application_id
-                        .toLowerCase()
-                        .includes(e.target.value.toLowerCase())
+                    const Application = applications.filter(
+                      (item) =>
+                        item.event_name
+                          .toLowerCase()
+                          .includes(e.target.value.toLowerCase()) ||
+                        item.application_id
+                          .toLowerCase()
+                          .includes(e.target.value.toLowerCase())
                     );
 
                     setFilteredApplications(Application);
@@ -626,7 +667,8 @@ const EventsRegistrations = () => {
                     <td className="lg:px-1 xl:px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {DateFormat(item.createdAt) || ""} - {TimeFormat(item.createdAt) || ""}
+                          {DateFormat(item.createdAt) || ""} -{" "}
+                          {TimeFormat(item.createdAt) || ""}
                         </span>
                       </div>
                     </td>
@@ -758,7 +800,7 @@ const EventsRegistrations = () => {
         />
       </div>
       {Object.hasOwn(application, "event_id") ? (
-        <ViewRegistrationModal application={application} />
+        <ViewRegistrationModal application={application} officials={officials} />
       ) : null}
       <ReplyRegistrationModal
         application={application}

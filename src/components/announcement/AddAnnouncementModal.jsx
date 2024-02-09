@@ -147,7 +147,7 @@ function CreateAnnouncementModal({ brgy }) {
                 user_id: null,
                 area: null,
               },
-              type: null,
+              type: "Municipality",
               banner: response.data.collections.banner,
               logo: response.data.collections.logo,
             };

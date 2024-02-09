@@ -128,11 +128,11 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     }
   }, [request]);
 
- const handleChange = (e) => {
+  const handleChange = (e) => {
     const inputValue = e.target.value;
   
-    if (e.target.name === "isRepliable" && e.target.checked) {
-      // If isRepliable is checked, update only isRepliable
+    if (e.target.name === "isRepliable") {
+      // If isRepliable checkbox is changed, update isRepliable accordingly
       setNewMessage((prev) => ({
         ...prev,
         [e.target.name]: e.target.checked,
