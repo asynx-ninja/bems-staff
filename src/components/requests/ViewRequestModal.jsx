@@ -1,4 +1,4 @@
-import { useState, React, useRef } from "react";
+import { useState, useEffect, React, useRef } from "react";
 // FORM DETAILS
 import PersonalDetails from "./PersonalDetails";
 import OtherDetails from "./OtherDetails";
@@ -7,12 +7,37 @@ import PrintPDF from "./form/PrintPDF";
 import PrintDocumentTypeB from "./form/PrintDocumentTypeB";
 import PrintDocumentTypeA from "./form/PrintDocumentTypeA";
 import PrintDocumentTypeE from "./form/PrintDocumentTypeE";
+import axios from "axios";
+import API_LINK from "../../config/API";
 
 import { PDFDownloadLink } from "@react-pdf/renderer";
 
 function ViewRequestModal({ request, brgy, officials }) {
   const [detail] = useState(request);
   const [empty] = useState(false);
+  const [docDetails, setDocDetails] = useState([]);
+  const [service_id] = useState(request.service_id);
+
+  useEffect(() => {
+    // function to filter
+    const fetch = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/document/?brgy=${brgy}&service_id=${service_id}`
+        );
+
+        // filter
+        setDocDetails(response.data);
+      } catch (err) {
+        console.log(err.message);
+      }
+    };
+
+    fetch();
+  }, [brgy, service_id]);
+
+  console.log("service_id: ", service_id);
+  // console.log("docDetails: ", docDetails);
 
   const fileName =
     detail.form[0] && detail.form[0].lastName
@@ -21,7 +46,7 @@ function ViewRequestModal({ request, brgy, officials }) {
         }.pdf`
       : "SAMPLE.pdf";
 
-  console.log("detail", detail);
+  // console.log("detail", detail);
 
   const returnFile = (string) => {
     for (const item of detail.file) {
@@ -113,6 +138,7 @@ function ViewRequestModal({ request, brgy, officials }) {
                       <PrintDocumentTypeA
                         detail={detail}
                         officials={officials}
+                        docDetails={docDetails}
                         brgy={brgy}
                       />
                     }
@@ -128,6 +154,7 @@ function ViewRequestModal({ request, brgy, officials }) {
                       <PrintDocumentTypeB
                         detail={detail}
                         officials={officials}
+                        docDetails={docDetails}
                         brgy={brgy}
                       />
                     }
@@ -143,6 +170,7 @@ function ViewRequestModal({ request, brgy, officials }) {
                       <PrintDocumentTypeE
                         detail={detail}
                         officials={officials}
+                        docDetails={docDetails}
                         brgy={brgy}
                       />
                     }

@@ -14,18 +14,18 @@ import { FaPeopleGroup } from "react-icons/fa6";
 import { GoGitPullRequest } from "react-icons/go";
 
 const StatisticsDashboard = () => {
-  const [announcements, setAnnouncements] = useState([]);
-  const [archivedAnnouncements, setArchivedAnnouncements] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [archivedUsers, setArchivedUsers] = useState([]);
-  const [services, setServices] = useState([]);
-  const [archivedServices, setArchivedServices] = useState([]);
-  const [officials, setOfficials] = useState([]);
-  const [archivedOfficials, setArchivedOfficials] = useState([]);
-  const [inquiries, setInquiries] = useState([]);
-  const [archivedInquiries, setArchivedInquiries] = useState([]);
-  const [requests, setRequests] = useState([]);
-  const [archivedRequests, setArchivedRequests] = useState([]);
+  const [announcements, setAnnouncements] = useState(0);
+  const [archivedAnnouncements, setArchivedAnnouncements] = useState(0);
+  const [users, setUsers] = useState(0);
+  const [archivedUsers, setArchivedUsers] = useState(0);
+  const [services, setServices] = useState(0);
+  const [archivedServices, setArchivedServices] = useState(0);
+  const [officials, setOfficials] = useState(0);
+  const [archivedOfficials, setArchivedOfficials] = useState(0);
+  const [inquiries, setInquiries] = useState(0);
+  const [archivedInquiries, setArchivedInquiries] = useState(0);
+  const [requests, setRequests] = useState(0);
+  const [archivedRequests, setArchivedRequests] = useState(0);
   const [userData, setUserData] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
@@ -42,8 +42,8 @@ const StatisticsDashboard = () => {
           );
           setAnnouncements(
             announcementsResponse.status === 200
-              ? announcementsResponse.data
-              : []
+              ? announcementsResponse.data.total
+              : 0
           );
         } catch (err) {
           console.log("err", err.message);
@@ -53,7 +53,7 @@ const StatisticsDashboard = () => {
           const usersResponse = await axios.get(
             `${API_LINK}/users/?brgy=${brgy}&type=Resident`
           );
-          setUsers(usersResponse.status === 200 ? usersResponse.data : []);
+          setUsers(usersResponse.status === 200 ? usersResponse.data.total : []);
         } catch (err) {
           console.log("err", err.message);
         }
@@ -64,8 +64,8 @@ const StatisticsDashboard = () => {
           );
           setArchivedUsers(
             archivedUsersResponse.status === 200
-              ? archivedUsersResponse.data
-              : []
+              ? archivedUsersResponse.data.total
+              : 0
           );
         } catch (err) {
           console.log("err", err.message);
@@ -76,7 +76,7 @@ const StatisticsDashboard = () => {
             `${API_LINK}/services/?brgy=${brgy}&archived=false`
           );
           setServices(
-            servicesResponse.status === 200 ? servicesResponse.data : []
+            servicesResponse.status === 200 ? servicesResponse.data.total : 0
           );
         } catch (err) {
           console.log("err", err.message);
@@ -87,7 +87,7 @@ const StatisticsDashboard = () => {
             `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
           );
           setOfficials(
-            officialsResponse.status === 200 ? officialsResponse.data : []
+            officialsResponse.status === 200 ? officialsResponse.data.total : 0
           );
         } catch (err) {
           console.log("err", err.message);
@@ -98,7 +98,7 @@ const StatisticsDashboard = () => {
             `${API_LINK}/requests/?brgy=${brgy}&archived=false`
           );
           setRequests(
-            requestsResponse.status === 200 ? requestsResponse.data : []
+            requestsResponse.status === 200 ? requestsResponse.data.total : 0
           );
         } catch (err) {
           console.log("err", err.message);
@@ -110,8 +110,8 @@ const StatisticsDashboard = () => {
           );
           setArchivedRequests(
             archivedRequestsResponse.status === 200
-              ? archivedRequestsResponse.data
-              : []
+              ? archivedRequestsResponse.data.total
+              : 0
           );
         } catch (err) {
           console.log("err", err.message);
@@ -123,8 +123,8 @@ const StatisticsDashboard = () => {
           );
           setArchivedServices(
             archivedServicesResponse.status === 200
-              ? archivedServicesResponse.data
-              : []
+              ? archivedServicesResponse.data.total
+              : 0
           );
         } catch (err) {
           console.log("err", err.message);
@@ -136,8 +136,8 @@ const StatisticsDashboard = () => {
           );
           setArchivedAnnouncements(
             archivedAnnouncementsResponse.status === 200
-              ? archivedAnnouncementsResponse.data
-              : []
+              ? archivedAnnouncementsResponse.data.total
+              : 0
           );
         } catch (err) {
           console.log("err", err.message);
@@ -149,20 +149,22 @@ const StatisticsDashboard = () => {
           );
           setArchivedOfficials(
             archivedOfficialsResponse.status === 200
-              ? archivedOfficialsResponse.data
-              : []
+              ? archivedOfficialsResponse.data.total
+              : 0
           );
         } catch (err) {
           console.log("err", err.message);
         }
 
         try {
-          const inquiriesResponse = await axios.get(
-            `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=false`
+          const InquiriesResponse = await axios.get(
+            `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=false&label=Staff`
           );
           setInquiries(
-            inquiriesResponse.status === 200 ? inquiriesResponse.data : []
-          );
+            InquiriesResponse.status === 200
+              ? InquiriesResponse.data.total
+              : 0
+          );console.log("inquiries", InquiriesResponse)
         } catch (err) {
           console.log("err", err.message);
         }
@@ -173,8 +175,8 @@ const StatisticsDashboard = () => {
           );
           setArchivedInquiries(
             archivedInquiriesResponse.status === 200
-              ? archivedInquiriesResponse.data
-              : []
+              ? archivedInquiriesResponse.data.total
+              : 0
           );
         } catch (err) {
           console.log("err", err.message);
@@ -211,40 +213,40 @@ const StatisticsDashboard = () => {
   const titles = [
     {
       title: "Events",
-      active: announcements?.result?.length,
-      archived: archivedAnnouncements?.result?.length,
+      active: announcements,
+      archived: archivedAnnouncements,
       activeLink: `/events_management/?id=${id}&brgy=${brgy}`,
       archivedLink: `/archived_events/?id=${id}&brgy=${brgy}&archived=true`,
       icon: <BsMegaphone size={15} className="sm:block md:hidden" />,
     },
     {
       title: "Inquiries",
-      active: inquiries?.result?.length,
-      archived: archivedInquiries?.result?.length,
+      active: inquiries,
+      archived: archivedInquiries,
       activeLink: `/inquiries/?id=${id}&brgy=${brgy}`,
       archivedLink: `/archivedinquiries/?id=${id}&brgy=${brgy}`,
       icon: <FaRegNoteSticky size={15} className="sm:block md:hidden" />,
     },
     {
       title: "Residents",
-      active: users?.result?.length,
-      archived: archivedUsers?.result?.length,
+      active: users,
+      archived: archivedUsers,
       activeLink: `/residents/?id=${id}&brgy=${brgy}`,
       archivedLink: `/archivedresidents/?id=${id}&brgy=${brgy}`,
       icon: <BsPeopleFill size={15} className="sm:block md:hidden" />,
     },
     {
       title: "Services",
-      active: services?.result?.length,
-      archived: archivedServices?.result?.length,
+      active: services,
+      archived: archivedServices,
       activeLink: `/services/?id=${id}&brgy=${brgy}`,
       archivedLink: `/archivedservices/?id=${id}&brgy=${brgy}&archived=true`,
       icon: <FaServicestack size={15} className="sm:block md:hidden" />,
     },
     {
       title: "Service Requests",
-      active: requests?.result?.length,
-      archived: archivedRequests?.result?.length,
+      active: requests,
+      archived: archivedRequests,
       activeLink: `/requests/?id=${id}&brgy=${brgy}`,
       archivedLink: `/archivedrequests/?id=${id}&brgy=${brgy}`,
       icon: <GoGitPullRequest size={15} className="sm:block md:hidden" />,
@@ -252,8 +254,8 @@ const StatisticsDashboard = () => {
     userData.type === "Brgy Admin"
       ? {
           title: "Barangay Officials",
-          active: officials?.result?.length,
-          archived: archivedOfficials?.result?.length,
+          active: officials,
+          archived: archivedOfficials,
           activeLink: `/officials/?id=${id}&brgy=${brgy}`,
           archivedLink: `/archived_officials/?id=${id}&brgy=${brgy}`,
           icon: <FaPeopleGroup size={15} className="sm:block md:hidden" />,

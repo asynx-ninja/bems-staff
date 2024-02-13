@@ -49,7 +49,7 @@ const AddSectionDocument = ({
           const formOptions2 = [].concat(
             ...selectedForm.form[1].map((item, idx) =>
               item.form.map((formItem, formIdx) => ({
-                key: `${idx}-${formIdx}`,
+                key: formatVariable(formItem.display), // Format key as needed
                 value: formItem.display,
               }))
             )
@@ -183,7 +183,7 @@ const AddSectionDocument = ({
                 >
                   <div className="flex items-center gap-x-3 py-2 w-full inline-flex items-center text-base rounded-lg">
                     <label className="px-2 border rounded-xl">
-                      {sectionIndex + 1}
+                    {sectionIndex}
                     </label>
 
                     <select

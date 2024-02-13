@@ -132,12 +132,13 @@ const EditSectionDocument = ({brgy, service_id, document, setDocument, docDetail
       const formOptions2 = [].concat(
         ...selectedForm.form[1].map((item, idx) =>
           item.form.map((formItem, formIdx) => ({
-            key: `${idx}-${formIdx}`,
+            key: formatVariable(formItem.display), // Format key as needed
             value: formItem.display,
           }))
         )
       );
 
+      console.log("formOptions:", formOptions);
       console.log("formOptions2:", formOptions2);
 
       setFormOptions2(formOptions2);
@@ -201,7 +202,7 @@ const EditSectionDocument = ({brgy, service_id, document, setDocument, docDetail
                 >
                   <div className="flex items-center gap-x-3 py-2 w-full inline-flex items-center text-base rounded-lg">
                     <label className="px-2 border rounded-xl">
-                      {sectionIndex + 1}
+                      {sectionIndex}
                     </label>
 
                     <select
