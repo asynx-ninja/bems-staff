@@ -42,7 +42,7 @@ useEffect(() => {
       const response = await axios.get(
         `${API_LINK}/notification/?user_id=${userData.user_id}&area=${brgy}&type=Barangay`
       );
-      console.log(response.data);
+      // console.log(response.data);
       if (response.status === 200) {
         const notificationsWithTimestamp = response.data.map((notification) => {
           const notificationDate = moment(notification.createdAt);
@@ -137,7 +137,7 @@ useEffect(() => {
                 className={`px-4 py-3 border-b last:border-b-0 border w-full justify-between shadow-sm  font-medium uppercase gap-x-3.5 text-sm text-black bg-[#f8f8f8] hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
                   data.read_by.some((item) => item.readerId === id)
                     ? ""
-                    : "bg-[#ebd4b6]"
+                    : "bg-[#e5d1b6]"
                 }`}
               >
                 <div className="flex items-start">
