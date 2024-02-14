@@ -4,9 +4,13 @@ import PersonalDetails from "./PersonalDetails";
 import OtherDetails from "./OtherDetails";
 import PrintForm from "./form/PrintForm";
 import PrintPDF from "./form/PrintPDF";
-import PrintDocumentTypeB from "./form/PrintDocumentTypeB";
 import PrintDocumentTypeA from "./form/PrintDocumentTypeA";
+import PrintDocumentTypeB from "./form/PrintDocumentTypeB";
+import PrintDocumentTypeC from "./form/PrintDocumentTypeC";
+import PrintDocumentTypeD from "./form/PrintDocumentTypeD";
 import PrintDocumentTypeE from "./form/PrintDocumentTypeE";
+import PrintDocumentTypeF from "./form/PrintDocumentTypeF";
+import PrintDocumentTypeH from "./form/PrintDocumentTypeH";
 import axios from "axios";
 import API_LINK from "../../config/API";
 

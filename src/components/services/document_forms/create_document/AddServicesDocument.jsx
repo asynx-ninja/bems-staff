@@ -183,6 +183,10 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                           First Time Job Seeker with Oath of Undertaking
                         </option>
                         <option value="Type F">Barangay Clearance</option>
+                        <option value="Type G">Certificate of Indigency</option>
+                        <option value="Type H">Solo Parent Certification</option>
+                        <option value="Type I">Barangay Blotter</option>
+                        <option value="Type J">Late Registration</option>
                       </select>
                     </div>
 
