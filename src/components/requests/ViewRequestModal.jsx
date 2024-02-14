@@ -7,6 +7,7 @@ import PrintPDF from "./form/PrintPDF";
 import PrintDocumentTypeB from "./form/PrintDocumentTypeB";
 import PrintDocumentTypeA from "./form/PrintDocumentTypeA";
 import PrintDocumentTypeE from "./form/PrintDocumentTypeE";
+import PrintDocumentTypeG from "./form/PrintDocumentTypeG";
 import axios from "axios";
 import API_LINK from "../../config/API";
 
@@ -178,6 +179,22 @@ function ViewRequestModal({ request, brgy, officials }) {
                     className="h-[2.5rem] flex justify-center text-center items-center w-full py-1 px-6 gap-2 rounded-md border text-[9px] xxl:text-xs font-base bg-[#22687a] text-white shadow-sm"
                   >
                     GENERATE DOCUMENT REQUEST (TYPE E)
+                  </PDFDownloadLink>
+                )}
+                 {request.status === "Transaction Completed" && (
+                  <PDFDownloadLink
+                    document={
+                      <PrintDocumentTypeG
+                        detail={detail}
+                        officials={officials}
+                        docDetails={docDetails}
+                        brgy={brgy}
+                      />
+                    }
+                    fileName={fileName}
+                    className="h-[2.5rem] flex text-center justify-center items-center w-full py-1 px-6 gap-2 rounded-md border text-[9px] xxl:text-xs font-base bg-[#22687a] text-white shadow-sm"
+                  >
+                    GENERATE DOCUMENT REQUEST (TYPE G)
                   </PDFDownloadLink>
                 )}
                 <PDFDownloadLink
