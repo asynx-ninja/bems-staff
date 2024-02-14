@@ -168,6 +168,22 @@ function ViewRequestModal({ request, brgy, officials }) {
                     GENERATE DOCUMENT REQUEST (TYPE B)
                   </PDFDownloadLink>
                 )}
+                 {request.status === "Transaction Completed" && (
+                  <PDFDownloadLink
+                    document={
+                      <PrintDocumentTypeH
+                        detail={detail}
+                        officials={officials}
+                        docDetails={docDetails}
+                        brgy={brgy}
+                      />
+                    }
+                    fileName={fileName}
+                    className="h-[2.5rem] flex justify-center text-center items-center w-full py-1 px-6 gap-2 rounded-md border text-[9px] xxl:text-xs font-base bg-[#22687a] text-white shadow-sm"
+                  >
+                    GENERATE DOCUMENT REQUEST (TYPE H)
+                  </PDFDownloadLink>
+                )}
                 {request.status === "Transaction Completed" && (
                   <PDFDownloadLink
                     document={
