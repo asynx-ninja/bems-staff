@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Font,
   Image,
@@ -36,32 +36,14 @@ Font.register({
   src: ESITC,
 });
 
-const PrintPDF = ({ detail, officials }) => {
+const PrintDocumentTypeI = ({
+  detail,
+  officials = { officials },
+  docDetails,
+  brgy,
+}) => {
   const [date, setDate] = useState(new Date());
-  const [announcements, setAnnouncements] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const announcementsResponse = await axios.get(
-          `${API_LINK}/announcement/specific/?brgy=${detail.brgy}&archived=false&event_id=${detail.event_id}`
-        );
-
-        setAnnouncements(announcementsResponse.data.result);
-
-      } catch (error) {
-        console.error("Error fetching data:", error);
-
-        console.error("Error response data:", error.response?.data);
-        console.error("Error response status:", error.response?.status);
-      }
-    };
-
-    fetchData();
-  }, [detail.brgy]);
-
-  console.log("announcements: ", announcements);
-  console.log("event_id: ", detail.event_id);
+  console.log("docDetails sa pdf: ", docDetails);
 
   const returnLogo = () => {
     switch (detail.brgy) {
@@ -110,22 +92,42 @@ const PrintPDF = ({ detail, officials }) => {
     return formattedBirthday;
   };
 
-  const formattedDate = date.toLocaleDateString("en-PH", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    weekday: "long",
-  });
+  const getOrdinalSuffix = (day) => {
+    if (day >= 11 && day <= 13) {
+      return "th";
+    }
+    const lastDigit = day % 10;
+    switch (lastDigit) {
+      case 1:
+        return "st";
+      case 2:
+        return "nd";
+      case 3:
+        return "rd";
+      default:
+        return "th";
+    }
+  };
 
-  const formattedDate1 = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-PH", {
+  const day = date.getDate();
+  const ordinalSuffix = getOrdinalSuffix(day);
+
+  const formattedDate = `${day}${ordinalSuffix} day of ${date.toLocaleDateString(
+    "en-PH",
+    {
+      month: "long",
+      year: "numeric",
+    }
+  )}`;
+
+  const createdAtFormatted = new Date(detail.createdAt).toLocaleDateString(
+    "en-PH",
+    {
       day: "numeric",
       month: "long",
       year: "numeric",
-      weekday: "long",
-    });
-  };
+    }
+  );
 
   const formattedTime = date.toLocaleTimeString("en-PH", {
     hour: "numeric",
@@ -183,7 +185,10 @@ const PrintPDF = ({ detail, officials }) => {
 
   const styles = StyleSheet.create({
     body: {
-      padding: 35,
+      paddingTop: 5,
+      paddingLeft: 35,
+      paddingRight: 35,
+      paddingBottom: 35,
     },
     letterHead: {
       view1: {
@@ -193,7 +198,7 @@ const PrintPDF = ({ detail, officials }) => {
         alignItems: "center",
       },
       image: {
-        width: 90,
+        width: 70,
       },
       view2: {
         display: "flex",
@@ -203,48 +208,51 @@ const PrintPDF = ({ detail, officials }) => {
       },
       republic: {
         fontFamily: "Old-English-Text-MT",
-        fontSize: 14,
+        fontSize: 11,
       },
       municipality: {
         fontFamily: "Old-English-Text-MT",
-        fontSize: 14,
+        fontSize: 11,
         lineHeight: 1,
         marginTop: 3,
       },
       municipality1: {
         fontFamily: "Times-Bold",
-        fontSize: 14,
+        fontSize: 11,
         fontWeight: 700,
         marginTop: 3,
       },
       brgy: {
         fontFamily: "Times-Bold",
-        fontSize: 18,
+        fontSize: 14,
         fontWeight: 700,
         marginTop: 3,
       },
       office: {
         fontFamily: "Edwardian-Script-ITC",
-        fontSize: 30,
+        fontSize: 26,
       },
     },
     title: {
       view1: {
-        paddingTop: 12,
-        paddingBottom: 12,
+        paddingTop: 5,
+        paddingBottom: 10,
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
+        marginVertical: 10,
       },
       req: {
-        fontSize: 18,
-        fontFamily: "Helvetica-Bold",
+        fontSize: 24,
+        fontFamily: "Times-Bold",
         fontWeight: 700,
+        // textDecoration: "underline",
       },
       id: {
         paddingTop: 3,
-        fontSize: 12,
+        fontSize: 11,
+        fontFamily: "Times-Bold",
       },
     },
     bodyHead: {
@@ -367,10 +375,9 @@ const PrintPDF = ({ detail, officials }) => {
       parentSign: {
         display: "flex",
         flexDirection: "row",
+        marginVertical: 4,
         width: "100%",
         gap: 10,
-        marginTop: 25,
-        marginBottom: 35,
       },
       half: {
         width: "50%",
@@ -405,13 +412,28 @@ const PrintPDF = ({ detail, officials }) => {
         fontWeight: 700,
       },
     },
+    backgroundImage: {
+      position: "absolute",
+      height: "550px",
+      width: "100%",
+      top: 25,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      opacity: 0.1, // Set the opacity of the background image
+    },
   });
 
-  console.log("detail: ", detail);
-
-  function addIndentation(spaces) {
-    return Array(spaces + 1).join(" "); // For spaces, or "\t" for tabs
-  }
+  const Divider = () => (
+    <View
+      style={{
+        borderBottomWidth: 2,
+        borderBottomColor: "#000000",
+        marginTop: 10,
+        marginBottom: 10,
+      }}
+    />
+  );
 
   const LetterHead = () => (
     <View style={styles.letterHead.view1}>
@@ -426,7 +448,7 @@ const PrintPDF = ({ detail, officials }) => {
         <Text style={styles.letterHead.republic}>
           Republic of the Philippines
         </Text>
-        <Text style={styles.letterHead.municipality}>Provice of Rizal</Text>
+        <Text style={styles.letterHead.municipality}>Province of Rizal</Text>
         <Text style={styles.letterHead.municipality1}>
           Municipality of Rodriguez
         </Text>
@@ -442,200 +464,251 @@ const PrintPDF = ({ detail, officials }) => {
 
   const Title = () => (
     <View style={styles.title.view1}>
-      <Text style={styles.title.req}>
-        {detail.event_name.toUpperCase()} EVENT CERTIFICATION
-      </Text>
+      <Text style={styles.title.req}>Barangay Certification</Text>
       <Text style={styles.title.id}>
-        Event Certification for Event Registration
+        Barangay Clearance for {detail.service_name}
       </Text>
     </View>
   );
 
-  const Divider = () => (
-    <View
-      style={{
-        borderBottomWidth: 2,
-        borderBottomColor: "#000000",
-        marginTop: 10,
-        marginBottom: 10,
-      }}
-    />
-  );
-
   const Body = () => (
-    <View style={{ marginHorizontal: 15 }}>
-      <Text style={{ fontSize: 12, marginTop: 20 }}>
-        To Whom It May Concern:
-      </Text>
-
-      <Text
-        style={{
-          marginTop: 20,
-          textAlign: "justify",
-          fontSize: 12,
-          lineHeight: 2, // Adjust the lineHeight as needed
-          textIndent: 30,
-        }}
-      >
-        This is to certify that{" "}
-        <Text style={{ ...styles.terms.bold, fontSize: 12 }}>
-          {detail.form && detail.form[0].firstName.value}{" "}
-          {detail.form && detail.form[0].middleName.value}{" "}
-          {detail.form && detail.form[0].lastName.value}
+    <View>
+      {/* TERMS */}
+      <View style={{ marginLeft: 10, marginRight: 10 }}>
+        <Text
+          style={{
+            marginTop: 20,
+            textAlign: "justify",
+            fontSize: 12,
+            lineHeight: 2,
+            fontFamily: "Times-Roman",
+          }}
+        >
+          TO WHOM IT MAY CONCERN:
         </Text>
-        , a registered resident of Barangay {detail.brgy}, Municipality of
-        Rodriguez, Rizal, has successfully registered and will actively
-        participate in the event titled {detail.event_name} held on{" "}
-        {formattedDate1(announcements.date)}.
-      </Text>
+        
+        <Text
+          style={{
+            marginTop: 10,
+            // textAlign: "justify",
+            fontSize: 12,
+            lineHeight: 1.5,
+            fontFamily: "Times-Roman",
+            textIndent: 30,
+          }}
+        >
+          {docDetails.map((doc, index) => (
+            <React.Fragment key={index}>
+              {Object.entries(doc.inputs)
+                .reduce((text, [key, value]) => {
+                  const placeholder = new RegExp(`\\(\\(${key}\\)\\)`, "g");
 
-      <Text
-        style={{
-          fontSize: 12,
-          marginTop: 15,
-          textAlign: "justify",
-          lineHeight: 2, // Adjust the lineHeight as needed
-        }}
-      >
-        Details of Resident:
-      </Text>
-      <Text
-        style={{
-          fontSize: 12,
-          marginTop: 5,
-          textAlign: "justify",
-          lineHeight: 2, // Adjust the lineHeight as needed
-        }}
-      >
-        - Full Name: {detail.form && detail.form[0].firstName.value}{" "}
-        {detail.form && detail.form[0].middleName.value}{" "}
-        {detail.form && detail.form[0].lastName.value}
-      </Text>
-      <Text
-        style={{
-          fontSize: 12,
-          marginTop: 3,
-          textAlign: "justify",
-          lineHeight: 2, // Adjust the lineHeight as needed
-        }}
-      >
-        - Address: {detail.form && detail.form[0].address.value}
-      </Text>
-      <Text
-        style={{
-          fontSize: 12,
-          marginTop: 3,
-          textAlign: "justify",
-          lineHeight: 2, // Adjust the lineHeight as needed
-        }}
-      >
-        - Barangay: {detail.brgy}
-      </Text>
-      <Text
-        style={{
-          fontSize: 12,
-          marginTop: 3,
-          textAlign: "justify",
-          lineHeight: 2, // Adjust the lineHeight as needed
-        }}
-      >
-        - Municipality: Rodriguez, Rizal
-      </Text>
+                  // Check if [value] matches with any variable in the nested structure
+                  const matchingVariable = detail.form?.[1]?.[0]?.form?.find(
+                    (entry) => entry.variable === value
+                  )?.variable;
 
-      <Text
-        style={{
-          fontSize: 12,
-          marginTop: 15,
-          textAlign: "justify",
-          lineHeight: 2, // Adjust the lineHeight as needed
-        }}
-      >
-        Details of Event:
-      </Text>
-      <Text
-        style={{
-          fontSize: 12,
-          marginTop: 3,
-          textAlign: "justify",
-          lineHeight: 2, // Adjust the lineHeight as needed
-        }}
-      >
-        - Event Name: {detail.event_name}
-      </Text>
-      <Text
-        style={{
-          fontSize: 12,
-          marginTop: 3,
-          textAlign: "justify",
-          lineHeight: 2, // Adjust the lineHeight as needed
-        }}
-      >
-        - Event Date: {formattedDate1(announcements.date)}
-      </Text>
+                  // Get the value from the matching form entry, otherwise use an empty string
+                  const replacementValue = matchingVariable
+                    ? detail.form?.[1]?.[0]?.form?.find(
+                        (entry) => entry.variable === matchingVariable
+                      )?.value || ""
+                    : detail.form?.[0]?.[value]?.value || "";
 
-      <Text
-        style={{
-          marginTop: 20,
-          textAlign: "justify",
-          fontSize: 12,
-          lineHeight: 2, // Adjust the lineHeight as needed
-          textIndent: 30,
-        }}
-      >
-        This certification is issued upon the request of{" "}
-        <Text style={{ ...styles.terms.bold, fontSize: 12 }}>
-          {detail.form && detail.form[0].firstName.value}{" "}
-          {detail.form && detail.form[0].middleName.value}{" "}
-          {detail.form && detail.form[0].lastName.value}
-        </Text>{" "}
-        in connection with his/her Event Registration. Given this{" "}
-        {formattedDate}, from the Office of the Punong Barangay, Barangay{" "}
-        {detail.brgy}, Rodriguez Rizal.
-      </Text>
+                  return text.replace(placeholder, replacementValue);
+                }, doc.details)
+                .replace(/\{CurrentDate\}/g, formattedDate)}
+              {/* <br /> */}
+              {/* Add additional line breaks or formatting as needed */}
+            </React.Fragment>
+          ))}
+        </Text>
 
-      <View style={{ ...styles.terms.parentSign, justifyContent: "flex-end" }}>
-        <View style={styles.terms.half}>
+        <View
+          style={{
+            ...styles.terms.parentSign,
+            justifyContent: "flex-end",
+            marginTop: 50,
+            fontFamily: "Times-Roman",
+          }}
+        >
+          <View style={styles.terms.half}>
+            {officials
+              .filter((official) => official.position === "Barangay Chairman")
+              .map((official) => (
+                <Text
+                  style={{
+                    fontSize: 12,
+                    textAlign: "center",
+                    lineHeight: 1.5, // Adjust the lineHeight as needed
+                  }}
+                >
+                  {official.lastName}, {official.firstName}{" "}
+                  {official.middleName}
+                </Text>
+              ))}
+            <View style={styles.terms.signText}>
+              <Text
+                style={{ ...styles.terms.center, fontFamily: "Times-Roman" }}
+              >
+                Punong Barangay
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={{ ...styles.terms.parentSign, marginTop: 30 }}>
+          <View style={styles.terms.half}>
+            <Text
+              style={{
+                fontSize: 12,
+                textAlign: "center",
+                lineHeight: 1.5, // Adjust the lineHeight as needed
+                fontFamily: "Times-Roman",
+              }}
+            >
+              {detail.form && detail.form[0].firstName.value}{" "}
+              {detail.form && detail.form[0].middleName.value}{" "}
+              {detail.form && detail.form[0].lastName.value}
+            </Text>
+            <View style={styles.terms.signText}>
+              <Text
+                style={{ ...styles.terms.center, fontFamily: "Times-Roman" }}
+              >
+                Applicant's Signature
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Box with a background color */}
+        <View
+          style={{
+            width: 70,
+            height: 55,
+            marginTop: 10,
+            marginLeft: 90,
+            borderColor: "black",
+            alignSelf: "stretch",
+            borderWidth: 1,
+          }}
+        />
+
+        <View style={{ ...styles.terms.parentSign, marginTop: 30 }}>
           <Text
             style={{
-              fontSize: 12,
+              fontSize: 11,
               textAlign: "center",
-              lineHeight: 2, // Adjust the lineHeight as needed
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              fontFamily: "Times-Roman",
             }}
           >
-            {detail.form && detail.form[0].firstName.value}{" "}
-            {detail.form && detail.form[0].middleName.value}{" "}
-            {detail.form && detail.form[0].lastName.value}
+            Brgy. Clearance No.
           </Text>
-          <View style={styles.terms.signText}>
-            <Text style={styles.terms.center}>Applicant's Signature</Text>
-          </View>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              marginLeft: 10,
+              textDecoration: "underline",
+              fontFamily: "Times-Roman",
+            }}
+          >
+            {detail.req_id}
+          </Text>
         </View>
-        <View style={styles.terms.half}>
-          {officials
-            .filter((official) => official.position === "Barangay Chairman")
-            .map((official) => (
-              <Text
-                style={{
-                  fontSize: 12,
-                  textAlign: "center",
-                  lineHeight: 2, // Adjust the lineHeight as needed
-                }}
-              >
-                {official.lastName.toUpperCase()},{" "}
-                {official.firstName.toUpperCase()}{" "}
-                {official.middleName.toUpperCase()}
-              </Text>
-            ))}
-          <View style={styles.terms.signText}>
-            <Text style={styles.terms.center}>Punong Barangay</Text>
-          </View>
+        <View style={{ ...styles.terms.parentSign }}>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              fontFamily: "Times-Roman",
+            }}
+          >
+            Amount:
+          </Text>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              marginLeft: 60,
+              textDecoration: "underline",
+              fontFamily: "Times-Roman",
+            }}
+          >
+            PHP {detail.fee}
+          </Text>
+        </View>
+        <View style={{ ...styles.terms.parentSign }}>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              fontFamily: "Times-Roman",
+            }}
+          >
+            Date Issued:
+          </Text>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              marginLeft: 45,
+              textDecoration: "underline",
+              fontFamily: "Times-Roman",
+            }}
+          >
+            {createdAtFormatted}
+          </Text>
+        </View>
+        <View style={{ ...styles.terms.parentSign }}>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              fontFamily: "Times-Roman",
+            }}
+          >
+            Place Issued:
+          </Text>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              marginLeft: 41,
+              textDecoration: "underline",
+              fontFamily: "Times-Roman",
+            }}
+          >
+            BARANGAY {detail.brgy}
+          </Text>
+        </View>
+        <View style={{ ...styles.terms.parentSign }}>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              fontFamily: "Times-Roman",
+            }}
+          >
+            O.R No.:
+          </Text>
         </View>
       </View>
+      {/* END OF TERMS */}
     </View>
   );
 
   const Footer = () => (
-    <View style={styles.footer.view}>
+    <View style={{ ...styles.footer.view, marginTop: 30 }}>
       <Text style={styles.footer.text}>THIS FORM IS NOT FOR SALE</Text>
       <Text style={styles.footer.text}>{detail.version}</Text>
     </View>
@@ -648,10 +721,10 @@ const PrintPDF = ({ detail, officials }) => {
         <Divider />
         <Title />
         <Body />
-        <Footer />
+        {/* <Footer /> */}
       </Page>
     </Document>
   );
 };
 
-export default PrintPDF;
+export default PrintDocumentTypeI;

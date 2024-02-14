@@ -7,7 +7,7 @@ import PrintPDF from "./form/PrintPDF";
 
 import { PDFDownloadLink } from "@react-pdf/renderer";
 
-function ViewRegistrationModal({ application }) {
+function ViewRegistrationModal({ application, officials }) {
   const [detail, ] = useState(application);
   const [empty, ] = useState(false);
 
@@ -97,8 +97,8 @@ function ViewRegistrationModal({ application }) {
             <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
               <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
                 <PDFDownloadLink
-                  document={<PrintPDF detail={detail} />}
-                  fileName="SAMPLE.pdf"
+                  document={<PrintPDF detail={detail} officials={officials}/>}
+                  fileName="Event_Application.pdf"
                   className="h-[2.5rem] flex justify-center items-center w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
                 >
                   PRINT

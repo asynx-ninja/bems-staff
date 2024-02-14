@@ -1,18 +1,49 @@
-import { useState, React, useRef } from "react";
+import { useState, useEffect, React, useRef } from "react";
 // FORM DETAILS
 import PersonalDetails from "./PersonalDetails";
 import OtherDetails from "./OtherDetails";
 import PrintForm from "./form/PrintForm";
 import PrintPDF from "./form/PrintPDF";
-import PrintDocumentTypeB from "./form/PrintDocumentTypeB";
 import PrintDocumentTypeA from "./form/PrintDocumentTypeA";
+import PrintDocumentTypeB from "./form/PrintDocumentTypeB";
+import PrintDocumentTypeC from "./form/PrintDocumentTypeC";
+import PrintDocumentTypeD from "./form/PrintDocumentTypeD";
 import PrintDocumentTypeE from "./form/PrintDocumentTypeE";
+import PrintDocumentTypeF from "./form/PrintDocumentTypeF";
+import PrintDocumentTypeH from "./form/PrintDocumentTypeH";
+import PrintDocumentTypeI from "./form/PrintDocumentTypeI";
+import PrintDocumentTypeJ from "./form/PrintDocumentTypeJ";
+import axios from "axios";
+import API_LINK from "../../config/API";
 
 import { PDFDownloadLink } from "@react-pdf/renderer";
 
 function ViewRequestModal({ request, brgy, officials }) {
   const [detail] = useState(request);
   const [empty] = useState(false);
+  const [docDetails, setDocDetails] = useState([]);
+  const [service_id] = useState(request.service_id);
+
+  useEffect(() => {
+    // function to filter
+    const fetch = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/document/?brgy=${brgy}&service_id=${service_id}`
+        );
+
+        // filter
+        setDocDetails(response.data);
+      } catch (err) {
+        console.log(err.message);
+      }
+    };
+
+    fetch();
+  }, [brgy, service_id]);
+
+  console.log("service_id: ", service_id);
+  // console.log("docDetails: ", docDetails);
 
   const fileName =
     detail.form[0] && detail.form[0].lastName
@@ -21,7 +52,7 @@ function ViewRequestModal({ request, brgy, officials }) {
         }.pdf`
       : "SAMPLE.pdf";
 
-  console.log("detail", detail);
+  // console.log("detail", detail);
 
   const returnFile = (string) => {
     for (const item of detail.file) {
@@ -113,6 +144,7 @@ function ViewRequestModal({ request, brgy, officials }) {
                       <PrintDocumentTypeA
                         detail={detail}
                         officials={officials}
+                        docDetails={docDetails}
                         brgy={brgy}
                       />
                     }
@@ -128,6 +160,7 @@ function ViewRequestModal({ request, brgy, officials }) {
                       <PrintDocumentTypeB
                         detail={detail}
                         officials={officials}
+                        docDetails={docDetails}
                         brgy={brgy}
                       />
                     }
@@ -143,6 +176,7 @@ function ViewRequestModal({ request, brgy, officials }) {
                       <PrintDocumentTypeE
                         detail={detail}
                         officials={officials}
+                        docDetails={docDetails}
                         brgy={brgy}
                       />
                     }
@@ -152,6 +186,55 @@ function ViewRequestModal({ request, brgy, officials }) {
                     GENERATE DOCUMENT REQUEST (TYPE E)
                   </PDFDownloadLink>
                 )}
+                 {request.status === "Transaction Completed" && (
+                  <PDFDownloadLink
+                    document={
+                      <PrintDocumentTypeH
+                        detail={detail}
+                        officials={officials}
+                        docDetails={docDetails}
+                        brgy={brgy}
+                      />
+                    }
+                    fileName={fileName}
+                    className="h-[2.5rem] flex justify-center text-center items-center w-full py-1 px-6 gap-2 rounded-md border text-[9px] xxl:text-xs font-base bg-[#22687a] text-white shadow-sm"
+                  >
+                    GENERATE DOCUMENT REQUEST (TYPE H)
+                  </PDFDownloadLink>
+                )}
+                {request.status === "Transaction Completed" && (
+                  <PDFDownloadLink
+                    document={
+                      <PrintDocumentTypeI
+                        detail={detail}
+                        officials={officials}
+                        docDetails={docDetails}
+                        brgy={brgy}
+                      />
+                    }
+                    fileName={fileName}
+                    className="h-[2.5rem] flex justify-center text-center items-center w-full py-1 px-6 gap-2 rounded-md border text-[9px] xxl:text-xs font-base bg-[#22687a] text-white shadow-sm"
+                  >
+                    GENERATE DOCUMENT REQUEST (TYPE I)
+                  </PDFDownloadLink>
+                )}
+                {request.status === "Transaction Completed" && (
+                  <PDFDownloadLink
+                    document={
+                      <PrintDocumentTypeJ
+                        detail={detail}
+                        officials={officials}
+                        docDetails={docDetails}
+                        brgy={brgy}
+                      />
+                    }
+                    fileName={fileName}
+                    className="h-[2.5rem] flex justify-center text-center items-center w-full py-1 px-6 gap-2 rounded-md border text-[9px] xxl:text-xs font-base bg-[#22687a] text-white shadow-sm"
+                  >
+                    GENERATE DOCUMENT REQUEST (TYPE J)
+                  </PDFDownloadLink>
+                )}
+                
                 <PDFDownloadLink
                   document={<PrintPDF detail={detail} brgy={brgy} />}
                   fileName={fileName}

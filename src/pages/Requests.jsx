@@ -541,6 +541,7 @@ const Requests = () => {
                     RESET FILTERS
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
+                  <div className="flex flex-col scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll h-44">
                   {requestFilter.map((service_name, index) => (
                     <a
                       key={index}
@@ -551,6 +552,7 @@ const Requests = () => {
                       {service_name}
                     </a>
                   ))}
+                  </div>
                 </ul>
               </div>
             </div>
@@ -676,10 +678,10 @@ const Requests = () => {
                           item.form[0].middleName.value}
                       </span>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="px-6 py-3 xxl:w-3/12">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {DateFormat(item.createdAt) || ""} - {TimeFormat(item.createdAt) || ""}
+                        {moment(item.createdAt).format("MMMM DD, YYYY")} - {TimeFormat(item.createdAt) || ""}
                         </span>
                       </div>
                     </td>
@@ -811,7 +813,7 @@ const Requests = () => {
         />
       </div>
       {Object.hasOwn(request, "service_id") ? (
-        <ViewRequestModal request={request} officials={officials}/>
+        <ViewRequestModal request={request} brgy={brgy} officials={officials}/>
       ) : null}
       <ReplyServiceModal request={request} setRequest={setRequest} brgy={brgy} />
       <ArchiveRequestsModal selectedItems={selectedItems} />

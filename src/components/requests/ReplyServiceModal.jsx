@@ -131,19 +131,24 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
   const handleChange = (e) => {
     const inputValue = e.target.value;
   
-    if (
-      statusChanger &&
-      (!newMessage.message || newMessage.message.trim() === "")
-    ) {
+    if (e.target.name === "isRepliable") {
+      // If isRepliable checkbox is changed, update isRepliable accordingly
       setNewMessage((prev) => ({
         ...prev,
-        message: `The status of your service request is ${inputValue}`,
+        [e.target.name]: e.target.checked,
+      }));
+    } else if (statusChanger && (!newMessage.message || newMessage.message.trim() === "")) {
+      // If statusChanger is true and message is not set, update message with status
+      setNewMessage((prev) => ({
+        ...prev,
+        message: `The status of your event application is ${inputValue}`,
+        [e.target.name]: inputValue,
       }));
     } else {
+      // Otherwise, update the input value normally
       setNewMessage((prev) => ({
         ...prev,
-        [e.target.name]:
-          e.target.name === "isRepliable" ? e.target.checked : inputValue,
+        [e.target.name]: inputValue,
       }));
     }
   };
