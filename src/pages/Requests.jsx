@@ -677,7 +677,7 @@ const Requests = () => {
                           item.form[0].middleName.value}
                       </span>
                     </td>
-                    <td className="px-6 py-3 w-full">
+                    <td className="px-6 py-3 xxl:w-3/12">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {moment(item.createdAt).format("MMMM DD, YYYY")} - {TimeFormat(item.createdAt) || ""}
@@ -812,7 +812,7 @@ const Requests = () => {
         />
       </div>
       {Object.hasOwn(request, "service_id") ? (
-        <ViewRequestModal request={request} officials={officials}/>
+        <ViewRequestModal request={request} brgy={brgy} officials={officials}/>
       ) : null}
       <ReplyServiceModal request={request} setRequest={setRequest} brgy={brgy} />
       <ArchiveRequestsModal selectedItems={selectedItems} />

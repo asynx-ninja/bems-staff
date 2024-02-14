@@ -655,7 +655,7 @@ const EventsRegistrations = () => {
                         {item.event_name}
                       </span>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="px-6 py-3 ">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {item.form[0].lastName.value +
                           ", " +
@@ -664,7 +664,7 @@ const EventsRegistrations = () => {
                           item.form[0].middleName.value}
                       </span>
                     </td>
-                    <td className="lg:px-1 xl:px-6 py-3 w-full">
+                    <td className="lg:px-1 xl:px-6 py-3 xxl:w-2/12">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
                         {moment(item.createdAt).format("MMMM DD, YYYY")} - {TimeFormat(item.createdAt) || ""}

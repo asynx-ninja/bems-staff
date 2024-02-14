@@ -538,7 +538,7 @@ const PrintDocumentTypeD = ({ detail, officials = { officials }, brgy }) => {
 
   return (
     <Document>
-      <Page size="LEGAL" style={styles.body}>
+      <Page size="A4" style={styles.body}>
         <LetterHead />
         <Divider />
         <Body />

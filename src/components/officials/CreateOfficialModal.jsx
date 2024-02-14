@@ -287,6 +287,7 @@ function CreateOfficialModal({ brgy }) {
                       <option value="SK Chairman">SK Chairman</option>
                       <option value="SK Kagawad">SK Kagawad</option>
                       <option value="Secretary">Secretary</option>
+                      <option value="Assistant Secretary">Assistant Secretary</option>
                       <option value="Treasurer">Treasurer</option>
                     </select>
                   </div>

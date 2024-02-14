@@ -23,6 +23,8 @@ import SAN_JOSE from "../../../assets/logo/SAN_JOSE.png";
 import SAN_RAFAEL from "../../../assets/logo/SAN_RAFAEL.png";
 import OETMT from "../../../assets/fonts/Old-English-Text-MT.otf";
 import ESITC from "../../../assets/fonts/Edwardian-Script-ITC.otf";
+import axios from "axios";
+import API_LINK from "../../../config/API";
 
 Font.register({
   family: "Old-English-Text-MT",
@@ -36,6 +38,30 @@ Font.register({
 
 const PrintPDF = ({ detail, officials }) => {
   const [date, setDate] = useState(new Date());
+  const [announcements, setAnnouncements] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const announcementsResponse = await axios.get(
+          `${API_LINK}/announcement/specific/?brgy=${detail.brgy}&archived=false&event_id=${detail.event_id}`
+        );
+
+        setAnnouncements(announcementsResponse.data.result);
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+
+        console.error("Error response data:", error.response?.data);
+        console.error("Error response status:", error.response?.status);
+      }
+    };
+
+    fetchData();
+  }, [detail.brgy]);
+
+  console.log("announcements: ", announcements);
+  console.log("event_id: ", detail.event_id);
 
   const returnLogo = () => {
     switch (detail.brgy) {
@@ -90,6 +116,16 @@ const PrintPDF = ({ detail, officials }) => {
     year: "numeric",
     weekday: "long",
   });
+
+  const formattedDate1 = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-PH", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      weekday: "long",
+    });
+  };
 
   const formattedTime = date.toLocaleTimeString("en-PH", {
     hour: "numeric",
@@ -373,6 +409,10 @@ const PrintPDF = ({ detail, officials }) => {
 
   console.log("detail: ", detail);
 
+  function addIndentation(spaces) {
+    return Array(spaces + 1).join(" "); // For spaces, or "\t" for tabs
+  }
+
   const LetterHead = () => (
     <View style={styles.letterHead.view1}>
       <Image
@@ -434,6 +474,7 @@ const PrintPDF = ({ detail, officials }) => {
           textAlign: "justify",
           fontSize: 12,
           lineHeight: 2, // Adjust the lineHeight as needed
+          textIndent: 30,
         }}
       >
         This is to certify that{" "}
@@ -445,7 +486,7 @@ const PrintPDF = ({ detail, officials }) => {
         , a registered resident of Barangay {detail.brgy}, Municipality of
         Rodriguez, Rizal, has successfully registered and will actively
         participate in the event titled {detail.event_name} held on{" "}
-        {detail.date}.
+        {formattedDate1(announcements.date)}.
       </Text>
 
       <Text
@@ -509,7 +550,7 @@ const PrintPDF = ({ detail, officials }) => {
           lineHeight: 2, // Adjust the lineHeight as needed
         }}
       >
-        Details of Resident:
+        Details of Event:
       </Text>
       <Text
         style={{
@@ -529,7 +570,7 @@ const PrintPDF = ({ detail, officials }) => {
           lineHeight: 2, // Adjust the lineHeight as needed
         }}
       >
-        - Event Date: *To be set*
+        - Event Date: {formattedDate1(announcements.date)}
       </Text>
 
       <Text
@@ -538,6 +579,7 @@ const PrintPDF = ({ detail, officials }) => {
           textAlign: "justify",
           fontSize: 12,
           lineHeight: 2, // Adjust the lineHeight as needed
+          textIndent: 30,
         }}
       >
         This certification is issued upon the request of{" "}
@@ -546,7 +588,7 @@ const PrintPDF = ({ detail, officials }) => {
           {detail.form && detail.form[0].middleName.value}{" "}
           {detail.form && detail.form[0].lastName.value}
         </Text>{" "}
-        in connection with his/ger Event Registration. Given this{" "}
+        in connection with his/her Event Registration. Given this{" "}
         {formattedDate}, from the Office of the Punong Barangay, Barangay{" "}
         {detail.brgy}, Rodriguez Rizal.
       </Text>
