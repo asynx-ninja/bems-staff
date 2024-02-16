@@ -47,25 +47,29 @@ const Requests = () => {
 
   useEffect(() => {
     const fetch = async () => {
-       try{
-     const response = await axios.get(
-      `${API_LINK}/services/?brgy=${brgy}&archived=false&page=${currentPage}`
-    );
-      console.log(response.data.result)
-     if (response.status === 200){
-         let arr = [];
-         response.data.result.map((item) => {
-         arr.push(item.name);
-         })
-         setRequestFilter(arr);
-         }
- 
-       }catch(err){
-     console.log(err)
-       }
+        try {
+            let page = 0;
+            let arr = [];
+            while (true) {
+                const response = await axios.get(
+                    `${API_LINK}/services/?brgy=${brgy}&archived=false&page=${page}`
+                );
+                if (response.status === 200 && response.data.result.length > 0) {
+                    response.data.result.map((item) => {
+                        arr.push(item.name);
+                    });
+                    page++;
+                } else {
+                    break;
+                }
+            }
+            setRequestFilter(arr);
+        } catch (err) {
+            console.log(err)
+        }
     }
     fetch()
- }, [brgy]);
+}, [brgy]);
 
   useEffect(() => {
     const fetch = async () => {

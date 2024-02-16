@@ -184,6 +184,9 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         </option>
                         <option value="Type F">Barangay Clearance</option>
                         <option value="Type G">Certificate of Indigency</option>
+                        <option value="Type H">Solo Parent Certification</option>
+                        <option value="Type I">Barangay Blotter</option>
+                        <option value="Type J">Late Registration</option>
                       </select>
                     </div>
 
@@ -235,7 +238,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         {officials
                           .filter(
                             (official) =>
-                              official.position === "Barangay Kagawad"
+                              official.position === "Secretary"
                           )
                           .map((official) => (
                             <option

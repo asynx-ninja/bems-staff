@@ -23,7 +23,8 @@ import SAN_JOSE from "../../../assets/logo/SAN_JOSE.png";
 import SAN_RAFAEL from "../../../assets/logo/SAN_RAFAEL.png";
 import OETMT from "../../../assets/fonts/Old-English-Text-MT.otf";
 import ESITC from "../../../assets/fonts/Edwardian-Script-ITC.otf";
-import BAGONG_PILIPINAS from "../../../assets/image/bagong-pilipinas-logo.jpg";
+import axios from "axios";
+import API_LINK from "../../../config/API";
 
 Font.register({
   family: "Old-English-Text-MT",
@@ -35,7 +36,7 @@ Font.register({
   src: ESITC,
 });
 
-const PrintDocumentTypeE = ({
+const PrintDocumentTypeJ = ({
   detail,
   officials = { officials },
   docDetails,
@@ -81,14 +82,15 @@ const PrintDocumentTypeE = ({
     }
   };
 
-  const birthdayFormatted = new Date(detail.birthday).toLocaleDateString(
-    "en-PH",
-    {
+  const formatBday = (bday) => {
+    const formattedBirthday = bday.toLocaleDateString("en-PH", {
       day: "numeric",
       month: "long",
       year: "numeric",
-    }
-  );
+    });
+
+    return formattedBirthday;
+  };
 
   const getOrdinalSuffix = (day) => {
     if (day >= 11 && day <= 13) {
@@ -118,11 +120,14 @@ const PrintDocumentTypeE = ({
     }
   )}`;
 
-  const formattedDate2 = date.toLocaleDateString("en-US", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  const createdAtFormatted = new Date(detail.createdAt).toLocaleDateString(
+    "en-PH",
+    {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }
+  );
 
   const formattedTime = date.toLocaleTimeString("en-PH", {
     hour: "numeric",
@@ -230,22 +235,24 @@ const PrintDocumentTypeE = ({
     },
     title: {
       view1: {
-        paddingTop: 12,
-        paddingBottom: 12,
+        paddingTop: 5,
+        paddingBottom: 10,
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
+        marginVertical: 10,
       },
       req: {
-        fontSize: 18,
-        fontFamily: "Helvetica-Bold",
+        fontSize: 24,
+        fontFamily: "Times-Bold",
         fontWeight: 700,
-        textDecoration: "underline",
+        // textDecoration: "underline",
       },
       id: {
         paddingTop: 3,
-        fontSize: 8,
+        fontSize: 11,
+        fontFamily: "Times-Bold",
       },
     },
     bodyHead: {
@@ -368,9 +375,9 @@ const PrintDocumentTypeE = ({
       parentSign: {
         display: "flex",
         flexDirection: "row",
-        marginVertical: 1,
+        marginVertical: 4,
         width: "100%",
-        gap: 1,
+        gap: 10,
       },
       half: {
         width: "50%",
@@ -407,9 +414,9 @@ const PrintDocumentTypeE = ({
     },
     backgroundImage: {
       position: "absolute",
-      height: "560px",
+      height: "550px",
       width: "100%",
-      top: 20,
+      top: 25,
       left: 0,
       right: 0,
       bottom: 0,
@@ -457,27 +464,9 @@ const PrintDocumentTypeE = ({
 
   const Title = () => (
     <View style={styles.title.view1}>
-      <Text
-        style={{
-          ...styles.terms.bold,
-          textAlign: "center",
-          fontSize: 20,
-          marginVertical: 20,
-          fontFamily: "Times-Bold",
-        }}
-      >
-        CERTIFICATION
-      </Text>
-      <Text
-        style={{
-          ...styles.terms.bold,
-          textAlign: "center",
-          fontSize: 16,
-          marginBottom: 20,
-          fontFamily: "Times-Bold",
-        }}
-      >
-        (First Time Job Seeker Assistance Act. - RA 11261)
+      <Text style={styles.title.req}>Barangay Certification</Text>
+      <Text style={styles.title.id}>
+        Barangay Clearance for {detail.service_name}
       </Text>
     </View>
   );
@@ -488,7 +477,20 @@ const PrintDocumentTypeE = ({
       <View style={{ marginLeft: 10, marginRight: 10 }}>
         <Text
           style={{
+            marginTop: 20,
+            textAlign: "justify",
+            fontSize: 12,
+            lineHeight: 2,
+            fontFamily: "Times-Roman",
+          }}
+        >
+          TO WHOM IT MAY CONCERN:
+        </Text>
+        
+        <Text
+          style={{
             marginTop: 10,
+            // textAlign: "justify",
             fontSize: 12,
             lineHeight: 1.5,
             fontFamily: "Times-Roman",
@@ -523,23 +525,14 @@ const PrintDocumentTypeE = ({
         </Text>
 
         <View
-          style={{ ...styles.terms.parentSign, justifyContent: "flex-end" }}
+          style={{
+            ...styles.terms.parentSign,
+            justifyContent: "flex-end",
+            marginTop: 50,
+            fontFamily: "Times-Roman",
+          }}
         >
           <View style={styles.terms.half}>
-            <View style={{ marginTop: 40 }}>
-              <Text
-                style={{
-                  ...styles.terms.bold,
-                  // textAlign: "center",
-                  marginBottom: 30,
-                  fontSize: 12,
-                  fontFamily: "Times-Italic",
-                }}
-              >
-                Certified by:
-              </Text>
-            </View>
-
             {officials
               .filter((official) => official.position === "Barangay Chairman")
               .map((official) => (
@@ -547,406 +540,177 @@ const PrintDocumentTypeE = ({
                   style={{
                     fontSize: 12,
                     textAlign: "center",
-                    lineHeight: 2, // Adjust the lineHeight as needed
-                    fontFamily: "Times-Bold",
-                    textDecoration: "underline",
-                  }}
-                >
-                  {official.lastName.toUpperCase()},{" "}
-                  {official.firstName.toUpperCase()}{" "}
-                  {official.middleName.toUpperCase()}
-                </Text>
-              ))}
-            <Text
-              style={{
-                fontFamily: "Times-Roman",
-                fontSize: "12",
-                lineHeight: 1,
-                textAlign: "center",
-              }}
-            >
-              Punong Barangay
-            </Text>
-
-            <View style={{ marginTop: 40 }}>
-              <Text
-                style={{
-                  fontSize: 12,
-                  textAlign: "center",
-                  lineHeight: 2, // Adjust the lineHeight as needed
-                  fontFamily: "Times-Roman",
-                }}
-              >
-                {formattedDate2}
-              </Text>
-
-              <Text
-                style={{
-                  fontFamily: "Times-Roman",
-                  fontSize: "12",
-                  lineHeight: 1,
-                  textAlign: "center",
-                }}
-              >
-                Date
-              </Text>
-            </View>
-
-            <View style={{ marginTop: 40 }}>
-              <Text
-                style={{
-                  ...styles.terms.bold,
-                  // textAlign: "center",
-                  marginBottom: 30,
-                  fontSize: 12,
-                  fontFamily: "Times-Roman",
-                }}
-              >
-                Witnessed by:
-              </Text>
-            </View>
-
-            {officials
-              .filter((official) => official.position === "Secretary")
-              .map((official) => (
-                <Text
-                  style={{
-                    fontSize: 12,
-                    textAlign: "center",
-                    lineHeight: 2, // Adjust the lineHeight as needed
-                    fontFamily: "Times-Bold",
-                    textDecoration: "underline",
-                  }}
-                >
-                  {official.lastName.toUpperCase()},{" "}
-                  {official.firstName.toUpperCase()}{" "}
-                  {official.middleName.toUpperCase()}
-                </Text>
-              ))}
-
-            <Text
-              style={{
-                fontFamily: "Times-Roman",
-                fontSize: "12",
-                lineHeight: 1,
-                textAlign: "center",
-              }}
-            >
-              Barangay Secretary
-            </Text>
-          </View>
-        </View>
-      </View>
-      {/* END OF TERMS */}
-    </View>
-  );
-
-  const Oath = () => (
-    <View>
-      {/* TERMS */}
-      <View style={{ marginHorizontal: 20 }}>
-        <Text
-          style={{
-            ...styles.terms.bold,
-            textAlign: "center",
-            fontSize: 24,
-            marginTop: 10,
-            fontFamily: "Times-Roman",
-          }}
-        >
-          OATH OF UNDERTAKING
-        </Text>
-        <Text
-          style={{
-            fontSize: 12,
-            marginTop: 20,
-            fontFamily: "Times-Roman",
-          }}
-        >
-          I,{" "}
-          <Text style={{ ...styles.terms.bold, textDecoration: "underline" }}>
-            {detail.form && detail.form[0]?.firstName?.value}{" "}
-            {detail.form && detail.form[0]?.middleName?.value}{" "}
-            {detail.form && detail.form[0]?.lastName?.value}
-          </Text>
-          , {detail.form && detail.form[0]?.age?.value} years old, is a bona
-          fide resident of {detail.form && detail.form[0]?.address?.value},
-          availing the benefit of RA 11261, otherwise known as{" "}
-          <Text style={styles.terms.bold}>
-            "First Time Job Seeker Act of 2019"
-          </Text>{" "}
-          do hereby declare, agree and undertake to abide to be bound by the
-          following:
-        </Text>
-        <Text
-          style={{
-            marginTop: 10,
-            fontSize: 12,
-            lineHeight: 1.3, // Adjust the lineHeight as needed\
-
-            fontFamily: "Times-Roman",
-          }}
-        >
-          1. That this is the first time that I will actively look for a job,
-          and therefore requesting that a Barangay Certification be issued in my
-          favor to avail the benefits of the law.
-        </Text>
-
-        <Text
-          style={{
-            marginTop: 10,
-            fontSize: 12,
-            lineHeight: 1.3, // Adjust the lineHeight as needed
-
-            fontFamily: "Times-Roman",
-          }}
-        >
-          2. That I am aware that the benefits and privilege/s under the said
-          law shall be allowed only for one (1) year from the date that the
-          Barangay Certification is issued;
-        </Text>
-
-        <Text
-          style={{
-            marginTop: 5,
-            fontSize: 12,
-            lineHeight: 1.3, // Adjust the lineHeight as needed
-
-            fontFamily: "Times-Roman",
-          }}
-        >
-          3. That I can avail the benefits of the law only once.
-        </Text>
-
-        <Text
-          style={{
-            marginTop: 5,
-            fontSize: 12,
-            lineHeight: 1.3, // Adjust the lineHeight as needed
-
-            fontFamily: "Times-Roman",
-          }}
-        >
-          4. That I understand that my personal information shall be included in
-          the roaster/list First Time Jobseekers and will not use for any
-          unlawful purpose;
-        </Text>
-
-        <Text
-          style={{
-            marginTop: 5,
-            fontSize: 12,
-            lineHeight: 1.3, // Adjust the lineHeight as needed
-
-            fontFamily: "Times-Roman",
-          }}
-        >
-          5. That I will inform and/or report to the barangay personally,
-          through my family relatives once I get employed; and
-        </Text>
-
-        <Text
-          style={{
-            marginTop: 5,
-            fontSize: 12,
-            lineHeight: 1.3, // Adjust the lineHeight as needed
-
-            fontFamily: "Times-Roman",
-          }}
-        >
-          6. That I am not beneficiary of the Job Start Program under R.A. No.
-          10864 and other Laws that give similar exemption for the documents or
-          transactions exempted under R.A. No. 11261
-        </Text>
-
-        <Text
-          style={{
-            marginTop: 5,
-            fontSize: 12,
-            lineHeight: 1.3, // Adjust the lineHeight as needed
-
-            fontFamily: "Times-Roman",
-          }}
-        >
-          7. That is issued the requested certifications, I will not use the
-          same in any fraud, neither falsify nor help and/assist in the
-          fabrication of the said certification.
-        </Text>
-
-        <Text
-          style={{
-            marginTop: 5,
-            fontSize: 12,
-            lineHeight: 1.3, // Adjust the lineHeight as needed
-
-            fontFamily: "Times-Roman",
-          }}
-        >
-          8. That this undertaking is made solely for the purpose of obtaining a
-          Barangay Certification consistent with the objective of R.A. No. 11261
-          and not for any other purpose.
-        </Text>
-
-        <Text
-          style={{
-            marginTop: 5,
-            fontSize: 12,
-            lineHeight: 1.3, // Adjust the lineHeight as needed
-
-            fontFamily: "Times-Roman",
-          }}
-        >
-          9. That I consent to the use of my personal information pursuant to
-          the Data Privacy Act and other applicable laws, rules and regulations.
-        </Text>
-
-        <Text
-          style={{
-            marginTop: 10,
-            fontSize: 12,
-            lineHeight: 1.3, // Adjust the lineHeight as needed
-            fontFamily: "Times-Roman",
-          }}
-        >
-          Done this {formattedDate}, in the office of the Punong Barangay,
-          Barangay {brgy} Rodriguez, (Montalban), Rizal.
-        </Text>
-
-        <View style={{ flexDirection: "row" }}>
-          <Text
-            style={{
-              marginTop: 20,
-              textAlign: "justify",
-              fontSize: 12,
-              lineHeight: 1.3, // Adjust the lineHeight as needed
-              fontFamily: "Times-Roman",
-            }}
-          >
-            First Time Job Seeker
-          </Text>
-
-          <Text
-            style={{
-              marginTop: 20,
-              textAlign: "justify",
-              fontSize: 12,
-              lineHeight: 1.3, // Adjust the lineHeight as needed
-              fontFamily: "Times-Roman",
-              marginLeft: 180,
-            }}
-          >
-            Witnessed by:
-          </Text>
-        </View>
-      </View>
-
-      {/* END OF TERMS */}
-    </View>
-  );
-
-  const Signature = () => (
-    <View>
-      <View
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          width: "100%",
-          gap: 1,
-        }}
-      >
-        <View style={{ width: "43%" }}>
-          <Text
-            style={{
-              fontSize: 12,
-              textAlign: "center",
-              lineHeight: 1.5, // Adjust the lineHeight as needed
-              fontFamily: "Times-Bold",
-              textDecoration: "underline",
-              marginTop: 45,
-            }}
-          >
-            {detail.form && detail.form[0].firstName.value}{" "}
-            {detail.form && detail.form[0].middleName.value}{" "}
-            {detail.form && detail.form[0].lastName.value}
-          </Text>
-
-          <Text
-            style={{
-              fontFamily: "Times-Roman",
-              fontSize: "12",
-              lineHeight: 1,
-              textAlign: "center",
-            }}
-          >
-            Signature over printed name
-          </Text>
-        </View>
-      </View>
-
-      <View style={{ ...styles.terms.parentSign, justifyContent: "flex-end" }}>
-        <View style={{ width: "45%" }}>
-          {officials
-            .filter((official) => official.position === "Secretary")
-            .map((official) => (
-              <Text
-                style={{
-                  fontSize: 12,
-                  textAlign: "center",
-                  lineHeight: 1.5, // Adjust the lineHeight as needed
-                  fontFamily: "Times-Bold",
-                  textDecoration: "underline",
-                }}
-              >
-                {official.lastName.toUpperCase()},{" "}
-                {official.firstName.toUpperCase()}{" "}
-                {official.middleName.toUpperCase()}
-              </Text>
-            ))}
-
-          <Text
-            style={{
-              fontFamily: "Times-Roman",
-              fontSize: "12",
-              lineHeight: 1,
-              textAlign: "center",
-            }}
-          >
-            Barangay Secretary
-          </Text>
-
-          <View style={{ marginTop: 10 }}>
-            {officials
-              .filter((official) => official.position === "Assistant Secretary")
-              .map((official) => (
-                <Text
-                  style={{
-                    fontSize: 12,
-                    textAlign: "center",
-                    marginTop: 15,
                     lineHeight: 1.5, // Adjust the lineHeight as needed
-                    fontFamily: "Times-Bold",
-                    textDecoration: "underline",
                   }}
                 >
-                  {official.lastName.toUpperCase()},{" "}
-                  {official.firstName.toUpperCase()}{" "}
-                  {official.middleName.toUpperCase()}
+                  {official.lastName}, {official.firstName}{" "}
+                  {official.middleName}
                 </Text>
               ))}
-
-            <Text
-              style={{
-                fontFamily: "Times-Roman",
-                fontSize: "12",
-                lineHeight: 1,
-                textAlign: "center",
-              }}
-            >
-              Barangay Assisstant Secretary
-            </Text>
+            <View style={styles.terms.signText}>
+              <Text
+                style={{ ...styles.terms.center, fontFamily: "Times-Roman" }}
+              >
+                Punong Barangay
+              </Text>
+            </View>
           </View>
         </View>
+
+        <View style={{ ...styles.terms.parentSign, marginTop: 30 }}>
+          <View style={styles.terms.half}>
+            <Text
+              style={{
+                fontSize: 12,
+                textAlign: "center",
+                lineHeight: 1.5, // Adjust the lineHeight as needed
+                fontFamily: "Times-Roman",
+              }}
+            >
+              {detail.form && detail.form[0].firstName.value}{" "}
+              {detail.form && detail.form[0].middleName.value}{" "}
+              {detail.form && detail.form[0].lastName.value}
+            </Text>
+            <View style={styles.terms.signText}>
+              <Text
+                style={{ ...styles.terms.center, fontFamily: "Times-Roman" }}
+              >
+                Applicant's Signature
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Box with a background color */}
+        <View
+          style={{
+            width: 70,
+            height: 55,
+            marginTop: 10,
+            marginLeft: 90,
+            borderColor: "black",
+            alignSelf: "stretch",
+            borderWidth: 1,
+          }}
+        />
+
+        <View style={{ ...styles.terms.parentSign, marginTop: 30 }}>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              fontFamily: "Times-Roman",
+            }}
+          >
+            Brgy. Clearance No.
+          </Text>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              marginLeft: 10,
+              textDecoration: "underline",
+              fontFamily: "Times-Roman",
+            }}
+          >
+            {detail.req_id}
+          </Text>
+        </View>
+        <View style={{ ...styles.terms.parentSign }}>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              fontFamily: "Times-Roman",
+            }}
+          >
+            Amount:
+          </Text>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              marginLeft: 60,
+              textDecoration: "underline",
+              fontFamily: "Times-Roman",
+            }}
+          >
+            PHP {detail.fee}
+          </Text>
+        </View>
+        <View style={{ ...styles.terms.parentSign }}>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              fontFamily: "Times-Roman",
+            }}
+          >
+            Date Issued:
+          </Text>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              marginLeft: 45,
+              textDecoration: "underline",
+              fontFamily: "Times-Roman",
+            }}
+          >
+            {createdAtFormatted}
+          </Text>
+        </View>
+        <View style={{ ...styles.terms.parentSign }}>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              fontFamily: "Times-Roman",
+            }}
+          >
+            Place Issued:
+          </Text>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              marginLeft: 41,
+              textDecoration: "underline",
+              fontFamily: "Times-Roman",
+            }}
+          >
+            BARANGAY {detail.brgy}
+          </Text>
+        </View>
+        <View style={{ ...styles.terms.parentSign }}>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              fontFamily: "Times-Roman",
+            }}
+          >
+            O.R No.:
+          </Text>
+        </View>
       </View>
+      {/* END OF TERMS */}
+    </View>
+  );
+
+  const Footer = () => (
+    <View style={{ ...styles.footer.view, marginTop: 30 }}>
+      <Text style={styles.footer.text}>THIS FORM IS NOT FOR SALE</Text>
+      <Text style={styles.footer.text}>{detail.version}</Text>
     </View>
   );
 
@@ -959,14 +723,8 @@ const PrintDocumentTypeE = ({
         <Body />
         {/* <Footer /> */}
       </Page>
-      <Page size="A4" style={styles.body}>
-        <LetterHead />
-        <Divider />
-        <Oath />
-        <Signature />
-      </Page>
     </Document>
   );
 };
 
-export default PrintDocumentTypeE;
+export default PrintDocumentTypeJ;

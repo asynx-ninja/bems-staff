@@ -92,12 +92,33 @@ const PrintDocumentTypeA = ({
     return formattedBirthday;
   };
 
-  const formattedDate = date.toLocaleDateString("en-PH", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    weekday: "long",
-  });
+  const getOrdinalSuffix = (day) => {
+    if (day >= 11 && day <= 13) {
+      return "th";
+    }
+    const lastDigit = day % 10;
+    switch (lastDigit) {
+      case 1:
+        return "st";
+      case 2:
+        return "nd";
+      case 3:
+        return "rd";
+      default:
+        return "th";
+    }
+  };
+
+  const day = date.getDate();
+  const ordinalSuffix = getOrdinalSuffix(day);
+
+  const formattedDate = `${day}${ordinalSuffix} day of ${date.toLocaleDateString(
+    "en-PH",
+    {
+      month: "long",
+      year: "numeric",
+    }
+  )}`;
 
   const createdAtFormatted = new Date(detail.createdAt).toLocaleDateString(
     "en-PH",

@@ -4,10 +4,14 @@ import PersonalDetails from "./PersonalDetails";
 import OtherDetails from "./OtherDetails";
 import PrintForm from "./form/PrintForm";
 import PrintPDF from "./form/PrintPDF";
-import PrintDocumentTypeB from "./form/PrintDocumentTypeB";
 import PrintDocumentTypeA from "./form/PrintDocumentTypeA";
+import PrintDocumentTypeB from "./form/PrintDocumentTypeB";
+import PrintDocumentTypeC from "./form/PrintDocumentTypeC";
+import PrintDocumentTypeD from "./form/PrintDocumentTypeD";
 import PrintDocumentTypeE from "./form/PrintDocumentTypeE";
 import PrintDocumentTypeG from "./form/PrintDocumentTypeG";
+import PrintDocumentTypeF from "./form/PrintDocumentTypeF";
+import PrintDocumentTypeH from "./form/PrintDocumentTypeH";
 import axios from "axios";
 import API_LINK from "../../config/API";
 
@@ -184,7 +188,7 @@ function ViewRequestModal({ request, brgy, officials }) {
                  {request.status === "Transaction Completed" && (
                   <PDFDownloadLink
                     document={
-                      <PrintDocumentTypeG
+                      <PrintDocumentTypeF
                         detail={detail}
                         officials={officials}
                         docDetails={docDetails}
@@ -194,7 +198,7 @@ function ViewRequestModal({ request, brgy, officials }) {
                     fileName={fileName}
                     className="h-[2.5rem] flex text-center justify-center items-center w-full py-1 px-6 gap-2 rounded-md border text-[9px] xxl:text-xs font-base bg-[#22687a] text-white shadow-sm"
                   >
-                    GENERATE DOCUMENT REQUEST (TYPE G)
+                    GENERATE DOCUMENT REQUEST (TYPE F)
                   </PDFDownloadLink>
                 )}
                 <PDFDownloadLink
