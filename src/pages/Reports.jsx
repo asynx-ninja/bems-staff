@@ -803,9 +803,12 @@ const Reports = () => {
 
         // Make the API request
         const response = await axios.get(
-          `${API_LINK}/requests/est_brgy_revenue`,
+          `${API_LINK}/requests/est_brgy_revenue/`,
           {
-            params: params,
+            params: {
+              ...params,
+              brgy: brgy,
+            },
           }
         );
 

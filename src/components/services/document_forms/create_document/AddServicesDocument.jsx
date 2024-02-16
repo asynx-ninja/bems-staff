@@ -187,6 +187,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         <option value="Type H">Solo Parent Certification</option>
                         <option value="Type I">Barangay Blotter</option>
                         <option value="Type J">Late Registration</option>
+                        <option value="Type K">Residency Certification</option>
                       </select>
                     </div>
 

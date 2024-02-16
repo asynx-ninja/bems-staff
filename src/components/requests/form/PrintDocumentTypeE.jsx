@@ -500,24 +500,36 @@ const PrintDocumentTypeE = ({
               {Object.entries(doc.inputs)
                 .reduce((text, [key, value]) => {
                   const placeholder = new RegExp(`\\(\\(${key}\\)\\)`, "g");
+                  let replacementValue = "";
 
-                  // Check if [value] matches with any variable in the nested structure
-                  const matchingVariable = detail.form?.[1]?.[0]?.form?.find(
-                    (entry) => entry.variable === value
-                  )?.variable;
+                  // Loop through all possible data in detail.form?.[1]
+                  for (let i = 0; i < detail.form?.[1]?.length; i++) {
+                    const possibleData = detail.form?.[1]?.[i]?.form;
 
-                  // Get the value from the matching form entry, otherwise use an empty string
-                  const replacementValue = matchingVariable
-                    ? detail.form?.[1]?.[0]?.form?.find(
-                        (entry) => entry.variable === matchingVariable
-                      )?.value || ""
-                    : detail.form?.[0]?.[value]?.value || "";
+                    // Check if possibleData is an array and has matching variable
+                    if (Array.isArray(possibleData)) {
+                      const matchingEntry = possibleData.find(
+                        (entry) => entry.variable === value
+                      );
 
-                  return text.replace(placeholder, replacementValue);
+                      // If matching entry is found, get its value
+                      if (matchingEntry) {
+                        replacementValue = matchingEntry.value || "";
+                        break; // Stop searching if a matching entry is found
+                      }
+                    }
+                  }
+
+                  // If no matching entry is found in detail.form?.[1]?.[all possible data]?.form?,
+                  // check detail.form?.[0]?.[value]?.value
+                  if (!replacementValue) {
+                    replacementValue = detail.form?.[0]?.[value]?.value || "";
+                  }
+
+                  // Replace the placeholder in the text
+                  return text.replace(placeholder, replacementValue || "");
                 }, doc.details)
                 .replace(/\{CurrentDate\}/g, formattedDate)}
-              {/* <br /> */}
-              {/* Add additional line breaks or formatting as needed */}
             </React.Fragment>
           ))}
         </Text>

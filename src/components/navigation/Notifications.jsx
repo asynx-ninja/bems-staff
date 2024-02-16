@@ -137,7 +137,7 @@ useEffect(() => {
                 className={`px-4 py-3 border-b last:border-b-0 border w-full justify-between shadow-sm  font-medium uppercase gap-x-3.5 text-sm text-black bg-[#f8f8f8] hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
                   data.read_by.some((item) => item.readerId === id)
                     ? ""
-                    : "bg-[#e5d1b6]"
+                    : "bg-yellow-100"
                 }`}
               >
                 <div className="flex items-start">
