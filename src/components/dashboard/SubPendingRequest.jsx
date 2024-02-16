@@ -6,7 +6,7 @@ import { useSearchParams } from "react-router-dom";
 import { AiOutlineEye } from "react-icons/ai";
 import ViewRequestModal from "./ViewRequestModal";
 import ReactPaginate from "react-paginate";
-
+import GetBrgy from "../GETBrgy/getbrgy";
 const SubPendingRequest = () => {
   const [requests, setRequests] = useState([]);
   const [request, setRequest] = useState({ response: [{ file: [] }] });
@@ -15,7 +15,7 @@ const SubPendingRequest = () => {
   const brgy = searchParams.get("brgy");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
-  
+  const information = GetBrgy(brgy);
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
@@ -96,7 +96,7 @@ const SubPendingRequest = () => {
           </table>
         </div>
       </div>
-      <div className="md:py-4 md:px-4 bg-[#21556d] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
+      <div className="md:py-4 md:px-4  flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3" style={{ backgroundColor: information?.theme?.primary }}>
         <span className="font-medium text-white sm:text-xs text-sm">
           Showing {currentPage + 1} out of {pageCount} pages
         </span>

@@ -1,6 +1,3 @@
-
-
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { BiSolidDashboard } from "react-icons/bi";
@@ -22,7 +19,7 @@ import { useSearchParams } from "react-router-dom";
 import API_LINK from "../../config/API";
 import axios from "axios";
 import default_pfp from "../../assets/sample-image/default-pfp.png";
-
+import GetBrgy from "../GETBrgy/getbrgy";
 const Sidebar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [userData, setUserData] = useState({});
@@ -31,8 +28,8 @@ const Sidebar = () => {
   const currentPath = location.pathname;
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
-  const to = searchParams.get("to")
-  const [selectedOption, setSelectedOption] = useState('');
+  const to = searchParams.get("to");
+  const [selectedOption, setSelectedOption] = useState("");
   const [requests, setRequests] = useState([]);
   const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
   const [events, setEvents] = useState([]);
@@ -40,7 +37,7 @@ const Sidebar = () => {
   const [pendingEventsAndApp, setPendingEventsAndApp] = useState(0);
   const [inquiries, setInquiries] = useState(0);
   const [residentResponseCount, setResidentInquiriesLength] = useState(0);
-
+  const information = GetBrgy(brgy);
   useEffect(() => {
     const fetchInquiries = async () => {
       try {
@@ -51,25 +48,26 @@ const Sidebar = () => {
         if (response.status === 200) {
           const inquiries = response.data.result;
           setInquiries(inquiries);
-         
+
           const residentInquiries = inquiries.filter((inquiry) => {
-            const latestResponse = inquiry.response[inquiry.response.length - 1];
-            console.log(latestResponse)
+            const latestResponse =
+              inquiry.response[inquiry.response.length - 1];
+            console.log(latestResponse);
             return (
               latestResponse &&
-              latestResponse.type === 'Resident' &&
-              (inquiry.isApproved === 'Pending' || inquiry.isApproved === 'In Progress')
+              latestResponse.type === "Resident" &&
+              (inquiry.isApproved === "Pending" ||
+                inquiry.isApproved === "In Progress")
             );
-            
-          }); 
+          });
 
           const residentInquiriesLength = residentInquiries.length;
           setResidentInquiriesLength(residentInquiriesLength);
         } else {
-          console.error('Error fetching inquiries:', response.error);
+          console.error("Error fetching inquiries:", response.error);
         }
       } catch (err) {
-        console.error('Uncaught error:', err.message);
+        console.error("Uncaught error:", err.message);
       }
     };
 
@@ -87,18 +85,23 @@ const Sidebar = () => {
     const fetchData = async () => {
       try {
         // Fetch pending requests
-        const requestResponse = await fetch(`${API_LINK}/requests/getallpending/?isArchived=false&isApproved=Pending&brgy=${brgy}`);
+        const requestResponse = await fetch(
+          `${API_LINK}/requests/getallpending/?isArchived=false&isApproved=Pending&brgy=${brgy}`
+        );
         const requestData = await requestResponse.json();
 
         // Fetch pending events
-        const eventResponse = await fetch(`${API_LINK}/application/countpendingevents/?isArchived=false&status=Pending&brgy=${brgy}`);
+        const eventResponse = await fetch(
+          `${API_LINK}/application/countpendingevents/?isArchived=false&status=Pending&brgy=${brgy}`
+        );
         const eventData = await eventResponse.json();
 
         // Calculate the total count of pending events and requests
-        const totalPendingCount = requestData.result.length + eventData.result.length;
+        const totalPendingCount =
+          requestData.result.length + eventData.result.length;
         setPendingEventsAndApp(totalPendingCount); // Update the count of pending events and requests
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 
@@ -108,28 +111,31 @@ const Sidebar = () => {
   useEffect(() => {
     const fetchPendingRequest = async () => {
       try {
-        const response = await fetch(`${API_LINK}/requests/getallpending/?isArchived=false&isApproved=Pending&brgy=${brgy}`);
+        const response = await fetch(
+          `${API_LINK}/requests/getallpending/?isArchived=false&isApproved=Pending&brgy=${brgy}`
+        );
         const data = await response.json();
         setRequests(data.result);
         setPendingRequestsCount(data.result.length); // Update the count of pending services
       } catch (error) {
-        console.error('Error fetching pending services:', error);
+        console.error("Error fetching pending services:", error);
       }
     };
 
     fetchPendingRequest();
   }, []);
 
-
   useEffect(() => {
     const fetchPendingEvents = async () => {
       try {
-        const response = await fetch(`${API_LINK}/application/countpendingevents/?isArchived=false&status=Pending&brgy=${brgy}`);
+        const response = await fetch(
+          `${API_LINK}/application/countpendingevents/?isArchived=false&status=Pending&brgy=${brgy}`
+        );
         const data = await response.json();
         setEvents(data.result);
         setPendingEventsCount(data.result.length);
       } catch (error) {
-        console.error('Error fetching pending services:', error);
+        console.error("Error fetching pending services:", error);
       }
     };
 
@@ -144,30 +150,30 @@ const Sidebar = () => {
           `${API_LINK}/brgyinfo/?brgy=${brgy}&logo=true`
         );
 
-        if (currentPath.includes('/dashboard')) {
-          setSelectedOption('dashboard');
-        } else if (currentPath.includes('/events_management')) {
-          setSelectedOption('events_management');
-        } else if (currentPath.includes('/events_registrations')) {
-          setSelectedOption('events_registrations');
-        } else if (currentPath.includes('/inquiries')) {
-          setSelectedOption('inquiries');
-        } else if (currentPath.includes('/residents')) {
-          setSelectedOption('residents');
-        } else if (currentPath.includes('/services')) {
-          setSelectedOption('services');
-        } else if (currentPath.includes('/requests')) {
-          setSelectedOption('requests');
-        } else if (currentPath.includes('/reports')) {
-          setSelectedOption('reports');
-        } else if (currentPath.includes('/officials')) {
-          setSelectedOption('officials');
-        } else if (currentPath.includes('/staff_management')) {
-          setSelectedOption('staff_management');
-        } else if (currentPath.includes('/info')) {
-          setSelectedOption('info');
-        } else if (currentPath.includes('/settings')) {
-          setSelectedOption('settings');
+        if (currentPath.includes("/dashboard")) {
+          setSelectedOption("dashboard");
+        } else if (currentPath.includes("/events_management")) {
+          setSelectedOption("events_management");
+        } else if (currentPath.includes("/events_registrations")) {
+          setSelectedOption("events_registrations");
+        } else if (currentPath.includes("/inquiries")) {
+          setSelectedOption("inquiries");
+        } else if (currentPath.includes("/residents")) {
+          setSelectedOption("residents");
+        } else if (currentPath.includes("/services")) {
+          setSelectedOption("services");
+        } else if (currentPath.includes("/requests")) {
+          setSelectedOption("requests");
+        } else if (currentPath.includes("/reports")) {
+          setSelectedOption("reports");
+        } else if (currentPath.includes("/officials")) {
+          setSelectedOption("officials");
+        } else if (currentPath.includes("/staff_management")) {
+          setSelectedOption("staff_management");
+        } else if (currentPath.includes("/info")) {
+          setSelectedOption("info");
+        } else if (currentPath.includes("/settings")) {
+          setSelectedOption("settings");
         }
 
         if (res.status === 200 && res1.status === 200) {
@@ -189,7 +195,6 @@ const Sidebar = () => {
     fetch();
   }, [id, currentPath, brgy]);
 
-
   const [isClicked, setIsClicked] = useState(false);
   const [isClickedServices, setIsClickedServices] = useState(false);
   const [isClickedInformation, setIsClickedInformation] = useState(false);
@@ -205,14 +210,31 @@ const Sidebar = () => {
   const handleCollapseToggleInformations = () => {
     setIsClickedInformation(!isClickedInformation);
   };
+  const [hoverStates, setHoverStates] = useState({});
 
+  const handleMouseEnter = (id) => {
+    setHoverStates((prevStates) => ({
+      ...prevStates,
+      [id]: true,
+    }));
+  };
+
+  const handleMouseLeave = (id) => {
+    setHoverStates((prevStates) => ({
+      ...prevStates,
+      [id]: false,
+    }));
+  };
   return (
     <>
       <div
         id="hs-overlay-basic"
         className="sm:fixed lg:relative overflow-y-auto lg:block lg:end-auto lg:bottom-0 sm:block flex items-center justify-center hs-overlay-basic h-full overflow-hidden hs-overlay hs-overlay-open:translate-x-0 -translate-x-full transition-all duration-300 transform hidden top-0 z-[60] lg:z-0 lg:translate-x-0 w-[17rem]"
       >
-        <div className="h-screen bg-[#2c606d] ">
+        <div
+          className="h-screen  "
+          style={{ backgroundColor: information?.theme?.primary }}
+        >
           <div className="max-h-screen flex flex-col ">
             <div className='bg-[url("/src/assets/image/bg-sidebar.jpg")] w-full shrink-0 flex flex-col items-center justify-center py-5 px-2 space-y-3 object-cover'>
               {/* <img src={logo} alt="" className="" width={80} /> */}
@@ -226,7 +248,12 @@ const Sidebar = () => {
                 </h1>
               </div>
             </div>
-            <div className="w-full shrink-0 flex flex-row items-center justify-between px-2 border-0 py-2 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#153646] border-y-[1px] space-y-3">
+            <div
+              className="w-full shrink-0 flex flex-row items-center justify-between px-2 border-0 py-2 border-y-[1px] space-y-3"
+              style={{
+                background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+              }}
+            >
               {/* <img src={logo} alt="" className="" width={80} /> */}
               <div className="flex flex-row items-center justify-between w-full">
                 <div className="w-4/12">
@@ -249,22 +276,31 @@ const Sidebar = () => {
                   <Link
                     to={`/dashboard/?id=${id}&brgy=${brgy}`}
                     onClick={() => {
-                      setSelectedOption('dashboard')
+                      setSelectedOption("dashboard");
 
                       window.innerWidth >= 320 && window.innerWidth <= 1023
                         ? document
-                          .getQuerySelector(
-                            "[data-hs-overlay-backdrop-template]"
-                          )
-                          .remove()
+                            .getQuerySelector(
+                              "[data-hs-overlay-backdrop-template]"
+                            )
+                            .remove()
                         : null;
-
-                    }
-                    }
-                    className={`${selectedOption === 'dashboard'
-                      ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                      : null
-                      } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                    }}
+                    style={{
+                      background:
+                        selectedOption === "dashboard" ||
+                        hoverStates["dashboard"]
+                          ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
+                          : null,
+                      color:
+                        selectedOption === "dashboard" ||
+                        hoverStates["dashboard"]
+                          ? `${information?.theme.hover}`
+                          : null,
+                    }}
+                    onMouseEnter={() => handleMouseEnter("dashboard")}
+                    onMouseLeave={() => handleMouseLeave("dashboard")}
+                    className={`flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-md `}
                   >
                     <BiSolidDashboard size={15} />
                     Dashboard
@@ -272,7 +308,10 @@ const Sidebar = () => {
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600" />
                       {pendingEventsAndApp > 0 && (
                         <span className="relative inline-flex text-xs bg-red-500 text-white rounded-full py-0.5 px-1.5">
-                          <text className="mr-[3px]"> {pendingEventsAndApp} </text>
+                          <text className="mr-[3px]">
+                            {" "}
+                            {pendingEventsAndApp}{" "}
+                          </text>
                         </span>
                       )}
                     </span>
@@ -282,8 +321,20 @@ const Sidebar = () => {
                   <button
                     id="hs-events-collapse"
                     data-hs-collapse="#hs-events-collapse-heading"
-                    className={`hs-collapse-toggle justify-between flex items-center w-full gap-x-3 py-2 px-2.5 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0] ${isClicked && (selectedOption === 'events_management' || selectedOption === 'events_registrations') ? "text-[#EFC586]" : ""
-                      }`}
+                    className={`hs-collapse-toggle justify-between flex items-center w-full gap-x-3 py-2 px-2.5 text-sm rounded-md `}
+                    style={{
+                      background: hoverStates["events"]
+                        ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
+                        : null,
+                      color:
+                        isClicked &&
+                        (selectedOption === "events_management" ||
+                          selectedOption === "events_registrations")
+                          ? `${information?.theme?.hover}`
+                          : hoverStates["events"] ?`${information?.theme?.hover}` : null,
+                    }}
+                    onMouseEnter={() => handleMouseEnter("events")}
+                    onMouseLeave={() => handleMouseLeave("events")}
                     onClick={handleCollapseToggle}
                   >
                     <div className="flex items-center gap-x-3">
@@ -312,22 +363,34 @@ const Sidebar = () => {
                     id="hs-events-collapse-heading"
                     className="hs-collapse hidden w-full overflow-hidden transition-[height] duration-300"
                     aria-labelledby="hs-events-collapse"
-
                   >
                     <Link
                       to={`/events_management/?id=${id}&brgy=${brgy}`}
                       onClick={() => {
-                        setSelectedOption('events_management')
+                        setSelectedOption("events_management");
                         window.innerWidth >= 320 && window.innerWidth <= 1023
                           ? document
-                            .querySelector("[data-hs-overlay-backdrop-template]")
-                            .remove()
+                              .querySelector(
+                                "[data-hs-overlay-backdrop-template]"
+                              )
+                              .remove()
                           : null;
                       }}
-                      className={`${selectedOption === 'events_management'
-                        ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                        : null
-                        } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                      style={{
+                        background:
+                          selectedOption === "events_management" ||
+                          hoverStates["events_management"]
+                            ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
+                            : null,
+                        color:
+                          selectedOption === "events_management" ||
+                          hoverStates["events_management"]
+                            ? `${information?.theme.hover}`
+                            : null,
+                      }}
+                      onMouseEnter={() => handleMouseEnter("events_management")}
+                      onMouseLeave={() => handleMouseLeave("events_management")}
+                      className={`flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md `}
                     >
                       <BsCalendar2Event size={15} />
                       Events Management
@@ -335,17 +398,30 @@ const Sidebar = () => {
                     <Link
                       to={`/events_registrations/?id=${id}&brgy=${brgy}`}
                       onClick={() => {
-                        setSelectedOption('events_registrations')
+                        setSelectedOption("events_registrations");
                         window.innerWidth >= 320 && window.innerWidth <= 1023
                           ? document
-                            .querySelector("[data-hs-overlay-backdrop-template]")
-                            .remove()
+                              .querySelector(
+                                "[data-hs-overlay-backdrop-template]"
+                              )
+                              .remove()
                           : null;
                       }}
-                      className={`${selectedOption === 'events_registrations'
-                        ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                        : null
-                        } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                      style={{
+                        background:
+                          selectedOption === "events_registrations" ||
+                          hoverStates["events_registrations"]
+                            ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
+                            : null,
+                        color:
+                          selectedOption === "events_registrations" ||
+                          hoverStates["events_registrations"]
+                            ? `${information?.theme.hover}`
+                            : null,
+                      }}
+                      onMouseEnter={() => handleMouseEnter("events_registrations")}
+                      onMouseLeave={() => handleMouseLeave("events_registrations")}
+                      className={`flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md `}
                     >
                       <SiGoogleforms size={15} />
                       Events Application
@@ -353,13 +429,14 @@ const Sidebar = () => {
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600" />
                         {pendingEventsCount > 0 && (
                           <span className="relative inline-flex text-xs bg-red-500 text-white rounded-full py-0.5 px-1.5">
-                            <text className="mr-[3px]"> {pendingEventsCount} </text>
+                            <text className="mr-[3px]">
+                              {" "}
+                              {pendingEventsCount}{" "}
+                            </text>
                           </span>
                         )}
                       </span>
-
                     </Link>
-
                   </div>
                 </li>
                 <li>
@@ -368,16 +445,27 @@ const Sidebar = () => {
                     onClick={() => {
                       window.innerWidth >= 320 && window.innerWidth <= 1023
                         ? document
-                          .getQuerySelector(
-                            "[data-hs-overlay-backdrop-template]"
-                          )
-                          .remove()
+                            .getQuerySelector(
+                              "[data-hs-overlay-backdrop-template]"
+                            )
+                            .remove()
                         : null;
                     }}
-                    className={`${selectedOption === 'inquiries'
-                      ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                      : null
-                      } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                     style={{
+                      background:
+                        selectedOption === "inquiries" ||
+                        hoverStates["inquiries"]
+                          ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
+                          : null,
+                      color:
+                        selectedOption === "inquiries" ||
+                        hoverStates["inquiries"]
+                          ? `${information?.theme.hover}`
+                          : null,
+                    }}
+                    onMouseEnter={() => handleMouseEnter("inquiries")}
+                    onMouseLeave={() => handleMouseLeave("inquiries")}
+                    className={`flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-md `}
                   >
                     <FaRegNoteSticky size={15} />
                     Inquiries
@@ -397,28 +485,52 @@ const Sidebar = () => {
                     onClick={() => {
                       window.innerWidth >= 320 && window.innerWidth <= 1023
                         ? document
-                          .querySelector("[data-hs-overlay-backdrop-template]")
-                          .remove()
+                            .querySelector(
+                              "[data-hs-overlay-backdrop-template]"
+                            )
+                            .remove()
                         : null;
                     }}
-                    className={`${selectedOption === 'residents'
-                      ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                      : null
-                      } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                    style={{
+                      background:
+                        selectedOption === "residents" ||
+                        hoverStates["residents"]
+                          ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
+                          : null,
+                      color:
+                        selectedOption === "residents" ||
+                        hoverStates["residents"]
+                          ? `${information?.theme.hover}`
+                          : null,
+                    }}
+                    onMouseEnter={() => handleMouseEnter("residents")}
+                    onMouseLeave={() => handleMouseLeave("residents")}
+                    className={`flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-md `}
                   >
                     <BsPeopleFill size={15} />
                     Residents
                   </Link>
-
                 </li>
 
                 <li>
                   <button
                     id="hs-unstyled-collapse"
                     data-hs-collapse="#hs-unstyled-collapse-heading"
-                    className={`hs-collapse-toggle justify-between flex items-center w-full gap-x-3 py-2 px-2.5 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0] ${isClickedServices && (selectedOption === 'services' || selectedOption === 'requests') ? "text-[#EFC586]" : ""
-                      }`}
-                    onClick={handleCollapseToggleServices}
+                    className={`hs-collapse-toggle justify-between flex items-center w-full gap-x-3 py-2 px-2.5 text-sm rounded-md `}
+                    style={{
+                      background: hoverStates["parent_services"]
+                        ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
+                        : null,
+                      color:
+                        isClicked &&
+                        (selectedOption === "services" ||
+                          selectedOption === "requests"|| hoverStates["parent_services"])
+                          ? `${information?.theme?.hover}`
+                          : hoverStates["parent_services"] ?`${information?.theme?.hover}` : null,
+                    }}
+                    onMouseEnter={() => handleMouseEnter("parent_services")}
+                    onMouseLeave={() => handleMouseLeave("parent_services")}
+                    onClick={handleCollapseToggle}
                   >
                     <div className="flex items-center gap-x-3">
                       <MdOutlineMiscellaneousServices size={15} />
@@ -450,15 +562,30 @@ const Sidebar = () => {
                     <Link
                       to={`/services/?id=${id}&brgy=${brgy}`}
                       onClick={() => {
-                        setSelectedOption('services');
+                        setSelectedOption("services");
                         window.innerWidth >= 320 && window.innerWidth <= 1023
-                          ? document.querySelector("[data-hs-overlay-backdrop-template]").remove()
+                          ? document
+                              .querySelector(
+                                "[data-hs-overlay-backdrop-template]"
+                              )
+                              .remove()
                           : null;
                       }}
-                      className={`${selectedOption === 'services'
-                        ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                        : null
-                        } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                      style={{
+                        background:
+                          selectedOption === "services" ||
+                          hoverStates["services"]
+                            ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
+                            : null,
+                        color:
+                          selectedOption === "services" ||
+                          hoverStates["services"]
+                            ? `${information?.theme.hover}`
+                            : null,
+                      }}
+                      onMouseEnter={() => handleMouseEnter("services")}
+                      onMouseLeave={() => handleMouseLeave("services")}
+                      className={`flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md `}
                     >
                       <FaServicestack size={15} />
                       Manage Services
@@ -467,17 +594,30 @@ const Sidebar = () => {
                     <Link
                       to={`/requests/?id=${id}&brgy=${brgy}`}
                       onClick={() => {
-                        setSelectedOption('requests')
+                        setSelectedOption("requests");
                         window.innerWidth >= 320 && window.innerWidth <= 1023
                           ? document
-                            .querySelector("[data-hs-overlay-backdrop-template]")
-                            .remove()
+                              .querySelector(
+                                "[data-hs-overlay-backdrop-template]"
+                              )
+                              .remove()
                           : null;
                       }}
-                      className={`${selectedOption === 'requests'
-                        ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                        : null
-                        } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                      style={{
+                        background:
+                          selectedOption === "requests" ||
+                          hoverStates["requests"]
+                            ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
+                            : null,
+                        color:
+                          selectedOption === "requests" ||
+                          hoverStates["requests"]
+                            ? `${information?.theme.hover}`
+                            : null,
+                      }}
+                      onMouseEnter={() => handleMouseEnter("requests")}
+                      onMouseLeave={() => handleMouseLeave("requests")}
+                      className={`flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md `}
                     >
                       <GoGitPullRequest size={15} />
                       Service Requests
@@ -485,13 +625,14 @@ const Sidebar = () => {
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600" />
                         {pendingRequestsCount > 0 && (
                           <span className="relative inline-flex text-xs bg-red-500 text-white rounded-full py-0.5 px-1.5">
-                            <text className="mr-[2 px]"> {pendingRequestsCount} </text>
+                            <text className="mr-[2 px]">
+                              {" "}
+                              {pendingRequestsCount}{" "}
+                            </text>
                           </span>
                         )}
                       </span>
-
                     </Link>
-
                   </div>
                 </li>
 
@@ -500,9 +641,23 @@ const Sidebar = () => {
                     <button
                       id="hs-unstyled-collapse"
                       data-hs-collapse="#hs-info-collapse-heading"
-                      className={`hs-collapse-toggle justify-between flex items-center w-full gap-x-3 py-2 px-2.5 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0] ${isClickedInformation && (selectedOption === 'reports' || selectedOption === 'officials' || selectedOption === 'staff_management' || selectedOption === 'info') ? "text-[#EFC586]" : ""
-                        }`}
-                      onClick={handleCollapseToggleInformations}
+                      className={`hs-collapse-toggle justify-between flex items-center w-full gap-x-3 py-2 px-2.5 text-sm rounded-md `}
+                      style={{
+                        background: hoverStates["information"]
+                          ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
+                          : null,
+                        color:
+                          isClicked &&
+                          (selectedOption === "reports" ||
+                          selectedOption === "officials" ||
+                          selectedOption === "staff_management" ||
+                          selectedOption === "info" || hoverStates["information"])
+                            ? `${information?.theme?.hover}`
+                            : hoverStates["information"] ?`${information?.theme?.hover}` : null,
+                      }}
+                      onMouseEnter={() => handleMouseEnter("information")}
+                      onMouseLeave={() => handleMouseLeave("information")}
+                      onClick={handleCollapseToggle}
                     >
                       <div className="flex items-center gap-x-3">
                         <HiMiniInformationCircle size={15} />
@@ -536,14 +691,27 @@ const Sidebar = () => {
                         onClick={() => {
                           window.innerWidth >= 320 && window.innerWidth <= 1023
                             ? document
-                              .querySelector("[data-hs-overlay-backdrop-template]")
-                              .remove()
+                                .querySelector(
+                                  "[data-hs-overlay-backdrop-template]"
+                                )
+                                .remove()
                             : null;
                         }}
-                        className={`${selectedOption === 'reports'
-                          ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                          : null
-                          } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                        style={{
+                          background:
+                            selectedOption === "reports" ||
+                            hoverStates["reports"]
+                              ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
+                              : null,
+                          color:
+                            selectedOption === "reports" ||
+                            hoverStates["reports"]
+                              ? `${information?.theme.hover}`
+                              : null,
+                        }}
+                        onMouseEnter={() => handleMouseEnter("reports")}
+                        onMouseLeave={() => handleMouseLeave("reports")}
+                        className={`flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md `}
                       >
                         <ImStatsBars size={15} />
                         Reports
@@ -554,14 +722,27 @@ const Sidebar = () => {
                         onClick={() => {
                           window.innerWidth >= 320 && window.innerWidth <= 1023
                             ? document
-                              .querySelector("[data-hs-overlay-backdrop-template]")
-                              .remove()
+                                .querySelector(
+                                  "[data-hs-overlay-backdrop-template]"
+                                )
+                                .remove()
                             : null;
                         }}
-                        className={`${selectedOption === 'officials'
-                          ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                          : null
-                          } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                        style={{
+                          background:
+                            selectedOption === "officials" ||
+                            hoverStates["officials"]
+                              ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
+                              : null,
+                          color:
+                            selectedOption === "officials" ||
+                            hoverStates["officials"]
+                              ? `${information?.theme.hover}`
+                              : null,
+                        }}
+                        onMouseEnter={() => handleMouseEnter("officials")}
+                        onMouseLeave={() => handleMouseLeave("officials")}
+                        className={`flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md `}
                       >
                         <FaPeopleGroup size={15} />
                         Barangay Officials
@@ -572,38 +753,62 @@ const Sidebar = () => {
                         onClick={() => {
                           window.innerWidth >= 320 && window.innerWidth <= 1023
                             ? document
-                              .querySelector("[data-hs-overlay-backdrop-template]")
-                              .remove()
+                                .querySelector(
+                                  "[data-hs-overlay-backdrop-template]"
+                                )
+                                .remove()
                             : null;
                         }}
-                        className={`${selectedOption === 'staff_management'
-                          ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                          : null
-                          } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                        style={{
+                          background:
+                            selectedOption === "staff_management" ||
+                            hoverStates["staff_management"]
+                              ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
+                              : null,
+                          color:
+                            selectedOption === "staff_management" ||
+                            hoverStates["staff_management"]
+                              ? `${information?.theme.hover}`
+                              : null,
+                        }}
+                        onMouseEnter={() => handleMouseEnter("staff_management")}
+                        onMouseLeave={() => handleMouseLeave("staff_management")}
+                        className={`flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md `}
                       >
                         <MdManageAccounts size={15} />
                         Staff Management
                       </Link>
-
 
                       <Link
                         to={`/info/?id=${id}&brgy=${brgy}`}
                         onClick={() => {
                           window.innerWidth >= 320 && window.innerWidth <= 1023
                             ? document
-                              .querySelector("[data-hs-overlay-backdrop-template]")
-                              .remove()
+                                .querySelector(
+                                  "[data-hs-overlay-backdrop-template]"
+                                )
+                                .remove()
                             : null;
                         }}
-                        className={`${selectedOption === 'info'
-                          ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                          : null
-                          } flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                        style={{
+                          background:
+                            selectedOption === "info" ||
+                            hoverStates["info"]
+                              ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
+                              : null,
+                          color:
+                            selectedOption === "info" ||
+                            hoverStates["info"]
+                              ? `${information?.theme.hover}`
+                              : null,
+                        }}
+                        onMouseEnter={() => handleMouseEnter("info")}
+                        onMouseLeave={() => handleMouseLeave("info")}
+                        className={`flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md `}
                       >
                         <FaChalkboardTeacher size={15} />
                         Barangay Information
                       </Link>
-
                     </div>
                   </li>
                 ) : null}
@@ -613,19 +818,31 @@ const Sidebar = () => {
                     onClick={() => {
                       window.innerWidth >= 320 && window.innerWidth <= 1023
                         ? document
-                          .querySelector("[data-hs-overlay-backdrop-template]")
-                          .remove()
+                            .querySelector(
+                              "[data-hs-overlay-backdrop-template]"
+                            )
+                            .remove()
                         : null;
                     }}
-                    className={`${selectedOption === 'settings'
-                      ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                      : null
-                      } flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                    style={{
+                      background:
+                        selectedOption === "settings" ||
+                        hoverStates["settings"]
+                          ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
+                          : null,
+                      color:
+                        selectedOption === "settings" ||
+                        hoverStates["settings"]
+                          ? `${information?.theme.hover}`
+                          : null,
+                    }}
+                    onMouseEnter={() => handleMouseEnter("settings")}
+                    onMouseLeave={() => handleMouseLeave("settings")}
+                    className={`flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-md `}
                   >
                     <MdOutlineMiscellaneousServices size={15} />
                     Profile Settings
                   </Link>
-
                 </li>
 
                 <li>
@@ -635,16 +852,27 @@ const Sidebar = () => {
                     onClick={() => {
                       window.innerWidth >= 320 && window.innerWidth <= 1023
                         ? document
-                          .getQuerySelector(
-                            "[data-hs-overlay-backdrop-template]"
-                          )
-                          .remove()
+                            .getQuerySelector(
+                              "[data-hs-overlay-backdrop-template]"
+                            )
+                            .remove()
                         : null;
                     }}
-                    className={`${currentPath === "/"
-                      ? "bg-gradient-to-r from-[#2e6674] to-[#3098a0] text-[#EFC586]"
-                      : null
-                      } flex items-center gap-x-3 py-2 px-2.5  text-sm rounded-md hover:text-[#EFC586] hover:bg-gradient-to-r from-[#2e6674] to-[#3098a0]`}
+                    style={{
+                      background:
+                        selectedOption === "/" ||
+                        hoverStates["/"]
+                          ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
+                          : null,
+                      color:
+                        selectedOption === "/" ||
+                        hoverStates["/"]
+                          ? `${information?.theme.hover}`
+                          : null,
+                    }}
+                    onMouseEnter={() => handleMouseEnter("/")}
+                    onMouseLeave={() => handleMouseLeave("/")}
+                    className={`flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-md `}
                   >
                     <HiMiniInformationCircle size={15} />
                     Sign-Out
