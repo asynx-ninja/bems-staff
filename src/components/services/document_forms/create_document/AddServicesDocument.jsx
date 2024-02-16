@@ -239,7 +239,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         {officials
                           .filter(
                             (official) =>
-                              official.position === "Barangay Kagawad"
+                              official.position === "Secretary"
                           )
                           .map((official) => (
                             <option

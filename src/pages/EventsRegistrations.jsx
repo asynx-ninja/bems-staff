@@ -39,24 +39,29 @@ const EventsRegistrations = () => {
 
   useEffect(() => {
     const fetch = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/announcement/?brgy=${brgy}&archived=false&page=${currentPage}`
-        );
-        console.log(response.data.result);
-        if (response.status === 200) {
-          let arr = [];
-          response.data.result.map((item) => {
-            arr.push(item.title);
-          });
-          setEventFilter(arr);
+        try {
+            let page = 0;
+            let arr = [];
+            while (true) {
+                const response = await axios.get(
+                    `${API_LINK}/announcement/?brgy=${brgy}&archived=false&page=${page}`
+                );
+                if (response.status === 200 && response.data.result.length > 0) {
+                    response.data.result.map((item) => {
+                        arr.push(item.title);
+                    });
+                    page++;
+                } else {
+                    break;
+                }
+            }
+            setEventFilter(arr);
+        } catch (err) {
+            console.log(err)
         }
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetch();
-  }, [brgy]);
+    }
+    fetch()
+}, [brgy]);
 
   const handleEventFilter = (selectedType) => {
     setSelectedEventFilter(selectedType);
