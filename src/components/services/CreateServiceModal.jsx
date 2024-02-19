@@ -6,8 +6,10 @@ import API_LINK from "../../config/API";
 import { CiImageOn } from "react-icons/ci";
 import AddLoader from "./loaders/AddLoader";
 import ErrorPopup from "./popup/ErrorPopup";
+import GetBrgy from "../GETBrgy/getbrgy";
 
 function CreateServiceModal({ brgy }) {
+  const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -112,7 +114,10 @@ function CreateServiceModal({ brgy }) {
       console.log("res_folder: ", res_folder);
 
       if (res_folder.status === 200) {
-        const response = await axios.post(`${API_LINK}/services/?service_folder_id=${res_folder.data[0].service}`, formData);
+        const response = await axios.post(
+          `${API_LINK}/services/?service_folder_id=${res_folder.data[0].service}`,
+          formData
+        );
 
         console.log("response: ", response);
 
@@ -209,7 +214,12 @@ function CreateServiceModal({ brgy }) {
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full   md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
             {/* Header */}
-            <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] overflow-hidden rounded-t-2xl">
+            <div
+              className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl"
+              style={{
+                background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+              }}
+            >
               <h3
                 className="font-bold text-white mx-auto md:text-xl text-center"
                 style={{ letterSpacing: "0.3em" }}

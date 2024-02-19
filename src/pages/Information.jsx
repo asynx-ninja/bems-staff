@@ -141,9 +141,18 @@ const Information = () => {
     };
   };
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
     setInformation((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      theme: {
+        ...prev.theme,
+        [name]: value,
+        gradient: {
+          ...prev.theme.gradient,
+          [name]: value,
+        },
+      },
     }));
   };
 
@@ -186,7 +195,12 @@ const Information = () => {
         <div className="flex justify-center sm:-mt-[260px] md:-mt-[220px] lg:-mt-[140px] xl:-mt-[60px]  h-auto md:mx-4 lg:mx-5">
           <div className="w-full md:w-96 h-full lg:my-0 lg:mx-5 relative rounded-[28px] mx-auto bg-white shadow-2xl md:w-full flex flex-col">
             <div className="h-auto rounded-lg">
-              <div className="bg-gradient-to-r from-[#4b7c80] to-[#21556d] rounded-t-[28px]">
+              <div
+                style={{
+                  background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+                  borderRadius: "28px 28px 0 0",
+                }}
+              >
                 <div
                   className="relative h-32 md:h-60 mx-auto justify-center items-center rounded-t-lg"
                   style={{
@@ -230,9 +244,174 @@ const Information = () => {
                   </div>
                 </div>
               </div>
-
+              {isEditingMode && (
+                <div className="grid lg:grid-cols-2 sm:grid-cols-1 gap-4">
+                  <div className=" mx-8 my-8 xxxl:mx-36 xxxl:my-10">
+                    <div className="hs-tooltip [--trigger:click] [--placement:bottom] flex justify-start items-center gap-2">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="primary-color"
+                      >
+                        Primary Color
+                      </label>
+                      <button
+                        type="button"
+                        className="hs-tooltip-toggle w-4 h-4 mb-2 text-[12px] font-bold inline-flex justify-center items-center gap-2 rounded-full bg-gray-200 border border-gray-200 text-black"
+                        data-tip="This primary color as the main color of your User Interface"
+                      >
+                        ?
+                      </button>
+                      <span
+                        className="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-10 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded shadow-sm dark:bg-slate-700"
+                        role="tooltip"
+                      >
+                        This primary color will serve as the <br></br>main color
+                        of your User Interface
+                      </span>
+                    </div>
+                    <input
+                      id="primary-color"
+                      className="shadow appearance-none border rounded w-full h-12 py-2 px-3 text-gray-700 leading-tight focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                      name="primary"
+                      type="color"
+                      value={information?.theme?.primary}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className=" mx-8 my-8 xxxl:mx-36 xxxl:my-10">
+                    <div className="hs-tooltip flex justify-start [--trigger:click] [--placement:bottom] items-center gap-2">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="primary-color"
+                      >
+                        Secondary Color
+                      </label>
+                      <button
+                        type="button"
+                        className="hs-tooltip-toggle w-4 h-4 mb-2 text-[12px] font-bold inline-flex justify-center items-center gap-2 rounded-full bg-gray-200 border border-gray-200 text-black"
+                        data-tip="This primary color as the main color of your User Interface"
+                      >
+                        ?
+                      </button>
+                      <span
+                        className="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-10 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded shadow-sm dark:bg-slate-700"
+                        role="tooltip"
+                      >
+                        This secondary color must be lighter <br></br>than the primary color 
+                      </span>
+                    </div>
+                    <input
+                      id="secondary-color"
+                      className="shadow appearance-none border rounded w-full h-12 py-2 px-3 text-gray-700 leading-tight focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                      name="secondary"
+                      type="color"
+                      value={information?.theme?.secondary}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className=" mx-8 my-0 xxxl:mx-36 xxxl:my-10">
+                    <div className="hs-tooltip flex justify-start [--trigger:click] [--placement:bottom] items-center gap-2">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="primary-color"
+                      >
+                        Gradient 1
+                      </label>
+                      <button
+                        type="button"
+                        className="hs-tooltip-toggle w-4 h-4 mb-2 text-[12px] font-bold inline-flex justify-center items-center gap-2 rounded-full bg-gray-200 border border-gray-200 text-black"
+                        data-tip="This primary color as the main color of your User Interface"
+                      >
+                        ?
+                      </button>
+                      <span
+                        className="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-10 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded shadow-sm dark:bg-slate-700"
+                        role="tooltip"
+                      >
+                        This gradient 1 color will be serve<br></br> as the start color of gradient
+                      </span>
+                    </div>
+                    <input
+                      id="gradient-color-1"
+                      className="shadow appearance-none border rounded w-full h-12 py-2 px-3 text-gray-700 leading-tight focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                      name="start"
+                      type="color"
+                      value={information?.theme?.gradient?.start}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className=" mx-8 my-0 xxxl:mx-36 xxxl:my-10">
+                    <div className="hs-tooltip flex justify-start [--trigger:click] [--placement:bottom] items-center gap-2">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="primary-color"
+                      >
+                        Gradient 2
+                      </label>
+                      <button
+                        type="button"
+                        className="hs-tooltip-toggle w-4 h-4 mb-2 text-[12px] font-bold inline-flex justify-center items-center gap-2 rounded-full bg-gray-200 border border-gray-200 text-black"
+                        data-tip="This primary color as the main color of your User Interface"
+                      >
+                        ?
+                      </button>
+                      <span
+                        className="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-10 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded shadow-sm dark:bg-slate-700"
+                        role="tooltip"
+                      >
+                        This gradient 1 color will be serve<br></br> as the end color of gradient
+                      </span>
+                    </div>
+                    <input
+                      id="gradient-color-2"
+                      className="shadow appearance-none border rounded w-full h-12 py-2 px-3 text-gray-700 leading-tight focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                      name="end"
+                      type="color"
+                      value={information?.theme?.gradient?.end}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className=" mx-8 my-8 xxxl:mx-36 xxxl:my-10">
+                    <div className="hs-tooltip flex justify-start [--trigger:click] [--placement:bottom] items-center gap-2">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="primary-color"
+                      >
+                        Hover Color
+                      </label>
+                      <button
+                        type="button"
+                        className="hs-tooltip-toggle w-4 h-4 mb-2 text-[12px] font-bold inline-flex justify-center items-center gap-2 rounded-full bg-gray-200 border border-gray-200 text-black"
+                        data-tip="This primary color as the main color of your User Interface"
+                      >
+                        ?
+                      </button>
+                      <span
+                        className="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-10 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded shadow-sm dark:bg-slate-700"
+                        role="tooltip"
+                      >
+                        This primary color as the main color of your User
+                        Interface
+                      </span>
+                    </div>
+                    <input
+                      id="text-color"
+                      className="shadow appearance-none border rounded w-full h-12 py-2 px-3 text-gray-700 leading-tight focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                      name="hover"
+                      type="color"
+                      value={information?.theme?.hover}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+              )}
               <div className="flex flex-col md:flex-row mx-8 my-8 xxxl:mx-36 xxxl:my-10">
-                <div className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center bg-gradient-to-r from-[#4b7c80] to-[#21556d] rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]">
+              <div
+                  className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center  rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]"
+                  style={{
+                    background: `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+                  }}
+                >
                   <h1
                     className="text-center text-white text-2xl font-bold"
                     style={{ letterSpacing: "0.2em" }}
@@ -255,7 +434,12 @@ const Information = () => {
               </div>
 
               <div className="flex flex-col md:flex-row mx-8 my-8 xxxl:mx-36 xxxl:my-10">
-                <div className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center bg-gradient-to-r from-[#4b7c80] to-[#21556d] rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]">
+                <div
+                  className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center  rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]"
+                  style={{
+                    background: `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+                  }}
+                >
                   <h1
                     className="text-center text-white text-2xl font-bold"
                     style={{ letterSpacing: "0.2em" }}
@@ -278,7 +462,12 @@ const Information = () => {
               </div>
 
               <div className="flex flex-col md:flex-row mx-8 my-8 xxxl:mx-36 xxxl:my-10">
-                <div className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center bg-gradient-to-r from-[#4b7c80] to-[#21556d] rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]">
+              <div
+                  className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center  rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]"
+                  style={{
+                    background: `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+                  }}
+                >
                   <h1
                     className="text-center text-white text-2xl font-bold"
                     style={{ letterSpacing: "0.2em" }}

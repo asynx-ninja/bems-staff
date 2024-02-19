@@ -5,13 +5,13 @@ import header from "../../assets/image/rizallogo.png";
 import { FaBars } from "react-icons/fa";
 import { FaBell } from "react-icons/fa";
 import Notifications from "./Notifications";
-
+import GetBrgy from "../GETBrgy/getbrgy";
 const TopHeader = () => {
   const [date, setDate] = useState(new Date());
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
-
+  const information = GetBrgy(brgy);
   useEffect(() => {
     const interval = setInterval(() => {
       setDate(new Date());
@@ -36,7 +36,7 @@ const TopHeader = () => {
   });
 
   return (
-    <div className="flex flex-col-reverse md:flex-row justify-between items-center sm:px-2 lg:pr-3 bg-[url('/imgs/header-bg.png')] font-medium py-2 z-50 bg-[#276b7c] uppercase text-white text-sm  md:text-sm lg:text-base 2xl:text-xl">
+    <div className="flex flex-col-reverse md:flex-row justify-between items-center sm:px-2 lg:pr-3 bg-[url('/imgs/header-bg.png')] font-medium py-2 z-50  uppercase text-white text-sm  md:text-sm lg:text-base 2xl:text-xl" style={{ backgroundColor: information?.theme?.primary }}>
       <div className="flex flex-row w-full sm:justify-between md:justify-center items-center space-x-3">
         <button
           type="button"

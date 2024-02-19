@@ -4,11 +4,13 @@ import axios from "axios";
 import API_LINK from "../../config/API";
 import { useSearchParams } from "react-router-dom";
 import EditDropbox from "./EditDropbox";
+import GetBrgy from "../GETBrgy/getbrgy";
 
-function ViewArchivedModal({ inquiry, setInquiry }) {
+function ViewArchivedModal({ inquiry, setInquiry, brgy }) {
   const [expandedIndexes, setExpandedIndexes] = useState([]);
   const [files, setFiles] = useState([]);
   const [createFiles, setCreateFiles] = useState([]);
+  const information = GetBrgy(brgy);
 
   useEffect(() => {
     setFiles(inquiry.length === 0 ? [] : inquiry.compose.file);
@@ -76,7 +78,9 @@ function ViewArchivedModal({ inquiry, setInquiry }) {
           <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
             <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
               {/* Header */}
-              <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] overflow-hidden rounded-t-2xl">
+              <div className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl"  style={{
+                background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+              }}>
                 <h3
                   className="font-bold text-white mx-auto md:text-xl text-center"
                   style={{ letterSpacing: "0.3em" }}

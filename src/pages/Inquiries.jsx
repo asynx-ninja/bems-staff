@@ -13,7 +13,7 @@ import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
 import ViewInquiriesModal from "../components/inquiries/ViewInquiriesModal";
 import noData from "../assets/image/no-data.png";
-
+import GetBrgy from "../components/GETBrgy/getbrgy";
 const Inquiries = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -24,7 +24,7 @@ const Inquiries = () => {
     compose: { file: [] },
     response: [{ file: [] }],
   });
-
+  const information = GetBrgy(brgy);
   //status filtering
   const [status, setStatus] = useState({});
   const [statusFilter, setStatusFilter] = useState("all");
@@ -158,9 +158,9 @@ const Inquiries = () => {
           console.log(typeof new Date(item.compose.date), selectedDate);
           return (
             new Date(item.compose.date).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.compose.date).getMonth() ===
-            selectedDate.getMonth() &&
+              selectedDate.getMonth() &&
             new Date(item.compose.date).getDate() === selectedDate.getDate()
           );
         });
@@ -175,7 +175,7 @@ const Inquiries = () => {
         return inquiries.filter(
           (item) =>
             new Date(item.compose.date).getFullYear() ===
-            startDate.getFullYear() &&
+              startDate.getFullYear() &&
             new Date(item.compose.date).getMonth() === startDate.getMonth() &&
             new Date(item.compose.date).getDate() >= startDate.getDate() &&
             new Date(item.compose.date).getDate() <= endDate.getDate()
@@ -184,7 +184,7 @@ const Inquiries = () => {
         return inquiries.filter(
           (item) =>
             new Date(item.compose.date).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.compose.date).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -238,7 +238,12 @@ const Inquiries = () => {
     <div className="mx-4 ">
       <div>
         <div className="flex flex-row mt-5 sm:flex-col-reverse lg:flex-row w-full">
-          <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
+          <div
+            className="sm:mt-5 md:mt-4 lg:mt-0  py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]"
+            style={{
+              background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+            }}
+          >
             <h1
               className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[1.2rem] xl:text-[26px] xxxl:text-4xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
@@ -253,7 +258,9 @@ const Inquiries = () => {
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"
-                      className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] w-full text-white font-medium text-sm text-center inline-flex items-center"
+                      className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg  w-full text-white font-medium text-sm text-center inline-flex items-center"  style={{
+                        background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+                      }}
                     >
                       <FaArchive size={24} style={{ color: "#ffffff" }} />
                       <span className="sm:block md:hidden sm:pl-5">
@@ -281,7 +288,7 @@ const Inquiries = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className="bg-[#21556d] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  " style={{ backgroundColor: information?.theme?.primary }}
                 >
                   STATUS
                   <svg
@@ -341,7 +348,7 @@ const Inquiries = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className="bg-[#21556d] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "style={{ backgroundColor: information?.theme?.primary }}
                 >
                   DATE
                   <svg
@@ -434,7 +441,7 @@ const Inquiries = () => {
 
             <div className="sm:flex-col md:flex-row flex sm:w-full md:w-7/12">
               <div className="flex flex-row w-full md:mr-2">
-                <button className=" bg-[#21556d] p-3 rounded-l-md">
+                <button className="  p-3 rounded-l-md"style={{ backgroundColor: information?.theme?.primary }}>
                   <div className="w-full overflow-hidden">
                     <svg
                       className="h-3.5 w-3.5 text-white"
@@ -500,7 +507,8 @@ const Inquiries = () => {
 
         <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_280px)] xxxl:h-[calc(100vh_-_300px)]">
           <table className="relative table-auto w-full">
-            <thead className="bg-[#21556d] sticky top-0">
+            <thead className=" sticky top-0"
+            style={{ backgroundColor: information?.theme?.primary }}>
               <tr className="">
                 <th scope="col" className="px-6 py-4">
                   <div className="flex justify-center items-center">
@@ -647,7 +655,7 @@ const Inquiries = () => {
             </tbody>
           </table>
         </div>
-        <div className="md:py-4 md:px-4 bg-[#21556d] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
+        <div className="md:py-4 md:px-4  flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3" style={{ backgroundColor: information?.theme?.primary }}>
           <span className="font-medium text-white sm:text-xs text-sm">
             Showing {currentPage + 1} out of {pageCount} pages
           </span>
@@ -665,7 +673,11 @@ const Inquiries = () => {
           />
         </div>
         <ArchiveModal selectedItems={selectedItems} />
-        <ViewInquiriesModal inquiry={inquiry} setInquiry={setInquiry} brgy={brgy} />
+        <ViewInquiriesModal
+          inquiry={inquiry}
+          setInquiry={setInquiry}
+          brgy={brgy}
+        />
         <Status status={status} setStatus={setStatus} />
       </div>
     </div>

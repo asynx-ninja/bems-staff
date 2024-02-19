@@ -14,6 +14,7 @@ import ViewRequestModal from "../components/requests/ViewRequestModal";
 import Breadcrumbs from "../components/archivedRequests/Breadcrumbs";
 import RestoreRequestsModal from "../components/archivedRequests/RestoreRequestsModal";
 import noData from "../assets/image/no-data.png";
+import GetBrgy from "../components/GETBrgy/getbrgy";
 
 const ArchivedRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -29,11 +30,13 @@ const ArchivedRequests = () => {
   const [requestFilter, setRequestFilter] = useState([]); // Default is "all"
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
+  const information = GetBrgy(brgy);
   const [selectedReqFilter, setSelectedReqFilter] = useState("all");
   //date filtering
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [filteredRequests, setFilteredRequests] = useState([]);
   const [selected, setSelected] = useState("date");
+  const [officials, setOfficials] = useState([]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -76,6 +79,35 @@ const ArchivedRequests = () => {
 
     fetch();
   }, [brgy, statusFilter, selectedReqFilter, currentPage]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
+        );
+
+        if (response.status === 200) {
+          const officialsData = response.data.result || [];
+
+          if (officialsData.length > 0) {
+            setOfficials(officialsData);
+          } else {
+            setOfficials([]);
+            console.log(`No officials found for Barangay ${brgy}`);
+          }
+        } else {
+          setOfficials([]);
+          console.error("Failed to fetch officials:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setOfficials([]);
+      }
+    };
+
+    fetchData();
+  }, [currentPage, brgy]); // Add positionFilter dependency
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -242,7 +274,9 @@ const ArchivedRequests = () => {
       <div>
         {/* Header */}
         <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
-          <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
+          <div className="sm:mt-5 md:mt-4 lg:mt-0  py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]" style={{
+              background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+            }}>
             <h1
               className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
@@ -260,7 +294,7 @@ const ArchivedRequests = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className="bg-[#21556d] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  " style={{ backgroundColor: information?.theme?.primary }}
                 >
                   STATUS
                   <svg
@@ -341,7 +375,7 @@ const ArchivedRequests = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className="bg-[#21556d] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  " style={{ backgroundColor: information?.theme?.primary }}
                 >
                   DATE
                   <svg
@@ -436,7 +470,7 @@ const ArchivedRequests = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className="bg-[#21556d] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  " style={{ backgroundColor: information?.theme?.primary }}
                 >
                   SERVICE TYPE
                   <svg
@@ -486,7 +520,7 @@ const ArchivedRequests = () => {
 
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:ml-2 xl:ml-0 lg:w-7/12">
               <div className="flex flex-row w-full md:mr-2">
-                <button className=" bg-[#21556d] p-3 rounded-l-md">
+                <button className="  p-3 rounded-l-md" style={{ backgroundColor: information?.theme?.primary }}>
                   <div className="w-full overflow-hidden">
                     <svg
                       className="h-3.5 w-3.5 text-white"
@@ -530,7 +564,7 @@ const ArchivedRequests = () => {
                   <button
                     type="button"
                     data-hs-overlay="#hs-restore-requests-modal"
-                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md  bg-[#21556d] font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
+                    className="hs-tooltip-toggle sm:w-full md:w-full text-white rounded-md  bg-[#295141] font-medium text-xs sm:py-1 md:px-3 md:py-2 flex items-center justify-center"
                   >
                     <MdRestartAlt size={24} style={{ color: "#ffffff" }} />
                     <span
@@ -549,7 +583,7 @@ const ArchivedRequests = () => {
         {/* Table */}
         <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_325px)] xxxl:h-[calc(100vh_-_345px)]">
           <table className="relative table-auto w-full">
-            <thead className="bg-[#21556d] sticky top-0">
+            <thead className="sticky top-0" style={{ backgroundColor: information?.theme?.primary }}>
               <tr className="">
                 <th scope="col" className="px-6 py-4">
                   <div className="flex justify-center items-center">
@@ -689,7 +723,7 @@ const ArchivedRequests = () => {
                           </span>
                         </div>
 
-                        <div className="hs-tooltip inline-block">
+                        {/* <div className="hs-tooltip inline-block">
                           <button
                             type="button"
                             data-hs-overlay="#hs-reply-modal"
@@ -707,7 +741,7 @@ const ArchivedRequests = () => {
                           >
                             Reply to Request
                           </span>
-                        </div>
+                        </div> */}
                       </div>
                     </td>
                   </tr>
@@ -730,7 +764,7 @@ const ArchivedRequests = () => {
           </table>
         </div>
       </div>
-      <div className="md:py-4 md:px-4 bg-[#21556d] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
+      <div className="md:py-4 md:px-4  flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3" style={{ backgroundColor: information?.theme?.primary }}>
         <span className="font-medium text-white sm:text-xs text-sm">
           Showing {currentPage + 1} out of {pageCount} pages
         </span>
@@ -748,7 +782,7 @@ const ArchivedRequests = () => {
         />
       </div>
       {Object.hasOwn(request, "service_id") ? (
-        <ViewRequestModal request={request} />
+        <ViewRequestModal request={request} brgy={brgy} officials={officials} />
       ) : null}
       <ArchiveRequestsModal />
       <RequestsReportsModal />

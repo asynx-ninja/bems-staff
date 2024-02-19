@@ -16,6 +16,7 @@ import { useSearchParams } from "react-router-dom";
 import API_LINK from "../config/API";
 import axios from "axios";
 import noData from "../assets/image/no-data.png";
+import GetBrgy from "../components/GETBrgy/getbrgy";
 
 const Requests = () => {
   const [requests, setRequests] = useState([]);
@@ -28,7 +29,7 @@ const Requests = () => {
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedReqFilter, setSelectedReqFilter] = useState("all");
-
+  const information = GetBrgy(brgy);
   //status filter
   const [statusFilter, setStatusFilter] = useState("all");
   //request filter
@@ -43,7 +44,6 @@ const Requests = () => {
   const [selected, setSelected] = useState("date");
 
   const [officials, setOfficials] = useState([]);
-  
 
   useEffect(() => {
     const fetch = async () => {
@@ -80,7 +80,7 @@ const Requests = () => {
         const response = await axios.get(
           `${API_LINK}/requests/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${selectedReqFilter}&page=${currentPage}`
         );
-  
+
         if (response.status === 200) {
           console.log("Filtered Requests:", response.data.result);
           setRequests(response.data.result);
@@ -91,7 +91,7 @@ const Requests = () => {
         console.log(err);
       }
     };
-  
+
     fetch();
   }, [brgy, statusFilter, selectedReqFilter, currentPage]);
 
@@ -131,7 +131,7 @@ const Requests = () => {
   const handleStatusFilter = (selectedStatus) => {
     setStatusFilter(selectedStatus);
   };
-  
+
   const handleRequestFilter = (selectedType) => {
     setSelectedReqFilter(selectedType);
   };
@@ -200,7 +200,7 @@ const Requests = () => {
 
   const TimeFormat = (date) => {
     if (!date) return "";
-  
+
     const formattedTime = moment(date).format("hh:mm A");
     return formattedTime;
   };
@@ -212,7 +212,7 @@ const Requests = () => {
           console.log(typeof new Date(item.createdAt), selectedDate);
           return (
             new Date(item.createdAt).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
             new Date(item.createdAt).getDate() === selectedDate.getDate()
           );
@@ -227,7 +227,7 @@ const Requests = () => {
         return requests.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-            startDate.getFullYear() &&
+              startDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === startDate.getMonth() &&
             new Date(item.createdAt).getDate() >= startDate.getDate() &&
             new Date(item.createdAt).getDate() <= endDate.getDate()
@@ -236,7 +236,7 @@ const Requests = () => {
         return requests.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -292,7 +292,12 @@ const Requests = () => {
       <div>
         {/* Header */}
         <div className="flex flex-row mt-5 sm:flex-col-reverse lg:flex-row w-full">
-          <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
+          <div
+            className="sm:mt-5 md:mt-4 lg:mt-0  py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]"
+            style={{
+              background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+            }}
+          >
             <h1
               className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
@@ -308,7 +313,9 @@ const Requests = () => {
                     <button
                       type="button"
                       data-hs-overlay="#hs-modal-add"
-                      className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] w-full text-white font-medium text-sm text-center inline-flex items-center"
+                      className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg b w-full text-white font-medium text-sm text-center inline-flex items-center"  style={{
+                        background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+                      }}
                     >
                       <FaArchive size={24} style={{ color: "#ffffff" }} />
                       <span className="sm:block md:hidden sm:pl-5">
@@ -336,12 +343,13 @@ const Requests = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className="bg-[#21556d] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  " style={{ backgroundColor: information?.theme?.primary }}
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -417,7 +425,7 @@ const Requests = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className="bg-[#21556d] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  " style={{ backgroundColor: information?.theme?.primary }}
                 >
                   DATE
                   <svg
@@ -512,12 +520,13 @@ const Requests = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className="bg-[#21556d] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
-                >
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  " style={{ backgroundColor: information?.theme?.primary }}
+                > 
                   SERVICE TYPE
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -545,16 +554,16 @@ const Requests = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <div className="flex flex-col scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll h-44">
-                  {requestFilter.map((service_name, index) => (
-                    <a
-                      key={index}
-                      onClick={() => handleRequestFilter(service_name)}
-                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                      href="#"
-                    >
-                      {service_name}
-                    </a>
-                  ))}
+                    {requestFilter.map((service_name, index) => (
+                      <a
+                        key={index}
+                        onClick={() => handleRequestFilter(service_name)}
+                        className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                        href="#"
+                      >
+                        {service_name}
+                      </a>
+                    ))}
                   </div>
                 </ul>
               </div>
@@ -562,7 +571,7 @@ const Requests = () => {
 
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12 lg:ml-2 xl:ml-0">
               <div className="flex flex-row w-full md:mr-2">
-                <button className=" bg-[#21556d] p-3 rounded-l-md">
+                <button className="  p-3 rounded-l-md" style={{ backgroundColor: information?.theme?.primary }}>
                   <div className="w-full overflow-hidden">
                     <svg
                       className="h-3.5 w-3.5 text-white"
@@ -592,13 +601,18 @@ const Requests = () => {
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
                     const Requests = requests.filter((item) => {
-                        const fullName = `${item.form[0].firstName.value} ${item.form[0].lastName.value}`;
-                        const reqId = item.req_id.toString(); // Assuming service_id is a number, convert it to string for case-insensitive comparison
-                        return fullName.toLowerCase().includes(e.target.value.toLowerCase()) || reqId.includes(e.target.value.toLowerCase());
+                      const fullName = `${item.form[0].firstName.value} ${item.form[0].lastName.value}`;
+                      const reqId = item.req_id.toString(); // Assuming service_id is a number, convert it to string for case-insensitive comparison
+                      return (
+                        fullName
+                          .toLowerCase()
+                          .includes(e.target.value.toLowerCase()) ||
+                        reqId.includes(e.target.value.toLowerCase())
+                      );
                     });
-                
+
                     setFilteredRequests(Requests);
-                }}
+                  }}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
@@ -625,7 +639,7 @@ const Requests = () => {
         {/* Table */}
         <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_280px)] xl:h-[calc(100vh_-_280px)] xxl:h-[calc(100vh_-_280px)] xxxl:h-[calc(100vh_-_300px)]">
           <table className="relative table-auto w-full">
-            <thead className="bg-[#21556d] sticky top-0">
+            <thead className=" sticky top-0" style={{ backgroundColor: information?.theme?.primary }}>
               <tr className="">
                 <th scope="col" className="px-6 py-4">
                   <div className="flex justify-center items-center">
@@ -684,7 +698,8 @@ const Requests = () => {
                     <td className="px-6 py-3 xxl:w-3/12">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {moment(item.createdAt).format("MMMM DD, YYYY")} - {TimeFormat(item.createdAt) || ""}
+                          {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
+                          {TimeFormat(item.createdAt) || ""}
                         </span>
                       </div>
                     </td>
@@ -798,7 +813,7 @@ const Requests = () => {
           </table>
         </div>
       </div>
-      <div className="md:py-4 md:px-4 bg-[#21556d] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
+      <div className="md:py-4 md:px-4  flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3" style={{ backgroundColor: information?.theme?.primary }}>
         <span className="font-medium text-white sm:text-xs text-sm">
           Showing {currentPage + 1} out of {pageCount} pages
         </span>
@@ -816,9 +831,13 @@ const Requests = () => {
         />
       </div>
       {Object.hasOwn(request, "service_id") ? (
-        <ViewRequestModal request={request} brgy={brgy} officials={officials}/>
+        <ViewRequestModal request={request} brgy={brgy} officials={officials} />
       ) : null}
-      <ReplyServiceModal request={request} setRequest={setRequest} brgy={brgy} />
+      <ReplyServiceModal
+        request={request}
+        setRequest={setRequest}
+        brgy={brgy}
+      />
       <ArchiveRequestsModal selectedItems={selectedItems} />
       <RequestsReportsModal />
     </div>

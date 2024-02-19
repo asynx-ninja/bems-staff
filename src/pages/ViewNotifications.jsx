@@ -8,7 +8,7 @@ import { useSearchParams } from "react-router-dom";
 import moment from "moment";
 import axios from "axios";
 import API_LINK from "../config/API";
-
+import GetBrgy from "../components/GETBrgy/getbrgy";
 
 const ViewNotifications = ({ setNotification}) => {
   const location = useLocation();
@@ -17,6 +17,7 @@ const ViewNotifications = ({ setNotification}) => {
   const id = searchParams2.get("id");
   const searchParams = new URLSearchParams(location.search);
   const notificationData = searchParams.get("notification");
+  const information = GetBrgy(brgy);
   const notification = notificationData
     ? JSON.parse(decodeURIComponent(notificationData))
     : null;
@@ -100,7 +101,7 @@ const ViewNotifications = ({ setNotification}) => {
             <div className="absolute md:top-[16%] lg:top-[28%] transform -translate-y-1/2 flex justify-center w-full">
               <div className="flex flex-col items-center">
                 <div className="relative sm:w-32 md:w-full lg:w-56 lg:h-56 ">
-                  <div className="w-[130px] h-[130px] md:w-[200px] md:h-[200px] lg:w-full lg:h-full  lg:mt-0 mt-8 flex mx-auto justify-center overflow-hidden rounded-full object-cover border-[5px] border-[#295141]">
+                  <div className="w-[130px] h-[130px] md:w-[200px] md:h-[200px] lg:w-full lg:h-full  lg:mt-0 mt-8 flex mx-auto justify-center overflow-hidden rounded-full object-cover border-[5px] " style={{ borderColor: information?.theme?.primary }}>
                     <img
                       id="pfp"
                       className="w-full h-full object-cover"
@@ -142,7 +143,7 @@ const ViewNotifications = ({ setNotification}) => {
             >
               <button
                 type="button"
-                className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-b-xl borde text-sm font-base bg-teal-700 text-white shadow-sm"
+                className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-b-xl borde text-sm font-base  text-white shadow-sm" style={{ backgroundColor: information?.theme?.primary }}
               >
                 RETURN TO DASHBOARD
               </button>

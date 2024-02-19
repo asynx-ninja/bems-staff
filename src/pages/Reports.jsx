@@ -5,7 +5,7 @@ import axios from "axios";
 import API_LINK from "../config/API";
 import Chart from "react-apexcharts";
 import moment from "moment";
-
+import GetBrgy from "../components/GETBrgy/getbrgy";
 const Reports = () => {
   const [services, setServices] = useState([]);
   const [requests, setRequests] = useState([]);
@@ -19,7 +19,7 @@ const Reports = () => {
   const [registeredCount, setRegisteredCount] = useState(0);
   const [pendingCount, setPendingCount] = useState(0);
   const [deniedCount, setDeniedCount] = useState(0);
-
+  const information = GetBrgy(brgy);
   useEffect(() => {
     document.title = "Reports | Barangay E-Services Management";
     const fetchData = async () => {
@@ -1288,54 +1288,70 @@ const Reports = () => {
           <div className="flex flex-col w-full lg:w-auto">
             <div
               id="toggle-count"
-              className="flex p-0.5 bg-gray-700 rounded-lg w-full lg:w-auto items-center overflow-y-hidden"
+              className="flex p-0.5  rounded-lg w-full lg:w-auto items-center overflow-y-hidden"
+              style={{ backgroundColor: information?.theme?.primary }}
             >
               <button
-                className={`px-3 py-2 w-full bg-gray-700 text-gray-800 rounded-l-lg font-medium text-sm lg:text-base focus:bg-gray-600 focus:outline-none  ${
-                  timeRange === "specific"
-                    ? "bg-gray-600 text-white"
-                    : "bg-gray-200 text-white"
-                }`}
+                className={`px-3 py-2 w-full   rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none`}
+                style={{
+                  backgroundColor:
+                    timeRange === "specific"
+                      ? information?.theme?.secondary
+                      : information?.theme?.primary,
+                  color: timeRange === "specific" ? "#ffffff" : "#ffffff",
+                }}
                 onClick={() => handleTimeRangeChange("specific")}
               >
                 Specific
               </button>
               <button
-                className={`px-3 py-2 w-full bg-gray-700 text-gray-800  font-medium text-sm lg:text-base focus:bg-gray-600 focus:outline-none  ${
-                  timeRange === "today"
-                    ? "bg-gray-600 text-white"
-                    : "bg-gray-200 text-white"
-                }`}
+                className={`px-3 py-2 w-full   rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none`}
+                style={{
+                  backgroundColor:
+                    timeRange === "today"
+                      ? information?.theme?.secondary
+                      : information?.theme?.primary,
+                  color: timeRange === "specific" ? "#ffffff" : "#ffffff",
+                }}
                 onClick={() => handleTimeRangeChange("today")}
               >
                 Today
               </button>
               <button
-                className={`px-3 py-2 w-full bg-gray-700 text-gray-800  font-medium text-sm lg:text-base focus:bg-gray-600 focus:outline-none  ${
-                  timeRange === "weekly"
-                    ? "bg-gray-600 text-white"
-                    : "bg-gray-200 text-white"
-                }`}
+                className={`px-3 py-2 w-full   rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none`}
+                style={{
+                  backgroundColor:
+                    timeRange === "weekly"
+                      ? information?.theme?.secondary
+                      : information?.theme?.primary,
+                  color: timeRange === "specific" ? "#ffffff" : "#ffffff",
+                }}
                 onClick={() => handleTimeRangeChange("weekly")}
               >
                 Weekly
               </button>
               <button
-                className={`px-3 py-2 w-full bg-gray-700 text-gray-800  font-medium text-sm lg:text-base focus:bg-gray-600 focus:outline-none  ${
-                  timeRange === "monthly"
-                    ? "bg-gray-600 text-white"
-                    : "bg-gray-200 text-white"
-                }`}
+                className={`px-3 py-2 w-full   rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none`}
+                style={{
+                  backgroundColor:
+                    timeRange === "monthly"
+                      ? information?.theme?.secondary
+                      : information?.theme?.primary,
+                  color: timeRange === "specific" ? "#ffffff" : "#ffffff",
+                }}
                 onClick={() => handleTimeRangeChange("monthly")}
               >
                 Monthly
               </button>
               <button
-                className={`px-3 py-2 w-full bg-gray-700 text-gray-800  font-medium text-sm lg:text-base focus:bg-gray-600 focus:outline-none  ${
-                  timeRange === "annual"
-                    ? "bg-gray-600 text-white"
-                    : "bg-gray-200 text-white"
-                }`}
+                className={`px-3 py-2 w-full   rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none`}
+                style={{
+                  backgroundColor:
+                    timeRange === "annual"
+                      ? information?.theme?.secondary
+                      : information?.theme?.primary,
+                  color: timeRange === "specific" ? "#ffffff" : "#ffffff",
+                }}
                 onClick={() => handleTimeRangeChange("annual")}
               >
                 Annual
@@ -1410,7 +1426,12 @@ const Reports = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 lg:items-center shadow-sm rounded-xl gap-3 ">
-          <div className="flex flex-col p-4 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] rounded-xl">
+          <div
+            className="flex flex-col p-4  rounded-xl "
+            style={{
+              background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+            }}
+          >
             <h4 className="text-white mb-1 text-xs lg:text-md">
               TOTAL SERVICES TAKEN
             </h4>
@@ -1424,7 +1445,12 @@ const Reports = () => {
             </div>
           </div>
 
-          <div className="flex flex-col p-4 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] rounded-xl">
+          <div
+            className="flex flex-col p-4  rounded-xl "
+            style={{
+              background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+            }}
+          >
             <div className="flex justify-between">
               <h4 className="text-white mb-1 text-xs lg:text-md">
                 COMPLETED SERVICES
@@ -1439,8 +1465,12 @@ const Reports = () => {
               </p>
             </div>
           </div>
-
-          <div className="flex flex-col p-4 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] rounded-xl">
+          <div
+            className="flex flex-col p-4  rounded-xl "
+            style={{
+              background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+            }}
+          >
             <div className="flex justify-between">
               <h4 className="text-white mb-1 text-xs lg:text-md">
                 ESTIMATED OVERALL REVENUE
@@ -1458,8 +1488,12 @@ const Reports = () => {
               </p>
             </div>
           </div>
-
-          <div className="flex flex-col p-4 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] rounded-xl">
+          <div
+            className="flex flex-col p-4  rounded-xl "
+            style={{
+              background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+            }}
+          >
             <h4 className="text-white mb-1 text-xs lg:text-md">
               CURRENT REVENUE FROM SERVICES
             </h4>
