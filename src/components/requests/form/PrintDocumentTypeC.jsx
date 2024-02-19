@@ -393,7 +393,7 @@ const PrintDocumentTypeC = ({
                   lineHeight: 1.3,
                 }}
               >
-                {detail.form && detail.form[0].lastName.value}
+                {detail.form && detail.form[0]?.lastName?.value}
               </Text>
             </View>
 
@@ -425,7 +425,7 @@ const PrintDocumentTypeC = ({
                   lineHeight: 1.3,
                 }}
               >
-                {detail.form && detail.form[0].firstName.value}
+                {detail.form && detail.form[0]?.firstName?.value}
               </Text>
             </View>
 
@@ -457,7 +457,7 @@ const PrintDocumentTypeC = ({
                   lineHeight: 1.3,
                 }}
               >
-                {detail.form && detail.form[0].middleName.value}
+                {detail.form && detail.form[0]?.middleName?.value}
               </Text>
             </View>
           </TwoColumns>
@@ -492,7 +492,7 @@ const PrintDocumentTypeC = ({
                   lineHeight: 1.3,
                 }}
               >
-                {detail.form && detail.form[0].address.value}
+                {detail.form && detail.form[0]?.address?.value}
               </Text>
             </View>
           </TwoColumns>
@@ -939,7 +939,7 @@ const PrintDocumentTypeC = ({
                   lineHeight: 1,
                 }}
               >
-                {detail.form && detail.form[0].height.value}
+                {detail.form && detail.form[0]?.height?.value}
               </Text>
             </View>
           </TwoColumns>
@@ -1180,7 +1180,7 @@ const PrintDocumentTypeC = ({
                   lineHeight: 1,
                 }}
               >
-                {detail.form && detail.form[0].birthday.value}
+                {detail.form && detail.form[0]?.birthday?.value}
               </Text>
             </View>
 
@@ -1212,7 +1212,7 @@ const PrintDocumentTypeC = ({
                   lineHeight: 1,
                 }}
               >
-                {detail.form && detail.form[0].weight.value} KG
+                {detail.form && detail.form[0]?.weight?.value} KG
               </Text>
             </View>
           </TwoColumns>
