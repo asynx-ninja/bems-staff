@@ -660,7 +660,7 @@ const PrintDocumentTypeF = ({
                 marginTop: 10,
                 borderColor: "black",
                 alignSelf: "stretch",
-                backgroundColor: "red",
+                backgroundColor: "#7d2222",
                 borderWidth: 1,
                 marginLeft: 80,
 
@@ -671,10 +671,13 @@ const PrintDocumentTypeF = ({
                 style={{
                   textAlign: "center",
                   fontWeight: "bold",
-                  fontSize: 11,
+                  fontSize: 9,
+                  color: "white",
+                  padding: 3,
+                  fontFamily: "Times-Roman"
                 }}
               >
-                Right Thumbmark
+                RIGHT THUMB MARK
               </Text>
 
               {/* Content */}

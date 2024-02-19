@@ -23,6 +23,7 @@ import SAN_JOSE from "../../../assets/logo/SAN_JOSE.png";
 import SAN_RAFAEL from "../../../assets/logo/SAN_RAFAEL.png";
 import OETMT from "../../../assets/fonts/Old-English-Text-MT.otf";
 import ESITC from "../../../assets/fonts/Edwardian-Script-ITC.otf";
+import moment from "moment";
 import axios from "axios";
 import API_LINK from "../../../config/API";
 
@@ -82,16 +83,6 @@ const PrintDocumentTypeH = ({
     }
   };
 
-  const formatBday = (bday) => {
-    const formattedBirthday = bday.toLocaleDateString("en-PH", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-
-    return formattedBirthday;
-  };
-
   const getOrdinalSuffix = (day) => {
     if (day >= 11 && day <= 13) {
       return "th";
@@ -111,6 +102,19 @@ const PrintDocumentTypeH = ({
 
   const day = date.getDate();
   const ordinalSuffix = getOrdinalSuffix(day);
+
+  const isValidDate = (dateString) => {
+    // Use a regular expression to check if the date string is in a valid format
+    const dateFormatRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
+    return dateFormatRegex.test(dateString);
+  };
+
+  const formatDate = (dateString) => {
+    if (isValidDate(dateString)) {
+      return moment(dateString).format("MMMM D, YYYY");
+    }
+    return dateString;
+  };
 
   const formattedDate = `${day}${ordinalSuffix} day of ${date.toLocaleDateString(
     "en-PH",
@@ -136,14 +140,10 @@ const PrintDocumentTypeH = ({
     }
   );
 
-  const birthdayFormat = new Date(detail.createdAt).toLocaleDateString(
-    "en-PH",
-    {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }
-  );
+  const birthdayFormat = (birthdayValue) => {
+    const birthday = moment(birthdayValue, "YYYY-MM-DD"); // Parse birthday value using moment
+    return birthday.format("DD MMMM YYYY"); // Format birthday using moment
+  };
 
   const formattedTime = date.toLocaleTimeString("en-PH", {
     hour: "numeric",
@@ -544,6 +544,9 @@ const PrintDocumentTypeH = ({
                       }
                     }
                   }
+
+                  // If the value is a valid date string, format it using moment
+                  replacementValue = formatDate(replacementValue);
 
                   // If no matching entry is found in detail.form?.[1]?.[all possible data]?.form?,
                   // check detail.form?.[0]?.[value]?.value

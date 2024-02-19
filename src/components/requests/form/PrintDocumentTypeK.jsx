@@ -25,6 +25,7 @@ import OETMT from "../../../assets/fonts/Old-English-Text-MT.otf";
 import ESITC from "../../../assets/fonts/Edwardian-Script-ITC.otf";
 import iconEmail from "../../../assets/icons/doc-email.png";
 import iconContact from "../../../assets/icons/doc-contact.png";
+import moment from "moment";
 import { IconContext } from "react-icons";
 import axios from "axios";
 import API_LINK from "../../../config/API";
@@ -85,16 +86,6 @@ const PrintDocumentTypeK = ({
     }
   };
 
-  const formatBday = (bday) => {
-    const formattedBirthday = bday.toLocaleDateString("en-PH", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-
-    return formattedBirthday;
-  };
-
   const getOrdinalSuffix = (day) => {
     if (day >= 11 && day <= 13) {
       return "th";
@@ -123,14 +114,7 @@ const PrintDocumentTypeK = ({
     }
   )}`;
 
-  const createdAtFormatted = new Date(detail.createdAt).toLocaleDateString(
-    "en-PH",
-    {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }
-  );
+  const birthdayFormat = moment(detail.form[0].birthday.value).format("MMMM D, YYYY"); // Use Moment.js to format the birthday value
 
   const formattedTime = date.toLocaleTimeString("en-PH", {
     hour: "numeric",
@@ -518,31 +502,43 @@ const PrintDocumentTypeK = ({
             textIndent: 30,
           }}
         >
-          {docDetails.map((doc, index) => (
-            <React.Fragment key={index}>
-              {Object.entries(doc.inputs)
-                .reduce((text, [key, value]) => {
-                  const placeholder = new RegExp(`\\(\\(${key}\\)\\)`, "g");
+ {docDetails.map((doc, index) => (
+  <React.Fragment key={index}>
+    {Object.entries(doc.inputs)
+      .reduce((text, [key, value]) => {
+        const placeholder = new RegExp(`\\(\\(${key}\\)\\)`, "g");
+        let replacementValue = "";
 
-                  // Check if [value] matches with any variable in the nested structure
-                  const matchingVariable = detail.form?.[1]?.[0]?.form?.find(
-                    (entry) => entry.variable === value
-                  )?.variable;
+        // Loop through all possible data in detail.form?.[1]
+        for (let i = 0; i < detail.form?.[1]?.length; i++) {
+          const possibleData = detail.form?.[1]?.[i]?.form;
 
-                  // Get the value from the matching form entry, otherwise use an empty string
-                  const replacementValue = matchingVariable
-                    ? detail.form?.[1]?.[0]?.form?.find(
-                        (entry) => entry.variable === matchingVariable
-                      )?.value || ""
-                    : detail.form?.[0]?.[value]?.value || "";
+          // Check if possibleData is an array and has matching variable
+          if (Array.isArray(possibleData)) {
+            const matchingEntry = possibleData.find(
+              (entry) => entry.variable === value
+            );
 
-                  return text.replace(placeholder, replacementValue);
-                }, doc.details)
-                .replace(/\{CurrentDate\}/g, formattedDate)}
-              {/* <br /> */}
-              {/* Add additional line breaks or formatting as needed */}
-            </React.Fragment>
-          ))}
+            // If matching entry is found, get its value
+            if (matchingEntry) {
+              replacementValue = matchingEntry.value || "";
+              break; // Stop searching if a matching entry is found
+            }
+          }
+        }
+
+        // If no matching entry is found in detail.form?.[1]?.[all possible data]?.form?,
+        // check detail.form?.[0]?.[value]?.value
+        if (!replacementValue) {
+          replacementValue = detail.form?.[0]?.[value]?.value || "";
+        }
+
+        // Replace the placeholder in the text
+        return text.replace(placeholder, replacementValue || "");
+      }, doc.details)
+      .replace(/\{CurrentDate\}/g, moment(formattedDate).format("MMMM D, YYYY"))} {/* Use Moment.js to format the formattedDate */}
+  </React.Fragment>
+))}
         </Text>
 
         <View
