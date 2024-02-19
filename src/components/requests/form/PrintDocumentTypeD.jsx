@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
+  Font,
   Image,
   Text,
   View,
@@ -20,10 +21,29 @@ import ROSARIO from "../../../assets/logo/ROSARIO.png";
 import SAN_ISIDRO from "../../../assets/logo/SAN_ISIDRO.png";
 import SAN_JOSE from "../../../assets/logo/SAN_JOSE.png";
 import SAN_RAFAEL from "../../../assets/logo/SAN_RAFAEL.png";
-import BAGONG_PILIPINAS from "../../../assets/image/bagong-pilipinas-logo.jpg";
+import OETMT from "../../../assets/fonts/Old-English-Text-MT.otf";
+import ESITC from "../../../assets/fonts/Edwardian-Script-ITC.otf";
+import axios from "axios";
+import API_LINK from "../../../config/API";
 
-const PrintDocumentTypeD = ({ detail, officials = { officials }, brgy }) => {
+Font.register({
+  family: "Old-English-Text-MT",
+  src: OETMT,
+});
+
+Font.register({
+  family: "Edwardian-Script-ITC",
+  src: ESITC,
+});
+
+const PrintDocumentTypeD = ({
+  detail,
+  officials = { officials },
+  docDetails,
+  brgy,
+}) => {
   const [date, setDate] = useState(new Date());
+  console.log("docDetails sa pdf: ", docDetails);
 
   const returnLogo = () => {
     switch (detail.brgy) {
@@ -72,12 +92,42 @@ const PrintDocumentTypeD = ({ detail, officials = { officials }, brgy }) => {
     return formattedBirthday;
   };
 
-  const formattedDate = date.toLocaleDateString("en-PH", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    weekday: "long",
-  });
+  const getOrdinalSuffix = (day) => {
+    if (day >= 11 && day <= 13) {
+      return "th";
+    }
+    const lastDigit = day % 10;
+    switch (lastDigit) {
+      case 1:
+        return "st";
+      case 2:
+        return "nd";
+      case 3:
+        return "rd";
+      default:
+        return "th";
+    }
+  };
+
+  const day = date.getDate();
+  const ordinalSuffix = getOrdinalSuffix(day);
+
+  const formattedDate = `${day}${ordinalSuffix} day of ${date.toLocaleDateString(
+    "en-PH",
+    {
+      month: "long",
+      year: "numeric",
+    }
+  )}`;
+
+  const createdAtFormatted = new Date(detail.createdAt).toLocaleDateString(
+    "en-PH",
+    {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }
+  );
 
   const formattedTime = date.toLocaleTimeString("en-PH", {
     hour: "numeric",
@@ -157,42 +207,52 @@ const PrintDocumentTypeD = ({ detail, officials = { officials }, brgy }) => {
         alignItems: "center",
       },
       republic: {
-        fontFamily: "Times-Roman",
-        fontSize: 12,
+        fontFamily: "Old-English-Text-MT",
+        fontSize: 11,
       },
       municipality: {
-        fontFamily: "Times-Roman",
-        fontSize: 12,
+        fontFamily: "Old-English-Text-MT",
+        fontSize: 11,
         lineHeight: 1,
+        marginTop: 3,
+      },
+      municipality1: {
+        fontFamily: "Times-Bold",
+        fontSize: 11,
+        fontWeight: 700,
+        marginTop: 3,
       },
       brgy: {
-        fontFamily: "Helvetica-Bold",
-        fontSize: 20,
+        fontFamily: "Times-Bold",
+        fontSize: 14,
         fontWeight: 700,
+        marginTop: 3,
       },
-      address: {
-        fontFamily: "Times-Roman",
-        fontSize: 12,
+      office: {
+        fontFamily: "Edwardian-Script-ITC",
+        fontSize: 26,
       },
     },
     title: {
       view1: {
-        paddingTop: 12,
-        paddingBottom: 12,
+        paddingTop: 5,
+        paddingBottom: 10,
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
+        marginVertical: 10,
       },
       req: {
-        fontSize: 18,
-        fontFamily: "Helvetica-Bold",
+        fontSize: 24,
+        fontFamily: "Times-Bold",
         fontWeight: 700,
-        textDecoration: "underline",
+        // textDecoration: "underline",
       },
       id: {
         paddingTop: 3,
-        fontSize: 8,
+        fontSize: 11,
+        fontFamily: "Times-Bold",
       },
     },
     bodyHead: {
@@ -353,10 +413,10 @@ const PrintDocumentTypeD = ({ detail, officials = { officials }, brgy }) => {
       },
     },
     backgroundImage: {
-      position: 'absolute',
-      height: "100%",
+      position: "absolute",
+      height: "550px",
       width: "100%",
-      top: 0,
+      top: 25,
       left: 0,
       right: 0,
       bottom: 0,
@@ -376,156 +436,127 @@ const PrintDocumentTypeD = ({ detail, officials = { officials }, brgy }) => {
   );
 
   const LetterHead = () => (
-    <View>
-      <View style={{ alignItems: "center", justifyContent: "center" }}>
-        <Image
-          src={BAGONG_PILIPINAS}
-          alt=""
-          srcset=""
-          style={styles.letterHead.image}
-        />
+    <View style={styles.letterHead.view1}>
+      <Image
+        src={returnLogo()}
+        alt=""
+        srcset=""
+        style={styles.letterHead.image}
+      />
+
+      <View style={styles.letterHead.view2}>
+        <Text style={styles.letterHead.republic}>
+          Republic of the Philippines
+        </Text>
+        <Text style={styles.letterHead.municipality}>Province of Rizal</Text>
+        <Text style={styles.letterHead.municipality1}>
+          Municipality of Rodriguez
+        </Text>
+        <Text style={styles.letterHead.brgy}>BARANGAY {detail.brgy}</Text>
+        <Text style={styles.letterHead.office}>
+          Office of the Barangay Chairman
+        </Text>
       </View>
-      <View style={styles.letterHead.view1}>
-        <Image src={logo} alt="" srcset="" style={styles.letterHead.image} />
-        <View style={styles.letterHead.view2}>
-          <Text style={styles.letterHead.republic}>
-            Republic of the Philippines
-          </Text>
-          <Text style={styles.letterHead.municipality}>
-            Municipality of Rodriguez, Rizal
-          </Text>
-          <Text style={styles.letterHead.brgy}>BARANGAY {detail.brgy}</Text>
-          <Text style={styles.letterHead.address}>
-            Barangay Hall, Dike Street, Rodriguez, Rizal
-          </Text>
-          <Text style={styles.letterHead.address}>
-            E-mail Address: montalbanpublicinformation@gmail.com
-          </Text>
-          <Text style={styles.letterHead.address}>
-            Telephone: 0967-291-5669
-          </Text>
-        </View>
-        <Image
-          src={returnLogo()}
-          alt=""
-          srcset=""
-          style={styles.letterHead.image}
-        />
-      </View>
+
+      <Image src={logo} alt="" srcset="" style={styles.letterHead.image} />
+    </View>
+  );
+
+  const Title = () => (
+    <View style={styles.title.view1}>
+      <Text style={styles.title.req}>Barangay Certification</Text>
+      <Text style={styles.title.id}>
+        Barangay Clearance for {detail.service_name}
+      </Text>
     </View>
   );
 
   const Body = () => (
     <View>
-      <Image src={returnLogo()} style={styles.backgroundImage} />
-      {/* BODY HEAD */}
-      <View style={styles.bodyHead.column}>
-        <Text style={{ ...styles.bodyHead.text, marginTop: 10 }}>
-          Control Number: {detail.req_id}
-        </Text>
-      </View>
-      {/* END OF BODY HEAD */}
-
       {/* TERMS */}
-      <View style={{ marginLeft: 10, marginRight: 10 }}>
+      <View style={{ marginLeft: 10, marginRight: 10 }}>    
         <Text
           style={{
-            ...styles.terms.bold,
-            textAlign: "center",
-            fontSize: 16,
-            marginTop: 30,
-          }}
-        >
-          {detail.service_name.toUpperCase()}
-        </Text>
-        <Text style={{ fontSize: 12, marginTop: 10 }}>
-          To Whom It May Concern:
-        </Text>
-        <Text
-          style={{
-            marginTop: 20,
-            textAlign: "justify",
+            marginTop: 10,
+            // textAlign: "justify",
             fontSize: 12,
-            lineHeight: 2, // Adjust the lineHeight as needed
+            lineHeight: 1.5,
+            fontFamily: "Times-Roman",
+            textIndent: 30,
           }}
         >
-          THIS IS TO CERTIFY THAT{" "}
-          <Text style={styles.terms.bold}>
-            {detail.form && detail.form[0].firstName.value}{" "}
-            {detail.form && detail.form[0].middleName.value}{" "}
-            {detail.form && detail.form[0].lastName.value}
-          </Text>
-          , of legal age, residing at{" "}
-          Barangay {brgy}, Rodriguez, Rizal is a bona-fide resident
-          of Barangay {brgy}, Rodriguez, Rizal.
-        </Text>
-        <Text
-          style={{
-            fontSize: 12,
-            marginTop: 15,
-            textAlign: "justify",
-            lineHeight: 2, // Adjust the lineHeight as needed
-          }}
-        >
-          This further certifies that he/she belongs to the many indigent
-          families living in this Barangay. He/she is considered one among the
-          families living below the poverty line or indigent family.
-        </Text>
-        <Text
-          style={{
-            fontSize: 12,
-            marginTop: 15,
-            textAlign: "justify",
-            lineHeight: 2, // Adjust the lineHeight as needed
-          }}
-        >
-          This certification is issued to subject individual for DSWD Financial
-          Assistance (Department of Social Welfare and development) for whatever
-          legal purpose it may serve him/her best.
-        </Text>
-        <Text
-          style={{
-            fontSize: 12,
-            marginTop: 15,
-            marginBottom: 30,
-            textAlign: "justify",
-            lineHeight: 2, // Adjust the lineHeight as needed
-          }}
-        >
-          Issued this at <Text style={styles.terms.bold}>{formattedDate}</Text>{" "}
-          at the Barangay 830 Hall, Zone 90, District VI, City of Manila.
+          {docDetails.map((doc, index) => (
+            <React.Fragment key={index}>
+              {Object.entries(doc.inputs)
+                .reduce((text, [key, value]) => {
+                  const placeholder = new RegExp(`\\(\\(${key}\\)\\)`, "g");
+                  let replacementValue = "";
+
+                  // Loop through all possible data in detail.form?.[1]
+                  for (let i = 0; i < detail.form?.[1]?.length; i++) {
+                    const possibleData = detail.form?.[1]?.[i]?.form;
+
+                    // Check if possibleData is an array and has matching variable
+                    if (Array.isArray(possibleData)) {
+                      const matchingEntry = possibleData.find(
+                        (entry) => entry.variable === value
+                      );
+
+                      // If matching entry is found, get its value
+                      if (matchingEntry) {
+                        replacementValue = matchingEntry.value || "";
+                        break; // Stop searching if a matching entry is found
+                      }
+                    }
+                  }
+
+                  // If no matching entry is found in detail.form?.[1]?.[all possible data]?.form?,
+                  // check detail.form?.[0]?.[value]?.value
+                  if (!replacementValue) {
+                    replacementValue = detail.form?.[0]?.[value]?.value || "";
+                  }
+
+                  // Replace the placeholder in the text
+                  return text.replace(placeholder, replacementValue || "");
+                }, doc.details)
+                .replace(/\{CurrentDate\}/g, formattedDate)}
+            </React.Fragment>
+          ))}
         </Text>
 
-        <View style={styles.terms.parentSign}>
+        <View
+          style={{
+            ...styles.terms.parentSign,
+            justifyContent: "flex-end",
+            marginTop: 50,
+            fontFamily: "Times-Roman",
+          }}
+        >
           <View style={styles.terms.half}>
-            <Text style={styles.terms.bold}>AFFIANT</Text>
-            <View alt="" style={styles.terms.imageStyle}></View>
+            {officials
+              .filter((official) => official.position === "Barangay Chairman")
+              .map((official) => (
+                <Text
+                  style={{
+                    fontSize: 12,
+                    textAlign: "center",
+                    lineHeight: 1.5, // Adjust the lineHeight as needed
+                  }}
+                >
+                  {official.lastName}, {official.firstName}{" "}
+                  {official.middleName}
+                </Text>
+              ))}
             <View style={styles.terms.signText}>
-              <Text style={styles.terms.center}>Witnessed By: Kagawad</Text>
-            </View>
-            <View style={{ ...styles.terms.signText, marginTop: 40 }}>
-              <Text style={styles.terms.center}>
-                Resident's Signature over Printed Name
-              </Text>
-            </View>
-          </View>
-          <View style={styles.terms.half}>
-            <Text
-              style={styles.terms.bold}
-            >{`ASSISTED BY: (For Residents below 18 years old)`}</Text>
-            <View alt="" style={styles.terms.imageStyle}></View>
-            <View style={styles.terms.signText}>
-              <Text style={styles.terms.center}>Punong Barangay</Text>
-            </View>
-            <View style={{ ...styles.terms.signText, marginTop: 40 }}>
-              <Text style={styles.terms.center}>
-                Parent/Guardian's Signature over Printed Name
+              <Text
+                style={{ ...styles.terms.center, fontFamily: "Times-Roman" }}
+              >
+                Punong Barangay
               </Text>
             </View>
           </View>
         </View>
-      </View>
-      {/* END OF TERMS */}
+      </View>    
     </View>
   );
 
@@ -538,11 +569,12 @@ const PrintDocumentTypeD = ({ detail, officials = { officials }, brgy }) => {
 
   return (
     <Document>
-      <Page size="A4" style={styles.body}>
+      <Page size="A4" style={styles.body} orientation="landscape">
         <LetterHead />
         <Divider />
+        <Title />
         <Body />
-        <Footer />
+        {/* <Footer /> */}
       </Page>
     </Document>
   );
