@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
+  Font,
   Image,
   Text,
   View,
@@ -20,10 +21,29 @@ import ROSARIO from "../../../assets/logo/ROSARIO.png";
 import SAN_ISIDRO from "../../../assets/logo/SAN_ISIDRO.png";
 import SAN_JOSE from "../../../assets/logo/SAN_JOSE.png";
 import SAN_RAFAEL from "../../../assets/logo/SAN_RAFAEL.png";
-import BAGONG_PILIPINAS from "../../../assets/image/bagong-pilipinas-logo.jpg";
+import OETMT from "../../../assets/fonts/Old-English-Text-MT.otf";
+import ESITC from "../../../assets/fonts/Edwardian-Script-ITC.otf";
+import axios from "axios";
+import API_LINK from "../../../config/API";
 
-const PrintDocumentTypeC = ({ detail, officials = { officials }, brgy }) => {
+Font.register({
+  family: "Old-English-Text-MT",
+  src: OETMT,
+});
+
+Font.register({
+  family: "Edwardian-Script-ITC",
+  src: ESITC,
+});
+
+const PrintDocumentTypeC = ({
+  detail,
+  officials = { officials },
+  docDetails,
+  brgy,
+}) => {
   const [date, setDate] = useState(new Date());
+  console.log("docDetails sa pdf: ", docDetails);
 
   const returnLogo = () => {
     switch (detail.brgy) {
@@ -72,12 +92,44 @@ const PrintDocumentTypeC = ({ detail, officials = { officials }, brgy }) => {
     return formattedBirthday;
   };
 
-  const formattedDate = date.toLocaleDateString("en-PH", {
+  const getOrdinalSuffix = (day) => {
+    if (day >= 11 && day <= 13) {
+      return "th";
+    }
+    const lastDigit = day % 10;
+    switch (lastDigit) {
+      case 1:
+        return "st";
+      case 2:
+        return "nd";
+      case 3:
+        return "rd";
+      default:
+        return "th";
+    }
+  };
+
+  const day = date.getDate();
+  const ordinalSuffix = getOrdinalSuffix(day);
+
+  const formattedDate = `${date.toLocaleDateString("en-PH", {
+    year: "numeric",
+  })}`;
+
+  const dateIssued = `${date.toLocaleDateString("en-PH", {
     day: "numeric",
     month: "long",
     year: "numeric",
-    weekday: "long",
-  });
+  })}`;
+
+  const createdAtFormatted = new Date(detail.createdAt).toLocaleDateString(
+    "en-PH",
+    {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }
+  );
 
   const formattedTime = date.toLocaleTimeString("en-PH", {
     hour: "numeric",
@@ -133,414 +185,1864 @@ const PrintDocumentTypeC = ({ detail, officials = { officials }, brgy }) => {
     "In compliance with the Data Privacy Act of 2012, I give consent to my barangay to collect, process, and evaluate information needed for this service application form.",
   ];
 
-  const styles = StyleSheet.create({
-    body: {
-      paddingTop: 5,
-      paddingLeft: 35,
-      paddingRight: 35,
-      paddingBottom: 35,
-    },
-    letterHead: {
-      view1: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-around",
-        alignItems: "center",
-      },
-      image: {
-        width: 70,
-      },
-      view2: {
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-      },
-      republic: {
-        fontFamily: "Times-Roman",
-        fontSize: 12,
-      },
-      municipality: {
-        fontFamily: "Times-Roman",
-        fontSize: 12,
-        lineHeight: 1,
-      },
-      brgy: {
-        fontFamily: "Helvetica-Bold",
-        fontSize: 20,
-        fontWeight: 700,
-      },
-      address: {
-        fontFamily: "Times-Roman",
-        fontSize: 12,
-      },
-    },
-    title: {
-      view1: {
-        paddingTop: 12,
-        paddingBottom: 12,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-      },
-      req: {
-        fontSize: 18,
-        fontFamily: "Helvetica-Bold",
-        fontWeight: 700,
-        textDecoration: "underline",
-      },
-      id: {
-        paddingTop: 3,
-        fontSize: 8,
-      },
-    },
-    bodyHead: {
-      bodyParent: {
-        paddingVertical: 12,
-        borderWidth: 2,
-        borderColor: "#000000",
-      },
-      view1: {
-        paddingBottom: 8,
-        paddingHorizontal: 12,
-        fontSize: 11,
-      },
-      parent: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "flex-start",
-        fontSize: 12,
-      },
-      bodyTitles: {
-        display: "flex",
-        flexDirection: "column",
-        width: "100%",
-        paddingHorizontal: 12,
-      },
-      text: {
-        fontFamily: "Helvetica-Bold",
-        fontWeight: 700,
-        fontSize: 12,
-      },
-      image: {
-        objectFit: "cover",
-        outlineWidth: 2,
-        backgroundColor: "#ffffff",
-        height: 100,
-        width: 100,
-      },
-      column: {
-        display: "flex",
-        flexDirection: "column",
-        marginBottom: 2,
-        paddingHorizontal: 12,
-      },
-    },
-    info: {
-      parent: {
-        paddingHorizontal: 12,
-      },
-      header: {
-        fontFamily: "Helvetica-Bold",
-        fontWeight: 700,
-        fontSize: 16,
-        borderBottomWidth: 2,
-        borderColor: "#000000",
-        marginTop: 10,
-      },
-      table: {
-        display: "flex",
-        flexDirection: "row",
-        width: "100%",
-        flexWrap: "wrap",
-        marginTop: 10,
-        border: 2,
-        borderColor: "#000000",
-      },
-      tableCell: {
-        flex: "1 0 21%",
-        padding: 8,
-        borderTop: 1,
-        borderColor: "#000000",
-        outlineWidth: 1,
-      },
-      label: {
-        fontFamily: "Helvetica-Bold",
-        fontSize: 10,
-        fontWeight: 700,
-      },
-      value: {
-        fontSize: 12,
-      },
-    },
-    terms: {
-      parent: {
-        paddingLeft: 12,
-        paddingRight: 12,
-        paddingTop: 12,
-        marginLeft: 12,
-        marginRight: 12,
-        marginTop: 12,
-        borderWidth: 2,
-        borderColor: "#000000",
-      },
-      bold: {
-        fontFamily: "Helvetica-Bold",
-        fontWeight: 700,
-        fontSize: 10,
-      },
-      underline: {
-        textDecoration: "underline",
-      },
-      listParent: {
-        display: "flex",
-        flexDirection: "column",
-        width: "100%",
-        marginVertical: 10,
-      },
-      listChild: {
-        fontSize: 10,
-        fontStyle: "italic",
-        display: "flex",
-        flexDirection: "row",
-      },
-      text: {
-        fontFamily: "Helvetica-Oblique",
-        textAlign: "justify",
-        marginLeft: 5,
-        fontStyle: "italic",
-      },
-      parentSign: {
-        display: "flex",
-        flexDirection: "row",
-        marginVertical: 4,
-        width: "100%",
-        gap: 10,
-      },
-      half: {
-        width: "50%",
-      },
-      imageStyle: {
-        height: 50,
-        marginLeft: "auto",
-        marginRight: "auto",
-      },
-      signText: {
-        borderWidth: 0,
-        borderTopWidth: 2,
-        borderColor: "#000000",
-        fontFamily: "Helvetica-Bold",
-        fontSize: 10,
-        fontWeight: 700,
-      },
-      center: {
-        textAlign: "center",
-      },
-    },
-    footer: {
-      view: {
-        display: "flex",
-        flexDirection: "row",
-        paddingHorizontal: 8,
-        justifyContent: "space-between",
-      },
-      text: {
-        fontFamily: "Helvetica-Bold",
-        fontSize: 10,
-        fontWeight: 700,
-      },
-    },
-    backgroundImage: {
-      position: 'absolute',
-      height: "100%",
-      width: "100%",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      opacity: 0.1, // Set the opacity of the background image
-    },
-  });
-
-  const Divider = () => (
-    <View
-      style={{
-        borderBottomWidth: 2,
-        borderBottomColor: "#000000",
-        marginTop: 10,
-        marginBottom: 10,
-      }}
-    />
-  );
-
-  const LetterHead = () => (
-    <View>
-      <View style={{ alignItems: "center", justifyContent: "center" }}>
-        <Image
-          src={BAGONG_PILIPINAS}
-          alt=""
-          srcset=""
-          style={styles.letterHead.image}
-        />
-      </View>
-      <View style={styles.letterHead.view1}>
-        <Image src={logo} alt="" srcset="" style={styles.letterHead.image} />
-        <View style={styles.letterHead.view2}>
-          <Text style={styles.letterHead.republic}>
-            Republic of the Philippines
-          </Text>
-          <Text style={styles.letterHead.municipality}>
-            Municipality of Rodriguez, Rizal
-          </Text>
-          <Text style={styles.letterHead.brgy}>BARANGAY {detail.brgy}</Text>
-          <Text style={styles.letterHead.address}>
-            Barangay Hall, Dike Street, Rodriguez, Rizal
-          </Text>
-          <Text style={styles.letterHead.address}>
-            E-mail Address: montalbanpublicinformation@gmail.com
-          </Text>
-          <Text style={styles.letterHead.address}>
-            Telephone: 0967-291-5669
-          </Text>
-        </View>
-        <Image
-          src={returnLogo()}
-          alt=""
-          srcset=""
-          style={styles.letterHead.image}
-        />
-      </View>
+  const TwoColumns = ({ children }) => (
+    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      {children}
     </View>
   );
 
-  const Body = () => (
+  const Title = () => (
     <View>
-      <Image src={returnLogo()} style={styles.backgroundImage} />
-      {/* BODY HEAD */}
-      <View style={styles.bodyHead.column}>
-        <Text style={{ ...styles.bodyHead.text, marginTop: 10 }}>
-          Control Number: {detail.req_id}
-        </Text>
-      </View>
-      {/* END OF BODY HEAD */}
+      <Text
+        style={{
+          marginTop: 5,
+          fontSize: 6,
+          lineHeight: 1.5,
+        }}
+      >
+        BIR FORM 0016 (DECEMBER, 2014)
+      </Text>
+    </View>
+  );
 
-      {/* TERMS */}
-      <View style={{ marginLeft: 10, marginRight: 10 }}>
-        <Text
+  const FirstSegment = () => (
+    <View>
+      <TwoColumns>
+        <View
           style={{
-            ...styles.terms.bold,
-            textAlign: "center",
-            fontSize: 16,
-            marginTop: 30,
+            width: "60%",
           }}
         >
-          {detail.service_name.toUpperCase()}
-        </Text>
-        <Text style={{ fontSize: 12, marginTop: 10 }}>
-          To Whom It May Concern:
-        </Text>
-        <Text
-          style={{
-            marginTop: 20,
-            textAlign: "justify",
-            fontSize: 12,
-            lineHeight: 2, // Adjust the lineHeight as needed
-          }}
-        >
-          THIS IS TO CERTIFY THAT{" "}
-          <Text style={styles.terms.bold}>
-            {detail.form && detail.form[0].firstName.value}{" "}
-            {detail.form && detail.form[0].middleName.value}{" "}
-            {detail.form && detail.form[0].lastName.value}
-          </Text>
-          , of legal age, residing at{" "}
-          Barangay {brgy}, Rodriguez, Rizal is a bona-fide resident
-          of Barangay {brgy}, Rodriguez, Rizal.
-        </Text>
-        <Text
-          style={{
-            fontSize: 12,
-            marginTop: 15,
-            textAlign: "justify",
-            lineHeight: 2, // Adjust the lineHeight as needed
-          }}
-        >
-          This further certifies that he/she belongs to the many indigent
-          families living in this Barangay. He/she is considered one among the
-          families living below the poverty line or indigent family.
-        </Text>
-        <Text
-          style={{
-            fontSize: 12,
-            marginTop: 15,
-            textAlign: "justify",
-            lineHeight: 2, // Adjust the lineHeight as needed
-          }}
-        >
-          This certification is issued to subject individual for DSWD Financial
-          Assistance (Department of Social Welfare and development) for whatever
-          legal purpose it may serve him/her best.
-        </Text>
-        <Text
-          style={{
-            fontSize: 12,
-            marginTop: 15,
-            marginBottom: 30,
-            textAlign: "justify",
-            lineHeight: 2, // Adjust the lineHeight as needed
-          }}
-        >
-          Issued this at <Text style={styles.terms.bold}>{formattedDate}</Text>{" "}
-          at the Barangay 830 Hall, Zone 90, District VI, City of Manila.
-        </Text>
-
-        <View style={styles.terms.parentSign}>
-          <View style={styles.terms.half}>
-            <Text style={styles.terms.bold}>AFFIANT</Text>
-            <View alt="" style={styles.terms.imageStyle}></View>
-            <View style={styles.terms.signText}>
-              <Text style={styles.terms.center}>Witnessed By: Kagawad</Text>
-            </View>
-            <View style={{ ...styles.terms.signText, marginTop: 40 }}>
-              <Text style={styles.terms.center}>
-                Resident's Signature over Printed Name
+          {/* TOP HEADER */}
+          <TwoColumns>
+            <View
+              style={{
+                width: "70%",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: 700,
+                  textAlign: "center",
+                  paddingVertical: 5,
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#000000",
+                }}
+              >
+                COMMUNITY TAX CERTIFICATE
               </Text>
             </View>
-          </View>
-          <View style={styles.terms.half}>
-            <Text
-              style={styles.terms.bold}
-            >{`ASSISTED BY: (For Residents below 18 years old)`}</Text>
-            <View alt="" style={styles.terms.imageStyle}></View>
-            <View style={styles.terms.signText}>
-              <Text style={styles.terms.center}>Punong Barangay</Text>
+
+            <View
+              style={{
+                width: "30%",
+                backgroundColor: "black", // Set black background color
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: 700,
+                  textAlign: "center",
+                  color: "white",
+                  paddingVertical: 5,
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#000000",
+                }}
+              >
+                INDIVIDUAL
+              </Text>
             </View>
-            <View style={{ ...styles.terms.signText, marginTop: 40 }}>
-              <Text style={styles.terms.center}>
-                Parent/Guardian's Signature over Printed Name
+          </TwoColumns>
+
+          {/* DATE AND PLACE ISSUED */}
+          <TwoColumns>
+            <View
+              style={{
+                width: "20%",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  textAlign: "center",
+                  paddingTop: 5,
+                  borderRightWidth: 1,
+                  borderRightColor: "#000000",
+                  lineHeight: 1.3,
+                }}
+              >
+                YEAR
+              </Text>
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  textAlign: "center",
+                  paddingTop: 2,
+                  paddingBottom: 3,
+                  borderRightWidth: 1,
+                  borderRightColor: "#000000",
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#000000",
+                  lineHeight: 1.3,
+                }}
+              >
+                {formattedDate}
+              </Text>
+            </View>
+
+            <View
+              style={{
+                width: "50%",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  paddingTop: 5,
+                  marginLeft: 10,
+                  borderRightWidth: 1,
+                  borderRightColor: "#000000",
+                  lineHeight: 1.3,
+                }}
+              >
+                PLACE OF ISSUE (City / Mun. / Prov.)
+              </Text>
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  textAlign: "center",
+                  paddingTop: 2,
+                  paddingBottom: 3,
+                  borderRightWidth: 1,
+                  borderRightColor: "#000000",
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#000000",
+                  lineHeight: 1.3,
+                }}
+              >
+                {detail.brgy}, RODRIGUEZ, RIZAL
+              </Text>
+            </View>
+
+            <View
+              style={{
+                width: "30%",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  marginLeft: 10,
+                  paddingTop: 5,
+                  lineHeight: 1.3,
+                }}
+              >
+                DATE ISSUED
+              </Text>
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  textAlign: "center",
+                  paddingTop: 2,
+                  paddingBottom: 3,
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#000000",
+                  lineHeight: 1.3,
+                }}
+              >
+                {dateIssued}
+              </Text>
+            </View>
+          </TwoColumns>
+
+          {/* NAMES */}
+          <TwoColumns>
+            <View
+              style={{
+                width: "20%",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  textAlign: "center",
+                  paddingTop: 5,
+                  lineHeight: 1.3,
+                }}
+              >
+                NAME (SURNAME)
+              </Text>
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  textAlign: "center",
+                  paddingTop: 2,
+                  paddingBottom: 3,
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#000000",
+                  lineHeight: 1.3,
+                }}
+              >
+                {detail.form && detail.form[0].lastName.value}
+              </Text>
+            </View>
+
+            <View
+              style={{
+                width: "50%",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  paddingTop: 5,
+                  lineHeight: 1.3,
+                  textAlign: "center",
+                }}
+              >
+                (FIRST)
+              </Text>
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  textAlign: "center",
+                  paddingTop: 2,
+                  paddingBottom: 3,
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#000000",
+                  lineHeight: 1.3,
+                }}
+              >
+                {detail.form && detail.form[0].firstName.value}
+              </Text>
+            </View>
+
+            <View
+              style={{
+                width: "30%",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  paddingTop: 5,
+                  lineHeight: 1.3,
+                  textAlign: "center",
+                }}
+              >
+                (MIDDLE)
+              </Text>
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  textAlign: "center",
+                  paddingTop: 2,
+                  paddingBottom: 3,
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#000000",
+                  lineHeight: 1.3,
+                }}
+              >
+                {detail.form && detail.form[0].middleName.value}
+              </Text>
+            </View>
+          </TwoColumns>
+
+          {/* NAMES */}
+          <TwoColumns>
+            <View
+              style={{
+                width: "100%",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  paddingLeft: 7,
+                  paddingTop: 5,
+                  lineHeight: 1.3,
+                }}
+              >
+                ADDRESS
+              </Text>
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  paddingLeft: 7,
+                  paddingTop: 2,
+                  paddingBottom: 3,
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#000000",
+                  lineHeight: 1.3,
+                }}
+              >
+                {detail.form && detail.form[0].address.value}
+              </Text>
+            </View>
+          </TwoColumns>
+        </View>
+
+        <View
+          style={{
+            width: "40%",
+            borderBottomWidth: 1,
+            borderBottomColor: "#000000",
+            borderLeftWidth: 1,
+            borderLeftColor: "#000000",
+          }}
+        >
+          <View>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: 700,
+                paddingVertical: 5,
+                paddingHorizontal: 5,
+                fontFamily: "Times-Bold",
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+              }}
+            >
+              CCI2022
+            </Text>
+          </View>
+          <View>
+            <Text
+              style={{
+                fontSize: 8,
+                textAlign: "center",
+                paddingVertical: 5,
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+                fontFamily: "Helvetica-Bold",
+              }}
+            >
+              TAXPAYER'S COPY
+            </Text>
+          </View>
+          <View>
+            <Text
+              style={{
+                fontSize: 6,
+                textAlign: "center",
+                paddingTop: 3,
+                paddingBottom: 2,
+              }}
+            >
+              TIN (If Any):
+            </Text>
+
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                paddingTop: 2,
+                paddingBottom: 4,
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+                paddingLeft: 7,
+              }}
+            >
+              <View
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderWidth: 1,
+                  borderColor: "black", // Set the color of the border
+                }}
+              />
+              <View
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderWidth: 1,
+                  borderColor: "black", // Set the color of the border
+                }}
+              />
+              <View
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderWidth: 1,
+                  borderColor: "black", // Set the color of the border
+                }}
+              />
+
+              <View
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderWidth: 1,
+                  borderColor: "black", // Set the color of the border
+                  marginLeft: 5,
+                }}
+              />
+              <View
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderWidth: 1,
+                  borderColor: "black", // Set the color of the border
+                }}
+              />
+              <View
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderWidth: 1,
+                  borderColor: "black", // Set the color of the border
+                }}
+              />
+
+              <View
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderWidth: 1,
+                  borderColor: "black", // Set the color of the border
+                  marginLeft: 5,
+                }}
+              />
+              <View
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderWidth: 1,
+                  borderColor: "black", // Set the color of the border
+                }}
+              />
+              <View
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderWidth: 1,
+                  borderColor: "black", // Set the color of the border
+                }}
+              />
+
+              <View
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderWidth: 1,
+                  borderColor: "black", // Set the color of the border
+                  marginLeft: 5,
+                }}
+              />
+              <View
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderWidth: 1,
+                  borderColor: "black", // Set the color of the border
+                }}
+              />
+              <View
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderWidth: 1,
+                  borderColor: "black", // Set the color of the border
+                }}
+              />
+              <View
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderWidth: 1,
+                  borderColor: "black", // Set the color of the border
+                }}
+              />
+              <View
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderWidth: 1,
+                  borderColor: "black", // Set the color of the border
+                }}
+              />
+            </View>
+          </View>
+
+          {/* Gender */}
+          <View
+            style={{
+              flexDirection: "row",
+              width: "100%",
+              paddingTop: 2,
+              paddingBottom: 4,
+              borderBottomWidth: 1,
+              borderBottomColor: "#000000",
+              paddingLeft: 7,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 8,
+                fontWeight: 700,
+                paddingVertical: 3,
+                paddingHorizontal: 5,
+              }}
+            >
+              SEX:
+            </Text>
+
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                paddingLeft: 35,
+              }}
+            >
+              <View
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderWidth: 1,
+                  borderColor: "black", // Set the color of the border
+                }}
+              />
+              <View
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderWidth: 1,
+                  borderColor: "black", // Set the color of the border
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 7,
+                    textAlign: "center",
+                  }}
+                >
+                  1
+                </Text>
+              </View>
+              <Text
+                style={{
+                  fontSize: 7,
+                  textAlign: "center",
+                  paddingHorizontal: 3,
+                }}
+              >
+                MALE
+              </Text>
+            </View>
+
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                paddingLeft: 7,
+              }}
+            >
+              <View
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderWidth: 1,
+                  borderColor: "black", // Set the color of the border
+                }}
+              />
+              <View
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderWidth: 1,
+                  borderColor: "black", // Set the color of the border
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 7,
+                    textAlign: "center",
+                  }}
+                >
+                  2
+                </Text>
+              </View>
+              <Text
+                style={{
+                  fontSize: 7,
+                  textAlign: "center",
+                  paddingHorizontal: 3,
+                }}
+              >
+                FEMALE
               </Text>
             </View>
           </View>
         </View>
+      </TwoColumns>
+    </View>
+  );
+
+  const SecondSegment = () => (
+    <View>
+      <TwoColumns>
+        <View
+          style={{
+            width: "100%",
+          }}
+        >
+          {/* OTHER INFO 1 */}
+          <TwoColumns>
+            <View
+              style={{
+                width: "20%",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  paddingLeft: 7,
+                  paddingTop: 5,
+                  paddingBottom: 5,
+                  borderRightWidth: 1,
+                  borderRightColor: "#000000",
+                  lineHeight: 1.3,
+                }}
+              >
+                CITIZENSHIP
+              </Text>
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  textAlign: "center",
+                  paddingTop: 2,
+                  paddingBottom: 3,
+                  borderRightWidth: 1,
+                  borderRightColor: "#000000",
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#000000",
+                  lineHeight: 1.3,
+                }}
+              />
+            </View>
+
+            <View
+              style={{
+                width: "25%",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  paddingTop: 5,
+                  paddingBottom: 5,
+                  marginLeft: 10,
+                  borderRightWidth: 1,
+                  borderRightColor: "#000000",
+                  lineHeight: 1.3,
+                }}
+              >
+                ICR NO. (If an Alien)
+              </Text>
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  paddingTop: 2,
+                  paddingBottom: 3,
+                  borderRightWidth: 1,
+                  borderRightColor: "#000000",
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#000000",
+                  lineHeight: 1.3,
+                }}
+              ></Text>
+            </View>
+
+            <View
+              style={{
+                width: "30%",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  paddingTop: 5,
+                  paddingBottom: 5,
+                  marginLeft: 10,
+                  borderRightWidth: 1,
+                  borderRightColor: "#000000",
+                  lineHeight: 1.3,
+                }}
+              >
+                PLACE OF BIRTH
+              </Text>
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  paddingTop: 2,
+                  paddingBottom: 3,
+                  borderRightWidth: 1,
+                  borderRightColor: "#000000",
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#000000",
+                  lineHeight: 1.3,
+                }}
+              ></Text>
+            </View>
+
+            <View
+              style={{
+                width: "25%",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  marginLeft: 10,
+                  paddingTop: 5,
+                  paddingBottom: 3,
+                  lineHeight: 1,
+                }}
+              >
+                HEIGHT
+              </Text>
+              <Text
+                style={{
+                  fontSize: 7,
+                  fontWeight: 700,
+                  textAlign: "center",
+                  paddingBottom: 1,
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#000000",
+                  lineHeight: 1,
+                }}
+              >
+                {detail.form && detail.form[0].height.value}
+              </Text>
+            </View>
+          </TwoColumns>
+        </View>
+      </TwoColumns>
+
+      <TwoColumns>
+        <View
+          style={{
+            width: "100%",
+          }}
+        >
+          {/* OTHER INFO 1 */}
+          <TwoColumns>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                width: "55%",
+                borderRightWidth: 1,
+                borderRightColor: "#000000",
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  paddingLeft: 7,
+                  paddingTop: 5,
+                  paddingBottom: 5,
+                  lineHeight: 1.3,
+                }}
+              >
+                CIVIL STATUS
+              </Text>
+
+              {/* STATUSES */}
+              <View
+                style={{
+                  flexDirection: "column",
+                  paddingLeft: 25,
+                  paddingVertical: 2,
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                  }}
+                >
+                  <View
+                    style={{
+                      width: 10,
+                      height: 10,
+                      borderWidth: 1,
+                      borderColor: "black",
+                    }}
+                  />
+                  <View
+                    style={{
+                      width: 10,
+                      height: 10,
+                      borderWidth: 1,
+                      borderColor: "black",
+                      marginRight: 5,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 7,
+                        textAlign: "center",
+                      }}
+                    >
+                      1
+                    </Text>
+                  </View>
+                  <Text
+                    style={{
+                      fontSize: 7,
+                      textAlign: "center",
+                      paddingHorizontal: 1,
+                    }}
+                  >
+                    Single
+                  </Text>
+
+                  <View
+                    style={{
+                      width: 10,
+                      height: 10,
+                      borderWidth: 1,
+                      borderColor: "black",
+                      marginLeft: 15,
+                    }}
+                  />
+                  <View
+                    style={{
+                      width: 10,
+                      height: 10,
+                      borderWidth: 1,
+                      borderColor: "black",
+                      marginRight: 5,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 7,
+                        textAlign: "center",
+                      }}
+                    >
+                      3
+                    </Text>
+                  </View>
+                  <Text
+                    style={{
+                      fontSize: 7,
+                      textAlign: "center",
+                      paddingHorizontal: 1,
+                    }}
+                  >
+                    Widow / Widower / Legally Separated
+                  </Text>
+                </View>
+
+                {/* LOWER */}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    marginTop: 1, // Adjust the margin as needed
+                  }}
+                >
+                  <View
+                    style={{
+                      width: 10,
+                      height: 10,
+                      borderWidth: 1,
+                      borderColor: "black",
+                    }}
+                  />
+                  <View
+                    style={{
+                      width: 10,
+                      height: 10,
+                      borderWidth: 1,
+                      borderColor: "black",
+                      marginRight: 5,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 7,
+                        textAlign: "center",
+                      }}
+                    >
+                      2
+                    </Text>
+                  </View>
+                  <Text
+                    style={{
+                      fontSize: 7,
+                      textAlign: "center",
+                      paddingHorizontal: 1,
+                    }}
+                  >
+                    Married
+                  </Text>
+
+                  <View
+                    style={{
+                      width: 10,
+                      height: 10,
+                      borderWidth: 1,
+                      borderColor: "black",
+                      marginLeft: 11,
+                    }}
+                  />
+                  <View
+                    style={{
+                      width: 10,
+                      height: 10,
+                      borderWidth: 1,
+                      borderColor: "black",
+                      marginRight: 5,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 7,
+                        textAlign: "center",
+                      }}
+                    >
+                      4
+                    </Text>
+                  </View>
+                  <Text
+                    style={{
+                      fontSize: 7,
+                      textAlign: "center",
+                      paddingHorizontal: 1,
+                    }}
+                  >
+                    Divorced
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            <View
+              style={{
+                width: "20%",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  marginLeft: 10,
+                  paddingTop: 5,
+                  paddingBottom: 3,
+                  lineHeight: 1,
+                  borderRightWidth: 1,
+                  borderRightColor: "#000000",
+                }}
+              >
+                DATE OF BIRTH
+              </Text>
+              <Text
+                style={{
+                  fontSize: 7,
+                  fontWeight: 700,
+                  textAlign: "center",
+                  paddingBottom: 5,
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#000000",
+                  borderRightWidth: 1,
+                  borderRightColor: "#000000",
+                  lineHeight: 1,
+                }}
+              >
+                {detail.form && detail.form[0].birthday.value}
+              </Text>
+            </View>
+
+            <View
+              style={{
+                width: "25%",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  marginLeft: 10,
+                  paddingTop: 5,
+                  paddingBottom: 3,
+                  lineHeight: 1,
+                }}
+              >
+                WEIGHT
+              </Text>
+              <Text
+                style={{
+                  fontSize: 7,
+                  fontWeight: 700,
+                  textAlign: "center",
+                  paddingBottom: 5,
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#000000",
+                  lineHeight: 1,
+                }}
+              >
+                {detail.form && detail.form[0].weight.value} KG
+              </Text>
+            </View>
+          </TwoColumns>
+        </View>
+      </TwoColumns>
+    </View>
+  );
+
+  const ThirdSegment = () => (
+    <View>
+      <TwoColumns>
+        <View
+          style={{
+            width: "100%",
+          }}
+        >
+          {/* OTHER INFO 1 */}
+          <TwoColumns>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                width: "55%",
+                borderRightWidth: 1,
+                borderRightColor: "#000000",
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  paddingLeft: 7,
+                  paddingBottom: 10,
+                  lineHeight: 1.3,
+                }}
+              >
+                PROFESSION / OCCUPATION / BUSINESS
+              </Text>
+            </View>
+
+            <View
+              style={{
+                width: "20%",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 8,
+                  fontWeight: 700,
+                  paddingVertical: 5,
+                  lineHeight: 1.3,
+                  textAlign: "center",
+                  borderRightWidth: 1,
+                  borderRightColor: "#000000",
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#000000",
+                }}
+              >
+                TAXABLE AMOUNT
+              </Text>
+            </View>
+
+            <View
+              style={{
+                width: "25%",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 8,
+                  fontWeight: 700,
+                  paddingVertical: 5,
+                  lineHeight: 1.3,
+                  textAlign: "center",
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#000000",
+                }}
+              >
+                COMMUNITY TAX DUE
+              </Text>
+            </View>
+          </TwoColumns>
+        </View>
+      </TwoColumns>
+
+      <TwoColumns>
+        <View
+          style={{
+            width: "100%",
+          }}
+        >
+          {/* OTHER INFO 1 */}
+          <TwoColumns>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                width: "55%",
+                borderRightWidth: 1,
+                borderRightColor: "#000000",
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 8,
+                  fontWeight: 700,
+                  paddingLeft: 7,
+                  paddingVertical: 3,
+                  lineHeight: 1.3,
+                  textAlign: "center",
+                }}
+              >
+                A. BASIC COMMUNITY TAX (₱5.00) Voluntary or Exempted (₱1.00)
+              </Text>
+            </View>
+
+            <View
+              style={{
+                width: "20%",
+                backgroundColor: "gray",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 8,
+                  fontWeight: 700,
+                  paddingVertical: 10,
+                  borderRightWidth: 1,
+                  borderRightColor: "#000000",
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#000000",
+                }}
+              ></Text>
+            </View>
+
+            <View
+              style={{
+                width: "25%",
+                flexDirection: "row",
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 8,
+                  fontWeight: 700,
+                  paddingVertical: 5,
+                  paddingLeft: 7,
+                  lineHeight: 1.3,
+                }}
+              >
+                ₱
+              </Text>
+              <Text
+                style={{
+                  fontSize: 8,
+                  fontWeight: 700,
+                  paddingVertical: 5,
+                  lineHeight: 1.3,
+                }}
+              ></Text>
+            </View>
+          </TwoColumns>
+        </View>
+      </TwoColumns>
+
+      <TwoColumns>
+        <View
+          style={{
+            width: "100%",
+          }}
+        >
+          {/* OTHER INFO 1 */}
+          <TwoColumns>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                width: "55%",
+                borderRightWidth: 1,
+                borderRightColor: "#000000",
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 8,
+                  fontWeight: 700,
+                  paddingLeft: 7,
+                  paddingVertical: 3,
+                  lineHeight: 1.3,
+                  textAlign: "center",
+                }}
+              >
+                B. ADDITIONAL COMMUNITY TAX (tax not to exceed ₱5,000.00)
+              </Text>
+            </View>
+
+            <View
+              style={{
+                width: "20%",
+                backgroundColor: "gray",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 8,
+                  fontWeight: 700,
+                  paddingVertical: 10,
+                  borderRightWidth: 1,
+                  borderRightColor: "#000000",
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#000000",
+                }}
+              ></Text>
+            </View>
+
+            <View
+              style={{
+                width: "25%",
+                backgroundColor: "gray",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 8,
+                  fontWeight: 700,
+                  paddingVertical: 10,
+                  borderRightWidth: 1,
+                  borderRightColor: "#000000",
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#000000",
+                }}
+              ></Text>
+            </View>
+          </TwoColumns>
+        </View>
+      </TwoColumns>
+
+      <TwoColumns>
+        <View
+          style={{
+            width: "100%",
+          }}
+        >
+          {/* OTHER INFO 1 */}
+          <TwoColumns>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                width: "55%",
+                borderRightWidth: 1,
+                borderRightColor: "#000000",
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 8,
+                  fontWeight: 700,
+                  paddingLeft: 7,
+                  paddingVertical: 3,
+                  lineHeight: 1.3,
+                  textAlign: "center",
+                }}
+              >
+                1.
+              </Text>
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  paddingLeft: 7,
+                  paddingVertical: 3,
+                  lineHeight: 1.3,
+                  paddingRight: 30,
+                }}
+              >
+                GROSS RECIEPTS OR EARNINGS DERIVED FROM BUSINESS DURING THE
+                PRECEDING YEAR (₱1.00 for every ₱1,000)
+              </Text>
+            </View>
+
+            <View
+              style={{
+                width: "20%",
+                flexDirection: "row",
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+                borderRightWidth: 1,
+                borderRightColor: "#000000",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 8,
+                  fontWeight: 700,
+                  paddingVertical: 5,
+                  paddingLeft: 7,
+                  lineHeight: 1.3,
+                }}
+              >
+                ₱
+              </Text>
+              <Text
+                style={{
+                  fontSize: 8,
+                  fontWeight: 700,
+                  paddingVertical: 5,
+                  lineHeight: 1.3,
+                }}
+              ></Text>
+            </View>
+
+            <View
+              style={{
+                width: "25%",
+                flexDirection: "row",
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 8,
+                  fontWeight: 700,
+                  paddingVertical: 5,
+                  lineHeight: 1.3,
+                }}
+              ></Text>
+            </View>
+          </TwoColumns>
+        </View>
+      </TwoColumns>
+
+      <TwoColumns>
+        <View
+          style={{
+            width: "100%",
+          }}
+        >
+          {/* OTHER INFO 1 */}
+          <TwoColumns>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                width: "55%",
+                borderRightWidth: 1,
+                borderRightColor: "#000000",
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 8,
+                  fontWeight: 700,
+                  paddingLeft: 7,
+                  paddingVertical: 3,
+                  lineHeight: 1.3,
+                  textAlign: "center",
+                }}
+              >
+                2.
+              </Text>
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  paddingLeft: 7,
+                  paddingVertical: 3,
+                  lineHeight: 1.3,
+                  paddingRight: 30,
+                }}
+              >
+                SALARIES OR GROSS RECIEPT OR EARNINGS DERIVED FROM EXERCISE OF
+                PROFESSION OR PURSUIT OF ANY OCCUPATION (₱1.00 of every ₱1,000)
+              </Text>
+            </View>
+
+            <View
+              style={{
+                width: "20%",
+                flexDirection: "row",
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+                borderRightWidth: 1,
+                borderRightColor: "#000000",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 8,
+                  fontWeight: 700,
+                  paddingVertical: 5,
+                  lineHeight: 1.3,
+                }}
+              ></Text>
+            </View>
+
+            <View
+              style={{
+                width: "25%",
+                flexDirection: "row",
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 8,
+                  fontWeight: 700,
+                  paddingVertical: 5,
+                  lineHeight: 1.3,
+                }}
+              ></Text>
+            </View>
+          </TwoColumns>
+        </View>
+      </TwoColumns>
+
+      <TwoColumns>
+        <View
+          style={{
+            width: "100%",
+          }}
+        >
+          {/* OTHER INFO 1 */}
+          <TwoColumns>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                width: "55%",
+                borderRightWidth: 1,
+                borderRightColor: "#000000",
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 8,
+                  fontWeight: 700,
+                  paddingLeft: 7,
+                  paddingVertical: 3,
+                  lineHeight: 1.3,
+                  textAlign: "center",
+                }}
+              >
+                3.
+              </Text>
+              <Text
+                style={{
+                  fontSize: 6,
+                  fontWeight: 700,
+                  paddingLeft: 7,
+                  paddingVertical: 3,
+                  lineHeight: 1.3,
+                  paddingRight: 30,
+                }}
+              >
+                INCOME FROM REAL PROPERTY (₱1.00 of every ₱1,000)
+              </Text>
+            </View>
+
+            <View
+              style={{
+                width: "20%",
+                flexDirection: "row",
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+                borderRightWidth: 1,
+                borderRightColor: "#000000",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 8,
+                  fontWeight: 700,
+                  paddingVertical: 5,
+                  lineHeight: 1.3,
+                }}
+              ></Text>
+            </View>
+
+            <View
+              style={{
+                width: "25%",
+                flexDirection: "row",
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 8,
+                  fontWeight: 700,
+                  paddingVertical: 5,
+                  lineHeight: 1.3,
+                }}
+              ></Text>
+            </View>
+          </TwoColumns>
+        </View>
+      </TwoColumns>
+    </View>
+  );
+
+  const LastSegment = () => {
+    return (
+      <View>
+        <TwoColumns>
+          <View
+            style={{
+              width: "20%",
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center", // Center the content horizontally
+                alignItems: "center", // Center the content vertically
+                borderRightWidth: 1,
+                borderRightColor: "#000000",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 8,
+                  fontWeight: 700,
+                  paddingVertical: 5,
+                  paddingBottom: 75,
+                  lineHeight: 1.3,
+                  textAlign: "center",
+                }}
+              >
+                Right Thumb Print
+              </Text>
+            </View>
+          </View>
+
+          <View
+            style={{
+              width: "80%",
+            }}
+          >
+            <TwoColumns>
+              <View
+                style={{
+                  flexDirection: "column",
+                  alignItems: "center",
+                  width: "46.5%",
+                  borderRightWidth: 1,
+                  borderRightColor: "#000000",
+                }}
+              >
+                <View
+                  style={{
+                    justifyContent: "center",
+                    // alignItems: "center",
+                    width: "100%",
+                    paddingTop: 4,
+                    paddingBottom: 20,
+                    borderBottomWidth: 1,
+                    borderBottomColor: "#000000",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 6,
+                      fontWeight: 700,
+                      paddingLeft: 7,
+                      paddingBottom: 11,
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    TAXPAYER'S SIGNATURE
+                  </Text>
+                </View>
+
+                <View
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: "100%",
+                    paddingTop: 16,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 8,
+                      textAlign: "center",
+                      lineHeight: 1,
+                    }}
+                  >
+                    {officials
+                      .filter((official) => official.position === "Treasurer")
+                      .map((official) => (
+                        <Text
+                          style={{
+                            fontSize: 10,
+                            textAlign: "center",
+                            lineHeight: 1.3, // Adjust the lineHeight as needed
+                          }}
+                        >
+                          {official.lastName}, {official.firstName}{" "}
+                          {official.middleName}
+                        </Text>
+                      ))}
+                  </Text>
+                  <View
+                    style={{
+                      borderWidth: 0,
+                      borderTopWidth: 1,
+                      borderColor: "#000000",
+                      fontSize: 8,
+                      paddingHorizontal: 15,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        paddingTop: 2,
+                        paddingBottom: 5,
+                      }}
+                    >
+                      MUNICIPAL / CITY TREASURER
+                    </Text>
+                  </View>
+                </View>
+              </View>
+
+              <View
+                style={{
+                  width: "59.5%",
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center", // Center the content horizontally
+                    alignItems: "center", // Center the content vertically
+                    borderBottomWidth: 1,
+                    borderBottomColor: "#000000",
+                  }}
+                >
+                  <Text
+                    style={{
+                      width: "44%",
+                      fontSize: 8,
+                      fontWeight: 700,
+                      paddingVertical: 5,
+                      lineHeight: 1.3,
+                      textAlign: "center",
+                      borderRightWidth: 1,
+                      borderRightColor: "#000000",
+                    }}
+                  >
+                    TOTAL
+                  </Text>
+
+                  <Text
+                    style={{
+                      width: "56%",
+                      fontSize: 8,
+                      fontWeight: 700,
+                      paddingVertical: 5,
+                      paddingLeft: 7,
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    ₱
+                  </Text>
+                </View>
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center", // Center the content horizontally
+                    alignItems: "center", // Center the content vertically
+                    borderBottomWidth: 1,
+                    borderBottomColor: "#000000",
+                  }}
+                >
+                  <Text
+                    style={{
+                      width: "44%",
+                      fontSize: 8,
+                      fontWeight: 700,
+                      paddingVertical: 5,
+                      lineHeight: 1.3,
+                      textAlign: "center",
+                      borderRightWidth: 1,
+                      borderRightColor: "#000000",
+                    }}
+                  >
+                    INTEREST
+                  </Text>
+
+                  <Text
+                    style={{
+                      width: "56%",
+                      fontSize: 8,
+                      fontWeight: 700,
+                      paddingVertical: 5,
+                      paddingLeft: 7,
+                      lineHeight: 1.3,
+                    }}
+                  >
+                  </Text>
+                </View>
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center", // Center the content horizontally
+                    alignItems: "center", // Center the content vertically
+                    borderBottomWidth: 1,
+                    borderBottomColor: "#000000",
+                  }}
+                >
+                  <Text
+                    style={{
+                      width: "44%",
+                      fontSize: 8,
+                      fontWeight: 700,
+                      paddingVertical: 5,
+                      lineHeight: 1.3,
+                      textAlign: "center",
+                      borderRightWidth: 1,
+                      borderRightColor: "#000000",
+                    }}
+                  >
+                    TOTAL AMOUNT PAID
+                  </Text>
+
+                  <Text
+                    style={{
+                      width: "56%",
+                      fontSize: 8,
+                      fontWeight: 700,
+                      paddingVertical: 5,
+                      paddingLeft: 7,
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    ₱
+                  </Text>
+                </View>
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center", // Center the content horizontally
+                    alignItems: "center", // Center the content vertically
+                  }}
+                >
+                  <Text
+                    style={{
+                      width: "100%",
+                      fontSize: 6,
+                      fontWeight: 700,
+                      paddingTop: 3,
+                      paddingBottom: 15,
+                      paddingLeft: 5,
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    (In words):
+                  </Text>
+                </View>
+              </View>
+            </TwoColumns>
+          </View>
+        </TwoColumns>
+
       </View>
-      {/* END OF TERMS */}
+    );
+  };
+
+  const Body = () => (
+    <View
+      style={{
+        border: 1,
+        borderColor: "black",
+      }}
+    >
+      <FirstSegment />
+      <SecondSegment />
+      <ThirdSegment />
+      <LastSegment />
     </View>
   );
 
   const Footer = () => (
-    <View style={{ ...styles.footer.view, marginTop: 30 }}>
-      <Text style={styles.footer.text}>THIS FORM IS NOT FOR SALE</Text>
-      <Text style={styles.footer.text}>{detail.version}</Text>
+    <View>
+      <Text
+        style={{
+          marginTop: 5,
+          fontSize: 6,
+          lineHeight: 1.5,
+        }}
+      >
+        DOP: 04.28.2022
+      </Text>
     </View>
   );
 
   return (
     <Document>
-      <Page size="A4" style={styles.body}>
-        <LetterHead />
-        <Divider />
+      <Page
+        size="A4"
+        style={{
+          paddingTop: 5,
+          paddingLeft: 10,
+          paddingRight: 10,
+          paddingBottom: 5,
+        }}
+      >
+        <Title />
         <Body />
         <Footer />
       </Page>

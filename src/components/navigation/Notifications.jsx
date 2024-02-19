@@ -8,6 +8,7 @@ import API_LINK from "../../config/API";
 import { MdEvent } from "react-icons/md";
 import { Link } from "react-router-dom";
 import moment from "moment";
+import GetBrgy from "../GETBrgy/getbrgy";
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [notification, setNotification] = useState([]);
@@ -17,6 +18,7 @@ const Notifications = () => {
   const [userData, setUserData] = useState({});
   const [isButtonClicked, setIsButtonClicked] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const information = GetBrgy(brgy);
   useEffect(() => {
     const fetch = async () => {
       try {
@@ -36,79 +38,94 @@ const Notifications = () => {
     fetch();
   }, [id, brgy]);
 
-useEffect(() => {
-  const fetchNotifications = async () => {
-    try {
-      const response = await axios.get(
-        `${API_LINK}/notification/?user_id=${userData.user_id}&area=${brgy}&type=Barangay`
-      );
-      // console.log(response.data);
-      if (response.status === 200) {
-        const notificationsWithTimestamp = response.data.map((notification) => {
-          const notificationDate = moment(notification.createdAt);
-          const now = moment();
-          const timeDiff = moment.duration(now.diff(notificationDate));
-          let timeAgo = "";
-
-          if (timeDiff.asMinutes() < 60) {
-            timeAgo = `${Math.floor(timeDiff.asMinutes())} minutes ago`;
-          } else if (timeDiff.asHours() < 24) {
-            timeAgo = `${Math.floor(timeDiff.asHours())} hours ago`;
-          } else if (timeDiff.asDays() === 1) {
-            timeAgo = "Yesterday at " + notificationDate.format("h:mm A");
-          } else {
-            timeAgo = notificationDate.format("ddd [at] MMM D, h:mm A");
-          }
-
-          return {
-            ...notification,
-            timestamp: timeAgo,
-          };
-        });
-
-        setNotifications(notificationsWithTimestamp);
-        setUnreadNotifications(
-          notificationsWithTimestamp.filter((notification) =>
-            notification.read_by.every((item) => item.readerId !== id)
-          ).length
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/notification/?user_id=${userData.user_id}&area=${brgy}&type=Barangay`
         );
-      } else {
+        // console.log(response.data);
+        if (response.status === 200) {
+          const notificationsWithTimestamp = response.data.map(
+            (notification) => {
+              const notificationDate = moment(notification.createdAt);
+              const now = moment();
+              const timeDiff = moment.duration(now.diff(notificationDate));
+              let timeAgo = "";
+
+              if (timeDiff.asMinutes() < 60) {
+                timeAgo = `${Math.floor(timeDiff.asMinutes())} minutes ago`;
+              } else if (timeDiff.asHours() < 24) {
+                timeAgo = `${Math.floor(timeDiff.asHours())} hours ago`;
+              } else if (timeDiff.asDays() === 1) {
+                timeAgo = "Yesterday at " + notificationDate.format("h:mm A");
+              } else {
+                timeAgo = notificationDate.format("ddd [at] MMM D, h:mm A");
+              }
+
+              return {
+                ...notification,
+                timestamp: timeAgo,
+              };
+            }
+          );
+
+          setNotifications(notificationsWithTimestamp);
+          setUnreadNotifications(
+            notificationsWithTimestamp.filter((notification) =>
+              notification.read_by.every((item) => item.readerId !== id)
+            ).length
+          );
+        } else {
+          setNotifications([]);
+          setUnreadNotifications(0);
+        }
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
         setNotifications([]);
         setUnreadNotifications(0);
       }
-    } catch (error) {
-      console.error("Error fetching notifications:", error);
-      setNotifications([]);
-      setUnreadNotifications(0);
-    }
-  };
+    };
 
-  fetchNotifications();
-  const intervalId = setInterval(() => {
     fetchNotifications();
-  }, 3000);
+    const intervalId = setInterval(() => {
+      fetchNotifications();
+    }, 3000);
 
-  return () => clearInterval(intervalId);
-}, [brgy]);
+    return () => clearInterval(intervalId);
+  }, [brgy]);
 
   const handleView = (item) => {
     setNotification(item);
   };
+  const [isHovered, setIsHovered] = useState(false);
 
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
   return (
     <>
       <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
         <button
           id="hs-dropdown"
           type="button"
-          className={`m-1 ms-0 relative flex justify-center items-center h-[2.875rem] w-[2.875rem] text-sm font-semibold text-white shadow-sm hover:bg-[#3d8da1] hover:rounded-xl disabled:opacity-50 disabled:pointer-events-none `}
+          className={`m-1 ms-0 relative flex justify-center items-center h-[2.875rem] w-[2.875rem] text-sm font-semibold text-white shadow-sm disabled:opacity-50 disabled:pointer-events-none `}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          style={{ background: isHovered ? information?.theme?.secondary : "", borderRadius: isHovered ? "10px" : "", }}
           onClick={() => setIsButtonClicked(!isButtonClicked)}
         >
           <FaBell size={20} />
           {notifications && notifications.length > 0 && (
             <span className="flex absolute top-0 end-0 h-4 w-4">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600"></span>
-              <span className="relative inline-flex items-center justify-center rounded-full h-4 w-4 bg-red-500">{unreadNotifications}</span>
+              <span className="relative inline-flex items-center justify-center rounded-full h-4 w-4 bg-red-500">
+                {unreadNotifications}
+              </span>
             </span>
           )}
         </button>

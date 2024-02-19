@@ -136,6 +136,15 @@ const PrintDocumentTypeH = ({
     }
   );
 
+  const birthdayFormat = new Date(detail.createdAt).toLocaleDateString(
+    "en-PH",
+    {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }
+  );
+
   const formattedTime = date.toLocaleTimeString("en-PH", {
     hour: "numeric",
     minute: "numeric",

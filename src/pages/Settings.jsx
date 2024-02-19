@@ -15,7 +15,7 @@ import API_LINK from "../config/API";
 import banner from "../assets/image/1.png";
 import OccupationList from "../components/occupations/OccupationList";
 import EditLoader from "../components/settings/loaders/EditLoader";
-
+import GetBrgy from "../components/GETBrgy/getbrgy";
 const Settings = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [submitClicked, setSubmitClicked] = useState(false);
@@ -26,6 +26,7 @@ const Settings = () => {
   const brgy = searchParams.get("brgy");
   const id = searchParams.get("id");
   const fileInputRef = useRef();
+  const information = GetBrgy(brgy);
   const handleAdd = (e) => {
     e.preventDefault();
 
@@ -439,6 +440,21 @@ const Settings = () => {
   const resetForm = (e) => {
     setError(null);
   };
+  const [hoverStates, setHoverStates] = useState({});
+
+  const handleMouseEnter = (id) => {
+    setHoverStates((prevStates) => ({
+      ...prevStates,
+      [id]: true,
+    }));
+  };
+
+  const handleMouseLeave = (id) => {
+    setHoverStates((prevStates) => ({
+      ...prevStates,
+      [id]: false,
+    }));
+  };
   return (
     <div>
       <div className="mx-4 overflow-y-auto lg:mt-[1rem] mt-0 scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb h-[calc(100vh_-_100px)] lg:h-[calc(100vh_-_100px)]">
@@ -458,11 +474,19 @@ const Settings = () => {
                   <label
                     htmlFor="file_input"
                     onClick={handleAdd}
-                    className={
-                      editButton
-                        ? "hidden"
-                        : "absolute inset-0 flex items-center justify-center bg-gray-200 rounded-full cursor-pointer opacity-0 hover:opacity-100 transition-opacity hover:bg-[#295141] hover:bg-opacity-60 "
-                    }
+                    className={`absolute inset-0 flex items-center justify-center rounded-full cursor-pointer opacity-0 ${
+                      editButton ? "hidden" : ""
+                    } `}
+                    style={{
+                      backgroundColor:
+                        editButton || hoverStates["pic"]
+                          ? "hidden"
+                          : information?.theme?.primary,
+                      opacity: hoverStates["pic"] ? 0.6 : 0,
+                      transition: "opacity 0.3s",
+                    }}
+                    onMouseEnter={() => handleMouseEnter("pic")}
+                    onMouseLeave={() => handleMouseLeave("pic")}
                   >
                     <FaCamera size={32} style={{ color: "#ffffff" }} />
                   </label>
@@ -476,7 +500,10 @@ const Settings = () => {
                     multiple="multiple"
                     className="hidden"
                   />
-                  <div className="lg:w-full lg:h-full w-[130px] h-[130px] lg:mt-0 mt-8 flex mx-auto justify-center overflow-hidden rounded-full object-cover border-[5px] border-[#295141]">
+                  <div
+                    className="lg:w-full lg:h-full w-[130px] h-[130px] lg:mt-0 mt-8 flex mx-auto justify-center overflow-hidden rounded-full object-cover border-[5px] "
+                    style={{ borderColor: information?.theme?.primary }}
+                  >
                     <img
                       id="pfp"
                       className="w-full h-full object-cover"
@@ -501,7 +528,16 @@ const Settings = () => {
               </div>
               <div className="lg:flex sm:grid lg:px-0 px-8 lg:py-0 py-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-center items-center mx-auto">
                 {userSocials.facebook && userSocials.facebook.name && (
-                  <button className="flex justify-center gap-2 items-center bg-white rounded-md p-2 hover:bg-[#1d4c8a] hover:text-white  transition-all ease-in-out duration-300">
+                  <button
+                    className="flex justify-center gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
+                    onMouseEnter={() => handleMouseEnter("facebook")}
+                    onMouseLeave={() => handleMouseLeave("facebook")}
+                    style={{
+                      backgroundColor: hoverStates["facebook"]
+                        ? information?.theme?.secondary
+                        : null,
+                    }}
+                  >
                     <FaFacebook />
                     <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
                       {userSocials.facebook.name}
@@ -509,7 +545,16 @@ const Settings = () => {
                   </button>
                 )}
                 {userSocials.twitter && userSocials.twitter.name && (
-                  <button className="flex justify-center gap-2 items-center bg-white rounded-md p-2 hover:bg-[#1d4c8a] hover:text-white  transition-all ease-in-out duration-300">
+                   <button
+                   className="flex justify-center gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
+                   onMouseEnter={() => handleMouseEnter("twitter")}
+                   onMouseLeave={() => handleMouseLeave("twitter")}
+                   style={{
+                     backgroundColor: hoverStates["twitter"]
+                       ? information?.theme?.secondary
+                       : null,
+                   }}
+                 >
                     <FaTwitter />
                     <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
                       {userSocials.twitter.name}
@@ -517,7 +562,16 @@ const Settings = () => {
                   </button>
                 )}
                 {userSocials.instagram && userSocials.instagram.name && (
-                  <button className="flex justify-center gap-2 items-center bg-white rounded-md p-2 hover:bg-[#1d4c8a] hover:text-white  transition-all ease-in-out duration-300">
+                  <button
+                  className="flex justify-center gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
+                  onMouseEnter={() => handleMouseEnter("ig")}
+                  onMouseLeave={() => handleMouseLeave("ig")}
+                  style={{
+                    backgroundColor: hoverStates["ig"]
+                      ? information?.theme?.secondary
+                      : null,
+                  }}
+                >
                     <FaInstagram />
                     <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
                       {userSocials.instagram.name}
@@ -525,7 +579,16 @@ const Settings = () => {
                   </button>
                 )}
                 {userData.contact && (
-                  <button className="flex justify-center gap-2 items-center bg-white rounded-md p-2 hover:bg-[#1d4c8a] hover:text-white  transition-all ease-in-out duration-300">
+                  <button
+                  className="flex justify-center gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
+                  onMouseEnter={() => handleMouseEnter("phone")}
+                  onMouseLeave={() => handleMouseLeave("phone")}
+                  style={{
+                    backgroundColor: hoverStates["phone"]
+                      ? information?.theme?.secondary
+                      : null,
+                  }}
+                >
                     <FaPhone />
                     <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
                       {userData.contact}
@@ -533,7 +596,16 @@ const Settings = () => {
                   </button>
                 )}
                 {userData.email && (
-                  <button className="flex justify-center gap-2 items-center bg-white rounded-md p-2  hover:bg-[#1d4c8a] hover:text-white  transition-all ease-in-out duration-300">
+                     <button
+                     className="flex justify-center gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
+                     onMouseEnter={() => handleMouseEnter("email")}
+                     onMouseLeave={() => handleMouseLeave("email")}
+                     style={{
+                       backgroundColor: hoverStates["email"]
+                         ? information?.theme?.secondary
+                         : null,
+                     }}
+                   >
                     <FaEnvelope />
                     <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
                       {userData.email}
@@ -552,9 +624,17 @@ const Settings = () => {
                   onClick={handleOnActive}
                   className={
                     activeButton.personal
-                      ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-[#1d4c8a] text-white font-medium"
-                      : "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-white text-black font-medium transition-all ease-in-out hover:bg-[#1d4c8a]  hover:text-white"
+                      ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md text-white font-medium"
+                      : "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-white text-black font-medium transition-all ease-in-out hover:text-white"
                   }
+                  onMouseEnter={() => handleMouseEnter("personal")}
+                  onMouseLeave={() => handleMouseLeave("personal")}
+                  style={{
+                    backgroundColor:
+                      activeButton.personal || hoverStates["personal"]
+                        ? information?.theme?.primary
+                        : null,
+                  }}
                 >
                   Personal Info
                 </button>
@@ -563,9 +643,17 @@ const Settings = () => {
                   onClick={handleOnActive}
                   className={
                     activeButton.credential
-                      ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-[#1d4c8a]  text-white font-medium"
-                      : "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-white text-black font-medium transition-all ease-in-out hover:bg-[#1d4c8a]  hover:text-white"
+                      ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md text-white font-medium"
+                      : "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-white text-black font-medium transition-all ease-in-out hover:text-white"
                   }
+                  onMouseEnter={() => handleMouseEnter("credential")}
+                  onMouseLeave={() => handleMouseLeave("credential")}
+                  style={{
+                    backgroundColor:
+                      activeButton.credential || hoverStates["credential"]
+                        ? information?.theme?.primary
+                        : null,
+                  }}
                 >
                   Account Info
                 </button>
@@ -575,9 +663,17 @@ const Settings = () => {
                   onClick={handleOnActive}
                   className={
                     activeButton.pass
-                      ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-[#1d4c8a]  text-white font-medium"
-                      : "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-white text-black font-medium transition-all ease-in-out hover:bg-[#1d4c8a] hover:text-white"
+                      ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md text-white font-medium"
+                      : "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-white text-black font-medium transition-all ease-in-out hover:text-white"
                   }
+                  onMouseEnter={() => handleMouseEnter("pass")}
+                  onMouseLeave={() => handleMouseLeave("pass")}
+                  style={{
+                    backgroundColor:
+                      activeButton.pass || hoverStates["pass"]
+                        ? information?.theme?.primary
+                        : null,
+                  }}
                 >
                   Change Password
                 </button>
@@ -1494,7 +1590,8 @@ const Settings = () => {
             <button
               name="edit"
               onClick={handleOnEdit}
-              className="bg-[#1d4c8a] text-white font-medium px-20 py-2 rounded-md"
+              className=" text-white font-medium px-20 py-2 rounded-md"
+              style={{ backgroundColor: information?.theme?.primary }}
             >
               Edit
             </button>

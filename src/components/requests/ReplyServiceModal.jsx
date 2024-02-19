@@ -12,8 +12,11 @@ import EditDropbox from "./EditDropbox";
 import { useSearchParams } from "react-router-dom";
 import ReplyLoader from "./loaders/ReplyLoader";
 import moment from "moment";
+import GetBrgy from "../GETBrgy/getbrgy";
+
 
 function ReplyServiceModal({ request, setRequest, brgy }) {
+  const information = GetBrgy(brgy);
   const [reply, setReply] = useState(false);
   const [statusChanger, setStatusChanger] = useState(false);
   const [upload, setUpload] = useState(false);
@@ -121,7 +124,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
       request.response.sort(
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
       );
-  
+
       // Initialize with the last index expanded
       const lastIndex = request.response.length - 1;
       setExpandedIndexes([lastIndex]);
@@ -130,14 +133,17 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
 
   const handleChange = (e) => {
     const inputValue = e.target.value;
-  
+
     if (e.target.name === "isRepliable") {
       // If isRepliable checkbox is changed, update isRepliable accordingly
       setNewMessage((prev) => ({
         ...prev,
         [e.target.name]: e.target.checked,
       }));
-    } else if (statusChanger && (!newMessage.message || newMessage.message.trim() === "")) {
+    } else if (
+      statusChanger &&
+      (!newMessage.message || newMessage.message.trim() === "")
+    ) {
       // If statusChanger is true and message is not set, update message with status
       setNewMessage((prev) => ({
         ...prev,
@@ -204,7 +210,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     try {
       e.preventDefault();
       setSubmitClicked(true);
-  
+
       const obj = {
         sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
         message: newMessage.message,
@@ -213,7 +219,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
         folder_id: request.folder_id,
         date: new Date(), // Add the current date and time
       };
-  
+
       console.log("obj", obj);
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
@@ -229,12 +235,12 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
         for (let i = 0; i < createFiles.length; i++) {
           formData.append("files", createFiles[i]);
         }
-    
+
         const response = await axios.patch(
           `${API_LINK}/requests/?req_id=${request._id}&?request_folder_id=${res_folder.data[0].request}`,
           formData
         );
-    
+
         if (response.status === 200) {
           const notify = {
             category: "One",
@@ -279,15 +285,15 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
             banner: service.collections.banner,
             logo: service.collections.logo,
           };
-  
+
           console.log("Notify: ", notify);
-  
+
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {
               "Content-Type": "application/json",
             },
           });
-  
+
           if (result.status === 200) {
             setTimeout(() => {
               setSubmitClicked(false);
@@ -299,9 +305,6 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
           }
         }
       }
-  
-      
-
     } catch (error) {
       console.log(error);
       setSubmitClicked(false);
@@ -320,7 +323,12 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
             {/* Header */}
-            <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] overflow-hidden rounded-t-2xl">
+            <div
+              className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl"
+              style={{
+                background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+              }}
+            >
               <h3
                 className="font-bold text-white mx-auto md:text-xl text-center"
                 style={{ letterSpacing: "0.3em" }}
@@ -737,7 +745,9 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                                 <input
                                                   type="checkbox"
                                                   name="isRepliable"
-                                                  checked={newMessage.isRepliable}
+                                                  checked={
+                                                    newMessage.isRepliable
+                                                  }
                                                   onChange={handleChange}
                                                   className="hs-tooltip-toggle sr-only peer"
                                                 />

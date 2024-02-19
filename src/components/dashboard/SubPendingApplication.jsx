@@ -4,10 +4,9 @@ import axios from "axios";
 import API_LINK from "../../config/API";
 import { useSearchParams } from "react-router-dom";
 import { AiOutlineEye } from "react-icons/ai";
-import ViewRequestModal from "./ViewRequestModal";
 import ReactPaginate from "react-paginate";
 import ViewRegistrationModal from "./ViewRegistrationModal";
-
+import GetBrgy from "../GETBrgy/getbrgy";
 const SubPendingApplication = () => {
   const [applications, setApplications] = useState([]);
   const [application, setApplication] = useState({ response: [{ file: [] }] });
@@ -18,7 +17,7 @@ const SubPendingApplication = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [statusFilter, setStatusFilter] = useState("all");
-
+  const information = GetBrgy(brgy);
   useEffect(() => {
     const fetch = async () => {
       try {
@@ -109,7 +108,7 @@ const SubPendingApplication = () => {
           </table>
         </div>
       </div>
-      <div className="md:py-4 md:px-4 bg-[#21556d] flex items-center rounded-b-xl justify-between sm:flex-col-reverse md:flex-row sm:py-3">
+      <div className="md:py-4 md:px-4 flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3" style={{ backgroundColor: information?.theme?.primary }}>
         <span className="font-medium text-white sm:text-xs text-sm">
           Showing {currentPage + 1} out of {pageCount} pages
         </span>

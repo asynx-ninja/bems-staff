@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
+  Font,
   Image,
   Text,
   View,
@@ -21,8 +22,25 @@ import SAN_ISIDRO from "../../../assets/logo/SAN_ISIDRO.png";
 import SAN_JOSE from "../../../assets/logo/SAN_JOSE.png";
 import SAN_RAFAEL from "../../../assets/logo/SAN_RAFAEL.png";
 import BAGONG_PILIPINAS from "../../../assets/image/bagong-pilipinas-logo.jpg";
+import OETMT from "../../../assets/fonts/Old-English-Text-MT.otf";
+import ESITC from "../../../assets/fonts/Edwardian-Script-ITC.otf";
+import axios from "axios";
+import API_LINK from "../../../config/API";
 
-const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
+Font.register({
+  family: "Old-English-Text-MT",
+  src: OETMT,
+});
+
+Font.register({
+  family: "Edwardian-Script-ITC",
+  src: ESITC,
+});
+
+const PrintDocumentTypeB = ({ detail,
+  officials = { officials },
+  docDetails,
+  brgy, }) => {
   const [date, setDate] = useState(new Date());
 
   const returnLogo = () => {
@@ -157,22 +175,30 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
         alignItems: "center",
       },
       republic: {
-        fontFamily: "Times-Roman",
-        fontSize: 12,
+        fontFamily: "Old-English-Text-MT",
+        fontSize: 11,
       },
       municipality: {
-        fontFamily: "Times-Roman",
-        fontSize: 12,
+        fontFamily: "Old-English-Text-MT",
+        fontSize: 11,
         lineHeight: 1,
+        marginTop: 3,
+      },
+      municipality1: {
+        fontFamily: "Times-Bold",
+        fontSize: 11,
+        fontWeight: 700,
+        marginTop: 3,
       },
       brgy: {
-        fontFamily: "Helvetica-Bold",
-        fontSize: 20,
+        fontFamily: "Times-Bold",
+        fontSize: 14,
         fontWeight: 700,
+        marginTop: 3,
       },
-      address: {
-        fontFamily: "Times-Roman",
-        fontSize: 12,
+      office: {
+        fontFamily: "Edwardian-Script-ITC",
+        fontSize: 26,
       },
     },
     title: {
@@ -382,55 +408,48 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
   );
 
   const LetterHead = () => (
-    <View>
-      <View style={{ alignItems: "center", justifyContent: "center" }}>
-        <Image
-          src={BAGONG_PILIPINAS}
-          alt=""
-          srcset=""
-          style={styles.letterHead.image}
-        />
+    <View style={styles.letterHead.view1}>
+      <Image
+        src={returnLogo()}
+        alt=""
+        srcset=""
+        style={styles.letterHead.image}
+      />
+
+      <View style={styles.letterHead.view2}>
+        <Text style={styles.letterHead.republic}>
+          Republic of the Philippines
+        </Text>
+        <Text style={styles.letterHead.municipality}>Province of Rizal</Text>
+        <Text style={styles.letterHead.municipality1}>
+          Municipality of Rodriguez
+        </Text>
+        <Text style={styles.letterHead.brgy}>BARANGAY {detail.brgy}</Text>
+        <Text style={styles.letterHead.office}>
+          Office of the Barangay Chairman
+        </Text>
       </View>
-      <View style={styles.letterHead.view1}>
-        <Image src={logo} alt="" srcset="" style={styles.letterHead.image} />
-        <View style={styles.letterHead.view2}>
-          <Text style={styles.letterHead.republic}>
-            Republic of the Philippines
-          </Text>
-          <Text style={styles.letterHead.municipality}>
-            Municipality of Rodriguez, Rizal
-          </Text>
-          <Text style={styles.letterHead.brgy}>BARANGAY {detail.brgy}</Text>
-          <Text style={styles.letterHead.address}>
-            Barangay Hall, Dike Street, Rodriguez, Rizal
-          </Text>
-          <Text style={styles.letterHead.address}>
-            E-mail Address: montalbanpublicinformation@gmail.com
-          </Text>
-          <Text style={styles.letterHead.address}>
-            Telephone: 0967-291-5669
-          </Text>
-        </View>
-        <Image
-          src={returnLogo()}
-          alt=""
-          srcset=""
-          style={styles.letterHead.image}
-        />
-      </View>
+
+      <Image src={logo} alt="" srcset="" style={styles.letterHead.image} />
     </View>
   );
 
   const Body = () => (
     <View>
       <TwoColumns>
-        <View style={{ width: "26%", borderRightWidth: 2, borderRightColor: "#000000" }}>
+        <View
+          style={{
+            width: "26%",
+            borderRightWidth: 2,
+            borderRightColor: "#000000",
+          }}
+        >
           <Text
             style={{
-              ...styles.terms.bold,
               textAlign: "center",
               fontSize: 12,
               marginTop: 30,
+              fontFamily: "Times-Bold",
             }}
           >
             BARANGAY {detail.brgy.toUpperCase()}
@@ -438,10 +457,10 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
 
           <Text
             style={{
-              ...styles.terms.bold,
               textAlign: "center",
               fontSize: 10,
               marginTop: 30,
+              fontFamily: "Times-Bold",
             }}
           >
             BARANGAY CHAIRMAN
@@ -453,12 +472,12 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
               <Text
                 key={official.user_id}
                 style={{
-                  ...styles.terms.bold,
                   textAlign: "center",
                   marginTop: 5,
                   marginLeft: 12,
                   marginRight: 12,
                   fontSize: 8,
+                  fontFamily: "Times-Roman",
                 }}
               >
                 {official.lastName}, {official.firstName} {official.middleName}
@@ -467,7 +486,7 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
 
           <Text
             style={{
-              ...styles.terms.bold,
+              fontFamily: "Times-Bold",
               textAlign: "center",
               fontSize: 10,
               marginTop: 30,
@@ -482,7 +501,7 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
               <Text
                 key={official.user_id}
                 style={{
-                  ...styles.terms.bold,
+                  fontFamily: "Times-Roman",
                   textAlign: "center",
                   marginTop: 5,
                   marginLeft: 12,
@@ -496,7 +515,7 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
 
           <Text
             style={{
-              ...styles.terms.bold,
+              fontFamily: "Times-Bold",
               textAlign: "center",
               fontSize: 10,
               marginTop: 30,
@@ -511,7 +530,7 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
               <Text
                 key={official.user_id}
                 style={{
-                  ...styles.terms.bold,
+                  fontFamily: "Times-Roman",
                   textAlign: "center",
                   marginTop: 10,
                   marginLeft: 12,
@@ -525,7 +544,7 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
 
           <Text
             style={{
-              ...styles.terms.bold,
+              fontFamily: "Times-Bold",
               textAlign: "center",
               fontSize: 10,
               marginTop: 30,
@@ -540,7 +559,7 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
               <Text
                 key={official.user_id}
                 style={{
-                  ...styles.terms.bold,
+                  fontFamily: "Times-Roman",
                   textAlign: "center",
                   marginTop: 10,
                   marginLeft: 12,
@@ -554,7 +573,7 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
 
           <Text
             style={{
-              ...styles.terms.bold,
+              fontFamily: "Times-Bold",
               textAlign: "center",
               fontSize: 10,
               marginTop: 30,
@@ -569,7 +588,7 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
               <Text
                 key={official.user_id}
                 style={{
-                  ...styles.terms.bold,
+                  fontFamily: "Times-Roman",
                   textAlign: "center",
                   marginTop: 10,
                   marginLeft: 12,
@@ -583,183 +602,117 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
         </View>
 
         <View style={{ ...styles.bodyHead.column, width: "74%" }}>
-        <Image src={returnLogo()} style={styles.backgroundImage} />
-      {/* BODY HEAD */}
-      <View style={styles.bodyHead.column}>
-        <Text style={{ ...styles.bodyHead.text, marginTop: 10 }}>
-          Control Number: {detail.req_id}
-        </Text>
-      </View>
-      {/* END OF BODY HEAD */}
+          {/* BODY HEAD */}
+          <View style={styles.bodyHead.column}>
+            <Text
+              style={{
+                ...styles.bodyHead.text,
+                marginTop: 10,
+                fontFamily: "Times-Bold",
+              }}
+            >
+              Control Number: {detail.req_id}
+            </Text>
+          </View>
+          {/* END OF BODY HEAD */}
 
-      {/* TERMS */}
-      <View style={{ marginLeft: 10, marginRight: 10 }}>
-        <Text
-          style={{
-            ...styles.terms.bold,
-            textAlign: "center",
-            fontSize: 16,
-            marginTop: 30,
-          }}
-        >
-          BARANGAY CLEARANCE
-        </Text>
-        <Text style={{ fontSize: 12, marginTop: 10 }}>
-          To Whom It May Concern:
-        </Text>
-        <Text
-          style={{
-            marginTop: 20,
-            textAlign: "justify",
-            fontSize: 12,
-            lineHeight: 2, // Adjust the lineHeight as needed
-          }}
-        >
-          This is to certify that the person whose name and right thumb mark
-          appear hereon has requested a RECORD CLEARANCE from this office and
-          the result(s) is/are listed below:
-        </Text>
-        <Text
-          style={{
-            fontSize: 12,
-            marginTop: 25,
-            textAlign: "justify",
-            lineHeight: 2, // Adjust the lineHeight as needed
-          }}
-        >
-          NAME : {detail.form && detail.form[0].firstName.value}{" "}
-          {detail.form && detail.form[0].middleName.value}{" "}
-          {detail.form && detail.form[0].lastName.value}
-        </Text>
-        <Text
-          style={{
-            fontSize: 12,
-            marginTop: 15,
-            textAlign: "justify",
-            lineHeight: 2, // Adjust the lineHeight as needed
-          }}
-        >
-          AGE :{" "}
-          {detail.form && detail.form[0].age && detail.form[0].age.value
-            ? detail.form[0].age.value
-            : ""}
-        </Text>
-        <Text
-          style={{
-            fontSize: 12,
-            marginTop: 15,
-            textAlign: "justify",
-            lineHeight: 2, // Adjust the lineHeight as needed
-          }}
-        >
-          SEX/CIVIL STATUS :{" "}
-          {detail.form && detail.form[0].sex && detail.form[0].sex.value
-            ? detail.form[0].sex.value
-            : ""}{" "}
-          /{" "}
-          {detail.form &&
-          detail.form[0].age &&
-          detail.form[0].civil_status.value
-            ? detail.form[0].civil_status.value
-            : ""}
-        </Text>
-        <Text
-          style={{
-            fontSize: 12,
-            marginTop: 15,
-            textAlign: "justify",
-            lineHeight: 2, // Adjust the lineHeight as needed
-          }}
-        >
-          BIRTH DATE:{" "}
-          {detail.form && detail.form[0].birthday && detail.form[0].birthday.value
-            ? detail.form[0].birthday.value
-            : ""}{" "}
-          / {detail.form && detail.form[0].address && detail.form[0].address.value
-            ? detail.form[0].address.value
-            : ""}{" "}
-        </Text>
+          {/* TERMS */}
+          <View style={{ marginLeft: 10, marginRight: 10 }}>
+            <Text
+              style={{
+                ...styles.terms.bold,
+                textAlign: "center",
+                fontSize: 16,
+                marginTop: 30,
+                fontFamily: "Times-Bold",
+              }}
+            >
+              BARANGAY CLEARANCE
+            </Text>
+            <Text
+              style={{ fontSize: 11, marginTop: 35, fontFamily: "Times-Bold" }}
+            >
+              To Whom It May Concern:
+            </Text>
 
-        <Text
-          style={{
-            fontSize: 12,
-            marginTop: 15,
-            textAlign: "justify",
-            lineHeight: 2, // Adjust the lineHeight as needed
-          }}
-        >
-          ADDRESS:{" "}
-          {detail.form && detail.form[0].address && detail.form[0].address.value
-            ? detail.form[0].address.value
-            : ""}{" "}
-        </Text>
+            <Text
+              style={{
+                marginTop: 10,
+                // textAlign: "justify",
+                fontSize: 12,
+                lineHeight: 1.5,
+                fontFamily: "Times-Roman",
+                textIndent: 30,
+              }}
+            >
+              {docDetails.map((doc, index) => (
+                <React.Fragment key={index}>
+                  {Object.entries(doc.inputs)
+                    .reduce((text, [key, value]) => {
+                      const placeholder = new RegExp(`\\(\\(${key}\\)\\)`, "g");
+                      let replacementValue = "";
 
-        <Text
-          style={{
-            fontSize: 12,
-            marginTop: 15,
-            textAlign: "justify",
-            lineHeight: 2, // Adjust the lineHeight as needed
-          }}
-        >
-          REMARKS:  {detail.form && detail.form[1].remarks && detail.form[1].remarks.value
-            ? detail.form[1].remarks.value
-            : ""}{" "}
-        </Text>
+                      // Loop through all possible data in detail.form?.[1]
+                      for (let i = 0; i < detail.form?.[1]?.length; i++) {
+                        const possibleData = detail.form?.[1]?.[i]?.form;
 
-        <Text
-          style={{
-            fontSize: 12,
-            marginTop: 15,
+                        // Check if possibleData is an array and has matching variable
+                        if (Array.isArray(possibleData)) {
+                          const matchingEntry = possibleData.find(
+                            (entry) => entry.variable === value
+                          );
 
-            textAlign: "justify",
-            lineHeight: 2, // Adjust the lineHeight as needed
-          }}
-        >
-          PURPOSE:  {detail.form && detail.form[1].purpose && detail.form[1].purpose.value
-            ? detail.form[1].purpose.value
-            : ""}{" "}
-        </Text>
+                          // If matching entry is found, get its value
+                          if (matchingEntry) {
+                            replacementValue = matchingEntry.value || "";
+                            break; // Stop searching if a matching entry is found
+                          }
+                        }
+                      }
 
-        <View
-          style={{ ...styles.terms.parentSign, justifyContent: "flex-end" }}
-        >
-          <View style={styles.terms.half}>
-            {officials
-              .filter((official) => official.position === "Barangay Chairman")
-              .map((official) => (
-                <Text
-                  style={{
-                    fontSize: 12,
-                    textAlign: "center",
-                    lineHeight: 2, // Adjust the lineHeight as needed
-                  }}
-                >
-                  {official.lastName}, {official.firstName}{" "}
-                  {official.middleName}
-                </Text>
+                      // If no matching entry is found in detail.form?.[1]?.[all possible data]?.form?,
+                      // check detail.form?.[0]?.[value]?.value
+                      if (!replacementValue) {
+                        replacementValue =
+                          detail.form?.[0]?.[value]?.value || "";
+                      }
+
+                      // Replace the placeholder in the text
+                      return text.replace(placeholder, replacementValue || "");
+                    }, doc.details)
+                    .replace(/\{CurrentDate\}/g, formattedDate)}
+                </React.Fragment>
               ))}
-            <View style={styles.terms.signText}>
-              <Text style={styles.terms.center}>Punong Barangay</Text>
+            </Text>
+
+            <View
+              style={{ ...styles.terms.parentSign, justifyContent: "flex-end", marginTop: 40 }}
+            >
+              <View style={styles.terms.half}>
+                {officials
+                  .filter(
+                    (official) => official.position === "Barangay Chairman"
+                  )
+                  .map((official) => (
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        textAlign: "center",
+                        lineHeight: 1.3, // Adjust the lineHeight as needed
+                        fontFamily: "Times-Roman",
+                      }}
+                    >
+                      {official.lastName}, {official.firstName}{" "}
+                      {official.middleName}
+                    </Text>
+                  ))}
+                <View style={styles.terms.signText}>
+                  <Text style={{...styles.terms.center,  fontFamily: "Times-Roman",}}>Punong Barangay</Text>
+                </View>
+              </View>
             </View>
           </View>
-        </View>
-      </View>
-
-      <View>
-        <Text
-          style={{
-            fontSize: 10,
-            marginTop: 30,
-            marginBottom: 5,
-            textAlign: "justify",
-            lineHeight: 2, // Adjust the lineHeight as needed
-          }}
-        >
-          Note: Not valid without Official Barangay dry seal
-        </Text>
-      </View>
-      {/* END OF TERMS */}
+          {/* END OF TERMS */}
         </View>
       </TwoColumns>
       {/* END OF TERMS */}
@@ -779,7 +732,6 @@ const PrintDocumentTypeB = ({ detail, officials = { officials }, brgy }) => {
         <LetterHead />
         <Divider />
         <Body />
-        <Footer />
       </Page>
     </Document>
   );

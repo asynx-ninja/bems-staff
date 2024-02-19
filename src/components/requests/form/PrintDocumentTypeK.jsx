@@ -536,9 +536,6 @@ const PrintDocumentTypeK = ({
                       )?.value || ""
                     : detail.form?.[0]?.[value]?.value || "";
 
-                    console.log("matching variables: ", matchingVariable);
-                    console.log("value: ", value);
-
                   return text.replace(placeholder, replacementValue);
                 }, doc.details)
                 .replace(/\{CurrentDate\}/g, formattedDate)}

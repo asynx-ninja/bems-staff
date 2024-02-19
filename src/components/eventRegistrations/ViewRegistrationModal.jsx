@@ -6,10 +6,12 @@ import PrintForm from "./form/PrintForm";
 import PrintPDF from "./form/PrintPDF";
 
 import { PDFDownloadLink } from "@react-pdf/renderer";
+import GetBrgy from "../GETBrgy/getbrgy";
 
-function ViewRegistrationModal({ application, officials }) {
-  const [detail, ] = useState(application);
-  const [empty, ] = useState(false);
+function ViewRegistrationModal({ application, officials, brgy }) {
+  const information = GetBrgy(brgy);
+  const [detail] = useState(application);
+  const [empty] = useState(false);
 
   const returnFile = (string) => {
     for (const item of detail.file) {
@@ -67,7 +69,12 @@ function ViewRegistrationModal({ application, officials }) {
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
             {/* Header */}
-            <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] overflow-hidden rounded-t-2xl">
+            <div
+              className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl"
+              style={{
+                background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+              }}
+            >
               <h3
                 className="font-bold text-white mx-auto md:text-xl text-center"
                 style={{ letterSpacing: "0.3em" }}
@@ -89,7 +96,6 @@ function ViewRegistrationModal({ application, officials }) {
                 )}
                 <PersonalDetails detail={detail} />
                 <OtherDetails detail={detail} returnFile={returnFile} />
-                
               </form>
             </div>
             {/* END OF BODY */}
@@ -97,7 +103,7 @@ function ViewRegistrationModal({ application, officials }) {
             <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
               <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
                 <PDFDownloadLink
-                  document={<PrintPDF detail={detail} officials={officials}/>}
+                  document={<PrintPDF detail={detail} officials={officials} />}
                   fileName="Event_Application.pdf"
                   className="h-[2.5rem] flex justify-center items-center w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
                 >

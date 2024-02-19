@@ -48,7 +48,6 @@ const PrintPDF = ({ detail, officials }) => {
         );
 
         setAnnouncements(announcementsResponse.data.result);
-
       } catch (error) {
         console.error("Error fetching data:", error);
 
@@ -193,7 +192,7 @@ const PrintPDF = ({ detail, officials }) => {
         alignItems: "center",
       },
       image: {
-        width: 90,
+        width: 70,
       },
       view2: {
         display: "flex",
@@ -203,48 +202,51 @@ const PrintPDF = ({ detail, officials }) => {
       },
       republic: {
         fontFamily: "Old-English-Text-MT",
-        fontSize: 14,
+        fontSize: 11,
       },
       municipality: {
         fontFamily: "Old-English-Text-MT",
-        fontSize: 14,
+        fontSize: 11,
         lineHeight: 1,
         marginTop: 3,
       },
       municipality1: {
         fontFamily: "Times-Bold",
-        fontSize: 14,
+        fontSize: 11,
         fontWeight: 700,
         marginTop: 3,
       },
       brgy: {
         fontFamily: "Times-Bold",
-        fontSize: 18,
+        fontSize: 14,
         fontWeight: 700,
         marginTop: 3,
       },
       office: {
         fontFamily: "Edwardian-Script-ITC",
-        fontSize: 30,
+        fontSize: 26,
       },
     },
     title: {
       view1: {
-        paddingTop: 12,
-        paddingBottom: 12,
+        paddingTop: 5,
+        paddingBottom: 10,
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
+        marginVertical: 10,
       },
       req: {
-        fontSize: 18,
-        fontFamily: "Helvetica-Bold",
+        fontSize: 20,
+        fontFamily: "Times-Bold",
         fontWeight: 700,
+        // textDecoration: "underline",
       },
       id: {
         paddingTop: 3,
-        fontSize: 12,
+        fontSize: 11,
+        fontFamily: "Times-Bold",
       },
     },
     bodyHead: {
@@ -369,7 +371,7 @@ const PrintPDF = ({ detail, officials }) => {
         flexDirection: "row",
         width: "100%",
         gap: 10,
-        marginTop: 25,
+        marginTop: 45,
         marginBottom: 35,
       },
       half: {
@@ -409,10 +411,6 @@ const PrintPDF = ({ detail, officials }) => {
 
   console.log("detail: ", detail);
 
-  function addIndentation(spaces) {
-    return Array(spaces + 1).join(" "); // For spaces, or "\t" for tabs
-  }
-
   const LetterHead = () => (
     <View style={styles.letterHead.view1}>
       <Image
@@ -426,7 +424,7 @@ const PrintPDF = ({ detail, officials }) => {
         <Text style={styles.letterHead.republic}>
           Republic of the Philippines
         </Text>
-        <Text style={styles.letterHead.municipality}>Provice of Rizal</Text>
+        <Text style={styles.letterHead.municipality}>Province of Rizal</Text>
         <Text style={styles.letterHead.municipality1}>
           Municipality of Rodriguez
         </Text>
@@ -464,8 +462,8 @@ const PrintPDF = ({ detail, officials }) => {
 
   const Body = () => (
     <View style={{ marginHorizontal: 15 }}>
-      <Text style={{ fontSize: 12, marginTop: 20 }}>
-        To Whom It May Concern:
+      <Text style={{ fontSize: 12, marginTop: 20, fontFamily: "Times-Roman" }}>
+        TO WHOM IT MAY CONCERN:
       </Text>
 
       <Text
@@ -475,10 +473,11 @@ const PrintPDF = ({ detail, officials }) => {
           fontSize: 12,
           lineHeight: 2, // Adjust the lineHeight as needed
           textIndent: 30,
+          fontFamily: "Times-Roman",
         }}
       >
         This is to certify that{" "}
-        <Text style={{ ...styles.terms.bold, fontSize: 12 }}>
+        <Text style={{ fontSize: 12, fontFamily: "Times-Bold" }}>
           {detail.form && detail.form[0].firstName.value}{" "}
           {detail.form && detail.form[0].middleName.value}{" "}
           {detail.form && detail.form[0].lastName.value}
@@ -491,99 +490,16 @@ const PrintPDF = ({ detail, officials }) => {
 
       <Text
         style={{
-          fontSize: 12,
-          marginTop: 15,
-          textAlign: "justify",
-          lineHeight: 2, // Adjust the lineHeight as needed
-        }}
-      >
-        Details of Resident:
-      </Text>
-      <Text
-        style={{
-          fontSize: 12,
-          marginTop: 5,
-          textAlign: "justify",
-          lineHeight: 2, // Adjust the lineHeight as needed
-        }}
-      >
-        - Full Name: {detail.form && detail.form[0].firstName.value}{" "}
-        {detail.form && detail.form[0].middleName.value}{" "}
-        {detail.form && detail.form[0].lastName.value}
-      </Text>
-      <Text
-        style={{
-          fontSize: 12,
-          marginTop: 3,
-          textAlign: "justify",
-          lineHeight: 2, // Adjust the lineHeight as needed
-        }}
-      >
-        - Address: {detail.form && detail.form[0].address.value}
-      </Text>
-      <Text
-        style={{
-          fontSize: 12,
-          marginTop: 3,
-          textAlign: "justify",
-          lineHeight: 2, // Adjust the lineHeight as needed
-        }}
-      >
-        - Barangay: {detail.brgy}
-      </Text>
-      <Text
-        style={{
-          fontSize: 12,
-          marginTop: 3,
-          textAlign: "justify",
-          lineHeight: 2, // Adjust the lineHeight as needed
-        }}
-      >
-        - Municipality: Rodriguez, Rizal
-      </Text>
-
-      <Text
-        style={{
-          fontSize: 12,
-          marginTop: 15,
-          textAlign: "justify",
-          lineHeight: 2, // Adjust the lineHeight as needed
-        }}
-      >
-        Details of Event:
-      </Text>
-      <Text
-        style={{
-          fontSize: 12,
-          marginTop: 3,
-          textAlign: "justify",
-          lineHeight: 2, // Adjust the lineHeight as needed
-        }}
-      >
-        - Event Name: {detail.event_name}
-      </Text>
-      <Text
-        style={{
-          fontSize: 12,
-          marginTop: 3,
-          textAlign: "justify",
-          lineHeight: 2, // Adjust the lineHeight as needed
-        }}
-      >
-        - Event Date: {formattedDate1(announcements.date)}
-      </Text>
-
-      <Text
-        style={{
           marginTop: 20,
           textAlign: "justify",
           fontSize: 12,
           lineHeight: 2, // Adjust the lineHeight as needed
           textIndent: 30,
+          fontFamily: "Times-Roman",
         }}
       >
         This certification is issued upon the request of{" "}
-        <Text style={{ ...styles.terms.bold, fontSize: 12 }}>
+        <Text style={{ fontFamily: "Times-Bold", fontSize: 12 }}>
           {detail.form && detail.form[0].firstName.value}{" "}
           {detail.form && detail.form[0].middleName.value}{" "}
           {detail.form && detail.form[0].lastName.value}
@@ -599,7 +515,8 @@ const PrintPDF = ({ detail, officials }) => {
             style={{
               fontSize: 12,
               textAlign: "center",
-              lineHeight: 2, // Adjust the lineHeight as needed
+              lineHeight: 1.3, // Adjust the lineHeight as needed
+              fontFamily: "Times-Bold",
             }}
           >
             {detail.form && detail.form[0].firstName.value}{" "}
@@ -607,7 +524,9 @@ const PrintPDF = ({ detail, officials }) => {
             {detail.form && detail.form[0].lastName.value}
           </Text>
           <View style={styles.terms.signText}>
-            <Text style={styles.terms.center}>Applicant's Signature</Text>
+            <Text style={{ ...styles.terms.center, fontFamily: "Times-Bold" }}>
+              Applicant's Signature
+            </Text>
           </View>
         </View>
         <View style={styles.terms.half}>
@@ -618,7 +537,8 @@ const PrintPDF = ({ detail, officials }) => {
                 style={{
                   fontSize: 12,
                   textAlign: "center",
-                  lineHeight: 2, // Adjust the lineHeight as needed
+                  lineHeight: 1.3, // Adjust the lineHeight as needed
+                  fontFamily: "Times-Roman",
                 }}
               >
                 {official.lastName.toUpperCase()},{" "}
@@ -627,7 +547,9 @@ const PrintPDF = ({ detail, officials }) => {
               </Text>
             ))}
           <View style={styles.terms.signText}>
-            <Text style={styles.terms.center}>Punong Barangay</Text>
+            <Text style={{ ...styles.terms.center, fontFamily: "Times-Bold" }}>
+              Punong Barangay
+            </Text>
           </View>
         </View>
       </View>
@@ -648,7 +570,6 @@ const PrintPDF = ({ detail, officials }) => {
         <Divider />
         <Title />
         <Body />
-        <Footer />
       </Page>
     </Document>
   );
