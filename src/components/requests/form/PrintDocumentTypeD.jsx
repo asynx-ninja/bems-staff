@@ -148,20 +148,20 @@ const PrintDocumentTypeD = ({
 
   const romanize = (num) => {
     var lookup = {
-        M: 1000,
-        CM: 900,
-        D: 500,
-        CD: 400,
-        C: 100,
-        XC: 90,
-        L: 50,
-        XL: 40,
-        X: 10,
-        IX: 9,
-        V: 5,
-        IV: 4,
-        I: 1,
-      },
+      M: 1000,
+      CM: 900,
+      D: 500,
+      CD: 400,
+      C: 100,
+      XC: 90,
+      L: 50,
+      XL: 40,
+      X: 10,
+      IX: 9,
+      V: 5,
+      IV: 4,
+      I: 1,
+    },
       roman = "",
       i;
     for (i in lookup) {
@@ -424,6 +424,12 @@ const PrintDocumentTypeD = ({
     },
   });
 
+  const TwoColumns = ({ children }) => (
+    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      {children}
+    </View>
+  );
+
   const Divider = () => (
     <View
       style={{
@@ -474,56 +480,71 @@ const PrintDocumentTypeD = ({
   const Body = () => (
     <View>
       {/* TERMS */}
-      <View style={{ marginLeft: 10, marginRight: 10 }}>    
-        <Text
-          style={{
-            marginTop: 10,
-            // textAlign: "justify",
-            fontSize: 12,
-            lineHeight: 1.5,
-            fontFamily: "Times-Roman",
-            textIndent: 30,
-          }}
-        >
-          {docDetails.map((doc, index) => (
-            <React.Fragment key={index}>
-              {Object.entries(doc.inputs)
-                .reduce((text, [key, value]) => {
-                  const placeholder = new RegExp(`\\(\\(${key}\\)\\)`, "g");
-                  let replacementValue = "";
+      <View style={{ marginLeft: 10, marginRight: 10 }}>
+        <TwoColumns>
+          <Text
+            style={{
+              marginTop: 10,
+              // textAlign: "justify",
+              fontSize: 12,
+              lineHeight: 1.5,
+              fontFamily: "Times-Roman",
+              textIndent: 30,
+            }}
+          >
+            {docDetails.map((doc, index) => (
+              <React.Fragment key={index}>
+                {Object.entries(doc.inputs)
+                  .reduce((text, [key, value]) => {
+                    const placeholder = new RegExp(`\\(\\(${key}\\)\\)`, "g");
+                    let replacementValue = "";
 
-                  // Loop through all possible data in detail.form?.[1]
-                  for (let i = 0; i < detail.form?.[1]?.length; i++) {
-                    const possibleData = detail.form?.[1]?.[i]?.form;
+                    // Loop through all possible data in detail.form?.[1]
+                    for (let i = 0; i < detail.form?.[1]?.length; i++) {
+                      const possibleData = detail.form?.[1]?.[i]?.form;
 
-                    // Check if possibleData is an array and has matching variable
-                    if (Array.isArray(possibleData)) {
-                      const matchingEntry = possibleData.find(
-                        (entry) => entry.variable === value
-                      );
+                      // Check if possibleData is an array and has matching variable
+                      if (Array.isArray(possibleData)) {
+                        const matchingEntry = possibleData.find(
+                          (entry) => entry.variable === value
+                        );
 
-                      // If matching entry is found, get its value
-                      if (matchingEntry) {
-                        replacementValue = matchingEntry.value || "";
-                        break; // Stop searching if a matching entry is found
+                        // If matching entry is found, get its value
+                        if (matchingEntry) {
+                          replacementValue = matchingEntry.value || "";
+                          break; // Stop searching if a matching entry is found
+                        }
                       }
                     }
-                  }
 
-                  // If no matching entry is found in detail.form?.[1]?.[all possible data]?.form?,
-                  // check detail.form?.[0]?.[value]?.value
-                  if (!replacementValue) {
-                    replacementValue = detail.form?.[0]?.[value]?.value || "";
-                  }
+                    // If no matching entry is found in detail.form?.[1]?.[all possible data]?.form?,
+                    // check detail.form?.[0]?.[value]?.value
+                    if (!replacementValue) {
+                      replacementValue = detail.form?.[0]?.[value]?.value || "";
+                    }
 
-                  // Replace the placeholder in the text
-                  return text.replace(placeholder, replacementValue || "");
-                }, doc.details)
-                .replace(/\{CurrentDate\}/g, formattedDate)}
-            </React.Fragment>
-          ))}
-        </Text>
-
+                    // Replace the placeholder in the text
+                    return text.replace(placeholder, replacementValue || "");
+                  }, doc.details)
+                  .replace(/\{CurrentDate\}/g, formattedDate)}
+              </React.Fragment>
+            ))}
+          </Text>
+          <Text
+            style={{
+              marginTop: 10,
+              // textAlign: "justify",
+              fontSize: 12,
+              lineHeight: 1.5,
+              fontFamily: "Times-Roman",
+              marginRight: 140,
+            }}
+          >
+            Emergency Name: {detail.form && detail.form[1]?.[0]?.form[1]?.value}{'\n'}
+            Emergency Contact: {detail.form && detail.form[1]?.[0]?.form[2]?.value}{'\n'}
+            Emergency Address: {detail.form && detail.form[1]?.[0]?.form[3]?.value}{'\n'}
+          </Text>
+        </TwoColumns>
         <View
           style={{
             ...styles.terms.parentSign,
@@ -547,16 +568,16 @@ const PrintDocumentTypeD = ({
                   {official.middleName}
                 </Text>
               ))}
-            <View style={styles.terms.signText}>
+            <View>
               <Text
-                style={{ ...styles.terms.center, fontFamily: "Times-Roman" }}
+                style={{ fontSize: 10, fontFamily: "Times-Bold", textAlign: "center" }}
               >
                 Punong Barangay
               </Text>
             </View>
           </View>
         </View>
-      </View>    
+      </View>
     </View>
   );
 
