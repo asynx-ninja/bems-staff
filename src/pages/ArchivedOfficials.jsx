@@ -144,13 +144,13 @@ const ArchivedOfficials = () => {
 
     const startYearMonth = startDate
       ? `${startDate.toLocaleString("default", {
-          month: "short",
-        })} ${startDate.getFullYear()}`
+        month: "short",
+      })} ${startDate.getFullYear()}`
       : "";
     const endYearMonth = endDate
       ? `${endDate.toLocaleString("default", {
-          month: "short",
-        })} ${endDate.getFullYear()}`
+        month: "short",
+      })} ${endDate.getFullYear()}`
       : "";
 
     return `${startYearMonth} ${endYearMonth}`;
@@ -172,8 +172,8 @@ const ArchivedOfficials = () => {
         {/* Header */}
         <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
           <div className="sm:mt-5 md:mt-4 lg:mt-0  py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]" style={{
-              background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-            }}>
+            background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+          }}>
             <h1
               className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-[1.5rem] xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
@@ -195,9 +195,8 @@ const ArchivedOfficials = () => {
                 >
                   POSITION
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -258,8 +257,8 @@ const ArchivedOfficials = () => {
 
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12">
               <div className="flex flex-row w-full md:mr-2">
-                <button className="  p-3 rounded-l-md">
-                  <div className="w-full overflow-hidden" style={{ backgroundColor: information?.theme?.primary }}>
+                <button className="  p-3 rounded-l-md" style={{ backgroundColor: information?.theme?.primary }}>
+                  <div className="w-full overflow-hidden">
                     <svg
                       className="h-3.5 w-3.5 text-white"
                       xmlns="http://www.w3.org/2000/svg"
@@ -336,81 +335,81 @@ const ArchivedOfficials = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-            {Officials.length > 0 ? (
+              {Officials.length > 0 ? (
                 Officials.map((item, index) => (
-                <tr key={index} className="odd:bg-slate-100 text-center">
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <input
-                        type="checkbox"
-                        checked={selectedItems.includes(item._id)}
-                        value={item._id}
-                        onChange={checkboxHandler}
-                      />
-                    </div>
-                  </td>
-                  <td className="xl:px-6 xl:py-3">
-                    <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      <div className="py-2 xl:px-6 xl:py-2">
-                        <img
-                          src={item.picture.link}
-                          alt=""
-                          className="w-[120px] h-[90px] xl:h-28 xl:w-28 bg-cover rounded-full mx-auto border-[5px] border-[#295141] object-cover"
+                  <tr key={index} className="odd:bg-slate-100 text-center">
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item._id)}
+                          value={item._id}
+                          onChange={checkboxHandler}
                         />
                       </div>
-                    </span>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
+                    </td>
+                    <td className="xl:px-6 xl:py-3">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.lastName +
-                          ", " +
-                          item.firstName +
-                          " " +
-                          item.middleName}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.position}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center items-center">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {dateFormat(item.fromYear) || ""} -{" "}
-                        {dateFormat(item.toYear) || ""}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3">
-                    <div className="flex justify-center space-x-1 sm:space-x-none">
-                      <div className="hs-tooltip inline-block w-full">
-                        <button
-                          onClick={() => handleView(item)}
-                          type="button"
-                          data-hs-overlay="#hs-view-archived-official-modal"
-                          className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                        >
-                          <AiOutlineEye
-                            size={24}
-                            style={{ color: "#ffffff" }}
+                        <div className="py-2 xl:px-6 xl:py-2">
+                          <img
+                            src={item.picture.link}
+                            alt=""
+                            className="w-[120px] h-[90px] xl:h-28 xl:w-28 bg-cover rounded-full mx-auto border-[5px] border-[#295141] object-cover"
                           />
-                        </button>
-                        <span
-                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                          role="tooltip"
-                        >
-                          View Official
+                        </div>
+                      </span>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {item.lastName +
+                            ", " +
+                            item.firstName +
+                            " " +
+                            item.middleName}
                         </span>
                       </div>
-                    </div>
-                  </td>
-                </tr>
-              ))
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {item.position}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {dateFormat(item.fromYear) || ""} -{" "}
+                          {dateFormat(item.toYear) || ""}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center space-x-1 sm:space-x-none">
+                        <div className="hs-tooltip inline-block w-full">
+                          <button
+                            onClick={() => handleView(item)}
+                            type="button"
+                            data-hs-overlay="#hs-view-archived-official-modal"
+                            className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                          >
+                            <AiOutlineEye
+                              size={24}
+                              style={{ color: "#ffffff" }}
+                            />
+                          </button>
+                          <span
+                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                            role="tooltip"
+                          >
+                            View Official
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))
               ) : (
                 <tr>
                   <td
