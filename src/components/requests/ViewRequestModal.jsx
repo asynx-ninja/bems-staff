@@ -143,10 +143,8 @@ function ViewRequestModal({ request, brgy, officials }) {
     }
   }
 
-
   console.log("request sa modal: ", request);
 
-  
   return (
     <div>
       <div

@@ -25,6 +25,7 @@ import OETMT from "../../../assets/fonts/Old-English-Text-MT.otf";
 import ESITC from "../../../assets/fonts/Edwardian-Script-ITC.otf";
 import axios from "axios";
 import API_LINK from "../../../config/API";
+import moment from "moment";
 
 Font.register({
   family: "Old-English-Text-MT",
@@ -112,6 +113,8 @@ const PrintDocumentTypeD = ({
   const day = date.getDate();
   const ordinalSuffix = getOrdinalSuffix(day);
 
+  const birthdayFormat = "MMMM DD, YYYY";
+
   const formattedDate = `${day}${ordinalSuffix} day of ${date.toLocaleDateString(
     "en-PH",
     {
@@ -148,20 +151,20 @@ const PrintDocumentTypeD = ({
 
   const romanize = (num) => {
     var lookup = {
-      M: 1000,
-      CM: 900,
-      D: 500,
-      CD: 400,
-      C: 100,
-      XC: 90,
-      L: 50,
-      XL: 40,
-      X: 10,
-      IX: 9,
-      V: 5,
-      IV: 4,
-      I: 1,
-    },
+        M: 1000,
+        CM: 900,
+        D: 500,
+        CD: 400,
+        C: 100,
+        XC: 90,
+        L: 50,
+        XL: 40,
+        X: 10,
+        IX: 9,
+        V: 5,
+        IV: 4,
+        I: 1,
+      },
       roman = "",
       i;
     for (i in lookup) {
@@ -198,7 +201,7 @@ const PrintDocumentTypeD = ({
         alignItems: "center",
       },
       image: {
-        width: 70,
+        width: 50,
       },
       view2: {
         display: "flex",
@@ -208,23 +211,23 @@ const PrintDocumentTypeD = ({
       },
       republic: {
         fontFamily: "Old-English-Text-MT",
-        fontSize: 11,
+        fontSize: 8,
       },
       municipality: {
         fontFamily: "Old-English-Text-MT",
-        fontSize: 11,
+        fontSize: 8,
         lineHeight: 1,
         marginTop: 3,
       },
       municipality1: {
         fontFamily: "Times-Bold",
-        fontSize: 11,
+        fontSize: 8,
         fontWeight: 700,
         marginTop: 3,
       },
       brgy: {
         fontFamily: "Times-Bold",
-        fontSize: 14,
+        fontSize: 10,
         fontWeight: 700,
         marginTop: 3,
       },
@@ -459,91 +462,200 @@ const PrintDocumentTypeD = ({
           Municipality of Rodriguez
         </Text>
         <Text style={styles.letterHead.brgy}>BARANGAY {detail.brgy}</Text>
-        <Text style={styles.letterHead.office}>
-          Office of the Barangay Chairman
-        </Text>
       </View>
-
       <Image src={logo} alt="" srcset="" style={styles.letterHead.image} />
-    </View>
-  );
-
-  const Title = () => (
-    <View style={styles.title.view1}>
-      <Text style={styles.title.req}>Barangay Certification</Text>
-      <Text style={styles.title.id}>
-        Barangay Clearance for {detail.service_name}
-      </Text>
     </View>
   );
 
   const Body = () => (
     <View>
       {/* TERMS */}
-      <View style={{ marginLeft: 10, marginRight: 10 }}>
+      <View style={{ marginLeft: 10, marginRight: 10, marginTop: 10 }}>
         <TwoColumns>
-          <Text
+          <View
             style={{
-              marginTop: 10,
-              // textAlign: "justify",
-              fontSize: 12,
-              lineHeight: 1.5,
-              fontFamily: "Times-Roman",
-              textIndent: 30,
+              flexDirection: "column",
+              borderColor: "black",
+              borderWidth: 1,
+              padding: 8,
             }}
           >
-            {docDetails.map((doc, index) => (
-              <React.Fragment key={index}>
-                {Object.entries(doc.inputs)
-                  .reduce((text, [key, value]) => {
-                    const placeholder = new RegExp(`\\(\\(${key}\\)\\)`, "g");
-                    let replacementValue = "";
-
-                    // Loop through all possible data in detail.form?.[1]
-                    for (let i = 0; i < detail.form?.[1]?.length; i++) {
-                      const possibleData = detail.form?.[1]?.[i]?.form;
-
-                      // Check if possibleData is an array and has matching variable
-                      if (Array.isArray(possibleData)) {
-                        const matchingEntry = possibleData.find(
-                          (entry) => entry.variable === value
+            <LetterHead />
+            <View style={{ flexDirection: "row" }}>
+              <Text
+                style={{
+                  marginTop: 10,
+                  // textAlign: "justify",
+                  fontSize: 8,
+                  lineHeight: 1.5,
+                  fontFamily: "Times-Roman",
+                }}
+              >
+                {docDetails.map((doc, index) => (
+                  <React.Fragment key={index}>
+                    {Object.entries(doc.inputs)
+                      .reduce((text, [key, value]) => {
+                        const placeholder = new RegExp(
+                          `\\(\\(${key}\\)\\)`,
+                          "g"
                         );
+                        let replacementValue = "";
 
-                        // If matching entry is found, get its value
-                        if (matchingEntry) {
-                          replacementValue = matchingEntry.value || "";
-                          break; // Stop searching if a matching entry is found
+                        // Loop through all possible data in detail.form?.[1]
+                        for (let i = 0; i < detail.form?.[1]?.length; i++) {
+                          const possibleData = detail.form?.[1]?.[i]?.form;
+
+                          // Check if possibleData is an array and has matching variable
+                          if (Array.isArray(possibleData)) {
+                            const matchingEntry = possibleData.find(
+                              (entry) => entry.variable === value
+                            );
+
+                            // If matching entry is found, get its value
+                            if (matchingEntry) {
+                              replacementValue = matchingEntry.value || "";
+                              break; // Stop searching if a matching entry is found
+                            }
+                          }
                         }
-                      }
-                    }
 
-                    // If no matching entry is found in detail.form?.[1]?.[all possible data]?.form?,
-                    // check detail.form?.[0]?.[value]?.value
-                    if (!replacementValue) {
-                      replacementValue = detail.form?.[0]?.[value]?.value || "";
-                    }
+                        // If no matching entry is found in detail.form?.[1]?.[all possible data]?.form?,
+                        // check detail.form?.[0]?.[value]?.value
+                        if (!replacementValue) {
+                          replacementValue =
+                            detail.form?.[0]?.[value]?.value || "";
+                        }
 
-                    // Replace the placeholder in the text
-                    return text.replace(placeholder, replacementValue || "");
-                  }, doc.details)
-                  .replace(/\{CurrentDate\}/g, formattedDate)}
-              </React.Fragment>
-            ))}
-          </Text>
-          <Text
+                        
+                        // Format birthday value using moment if the key is 'birthday'
+                        if (value === "birthday" && replacementValue) {
+                          const dateMoment = moment(
+                            replacementValue,
+                            "YYYY-MM-DD"
+                          );
+                          replacementValue = dateMoment.isValid()
+                            ? dateMoment.format(birthdayFormat)
+                            : replacementValue;
+                        }
+
+                        // Replace the placeholder in the text
+                        return text.replace(
+                          placeholder,
+                          replacementValue || ""
+                        );
+                      }, doc.details)
+                      .replace(/\{CurrentDate\}/g, formattedDate)}
+                  </React.Fragment>
+                ))}
+              </Text>
+              <View
+                style={{
+                  width: 85,
+                  height: 73,
+                  borderColor: "black",
+                  borderWidth: 1,
+                  marginLeft: 50,
+                  marginTop: 3,
+                }}
+              ></View>
+            </View>
+            <Text
+              style={{
+                marginLeft: 248,
+                borderTopWidth: 1,
+                borderTopColor: "black",
+              }}
+            ></Text>
+            <Text style={{ marginLeft: 272, fontSize: 8 }}>Signature</Text>
+          </View>
+
+          <View
             style={{
-              marginTop: 10,
-              // textAlign: "justify",
-              fontSize: 12,
-              lineHeight: 1.5,
-              fontFamily: "Times-Roman",
-              marginRight: 140,
+              borderColor: "black",
+              borderWidth: 1,
+              padding: 8,
             }}
           >
-            Emergency Name: {detail.form && detail.form[1]?.[0]?.form[1]?.value}{'\n'}
-            Emergency Contact: {detail.form && detail.form[1]?.[0]?.form[2]?.value}{'\n'}
-            Emergency Address: {detail.form && detail.form[1]?.[0]?.form[3]?.value}{'\n'}
-          </Text>
+            <Text
+              style={{
+                marginTop: 10,
+                // textAlign: "justify",
+                fontSize: 8,
+                lineHeight: 1.5,
+                fontFamily: "Times-Bold",
+                marginRight: 20,
+              }}
+            >
+              IN CASE OF EMERGENCY:{"\n"}
+              Name: {detail.form && detail.form[1]?.[0]?.form[1]?.value}
+              {"\n"}
+              Contact Number:{" "}
+              {detail.form && detail.form[1]?.[0]?.form[2]?.value}
+              {"\n"}
+              Address: {detail.form && detail.form[1]?.[0]?.form[3]?.value}
+              {"\n"}
+              {"\n"}
+              <Text
+                style={{
+                  fontFamily: "Times-Bold",
+                  fontSize: 8,
+                  textIndent: 90,
+                }}
+              >
+                THIS CARD IS NON-TRANSFERRABLE {"\n"}
+              </Text>
+              <Text
+                style={{
+                  fontFamily: "Times-Bold",
+                  fontSize: 8,
+                  textIndent: 15,
+                }}
+              >
+                This is to certify that the bearer of this card whose picture
+                and signature appear hereon is a {"\n"}
+              </Text>
+              <Text style={{ fontFamily: "Times-Bold", fontSize: 8 }}>
+                bona fide resident of Barangay {brgy} RODRIGUEZ, RIZAL. {"\n"}
+              </Text>
+              <Text
+                style={{
+                  fontFamily: "Times-Bold",
+                  fontSize: 8,
+                  textIndent: 15,
+                }}
+              >
+                If found, please return to the Barangay Secretariat or to any
+                Officials of Barangay {brgy}
+              </Text>
+            </Text>
+            <View style={{ ...styles.terms.half, marginTop: 10 }}>
+              {officials
+                .filter((official) => official.position === "Barangay Chairman")
+                .map((official) => (
+                  <Text
+                    style={{
+                      fontSize: 10,
+                      textIndent: 90,
+                      lineHeight: 1.5, // Adjust the lineHeight as needed
+                    }}
+                  >
+                    {official.lastName}, {official.firstName}{" "}
+                    {official.middleName}
+                  </Text>
+                ))}
+              <View>
+                <Text
+                  style={{
+                    fontSize: 8,
+                    fontFamily: "Times-Bold",
+                    marginLeft: 130,
+                  }}
+                >
+                  Punong Barangay
+                </Text>
+              </View>
+            </View>
+          </View>
         </TwoColumns>
         <View
           style={{
@@ -552,31 +664,7 @@ const PrintDocumentTypeD = ({
             marginTop: 50,
             fontFamily: "Times-Roman",
           }}
-        >
-          <View style={styles.terms.half}>
-            {officials
-              .filter((official) => official.position === "Barangay Chairman")
-              .map((official) => (
-                <Text
-                  style={{
-                    fontSize: 12,
-                    textAlign: "center",
-                    lineHeight: 1.5, // Adjust the lineHeight as needed
-                  }}
-                >
-                  {official.lastName}, {official.firstName}{" "}
-                  {official.middleName}
-                </Text>
-              ))}
-            <View>
-              <Text
-                style={{ fontSize: 10, fontFamily: "Times-Bold", textAlign: "center" }}
-              >
-                Punong Barangay
-              </Text>
-            </View>
-          </View>
-        </View>
+        ></View>
       </View>
     </View>
   );
@@ -591,9 +679,6 @@ const PrintDocumentTypeD = ({
   return (
     <Document>
       <Page size="A4" style={styles.body} orientation="landscape">
-        <LetterHead />
-        <Divider />
-        <Title />
         <Body />
         {/* <Footer /> */}
       </Page>

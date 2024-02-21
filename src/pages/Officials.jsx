@@ -197,13 +197,13 @@ const Officials = () => {
 
     const startYearMonth = startDate
       ? `${startDate.toLocaleString("default", {
-          month: "short",
-        })} ${startDate.getFullYear()}`
+        month: "short",
+      })} ${startDate.getFullYear()}`
       : "";
     const endYearMonth = endDate
       ? `${endDate.toLocaleString("default", {
-          month: "short",
-        })} ${endDate.getFullYear()}`
+        month: "short",
+      })} ${endDate.getFullYear()}`
       : "";
 
     return `${startYearMonth} ${endYearMonth}`;
@@ -219,9 +219,9 @@ const Officials = () => {
       <div>
         {/* Header */}
         <div className="flex flex-row mt-5 sm:flex-col-reverse lg:flex-row w-full">
-        <div className="sm:mt-5 md:mt-4 lg:mt-0  py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]" style={{
-                        background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-                      }}>
+          <div className="sm:mt-5 md:mt-4 lg:mt-0  py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]" style={{
+            background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+          }}>
             <h1
               className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
@@ -236,7 +236,7 @@ const Officials = () => {
                   <button
                     type="button"
                     data-hs-overlay="#hs-create-official-modal"
-                    className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg  w-full text-white font-medium text-sm  text-center inline-flex items-center "  style={{
+                    className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg  w-full text-white font-medium text-sm  text-center inline-flex items-center " style={{
                       background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
                     }}
                   >
@@ -261,7 +261,7 @@ const Officials = () => {
                     <button
                       type="button"
                       data-hs-overlay="#hs-modal-add"
-                      className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg  w-full text-white font-medium text-sm text-center inline-flex items-center"  style={{
+                      className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg  w-full text-white font-medium text-sm text-center inline-flex items-center" style={{
                         background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
                       }}
                     >
@@ -294,9 +294,8 @@ const Officials = () => {
                 >
                   POSITION
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -338,6 +337,27 @@ const Officials = () => {
                     BARANGAY KAGAWAD
                   </a>
                   <a
+                    onClick={() => handlePositionFilter("Secretary")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    SECRETARY
+                  </a>
+                  <a
+                    onClick={() => handlePositionFilter("Assistant Secretary")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    ASSISTANT SECRETARY
+                  </a>
+                  <a
+                    onClick={() => handlePositionFilter("Treasurer")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    TREASURER
+                  </a>
+                  <a
                     onClick={() => handlePositionFilter("SK Chairman")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
@@ -352,18 +372,18 @@ const Officials = () => {
                     SK KAGAWAD
                   </a>
                   <a
-                    onClick={() => handlePositionFilter("Secretary")}
+                    onClick={() => handlePositionFilter("SK Secretary")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    SECRETARY
+                    SK Secretary
                   </a>
                   <a
-                    onClick={() => handlePositionFilter("Treasurer")}
+                    onClick={() => handlePositionFilter("SK Treasurer")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    TREASURER
+                    SK TREASURER
                   </a>
                 </ul>
               </div>

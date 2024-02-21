@@ -117,8 +117,8 @@ const Inquiries = () => {
   };
 
   const tableHeader = [
+    "inquiry #",
     "name",
-    "e-mail",
     "message",
     "date",
     "status",
@@ -158,9 +158,9 @@ const Inquiries = () => {
           console.log(typeof new Date(item.compose.date), selectedDate);
           return (
             new Date(item.compose.date).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.compose.date).getMonth() ===
-              selectedDate.getMonth() &&
+            selectedDate.getMonth() &&
             new Date(item.compose.date).getDate() === selectedDate.getDate()
           );
         });
@@ -175,7 +175,7 @@ const Inquiries = () => {
         return inquiries.filter(
           (item) =>
             new Date(item.compose.date).getFullYear() ===
-              startDate.getFullYear() &&
+            startDate.getFullYear() &&
             new Date(item.compose.date).getMonth() === startDate.getMonth() &&
             new Date(item.compose.date).getDate() >= startDate.getDate() &&
             new Date(item.compose.date).getDate() <= endDate.getDate()
@@ -184,7 +184,7 @@ const Inquiries = () => {
         return inquiries.filter(
           (item) =>
             new Date(item.compose.date).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.compose.date).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -258,7 +258,7 @@ const Inquiries = () => {
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"
-                      className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg  w-full text-white font-medium text-sm text-center inline-flex items-center"  style={{
+                      className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg  w-full text-white font-medium text-sm text-center inline-flex items-center" style={{
                         background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
                       }}
                     >
@@ -348,7 +348,7 @@ const Inquiries = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "style={{ backgroundColor: information?.theme?.primary }}
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  " style={{ backgroundColor: information?.theme?.primary }}
                 >
                   DATE
                   <svg
@@ -441,7 +441,7 @@ const Inquiries = () => {
 
             <div className="sm:flex-col md:flex-row flex sm:w-full md:w-7/12">
               <div className="flex flex-row w-full md:mr-2">
-                <button className="  p-3 rounded-l-md"style={{ backgroundColor: information?.theme?.primary }}>
+                <button className="  p-3 rounded-l-md" style={{ backgroundColor: information?.theme?.primary }}>
                   <div className="w-full overflow-hidden">
                     <svg
                       className="h-3.5 w-3.5 text-white"
@@ -508,7 +508,7 @@ const Inquiries = () => {
         <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_280px)] xxxl:h-[calc(100vh_-_300px)]">
           <table className="relative table-auto w-full">
             <thead className=" sticky top-0"
-            style={{ backgroundColor: information?.theme?.primary }}>
+              style={{ backgroundColor: information?.theme?.primary }}>
               <tr className="">
                 <th scope="col" className="px-6 py-4">
                   <div className="flex justify-center items-center">
@@ -549,14 +549,14 @@ const Inquiries = () => {
                     <td className="xl:px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                          {item.name}
+                          {item.inq_id}
                         </span>
                       </div>
                     </td>
                     <td className="xl:px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                          {item.email}
+                          {item.name}
                         </span>
                       </div>
                     </td>
@@ -568,8 +568,8 @@ const Inquiries = () => {
                     <td className="xl:px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {DateFormat(item.compose.date) || ""} -{" "}
-                          {TimeFormat(item.compose.date) || ""}
+                          {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
+                          {TimeFormat(item.createdAt) || ""}
                         </span>
                       </div>
                     </td>

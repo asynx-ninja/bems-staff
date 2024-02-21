@@ -108,8 +108,8 @@ const Inquiries = () => {
   ];
 
   const tableHeader = [
+    "inquiry #",
     "name",
-    "e-mail",
     "message",
     "date",
     "status",
@@ -143,9 +143,9 @@ const Inquiries = () => {
           console.log(typeof new Date(item.compose.date), selectedDate);
           return (
             new Date(item.compose.date).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.compose.date).getMonth() ===
-              selectedDate.getMonth() &&
+            selectedDate.getMonth() &&
             new Date(item.compose.date).getDate() === selectedDate.getDate()
           );
         });
@@ -159,7 +159,7 @@ const Inquiries = () => {
         return inquiries.filter(
           (item) =>
             new Date(item.compose.date).getFullYear() ===
-              startDate.getFullYear() &&
+            startDate.getFullYear() &&
             new Date(item.compose.date).getMonth() === startDate.getMonth() &&
             new Date(item.compose.date).getDate() >= startDate.getDate() &&
             new Date(item.compose.date).getDate() <= endDate.getDate()
@@ -168,7 +168,7 @@ const Inquiries = () => {
         return inquiries.filter(
           (item) =>
             new Date(item.compose.date).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.compose.date).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -224,8 +224,8 @@ const Inquiries = () => {
         <Breadcrumbs />
         <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
           <div className="flex justify-center items-center sm:mt-5 md:mt-4 lg:mt-0  py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]" style={{
-              background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-            }}>
+            background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+          }}>
             <h1
               className="mx-auto font-bold text-xs md:text-xl lg:text-[17px] xl:text-[20px] xxxl:text-4xl text-white"
               style={{ letterSpacing: "0.2em" }}
@@ -502,14 +502,14 @@ const Inquiries = () => {
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                          {item.name}
+                          {item.inq_id}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
-                          {item.email}
+                          {item.name}
                         </span>
                       </div>
                     </td>
@@ -521,8 +521,8 @@ const Inquiries = () => {
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {DateFormat(item.compose.date) || ""} -{" "}
-                          {TimeFormat(item.compose.date) || ""}
+                          {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
+                          {TimeFormat(item.createdAt) || ""}
                         </span>
                       </div>
                     </td>

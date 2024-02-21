@@ -719,6 +719,10 @@ const PrintDocumentTypeC = ({
                   height: 10,
                   borderWidth: 1,
                   borderColor: "black", // Set the color of the border
+                  backgroundColor:
+                  detail.form[0].sex.value === "Male"
+                    ? "black"
+                    : "transparent",
                 }}
               />
               <View
@@ -763,6 +767,10 @@ const PrintDocumentTypeC = ({
                   height: 10,
                   borderWidth: 1,
                   borderColor: "black", // Set the color of the border
+                  backgroundColor:
+                  detail.form[0].sex.value === "Female"
+                    ? "black"
+                    : "transparent",
                 }}
               />
               <View
@@ -997,6 +1005,10 @@ const PrintDocumentTypeC = ({
                       height: 10,
                       borderWidth: 1,
                       borderColor: "black",
+                      backgroundColor:
+                        detail.form[0].civil_status.value === "Single"
+                          ? "black"
+                          : "transparent",
                     }}
                   />
                   <View
@@ -1034,6 +1046,12 @@ const PrintDocumentTypeC = ({
                       borderWidth: 1,
                       borderColor: "black",
                       marginLeft: 15,
+                      backgroundColor:
+                        detail.form[0].civil_status.value === "Widowed" ||
+                        detail.form[0].civil_status.value ===
+                          "Legally Separated"
+                          ? "black"
+                          : "transparent",
                     }}
                   />
                   <View
@@ -1078,6 +1096,10 @@ const PrintDocumentTypeC = ({
                       height: 10,
                       borderWidth: 1,
                       borderColor: "black",
+                      backgroundColor:
+                        detail.form[0].civil_status.value === "Married"
+                          ? "black"
+                          : "transparent",
                     }}
                   />
                   <View
@@ -1115,6 +1137,10 @@ const PrintDocumentTypeC = ({
                       borderWidth: 1,
                       borderColor: "black",
                       marginLeft: 11,
+                      backgroundColor:
+                        detail.form[0].civil_status.value === "Divorced"
+                          ? "black"
+                          : "transparent",
                     }}
                   />
                   <View
@@ -1180,7 +1206,15 @@ const PrintDocumentTypeC = ({
                   lineHeight: 1,
                 }}
               >
-                {detail.form && detail.form[0]?.birthday?.value}
+                {detail.form && detail.form[0]?.birthday?.value
+                  ? new Date(
+                      detail.form[0]?.birthday?.value
+                    ).toLocaleDateString("en-US", {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    })
+                  : ""}
               </Text>
             </View>
 
@@ -1931,8 +1965,7 @@ const PrintDocumentTypeC = ({
                       paddingLeft: 7,
                       lineHeight: 1.3,
                     }}
-                  >
-                  </Text>
+                  ></Text>
                 </View>
 
                 <View
@@ -1998,7 +2031,6 @@ const PrintDocumentTypeC = ({
             </TwoColumns>
           </View>
         </TwoColumns>
-
       </View>
     );
   };
