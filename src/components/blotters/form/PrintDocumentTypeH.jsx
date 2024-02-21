@@ -23,10 +23,7 @@ import SAN_JOSE from "../../../assets/logo/SAN_JOSE.png";
 import SAN_RAFAEL from "../../../assets/logo/SAN_RAFAEL.png";
 import OETMT from "../../../assets/fonts/Old-English-Text-MT.otf";
 import ESITC from "../../../assets/fonts/Edwardian-Script-ITC.otf";
-import iconEmail from "../../../assets/icons/doc-email.png";
-import iconContact from "../../../assets/icons/doc-contact.png";
 import moment from "moment";
-import { IconContext } from "react-icons";
 import axios from "axios";
 import API_LINK from "../../../config/API";
 
@@ -40,14 +37,14 @@ Font.register({
   src: ESITC,
 });
 
-const PrintDocumentTypeJ = ({
+const PrintDocumentTypeH = ({
   detail,
   officials = { officials },
   docDetails,
   brgy,
 }) => {
   const [date, setDate] = useState(new Date());
-  console.log("docDetails sa pdfsss: ", docDetails);
+  console.log("docDetails sa pdf: ", docDetails);
 
   const returnLogo = () => {
     switch (detail.brgy) {
@@ -86,20 +83,6 @@ const PrintDocumentTypeJ = ({
     }
   };
 
-  const formatBday = (bday) => {
-    const formattedBirthday = bday.toLocaleDateString("en-PH", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-
-    return formattedBirthday;
-  };
-
-
-  const birthdayFormat = "MMMM DD, YYYY";
-
-  
   const getOrdinalSuffix = (day) => {
     if (day >= 11 && day <= 13) {
       return "th";
@@ -120,6 +103,19 @@ const PrintDocumentTypeJ = ({
   const day = date.getDate();
   const ordinalSuffix = getOrdinalSuffix(day);
 
+  const isValidDate = (dateString) => {
+    // Use a regular expression to check if the date string is in a valid format
+    const dateFormatRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
+    return dateFormatRegex.test(dateString);
+  };
+
+  const formatDate = (dateString) => {
+    if (isValidDate(dateString)) {
+      return moment(dateString).format("MMMM D, YYYY");
+    }
+    return dateString;
+  };
+
   const formattedDate = `${day}${ordinalSuffix} day of ${date.toLocaleDateString(
     "en-PH",
     {
@@ -127,6 +123,13 @@ const PrintDocumentTypeJ = ({
       year: "numeric",
     }
   )}`;
+
+  const formattedDate2 = date.toLocaleDateString("en-PH", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    weekday: "long",
+  });
 
   const createdAtFormatted = new Date(detail.createdAt).toLocaleDateString(
     "en-PH",
@@ -136,6 +139,11 @@ const PrintDocumentTypeJ = ({
       year: "numeric",
     }
   );
+
+  const birthdayFormat = (birthdayValue) => {
+    const birthday = moment(birthdayValue, "YYYY-MM-DD"); // Parse birthday value using moment
+    return birthday.format("DD MMMM YYYY"); // Format birthday using moment
+  };
 
   const formattedTime = date.toLocaleTimeString("en-PH", {
     hour: "numeric",
@@ -481,18 +489,7 @@ const PrintDocumentTypeJ = ({
           fontFamily: "Times-Bold",
         }}
       >
-        BARANGAY CERTIFICATION
-      </Text>
-      <Text
-        style={{
-          ...styles.terms.bold,
-          textAlign: "center",
-          fontSize: 16,
-          marginBottom: 20,
-          fontFamily: "Times-Bold",
-        }}
-      >
-        (Late Registration)
+        CERTIFICATION OF SOLO PARENT
       </Text>
     </View>
   );
@@ -548,16 +545,13 @@ const PrintDocumentTypeJ = ({
                     }
                   }
 
+                  // If the value is a valid date string, format it using moment
+                  replacementValue = formatDate(replacementValue);
+
                   // If no matching entry is found in detail.form?.[1]?.[all possible data]?.form?,
                   // check detail.form?.[0]?.[value]?.value
                   if (!replacementValue) {
                     replacementValue = detail.form?.[0]?.[value]?.value || "";
-                  }
-
-                  // Format birthday value using moment if the key is 'birthday'
-                  if (value === 'birthday' && replacementValue) {
-                    const dateMoment = moment(replacementValue, "YYYY-MM-DD");
-                    replacementValue = dateMoment.isValid() ? dateMoment.format(birthdayFormat) : replacementValue;
                   }
 
                   // Replace the placeholder in the text
@@ -594,8 +588,9 @@ const PrintDocumentTypeJ = ({
                   style={{
                     fontSize: 12,
                     textAlign: "center",
-                    lineHeight: 1, // Adjust the lineHeight as needed
+                    lineHeight: 2, // Adjust the lineHeight as needed
                     fontFamily: "Times-Bold",
+                    textDecoration: "underline",
                   }}
                 >
                   {official.lastName.toUpperCase()},{" "}
@@ -612,63 +607,19 @@ const PrintDocumentTypeJ = ({
                 textAlign: "center",
               }}
             >
-              Barangay Chairman
+              Punong Barangay
             </Text>
-          </View>
-        </View>
-
-        <View style={{ ...styles.terms.parentSign }}>
-          <View style={styles.terms.half}>
-            {docDetails && docDetails.length > 0 && (
-              <>
-                <View
-                  style={{
-                    marginTop: 40,
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <Image src={iconEmail} style={{ width: 25 }} />
-                  <Text
-                    style={{
-                      ...styles.terms.bold,
-                      marginBottom: 10,
-                      marginLeft: 10, // Adjust the margin as needed
-                      fontSize: 12,
-                      fontFamily: "Times-Roman",
-                      lineHeight: 0.5,
-                    }}
-                  >
-                    {docDetails[0].email}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    marginTop: 10,
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <Image src={iconContact} style={{ width: 25 }} />
-                  <Text
-                    style={{
-                      ...styles.terms.bold,
-                      marginBottom: 10,
-                      marginLeft: 10, // Adjust the margin as needed
-                      fontSize: 12,
-                      fontFamily: "Times-Roman",
-                      lineHeight: 0.5,
-                    }}
-                  >
-                    {docDetails[0].tel}
-                  </Text>
-                </View>
-              </>
-            )}
           </View>
         </View>
       </View>
       {/* END OF TERMS */}
+    </View>
+  );
+
+  const Footer = () => (
+    <View style={{ ...styles.footer.view, marginTop: 30 }}>
+      <Text style={styles.footer.text}>THIS FORM IS NOT FOR SALE</Text>
+      <Text style={styles.footer.text}>{detail.version}</Text>
     </View>
   );
 
@@ -679,9 +630,10 @@ const PrintDocumentTypeJ = ({
         <Divider />
         <Title />
         <Body />
+        {/* <Footer /> */}
       </Page>
     </Document>
   );
 };
 
-export default PrintDocumentTypeJ;
+export default PrintDocumentTypeH;

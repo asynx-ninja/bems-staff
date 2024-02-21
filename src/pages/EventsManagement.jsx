@@ -535,9 +535,9 @@ const EventsManagement = () => {
                         </span>
                       </div>
                     </td>
-                    <td className="px-2 xl:px-6 py-3 w-4/12">
+                    <td className="px-2 xl:px-6 py-3 ">
                       <div className="flex justify-center items-center">
-                        <span className="text-xs sm:text-sm text-black line-clamp-2 text-left">
+                        <span className="text-xs sm:text-sm text-black line-clamp-1 w-[100px] text-left ">
                           {item.details}
                         </span>
                       </div>

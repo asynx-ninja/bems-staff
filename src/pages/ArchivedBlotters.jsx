@@ -1,25 +1,24 @@
 import React from "react";
-import moment from "moment";
 import ReactPaginate from "react-paginate";
+import moment from "moment";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import API_LINK from "../config/API";
 import axios from "axios";
-import { BsPrinter } from "react-icons/bs";
 import { AiOutlineEye } from "react-icons/ai";
 import { AiOutlineSend } from "react-icons/ai";
 import { MdRestartAlt } from "react-icons/md";
-import ArchiveRegistrationModal from "../components/eventRegistrations/ArchiveRegistrationModal";
-import RequestsReportsModal from "../components/eventRegistrations/RequestsReportsModal";
-import ViewRegistrationModal from "../components/eventRegistrations/ViewRegistrationModal";
-import Breadcrumbs from "../components/archivedRegistrations/Breadcrumbs";
-import RestoreRegistrationModal from "../components/archivedRegistrations/RestoreRegistrationModal";
+import ArchiveRequestsModal from "../components/blotters/ArchiveRequestsModal";
+import RequestsReportsModal from "../components/blotters/RequestsReportsModal";
+import ViewRequestModal from "../components/blotters/ViewRequestModal";
+import Breadcrumbs from "../components/archivedBlotters/Breadcrumbs";
+import RestoreRequestsModal from "../components/archivedBlotters/RestoreRequestsModal";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
 
-const ArchivedRegistrations = () => {
-  const [applications, setApplications] = useState([]);
-  const [application, setApplication] = useState({ response: [{ file: [] }] });
+const ArchivedBlotters = () => {
+  const [requests, setRequests] = useState([]);
+  const [request, setRequest] = useState({ response: [{ file: [] }] });
   const [selectedItems, setSelectedItems] = useState([]);
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
@@ -27,79 +26,59 @@ const ArchivedRegistrations = () => {
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selecteEventFilter, setSelectedEventFilter] = useState("all");
-  const information = GetBrgy(brgy);
-  const [eventFilter, setEventFilter] = useState([]);
-  //status
   const [statusFilter, setStatusFilter] = useState("all"); // Default is "all"
-  //pagination
+  const [requestFilter, setRequestFilter] = useState([]); // Default is "all"
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
-
+  const information = GetBrgy(brgy);
+  const [selectedReqFilter, setSelectedReqFilter] = useState("all");
   //date filtering
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
-  const [filteredApplications, setFilteredApplications] = useState([]);
+  const [filteredRequests, setFilteredRequests] = useState([]);
   const [selected, setSelected] = useState("date");
-
   const [officials, setOfficials] = useState([]);
-
-  const [selectedEventType, setSelectedEventType] = useState("EVENT TYPE");
 
   useEffect(() => {
     const fetch = async () => {
-      try {
-        let page = 0;
-        let arr = [];
-        while (true) {
-          const response = await axios.get(
-            `${API_LINK}/announcement/?brgy=${brgy}&archived=false&page=${page}`
-          );
-          if (response.status === 200 && response.data.result.length > 0) {
-            response.data.result.map((item) => {
-              arr.push(item.title);
-            });
-            page++;
-          } else {
-            break;
-          }
-        }
-        setEventFilter(arr);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetch();
-  }, [brgy]);
-
-  const handleEventFilter = (selectedType) => {
-    setSelectedEventFilter(selectedType);
-    setSelectedEventType(selectedType);
-  };
-
+       try{
+     const response = await axios.get(
+      `${API_LINK}/services/?brgy=${brgy}&archived=false&page=${currentPage}`
+    );
+      console.log(response.data.result)
+     if (response.status === 200){
+         let arr = [];
+         response.data.result.map((item) => {
+         arr.push(item.name);
+         })
+         setRequestFilter(arr);
+         }
+ 
+       }catch(err){
+     console.log(err)
+       }
+    }
+    fetch()
+ }, [brgy]);
 
   useEffect(() => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/application/?brgy=${brgy}&archived=true&status=${statusFilter}&title=${selecteEventFilter}&page=${currentPage}`
+          `${API_LINK}/requests/?brgy=${brgy}&archived=true&status=${statusFilter}&type=${selectedReqFilter}&page=${currentPage}`
         );
 
         if (response.status === 200) {
-          setApplications(response.data.result);
+          setRequests(response.data.result);
           setPageCount(response.data.pageCount);
-          setFilteredApplications(response.data.result);
-        } else setApplications([]);
+          setFilteredRequests(response.data.result);
+        } else setRequests([]);
       } catch (err) {
         console.log(err);
       }
     };
 
     fetch();
-  }, [brgy, statusFilter, selecteEventFilter, currentPage]);
-
-  const handlePageChange = ({ selected }) => {
-    setCurrentPage(selected);
-  };
+  }, [brgy, statusFilter, selectedReqFilter, currentPage]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -130,31 +109,26 @@ const ArchivedRegistrations = () => {
     fetchData();
   }, [currentPage, brgy]); // Add positionFilter dependency
 
-  const Applications = applications.filter((item) =>
-    item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
+  const handlePageChange = ({ selected }) => {
+    setCurrentPage(selected);
+  };
+
+  const Requests = requests.filter((item) =>
+    item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleStatusFilter = (selectedStatus) => {
     setStatusFilter(selectedStatus);
   };
+  const handleRequestFilter = (selectedType) => {
+    setSelectedReqFilter(selectedType);
+  };
 
   const handleResetFilter = () => {
     setStatusFilter("all");
+    setRequestFilter("all");
+    setRequest();
     setSearchQuery("");
-    setEventFilter("all");
-    setSelectedEventType("EVENT TYPE");
-  };
-
-  const DateFormat = (date) => {
-    const dateFormat = date === undefined ? "" : date.substr(0, 10);
-    return dateFormat;
-  };
-
-  const TimeFormat = (date) => {
-    if (!date) return "";
-
-    const formattedTime = moment(date).format("hh:mm A");
-    return formattedTime;
   };
 
   const checkboxHandler = (e) => {
@@ -173,13 +147,12 @@ const ArchivedRegistrations = () => {
   };
 
   const checkAllHandler = () => {
-    const applicationsToCheck =
-      Applications.length > 0 ? Applications : applications;
+    const requestsToCheck = Requests.length > 0 ? Requests : requests;
 
-    if (applicationsToCheck.length === selectedItems.length) {
+    if (requestsToCheck.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
-      const postIds = applicationsToCheck.map((item) => {
+      const postIds = requestsToCheck.map((item) => {
         return item._id;
       });
 
@@ -187,54 +160,36 @@ const ArchivedRegistrations = () => {
     }
   };
 
-  const tableHeader = ["APP ID", "EVENT NAME", "SENDER", "DATE", "STATUS", "ACTIONS"];
+  const tableHeader = [
+    "Control #",
+    "SERVICE NAME",
+    "SENDER",
+    "TYPE OF SERVICE",
+    "DATE",
+    "STATUS",
+    "ACTIONS",
+  ];
 
   const handleView = (item) => {
-    setApplication(item);
+    setRequest(item);
   };
 
-  const handleSort = (sortBy) => {
-    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
-    setSortOrder(newSortOrder);
-    setSortColumn(sortBy);
-
-    const sortedData = applications.slice().sort((a, b) => {
-      if (sortBy === "event_id") {
-        return newSortOrder === "asc"
-          ? a.event_id.localeCompare(b.event_id)
-          : b.event_id.localeCompare(a.event_id);
-      } else if (sortBy === "service_name") {
-        return newSortOrder === "asc"
-          ? a.service_name.localeCompare(b.service_name)
-          : b.service_name.localeCompare(a.service_name);
-      } else if (sortBy === "status") {
-        const order = {
-          "Transaction Completed": 1,
-          Pending: 2,
-          Paid: 3,
-          Processing: 4,
-          Cancelled: 5,
-          Rejected: 6,
-        };
-        return newSortOrder === "asc"
-          ? order[a.status] - order[b.status]
-          : order[b.status] - order[a.status];
-      }
-
-      return 0;
-    });
-
-    setApplications(sortedData);
+  const DateFormat = (date) => {
+    const dateFormat = date === undefined ? "" : date.substr(0, 10);
+    return dateFormat;
   };
 
-  useEffect(() => {
-    document.title = "Archived Applications | Barangay E-Services Management";
-  }, []);
+  const TimeFormat = (date) => {
+    if (!date) return "";
+  
+    const formattedTime = moment(date).format("hh:mm A");
+    return formattedTime;
+  };
 
   const filters = (choice, selectedDate) => {
     switch (choice) {
       case "date":
-        return applications.filter((item) => {
+        return requests.filter((item) => {
           console.log(typeof new Date(item.createdAt), selectedDate);
           return (
             new Date(item.createdAt).getFullYear() ===
@@ -250,7 +205,7 @@ const ArchivedRegistrations = () => {
 
         console.log("start and end", startDate, endDate);
 
-        return applications.filter(
+        return requests.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
             startDate.getFullYear() &&
@@ -259,14 +214,14 @@ const ArchivedRegistrations = () => {
             new Date(item.createdAt).getDate() <= endDate.getDate()
         );
       case "month":
-        return applications.filter(
+        return requests.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
             selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
-        return applications.filter(
+        return requests.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
             selectedDate.getFullYear()
@@ -285,30 +240,30 @@ const ArchivedRegistrations = () => {
   const onChangeDate = (e) => {
     const date = new Date(e.target.value);
     setSpecifiedDate(date);
-    setFilteredApplications(filters(selected, date));
+    setFilteredRequests(filters(selected, date));
   };
 
   const onChangeWeek = (e) => {
     const date = moment(e.target.value).toDate();
     setSpecifiedDate(date);
-    setFilteredApplications(filters(selected, date));
+    setFilteredRequests(filters(selected, date));
   };
 
   const onChangeMonth = (e) => {
     const date = moment(e.target.value).toDate();
     setSpecifiedDate(date);
-    setFilteredApplications(filters(selected, date));
+    setFilteredRequests(filters(selected, date));
   };
 
   const onChangeYear = (e) => {
     if (e.target.value === "") {
-      setFilteredApplications(applications);
+      setFilteredRequests(requests);
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
       console.log("selected year converted date", date);
       console.log("specified year", filters(selected, date));
-      setFilteredApplications(filters(selected, date));
+      setFilteredRequests(filters(selected, date));
     }
   };
 
@@ -319,14 +274,14 @@ const ArchivedRegistrations = () => {
       <div>
         {/* Header */}
         <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
-          <div className="sm:mt-5 md:mt-4 lg:mt-0  py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-3/5 xxl:h-[4rem] xxxl:h-[5rem]" style={{
+          <div className="sm:mt-5 md:mt-4 lg:mt-0  py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]" style={{
               background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
             }}>
             <h1
-              className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-xl xxxl:text-3xl xxxl:mt-1 text-white"
+              className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
             >
-              ARCHIVED EVENTS APPLICATIONS
+              ARCHIVED BLOTTERS
             </h1>
           </div>
         </div>
@@ -455,9 +410,9 @@ const ArchivedRegistrations = () => {
                     <label className="text-black font-medium mb-1">
                       DATE RANGE
                     </label>
-                    <div className="flex flex-col gap-2">
+                    <div className="flex gap-2 flex-col">
                       <select
-                        className="bg-[#f8f8f8] text-gray-600 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
+                        className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                         onChange={onSelect}
                         defaultValue={selected}
                       >
@@ -495,7 +450,7 @@ const ArchivedRegistrations = () => {
                       )}
                       {selected === "year" && (
                         <input
-                          className=" text-black py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-grey-800 w-full"
+                        className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="number"
                           id="year"
                           name="year"
@@ -509,18 +464,18 @@ const ArchivedRegistrations = () => {
                   </div>
                 </ul>
               </div>
+
+              {/* Service Type Sort */}
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
-              <button
+                <button
                   id="hs-dropdown"
                   type="button"
-                  className="sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md font-medium shadow-sm align-middle transition-all text-sm"
-                  style={{ backgroundColor: information?.theme?.primary }}
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  " style={{ backgroundColor: information?.theme?.primary }}
                 >
-                  {selectedEventType}
+                  SERVICE TYPE
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -548,14 +503,14 @@ const ArchivedRegistrations = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <div className="flex flex-col scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll h-44">
-                  {eventFilter.map((title, index) => (
+                  {requestFilter.map((service_name, index) => (
                     <a
                       key={index}
-                      onClick={() => handleEventFilter(title)}
+                      onClick={() => handleRequestFilter(service_name)}
                       className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
                     >
-                      {title}
+                      {service_name}
                     </a>
                   ))}
                   </div>
@@ -563,7 +518,7 @@ const ArchivedRegistrations = () => {
               </div>
             </div>
 
-            <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12">
+            <div className="sm:flex-col md:flex-row flex sm:w-full lg:ml-2 xl:ml-0 lg:w-7/12">
               <div className="flex flex-row w-full md:mr-2">
                 <button className="  p-3 rounded-l-md" style={{ backgroundColor: information?.theme?.primary }}>
                   <div className="w-full overflow-hidden">
@@ -594,17 +549,14 @@ const ArchivedRegistrations = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    const Applications = applications.filter((item) =>
-                      item.event_name
-                        .toLowerCase()
-                        .includes(e.target.value.toLowerCase()) ||
-                      item.event_id
-                        .toLowerCase()
-                        .includes(e.target.value.toLowerCase())
-                    );
-
-                    setFilteredApplications(Applications);
-                  }}
+                    const Requests = requests.filter((item) => {
+                        const fullName = `${item.form[0].firstName.value} ${item.form[0].lastName.value}`;
+                        const serviceId = item.req_id.toString(); // Assuming service_id is a number, convert it to string for case-insensitive comparison
+                        return fullName.toLowerCase().includes(e.target.value.toLowerCase()) || serviceId.includes(e.target.value.toLowerCase());
+                    });
+                
+                    setFilteredRequests(Requests);
+                }}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
@@ -619,7 +571,7 @@ const ArchivedRegistrations = () => {
                       className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                       role="tooltip"
                     >
-                      Restore Selected Event Applications
+                      Restore Selected Requests
                     </span>
                   </button>
                 </div>
@@ -629,9 +581,9 @@ const ArchivedRegistrations = () => {
         </div>
 
         {/* Table */}
-        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_325px)] lg:h-[calc(100vh_-_350px)] xxl:h-[calc(100vh_-_320px)] xxxl:h-[calc(100vh_-_345px)]">
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_325px)] xxxl:h-[calc(100vh_-_345px)]">
           <table className="relative table-auto w-full">
-            <thead className=" sticky top-0" style={{ backgroundColor: information?.theme?.primary }}>
+            <thead className="sticky top-0" style={{ backgroundColor: information?.theme?.primary }}>
               <tr className="">
                 <th scope="col" className="px-6 py-4">
                   <div className="flex justify-center items-center">
@@ -655,8 +607,8 @@ const ArchivedRegistrations = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {filteredApplications.length > 0 ? (
-                filteredApplications.map((item, index) => (
+              {filteredRequests.length > 0 ? (
+                filteredRequests.map((item, index) => (
                   <tr key={index} className="odd:bg-slate-100 text-center">
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
@@ -669,13 +621,13 @@ const ArchivedRegistrations = () => {
                       </div>
                     </td>
                     <td className="px-6 py-3">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {item.application_id}
+                      <span className="text-xs sm:text-sm text-black line-clamp-4">
+                        {item.req_id}
                       </span>
                     </td>
                     <td className="px-6 py-3">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.event_name}
+                        {item.service_name}
                       </span>
                     </td>
                     <td className="px-6 py-3">
@@ -690,19 +642,26 @@ const ArchivedRegistrations = () => {
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
-                          {TimeFormat(item.createdAt) || ""}
+                          {item.type}
                         </span>
                       </div>
                     </td>
-                    <td className="px-2 xl:px-6 py-3 xxl:w-3/12">
-                      {item.status === "Application Completed" && (
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                        {DateFormat(item.createdAt) || ""} - {TimeFormat(item.createdAt) || ""}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3 xxl:w-3/12">
+                      {item.status === "Transaction Completed" && (
                         <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            APPLICATION COMPLETED
+                            TRANSACTION COMPLETED
                           </span>
                         </div>
                       )}
+
                       {item.status === "Rejected" && (
                         <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
@@ -710,6 +669,7 @@ const ArchivedRegistrations = () => {
                           </span>
                         </div>
                       )}
+
                       {item.status === "Pending" && (
                         <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
@@ -746,7 +706,7 @@ const ArchivedRegistrations = () => {
                         <div className="hs-tooltip inline-block">
                           <button
                             type="button"
-                            data-hs-overlay="#hs-view-application-modal"
+                            data-hs-overlay="#hs-view-request-modal"
                             onClick={() => handleView({ ...item })}
                             className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                           >
@@ -759,23 +719,42 @@ const ArchivedRegistrations = () => {
                             className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                             role="tooltip"
                           >
-                            View Event Registration
+                            View Request
                           </span>
                         </div>
+
+                        {/* <div className="hs-tooltip inline-block">
+                          <button
+                            type="button"
+                            data-hs-overlay="#hs-reply-modal"
+                            onClick={() => handleView({ ...item })}
+                            className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                          >
+                            <AiOutlineSend
+                              size={24}
+                              style={{ color: "#ffffff" }}
+                            />
+                          </button>
+                          <span
+                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                            role="tooltip"
+                          >
+                            Reply to Request
+                          </span>
+                        </div> */}
                       </div>
                     </td>
                   </tr>
-                ))
-              ) : (
+                ))) : (
                 <tr>
                   <td
                     colSpan={tableHeader.length + 1}
-                    className="text-center  sm:h-[15.8rem] md:h-[17.2rem] xl:py-1 lg:h-[15.7rem] xxl:py-32 xl:h-[15rem]"
+                    className="text-center sm:h-[15rem] md:h-[16.5rem] xl:py-1 lg:h-[17rem] xxl:py-32 xl:h-[17rem]"
                   >
                     <img
                       src={noData}
                       alt=""
-                      className=" w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-[13.2rem] xl:w-80 mx-auto"
+                      className=" w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-[14rem] xl:w-80 mx-auto"
                     />
                     <strong className="text-[#535353]">NO DATA FOUND</strong>
                   </td>
@@ -802,14 +781,14 @@ const ArchivedRegistrations = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      {Object.hasOwn(application, "event_id") ? (
-        <ViewRegistrationModal application={application} brgy={brgy} officials={officials}/>
+      {Object.hasOwn(request, "service_id") ? (
+        <ViewRequestModal request={request} brgy={brgy} officials={officials} />
       ) : null}
-      <ArchiveRegistrationModal />
+      <ArchiveRequestsModal />
       <RequestsReportsModal />
-      <RestoreRegistrationModal selectedItems={selectedItems} />
+      <RestoreRequestsModal selectedItems={selectedItems} />
     </div>
   );
 };
 
-export default ArchivedRegistrations;
+export default ArchivedBlotters;

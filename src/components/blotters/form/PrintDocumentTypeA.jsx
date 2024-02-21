@@ -23,10 +23,6 @@ import SAN_JOSE from "../../../assets/logo/SAN_JOSE.png";
 import SAN_RAFAEL from "../../../assets/logo/SAN_RAFAEL.png";
 import OETMT from "../../../assets/fonts/Old-English-Text-MT.otf";
 import ESITC from "../../../assets/fonts/Edwardian-Script-ITC.otf";
-import iconEmail from "../../../assets/icons/doc-email.png";
-import iconContact from "../../../assets/icons/doc-contact.png";
-import moment from "moment";
-import { IconContext } from "react-icons";
 import axios from "axios";
 import API_LINK from "../../../config/API";
 
@@ -40,14 +36,14 @@ Font.register({
   src: ESITC,
 });
 
-const PrintDocumentTypeJ = ({
+const PrintDocumentTypeA = ({
   detail,
   officials = { officials },
   docDetails,
   brgy,
 }) => {
   const [date, setDate] = useState(new Date());
-  console.log("docDetails sa pdfsss: ", docDetails);
+  console.log("docDetails sa pdf: ", docDetails);
 
   const returnLogo = () => {
     switch (detail.brgy) {
@@ -96,10 +92,6 @@ const PrintDocumentTypeJ = ({
     return formattedBirthday;
   };
 
-
-  const birthdayFormat = "MMMM DD, YYYY";
-
-  
   const getOrdinalSuffix = (day) => {
     if (day >= 11 && day <= 13) {
       return "th";
@@ -472,27 +464,9 @@ const PrintDocumentTypeJ = ({
 
   const Title = () => (
     <View style={styles.title.view1}>
-      <Text
-        style={{
-          ...styles.terms.bold,
-          textAlign: "center",
-          fontSize: 20,
-          marginVertical: 20,
-          fontFamily: "Times-Bold",
-        }}
-      >
-        BARANGAY CERTIFICATION
-      </Text>
-      <Text
-        style={{
-          ...styles.terms.bold,
-          textAlign: "center",
-          fontSize: 16,
-          marginBottom: 20,
-          fontFamily: "Times-Bold",
-        }}
-      >
-        (Late Registration)
+      <Text style={styles.title.req}>Barangay Certification</Text>
+      <Text style={styles.title.id}>
+        Barangay Clearance for {detail.service_name}
       </Text>
     </View>
   );
@@ -512,7 +486,7 @@ const PrintDocumentTypeJ = ({
         >
           TO WHOM IT MAY CONCERN:
         </Text>
-
+        
         <Text
           style={{
             marginTop: 10,
@@ -554,12 +528,6 @@ const PrintDocumentTypeJ = ({
                     replacementValue = detail.form?.[0]?.[value]?.value || "";
                   }
 
-                  // Format birthday value using moment if the key is 'birthday'
-                  if (value === 'birthday' && replacementValue) {
-                    const dateMoment = moment(replacementValue, "YYYY-MM-DD");
-                    replacementValue = dateMoment.isValid() ? dateMoment.format(birthdayFormat) : replacementValue;
-                  }
-
                   // Replace the placeholder in the text
                   return text.replace(placeholder, replacementValue || "");
                 }, doc.details)
@@ -569,24 +537,14 @@ const PrintDocumentTypeJ = ({
         </Text>
 
         <View
-          style={{ ...styles.terms.parentSign, justifyContent: "flex-end" }}
+          style={{
+            ...styles.terms.parentSign,
+            justifyContent: "flex-end",
+            marginTop: 50,
+            fontFamily: "Times-Roman",
+          }}
         >
           <View style={styles.terms.half}>
-            <View style={{ marginTop: 40 }}>
-              <Text
-                style={{
-                  ...styles.terms.bold,
-                  // textAlign: "center",
-                  marginBottom: 30,
-                  marginLeft: 20,
-                  fontSize: 12,
-                  fontFamily: "Times-Italic",
-                }}
-              >
-                Certified by:
-              </Text>
-            </View>
-
             {officials
               .filter((official) => official.position === "Barangay Chairman")
               .map((official) => (
@@ -594,81 +552,177 @@ const PrintDocumentTypeJ = ({
                   style={{
                     fontSize: 12,
                     textAlign: "center",
-                    lineHeight: 1, // Adjust the lineHeight as needed
-                    fontFamily: "Times-Bold",
+                    lineHeight: 1.5, // Adjust the lineHeight as needed
                   }}
                 >
-                  {official.lastName.toUpperCase()},{" "}
-                  {official.firstName.toUpperCase()}{" "}
-                  {official.middleName.toUpperCase()}
+                  {official.lastName}, {official.firstName}{" "}
+                  {official.middleName}
                 </Text>
               ))}
-
-            <Text
-              style={{
-                fontFamily: "Times-Roman",
-                fontSize: "12",
-                lineHeight: 1,
-                textAlign: "center",
-              }}
-            >
-              Barangay Chairman
-            </Text>
+            <View style={styles.terms.signText}>
+              <Text
+                style={{ ...styles.terms.center, fontFamily: "Times-Roman" }}
+              >
+                Punong Barangay
+              </Text>
+            </View>
           </View>
         </View>
 
-        <View style={{ ...styles.terms.parentSign }}>
+        <View style={{ ...styles.terms.parentSign, marginTop: 30 }}>
           <View style={styles.terms.half}>
-            {docDetails && docDetails.length > 0 && (
-              <>
-                <View
-                  style={{
-                    marginTop: 40,
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <Image src={iconEmail} style={{ width: 25 }} />
-                  <Text
-                    style={{
-                      ...styles.terms.bold,
-                      marginBottom: 10,
-                      marginLeft: 10, // Adjust the margin as needed
-                      fontSize: 12,
-                      fontFamily: "Times-Roman",
-                      lineHeight: 0.5,
-                    }}
-                  >
-                    {docDetails[0].email}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    marginTop: 10,
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <Image src={iconContact} style={{ width: 25 }} />
-                  <Text
-                    style={{
-                      ...styles.terms.bold,
-                      marginBottom: 10,
-                      marginLeft: 10, // Adjust the margin as needed
-                      fontSize: 12,
-                      fontFamily: "Times-Roman",
-                      lineHeight: 0.5,
-                    }}
-                  >
-                    {docDetails[0].tel}
-                  </Text>
-                </View>
-              </>
-            )}
+            <Text
+              style={{
+                fontSize: 12,
+                textAlign: "center",
+                lineHeight: 1.5, // Adjust the lineHeight as needed
+                fontFamily: "Times-Roman",
+              }}
+            >
+              {detail.form && detail.form[0].firstName.value}{" "}
+              {detail.form && detail.form[0].middleName.value}{" "}
+              {detail.form && detail.form[0].lastName.value}
+            </Text>
+            <View style={styles.terms.signText}>
+              <Text
+                style={{ ...styles.terms.center, fontFamily: "Times-Roman" }}
+              >
+                Applicant's Signature
+              </Text>
+            </View>
           </View>
+        </View>
+
+        {/* Box with a background color */}
+        <View
+          style={{
+            width: 70,
+            height: 55,
+            marginTop: 10,
+            marginLeft: 90,
+            borderColor: "black",
+            alignSelf: "stretch",
+            borderWidth: 1,
+          }}
+        />
+
+        <View style={{ ...styles.terms.parentSign, marginTop: 30 }}>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              fontFamily: "Times-Roman",
+            }}
+          >
+            Brgy. Clearance No.
+          </Text>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              marginLeft: 10,
+              textDecoration: "underline",
+              fontFamily: "Times-Roman",
+            }}
+          >
+            {detail.req_id}
+          </Text>
+        </View>
+        <View style={{ ...styles.terms.parentSign }}>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              fontFamily: "Times-Roman",
+            }}
+          >
+            Amount:
+          </Text>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              marginLeft: 60,
+              textDecoration: "underline",
+              fontFamily: "Times-Roman",
+            }}
+          >
+            PHP {detail.fee}
+          </Text>
+        </View>
+        <View style={{ ...styles.terms.parentSign }}>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              fontFamily: "Times-Roman",
+            }}
+          >
+            Date Issued:
+          </Text>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              marginLeft: 45,
+              textDecoration: "underline",
+              fontFamily: "Times-Roman",
+            }}
+          >
+            {createdAtFormatted}
+          </Text>
+        </View>
+        <View style={{ ...styles.terms.parentSign }}>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              fontFamily: "Times-Roman",
+            }}
+          >
+            Place Issued:
+          </Text>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              marginLeft: 41,
+              textDecoration: "underline",
+              fontFamily: "Times-Roman",
+            }}
+          >
+            BARANGAY {detail.brgy}
+          </Text>
+        </View>
+        <View style={{ ...styles.terms.parentSign }}>
+          <Text
+            style={{
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 0.75, // Adjust the lineHeight as needed
+              fontFamily: "Times-Roman",
+            }}
+          >
+            O.R No.:
+          </Text>
         </View>
       </View>
       {/* END OF TERMS */}
+    </View>
+  );
+
+  const Footer = () => (
+    <View style={{ ...styles.footer.view, marginTop: 30 }}>
+      <Text style={styles.footer.text}>THIS FORM IS NOT FOR SALE</Text>
+      <Text style={styles.footer.text}>{detail.version}</Text>
     </View>
   );
 
@@ -679,9 +733,10 @@ const PrintDocumentTypeJ = ({
         <Divider />
         <Title />
         <Body />
+        {/* <Footer /> */}
       </Page>
     </Document>
   );
 };
 
-export default PrintDocumentTypeJ;
+export default PrintDocumentTypeA;

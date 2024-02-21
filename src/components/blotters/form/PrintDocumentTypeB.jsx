@@ -21,12 +21,9 @@ import ROSARIO from "../../../assets/logo/ROSARIO.png";
 import SAN_ISIDRO from "../../../assets/logo/SAN_ISIDRO.png";
 import SAN_JOSE from "../../../assets/logo/SAN_JOSE.png";
 import SAN_RAFAEL from "../../../assets/logo/SAN_RAFAEL.png";
+import BAGONG_PILIPINAS from "../../../assets/image/bagong-pilipinas-logo.jpg";
 import OETMT from "../../../assets/fonts/Old-English-Text-MT.otf";
 import ESITC from "../../../assets/fonts/Edwardian-Script-ITC.otf";
-import iconEmail from "../../../assets/icons/doc-email.png";
-import iconContact from "../../../assets/icons/doc-contact.png";
-import moment from "moment";
-import { IconContext } from "react-icons";
 import axios from "axios";
 import API_LINK from "../../../config/API";
 
@@ -40,14 +37,11 @@ Font.register({
   src: ESITC,
 });
 
-const PrintDocumentTypeJ = ({
-  detail,
+const PrintDocumentTypeB = ({ detail,
   officials = { officials },
   docDetails,
-  brgy,
-}) => {
+  brgy, }) => {
   const [date, setDate] = useState(new Date());
-  console.log("docDetails sa pdfsss: ", docDetails);
 
   const returnLogo = () => {
     switch (detail.brgy) {
@@ -96,46 +90,12 @@ const PrintDocumentTypeJ = ({
     return formattedBirthday;
   };
 
-
-  const birthdayFormat = "MMMM DD, YYYY";
-
-  
-  const getOrdinalSuffix = (day) => {
-    if (day >= 11 && day <= 13) {
-      return "th";
-    }
-    const lastDigit = day % 10;
-    switch (lastDigit) {
-      case 1:
-        return "st";
-      case 2:
-        return "nd";
-      case 3:
-        return "rd";
-      default:
-        return "th";
-    }
-  };
-
-  const day = date.getDate();
-  const ordinalSuffix = getOrdinalSuffix(day);
-
-  const formattedDate = `${day}${ordinalSuffix} day of ${date.toLocaleDateString(
-    "en-PH",
-    {
-      month: "long",
-      year: "numeric",
-    }
-  )}`;
-
-  const createdAtFormatted = new Date(detail.createdAt).toLocaleDateString(
-    "en-PH",
-    {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }
-  );
+  const formattedDate = date.toLocaleDateString("en-PH", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    weekday: "long",
+  });
 
   const formattedTime = date.toLocaleTimeString("en-PH", {
     hour: "numeric",
@@ -194,8 +154,8 @@ const PrintDocumentTypeJ = ({
   const styles = StyleSheet.create({
     body: {
       paddingTop: 5,
-      paddingLeft: 35,
-      paddingRight: 35,
+      paddingLeft: 15,
+      paddingRight: 15,
       paddingBottom: 35,
     },
     letterHead: {
@@ -243,24 +203,22 @@ const PrintDocumentTypeJ = ({
     },
     title: {
       view1: {
-        paddingTop: 5,
-        paddingBottom: 10,
+        paddingTop: 12,
+        paddingBottom: 12,
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        marginVertical: 10,
       },
       req: {
-        fontSize: 24,
-        fontFamily: "Times-Bold",
+        fontSize: 18,
+        fontFamily: "Helvetica-Bold",
         fontWeight: 700,
-        // textDecoration: "underline",
+        textDecoration: "underline",
       },
       id: {
         paddingTop: 3,
-        fontSize: 11,
-        fontFamily: "Times-Bold",
+        fontSize: 8,
       },
     },
     bodyHead: {
@@ -422,10 +380,10 @@ const PrintDocumentTypeJ = ({
     },
     backgroundImage: {
       position: "absolute",
-      height: "550px",
+      height: "410px",
       width: "100%",
-      top: 25,
-      left: 0,
+      top: 50,
+      left: 10,
       right: 0,
       bottom: 0,
       opacity: 0.1, // Set the opacity of the background image
@@ -441,6 +399,12 @@ const PrintDocumentTypeJ = ({
         marginBottom: 10,
       }}
     />
+  );
+
+  const TwoColumns = ({ children }) => (
+    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      {children}
+    </View>
   );
 
   const LetterHead = () => (
@@ -470,205 +434,295 @@ const PrintDocumentTypeJ = ({
     </View>
   );
 
-  const Title = () => (
-    <View style={styles.title.view1}>
-      <Text
-        style={{
-          ...styles.terms.bold,
-          textAlign: "center",
-          fontSize: 20,
-          marginVertical: 20,
-          fontFamily: "Times-Bold",
-        }}
-      >
-        BARANGAY CERTIFICATION
-      </Text>
-      <Text
-        style={{
-          ...styles.terms.bold,
-          textAlign: "center",
-          fontSize: 16,
-          marginBottom: 20,
-          fontFamily: "Times-Bold",
-        }}
-      >
-        (Late Registration)
-      </Text>
-    </View>
-  );
-
   const Body = () => (
     <View>
-      {/* TERMS */}
-      <View style={{ marginLeft: 10, marginRight: 10 }}>
-        <Text
-          style={{
-            marginTop: 20,
-            textAlign: "justify",
-            fontSize: 12,
-            lineHeight: 2,
-            fontFamily: "Times-Roman",
-          }}
-        >
-          TO WHOM IT MAY CONCERN:
-        </Text>
-
-        <Text
-          style={{
-            marginTop: 10,
-            // textAlign: "justify",
-            fontSize: 12,
-            lineHeight: 1.5,
-            fontFamily: "Times-Roman",
-            textIndent: 30,
-          }}
-        >
-          {docDetails.map((doc, index) => (
-            <React.Fragment key={index}>
-              {Object.entries(doc.inputs)
-                .reduce((text, [key, value]) => {
-                  const placeholder = new RegExp(`\\(\\(${key}\\)\\)`, "g");
-                  let replacementValue = "";
-
-                  // Loop through all possible data in detail.form?.[1]
-                  for (let i = 0; i < detail.form?.[1]?.length; i++) {
-                    const possibleData = detail.form?.[1]?.[i]?.form;
-
-                    // Check if possibleData is an array and has matching variable
-                    if (Array.isArray(possibleData)) {
-                      const matchingEntry = possibleData.find(
-                        (entry) => entry.variable === value
-                      );
-
-                      // If matching entry is found, get its value
-                      if (matchingEntry) {
-                        replacementValue = matchingEntry.value || "";
-                        break; // Stop searching if a matching entry is found
-                      }
-                    }
-                  }
-
-                  // If no matching entry is found in detail.form?.[1]?.[all possible data]?.form?,
-                  // check detail.form?.[0]?.[value]?.value
-                  if (!replacementValue) {
-                    replacementValue = detail.form?.[0]?.[value]?.value || "";
-                  }
-
-                  // Format birthday value using moment if the key is 'birthday'
-                  if (value === 'birthday' && replacementValue) {
-                    const dateMoment = moment(replacementValue, "YYYY-MM-DD");
-                    replacementValue = dateMoment.isValid() ? dateMoment.format(birthdayFormat) : replacementValue;
-                  }
-
-                  // Replace the placeholder in the text
-                  return text.replace(placeholder, replacementValue || "");
-                }, doc.details)
-                .replace(/\{CurrentDate\}/g, formattedDate)}
-            </React.Fragment>
-          ))}
-        </Text>
-
+      <TwoColumns>
         <View
-          style={{ ...styles.terms.parentSign, justifyContent: "flex-end" }}
+          style={{
+            width: "26%",
+            borderRightWidth: 2,
+            borderRightColor: "#000000",
+          }}
         >
-          <View style={styles.terms.half}>
-            <View style={{ marginTop: 40 }}>
+          <Text
+            style={{
+              textAlign: "center",
+              fontSize: 12,
+              marginTop: 30,
+              fontFamily: "Times-Bold",
+            }}
+          >
+            BARANGAY {detail.brgy.toUpperCase()}
+          </Text>
+
+          <Text
+            style={{
+              textAlign: "center",
+              fontSize: 10,
+              marginTop: 30,
+              fontFamily: "Times-Bold",
+            }}
+          >
+            BARANGAY CHAIRMAN
+          </Text>
+
+          {officials
+            .filter((official) => official.position === "Barangay Chairman")
+            .map((official) => (
               <Text
+                key={official.user_id}
                 style={{
-                  ...styles.terms.bold,
-                  // textAlign: "center",
-                  marginBottom: 30,
-                  marginLeft: 20,
-                  fontSize: 12,
-                  fontFamily: "Times-Italic",
+                  textAlign: "center",
+                  marginTop: 5,
+                  marginLeft: 12,
+                  marginRight: 12,
+                  fontSize: 8,
+                  fontFamily: "Times-Roman",
                 }}
               >
-                Certified by:
+                {official.lastName}, {official.firstName} {official.middleName}
               </Text>
-            </View>
+            ))}
 
-            {officials
-              .filter((official) => official.position === "Barangay Chairman")
-              .map((official) => (
-                <Text
-                  style={{
-                    fontSize: 12,
-                    textAlign: "center",
-                    lineHeight: 1, // Adjust the lineHeight as needed
-                    fontFamily: "Times-Bold",
-                  }}
-                >
-                  {official.lastName.toUpperCase()},{" "}
-                  {official.firstName.toUpperCase()}{" "}
-                  {official.middleName.toUpperCase()}
-                </Text>
-              ))}
+          <Text
+            style={{
+              fontFamily: "Times-Bold",
+              textAlign: "center",
+              fontSize: 10,
+              marginTop: 30,
+            }}
+          >
+            BARANGAY KAGAWAD
+          </Text>
+
+          {officials
+            .filter((official) => official.position === "Barangay Kagawad")
+            .map((official) => (
+              <Text
+                key={official.user_id}
+                style={{
+                  fontFamily: "Times-Roman",
+                  textAlign: "center",
+                  marginTop: 5,
+                  marginLeft: 12,
+                  marginRight: 12,
+                  fontSize: 8,
+                }}
+              >
+                {official.lastName}, {official.firstName} {official.middleName}
+              </Text>
+            ))}
+
+          <Text
+            style={{
+              fontFamily: "Times-Bold",
+              textAlign: "center",
+              fontSize: 10,
+              marginTop: 30,
+            }}
+          >
+            SK CHAIRMAN
+          </Text>
+
+          {officials
+            .filter((official) => official.position === "SK Chairman")
+            .map((official) => (
+              <Text
+                key={official.user_id}
+                style={{
+                  fontFamily: "Times-Roman",
+                  textAlign: "center",
+                  marginTop: 10,
+                  marginLeft: 12,
+                  marginRight: 12,
+                  fontSize: 8,
+                }}
+              >
+                {official.lastName}, {official.firstName} {official.middleName}
+              </Text>
+            ))}
+
+          <Text
+            style={{
+              fontFamily: "Times-Bold",
+              textAlign: "center",
+              fontSize: 10,
+              marginTop: 30,
+            }}
+          >
+            SECRETARY
+          </Text>
+
+          {officials
+            .filter((official) => official.position === "Secretary")
+            .map((official) => (
+              <Text
+                key={official.user_id}
+                style={{
+                  fontFamily: "Times-Roman",
+                  textAlign: "center",
+                  marginTop: 10,
+                  marginLeft: 12,
+                  marginRight: 12,
+                  fontSize: 8,
+                }}
+              >
+                {official.lastName}, {official.firstName} {official.middleName}
+              </Text>
+            ))}
+
+          <Text
+            style={{
+              fontFamily: "Times-Bold",
+              textAlign: "center",
+              fontSize: 10,
+              marginTop: 30,
+            }}
+          >
+            TREASURER
+          </Text>
+
+          {officials
+            .filter((official) => official.position === "Treasurer")
+            .map((official) => (
+              <Text
+                key={official.user_id}
+                style={{
+                  fontFamily: "Times-Roman",
+                  textAlign: "center",
+                  marginTop: 10,
+                  marginLeft: 12,
+                  marginRight: 12,
+                  fontSize: 8,
+                }}
+              >
+                {official.lastName}, {official.firstName} {official.middleName}
+              </Text>
+            ))}
+        </View>
+
+        <View style={{ ...styles.bodyHead.column, width: "74%" }}>
+          {/* BODY HEAD */}
+          <View style={styles.bodyHead.column}>
+            <Text
+              style={{
+                ...styles.bodyHead.text,
+                marginTop: 10,
+                fontFamily: "Times-Bold",
+              }}
+            >
+              Control Number: {detail.req_id}
+            </Text>
+          </View>
+          {/* END OF BODY HEAD */}
+
+          {/* TERMS */}
+          <View style={{ marginLeft: 10, marginRight: 10 }}>
+            <Text
+              style={{
+                ...styles.terms.bold,
+                textAlign: "center",
+                fontSize: 16,
+                marginTop: 30,
+                fontFamily: "Times-Bold",
+              }}
+            >
+              BARANGAY CLEARANCE
+            </Text>
+            <Text
+              style={{ fontSize: 11, marginTop: 35, fontFamily: "Times-Bold" }}
+            >
+              To Whom It May Concern:
+            </Text>
 
             <Text
               style={{
+                marginTop: 10,
+                // textAlign: "justify",
+                fontSize: 12,
+                lineHeight: 1.5,
                 fontFamily: "Times-Roman",
-                fontSize: "12",
-                lineHeight: 1,
-                textAlign: "center",
+                textIndent: 30,
               }}
             >
-              Barangay Chairman
-            </Text>
-          </View>
-        </View>
+              {docDetails.map((doc, index) => (
+                <React.Fragment key={index}>
+                  {Object.entries(doc.inputs)
+                    .reduce((text, [key, value]) => {
+                      const placeholder = new RegExp(`\\(\\(${key}\\)\\)`, "g");
+                      let replacementValue = "";
 
-        <View style={{ ...styles.terms.parentSign }}>
-          <View style={styles.terms.half}>
-            {docDetails && docDetails.length > 0 && (
-              <>
-                <View
-                  style={{
-                    marginTop: 40,
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <Image src={iconEmail} style={{ width: 25 }} />
-                  <Text
-                    style={{
-                      ...styles.terms.bold,
-                      marginBottom: 10,
-                      marginLeft: 10, // Adjust the margin as needed
-                      fontSize: 12,
-                      fontFamily: "Times-Roman",
-                      lineHeight: 0.5,
-                    }}
-                  >
-                    {docDetails[0].email}
-                  </Text>
+                      // Loop through all possible data in detail.form?.[1]
+                      for (let i = 0; i < detail.form?.[1]?.length; i++) {
+                        const possibleData = detail.form?.[1]?.[i]?.form;
+
+                        // Check if possibleData is an array and has matching variable
+                        if (Array.isArray(possibleData)) {
+                          const matchingEntry = possibleData.find(
+                            (entry) => entry.variable === value
+                          );
+
+                          // If matching entry is found, get its value
+                          if (matchingEntry) {
+                            replacementValue = matchingEntry.value || "";
+                            break; // Stop searching if a matching entry is found
+                          }
+                        }
+                      }
+
+                      // If no matching entry is found in detail.form?.[1]?.[all possible data]?.form?,
+                      // check detail.form?.[0]?.[value]?.value
+                      if (!replacementValue) {
+                        replacementValue =
+                          detail.form?.[0]?.[value]?.value || "";
+                      }
+
+                      // Replace the placeholder in the text
+                      return text.replace(placeholder, replacementValue || "");
+                    }, doc.details)
+                    .replace(/\{CurrentDate\}/g, formattedDate)}
+                </React.Fragment>
+              ))}
+            </Text>
+
+            <View
+              style={{ ...styles.terms.parentSign, justifyContent: "flex-end", marginTop: 40 }}
+            >
+              <View style={styles.terms.half}>
+                {officials
+                  .filter(
+                    (official) => official.position === "Barangay Chairman"
+                  )
+                  .map((official) => (
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        textAlign: "center",
+                        lineHeight: 1.3, // Adjust the lineHeight as needed
+                        fontFamily: "Times-Roman",
+                      }}
+                    >
+                      {official.lastName}, {official.firstName}{" "}
+                      {official.middleName}
+                    </Text>
+                  ))}
+                <View style={styles.terms.signText}>
+                  <Text style={{...styles.terms.center,  fontFamily: "Times-Roman",}}>Punong Barangay</Text>
                 </View>
-                <View
-                  style={{
-                    marginTop: 10,
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <Image src={iconContact} style={{ width: 25 }} />
-                  <Text
-                    style={{
-                      ...styles.terms.bold,
-                      marginBottom: 10,
-                      marginLeft: 10, // Adjust the margin as needed
-                      fontSize: 12,
-                      fontFamily: "Times-Roman",
-                      lineHeight: 0.5,
-                    }}
-                  >
-                    {docDetails[0].tel}
-                  </Text>
-                </View>
-              </>
-            )}
+              </View>
+            </View>
           </View>
+          {/* END OF TERMS */}
         </View>
-      </View>
+      </TwoColumns>
       {/* END OF TERMS */}
+    </View>
+  );
+
+  const Footer = () => (
+    <View style={{ ...styles.footer.view, marginTop: 30 }}>
+      <Text style={styles.footer.text}>THIS FORM IS NOT FOR SALE</Text>
+      <Text style={styles.footer.text}>{detail.version}</Text>
     </View>
   );
 
@@ -677,11 +731,10 @@ const PrintDocumentTypeJ = ({
       <Page size="A4" style={styles.body}>
         <LetterHead />
         <Divider />
-        <Title />
         <Body />
       </Page>
     </Document>
   );
 };
 
-export default PrintDocumentTypeJ;
+export default PrintDocumentTypeB;

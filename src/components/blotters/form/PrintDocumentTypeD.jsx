@@ -23,10 +23,6 @@ import SAN_JOSE from "../../../assets/logo/SAN_JOSE.png";
 import SAN_RAFAEL from "../../../assets/logo/SAN_RAFAEL.png";
 import OETMT from "../../../assets/fonts/Old-English-Text-MT.otf";
 import ESITC from "../../../assets/fonts/Edwardian-Script-ITC.otf";
-import iconEmail from "../../../assets/icons/doc-email.png";
-import iconContact from "../../../assets/icons/doc-contact.png";
-import moment from "moment";
-import { IconContext } from "react-icons";
 import axios from "axios";
 import API_LINK from "../../../config/API";
 
@@ -40,14 +36,14 @@ Font.register({
   src: ESITC,
 });
 
-const PrintDocumentTypeJ = ({
+const PrintDocumentTypeD = ({
   detail,
   officials = { officials },
   docDetails,
   brgy,
 }) => {
   const [date, setDate] = useState(new Date());
-  console.log("docDetails sa pdfsss: ", docDetails);
+  console.log("docDetails sa pdf: ", docDetails);
 
   const returnLogo = () => {
     switch (detail.brgy) {
@@ -96,10 +92,6 @@ const PrintDocumentTypeJ = ({
     return formattedBirthday;
   };
 
-
-  const birthdayFormat = "MMMM DD, YYYY";
-
-  
   const getOrdinalSuffix = (day) => {
     if (day >= 11 && day <= 13) {
       return "th";
@@ -156,20 +148,20 @@ const PrintDocumentTypeJ = ({
 
   const romanize = (num) => {
     var lookup = {
-        M: 1000,
-        CM: 900,
-        D: 500,
-        CD: 400,
-        C: 100,
-        XC: 90,
-        L: 50,
-        XL: 40,
-        X: 10,
-        IX: 9,
-        V: 5,
-        IV: 4,
-        I: 1,
-      },
+      M: 1000,
+      CM: 900,
+      D: 500,
+      CD: 400,
+      C: 100,
+      XC: 90,
+      L: 50,
+      XL: 40,
+      X: 10,
+      IX: 9,
+      V: 5,
+      IV: 4,
+      I: 1,
+    },
       roman = "",
       i;
     for (i in lookup) {
@@ -432,6 +424,12 @@ const PrintDocumentTypeJ = ({
     },
   });
 
+  const TwoColumns = ({ children }) => (
+    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      {children}
+    </View>
+  );
+
   const Divider = () => (
     <View
       style={{
@@ -472,27 +470,9 @@ const PrintDocumentTypeJ = ({
 
   const Title = () => (
     <View style={styles.title.view1}>
-      <Text
-        style={{
-          ...styles.terms.bold,
-          textAlign: "center",
-          fontSize: 20,
-          marginVertical: 20,
-          fontFamily: "Times-Bold",
-        }}
-      >
-        BARANGAY CERTIFICATION
-      </Text>
-      <Text
-        style={{
-          ...styles.terms.bold,
-          textAlign: "center",
-          fontSize: 16,
-          marginBottom: 20,
-          fontFamily: "Times-Bold",
-        }}
-      >
-        (Late Registration)
+      <Text style={styles.title.req}>Barangay Certification</Text>
+      <Text style={styles.title.id}>
+        Barangay Clearance for {detail.service_name}
       </Text>
     </View>
   );
@@ -501,92 +481,79 @@ const PrintDocumentTypeJ = ({
     <View>
       {/* TERMS */}
       <View style={{ marginLeft: 10, marginRight: 10 }}>
-        <Text
-          style={{
-            marginTop: 20,
-            textAlign: "justify",
-            fontSize: 12,
-            lineHeight: 2,
-            fontFamily: "Times-Roman",
-          }}
-        >
-          TO WHOM IT MAY CONCERN:
-        </Text>
+        <TwoColumns>
+          <Text
+            style={{
+              marginTop: 10,
+              // textAlign: "justify",
+              fontSize: 12,
+              lineHeight: 1.5,
+              fontFamily: "Times-Roman",
+              textIndent: 30,
+            }}
+          >
+            {docDetails.map((doc, index) => (
+              <React.Fragment key={index}>
+                {Object.entries(doc.inputs)
+                  .reduce((text, [key, value]) => {
+                    const placeholder = new RegExp(`\\(\\(${key}\\)\\)`, "g");
+                    let replacementValue = "";
 
-        <Text
-          style={{
-            marginTop: 10,
-            // textAlign: "justify",
-            fontSize: 12,
-            lineHeight: 1.5,
-            fontFamily: "Times-Roman",
-            textIndent: 30,
-          }}
-        >
-          {docDetails.map((doc, index) => (
-            <React.Fragment key={index}>
-              {Object.entries(doc.inputs)
-                .reduce((text, [key, value]) => {
-                  const placeholder = new RegExp(`\\(\\(${key}\\)\\)`, "g");
-                  let replacementValue = "";
+                    // Loop through all possible data in detail.form?.[1]
+                    for (let i = 0; i < detail.form?.[1]?.length; i++) {
+                      const possibleData = detail.form?.[1]?.[i]?.form;
 
-                  // Loop through all possible data in detail.form?.[1]
-                  for (let i = 0; i < detail.form?.[1]?.length; i++) {
-                    const possibleData = detail.form?.[1]?.[i]?.form;
+                      // Check if possibleData is an array and has matching variable
+                      if (Array.isArray(possibleData)) {
+                        const matchingEntry = possibleData.find(
+                          (entry) => entry.variable === value
+                        );
 
-                    // Check if possibleData is an array and has matching variable
-                    if (Array.isArray(possibleData)) {
-                      const matchingEntry = possibleData.find(
-                        (entry) => entry.variable === value
-                      );
-
-                      // If matching entry is found, get its value
-                      if (matchingEntry) {
-                        replacementValue = matchingEntry.value || "";
-                        break; // Stop searching if a matching entry is found
+                        // If matching entry is found, get its value
+                        if (matchingEntry) {
+                          replacementValue = matchingEntry.value || "";
+                          break; // Stop searching if a matching entry is found
+                        }
                       }
                     }
-                  }
 
-                  // If no matching entry is found in detail.form?.[1]?.[all possible data]?.form?,
-                  // check detail.form?.[0]?.[value]?.value
-                  if (!replacementValue) {
-                    replacementValue = detail.form?.[0]?.[value]?.value || "";
-                  }
+                    // If no matching entry is found in detail.form?.[1]?.[all possible data]?.form?,
+                    // check detail.form?.[0]?.[value]?.value
+                    if (!replacementValue) {
+                      replacementValue = detail.form?.[0]?.[value]?.value || "";
+                    }
 
-                  // Format birthday value using moment if the key is 'birthday'
-                  if (value === 'birthday' && replacementValue) {
-                    const dateMoment = moment(replacementValue, "YYYY-MM-DD");
-                    replacementValue = dateMoment.isValid() ? dateMoment.format(birthdayFormat) : replacementValue;
-                  }
-
-                  // Replace the placeholder in the text
-                  return text.replace(placeholder, replacementValue || "");
-                }, doc.details)
-                .replace(/\{CurrentDate\}/g, formattedDate)}
-            </React.Fragment>
-          ))}
-        </Text>
-
+                    // Replace the placeholder in the text
+                    return text.replace(placeholder, replacementValue || "");
+                  }, doc.details)
+                  .replace(/\{CurrentDate\}/g, formattedDate)}
+              </React.Fragment>
+            ))}
+          </Text>
+          <Text
+            style={{
+              marginTop: 10,
+              // textAlign: "justify",
+              fontSize: 12,
+              lineHeight: 1.5,
+              fontFamily: "Times-Roman",
+              marginRight: 140,
+            }}
+          >
+            Emergency Name: {detail.form && detail.form[1]?.[0]?.form[1]?.value}{'\n'}
+            Emergency Contact: {detail.form && detail.form[1]?.[0]?.form[2]?.value}{'\n'}
+            Emergency Address: {detail.form && detail.form[1]?.[0]?.form[3]?.value}{'\n'}
+          </Text>
+        </TwoColumns>
         <View
-          style={{ ...styles.terms.parentSign, justifyContent: "flex-end" }}
+          style={{
+            ...styles.terms.parentSign,
+            justifyContent: "flex-end",
+            marginTop: 50,
+            fontFamily: "Times-Roman",
+          }}
         >
           <View style={styles.terms.half}>
-            <View style={{ marginTop: 40 }}>
-              <Text
-                style={{
-                  ...styles.terms.bold,
-                  // textAlign: "center",
-                  marginBottom: 30,
-                  marginLeft: 20,
-                  fontSize: 12,
-                  fontFamily: "Times-Italic",
-                }}
-              >
-                Certified by:
-              </Text>
-            </View>
-
             {officials
               .filter((official) => official.position === "Barangay Chairman")
               .map((official) => (
@@ -594,94 +561,44 @@ const PrintDocumentTypeJ = ({
                   style={{
                     fontSize: 12,
                     textAlign: "center",
-                    lineHeight: 1, // Adjust the lineHeight as needed
-                    fontFamily: "Times-Bold",
+                    lineHeight: 1.5, // Adjust the lineHeight as needed
                   }}
                 >
-                  {official.lastName.toUpperCase()},{" "}
-                  {official.firstName.toUpperCase()}{" "}
-                  {official.middleName.toUpperCase()}
+                  {official.lastName}, {official.firstName}{" "}
+                  {official.middleName}
                 </Text>
               ))}
-
-            <Text
-              style={{
-                fontFamily: "Times-Roman",
-                fontSize: "12",
-                lineHeight: 1,
-                textAlign: "center",
-              }}
-            >
-              Barangay Chairman
-            </Text>
-          </View>
-        </View>
-
-        <View style={{ ...styles.terms.parentSign }}>
-          <View style={styles.terms.half}>
-            {docDetails && docDetails.length > 0 && (
-              <>
-                <View
-                  style={{
-                    marginTop: 40,
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <Image src={iconEmail} style={{ width: 25 }} />
-                  <Text
-                    style={{
-                      ...styles.terms.bold,
-                      marginBottom: 10,
-                      marginLeft: 10, // Adjust the margin as needed
-                      fontSize: 12,
-                      fontFamily: "Times-Roman",
-                      lineHeight: 0.5,
-                    }}
-                  >
-                    {docDetails[0].email}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    marginTop: 10,
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <Image src={iconContact} style={{ width: 25 }} />
-                  <Text
-                    style={{
-                      ...styles.terms.bold,
-                      marginBottom: 10,
-                      marginLeft: 10, // Adjust the margin as needed
-                      fontSize: 12,
-                      fontFamily: "Times-Roman",
-                      lineHeight: 0.5,
-                    }}
-                  >
-                    {docDetails[0].tel}
-                  </Text>
-                </View>
-              </>
-            )}
+            <View>
+              <Text
+                style={{ fontSize: 10, fontFamily: "Times-Bold", textAlign: "center" }}
+              >
+                Punong Barangay
+              </Text>
+            </View>
           </View>
         </View>
       </View>
-      {/* END OF TERMS */}
+    </View>
+  );
+
+  const Footer = () => (
+    <View style={{ ...styles.footer.view, marginTop: 30 }}>
+      <Text style={styles.footer.text}>THIS FORM IS NOT FOR SALE</Text>
+      <Text style={styles.footer.text}>{detail.version}</Text>
     </View>
   );
 
   return (
     <Document>
-      <Page size="A4" style={styles.body}>
+      <Page size="A4" style={styles.body} orientation="landscape">
         <LetterHead />
         <Divider />
         <Title />
         <Body />
+        {/* <Footer /> */}
       </Page>
     </Document>
   );
 };
 
-export default PrintDocumentTypeJ;
+export default PrintDocumentTypeD;
