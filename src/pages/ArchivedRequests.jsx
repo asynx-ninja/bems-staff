@@ -15,6 +15,7 @@ import Breadcrumbs from "../components/archivedRequests/Breadcrumbs";
 import RestoreRequestsModal from "../components/archivedRequests/RestoreRequestsModal";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+
 const ArchivedRequests = () => {
   const [requests, setRequests] = useState([]);
   const [request, setRequest] = useState({ response: [{ file: [] }] });
@@ -35,6 +36,7 @@ const ArchivedRequests = () => {
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [filteredRequests, setFilteredRequests] = useState([]);
   const [selected, setSelected] = useState("date");
+  const [officials, setOfficials] = useState([]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -77,6 +79,35 @@ const ArchivedRequests = () => {
 
     fetch();
   }, [brgy, statusFilter, selectedReqFilter, currentPage]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
+        );
+
+        if (response.status === 200) {
+          const officialsData = response.data.result || [];
+
+          if (officialsData.length > 0) {
+            setOfficials(officialsData);
+          } else {
+            setOfficials([]);
+            console.log(`No officials found for Barangay ${brgy}`);
+          }
+        } else {
+          setOfficials([]);
+          console.error("Failed to fetch officials:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setOfficials([]);
+      }
+    };
+
+    fetchData();
+  }, [currentPage, brgy]); // Add positionFilter dependency
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -692,7 +723,7 @@ const ArchivedRequests = () => {
                           </span>
                         </div>
 
-                        <div className="hs-tooltip inline-block">
+                        {/* <div className="hs-tooltip inline-block">
                           <button
                             type="button"
                             data-hs-overlay="#hs-reply-modal"
@@ -710,7 +741,7 @@ const ArchivedRequests = () => {
                           >
                             Reply to Request
                           </span>
-                        </div>
+                        </div> */}
                       </div>
                     </td>
                   </tr>
@@ -751,7 +782,7 @@ const ArchivedRequests = () => {
         />
       </div>
       {Object.hasOwn(request, "service_id") ? (
-        <ViewRequestModal request={request} />
+        <ViewRequestModal request={request} brgy={brgy} officials={officials} />
       ) : null}
       <ArchiveRequestsModal />
       <RequestsReportsModal />

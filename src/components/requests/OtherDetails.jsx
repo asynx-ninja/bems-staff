@@ -62,7 +62,7 @@ const OtherDetails = ({ detail, returnFile }) => {
                                   className={`border-gray-400 border shrink-0 mt-0.5 text-green-500 focus:ring-green-500`}
                                   name={item.variable}
                                   type={item.type}
-                                  checked={childItem.value === item.value}
+                                  checked={item.value.includes(childItem.value)} // Check if the value is present in the array
                                 />
                                 <label className="ml-2">
                                   {childItem.option}

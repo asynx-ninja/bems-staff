@@ -24,6 +24,7 @@ import SAN_RAFAEL from "../../../assets/logo/SAN_RAFAEL.png";
 import OETMT from "../../../assets/fonts/Old-English-Text-MT.otf";
 import ESITC from "../../../assets/fonts/Edwardian-Script-ITC.otf";
 import BAGONG_PILIPINAS from "../../../assets/image/bagong-pilipinas-logo.jpg";
+import moment from "moment";
 
 Font.register({
   family: "Old-English-Text-MT",
@@ -89,6 +90,8 @@ const PrintDocumentTypeE = ({
       year: "numeric",
     }
   );
+
+  const birthdayFormat = "MMMM DD, YYYY";
 
   const getOrdinalSuffix = (day) => {
     if (day >= 11 && day <= 13) {
@@ -524,6 +527,17 @@ const PrintDocumentTypeE = ({
                   // check detail.form?.[0]?.[value]?.value
                   if (!replacementValue) {
                     replacementValue = detail.form?.[0]?.[value]?.value || "";
+                  }
+
+                  // Format birthday value using moment if the key is 'birthday'
+                  if (value === "birthday" && replacementValue) {
+                    const dateMoment = moment(
+                      replacementValue,
+                      "YYYY-MM-DD"
+                    );
+                    replacementValue = dateMoment.isValid()
+                      ? dateMoment.format(birthdayFormat)
+                      : replacementValue;
                   }
 
                   // Replace the placeholder in the text

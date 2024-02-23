@@ -121,9 +121,9 @@ const ArchivedServices = () => {
   };
 
   const tableHeader = [
+    "SERVICE ID",
     "SERVICE NAME",
     "DETAILS",
-    "TYPE OF SERVICE",
     "FEES",
     "STATUS",
     "ACTIONS",
@@ -414,21 +414,21 @@ const ArchivedServices = () => {
                       </div>
                     </td>
                     <td className="px-2 xl:px-6 py-3 w-4/12">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {item.service_id}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-2 xl:px-6 py-3 w-4/12">
                       <span className="text-xs sm:text-sm text-black line-clamp-2 ">
                         {item.name}
                       </span>
                     </td>
                     <td className="px-2 xl:px-6 py-3 w-4/12">
                       <div className="flex justify-center items-center">
-                        <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
+                        <span className="text-xs sm:text-sm text-black  line-clamp-1 tas w-[100px] ">
                           {item.details}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-2 xl:px-6 py-3 w-4/12">
-                      <div className="flex justify-center items-center">
-                        <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {item.type}
                         </span>
                       </div>
                     </td>
@@ -525,7 +525,7 @@ const ArchivedServices = () => {
         />
       </div>
       <RestoreServicesModal selectedItems={selectedItems} />
-      <ViewArchivedServiceModal service={service} setService={setService} />
+      <ViewArchivedServiceModal service={service} setService={setService} brgy={brgy} />
       <ArchivedServicesReportsModal />
     </div>
   );

@@ -41,31 +41,41 @@ const ArchivedRegistrations = () => {
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [selected, setSelected] = useState("date");
 
+  const [officials, setOfficials] = useState([]);
+
+  const [selectedEventType, setSelectedEventType] = useState("EVENT TYPE");
+
   useEffect(() => {
     const fetch = async () => {
       try {
-        const response = await axios.get(
-          `${API_LINK}/announcement/?brgy=${brgy}&archived=false&page=${currentPage}`
-        );
-        console.log(response.data.result)
-        if (response.status === 200) {
-          let arr = [];
-          response.data.result.map((item) => {
-            arr.push(item.title);
-          })
-          setEventFilter(arr);
+        let page = 0;
+        let arr = [];
+        while (true) {
+          const response = await axios.get(
+            `${API_LINK}/announcement/?brgy=${brgy}&archived=false&page=${page}`
+          );
+          if (response.status === 200 && response.data.result.length > 0) {
+            response.data.result.map((item) => {
+              arr.push(item.title);
+            });
+            page++;
+          } else {
+            break;
+          }
         }
-
+        setEventFilter(arr);
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
-    }
-    fetch()
+    };
+    fetch();
   }, [brgy]);
 
   const handleEventFilter = (selectedType) => {
     setSelectedEventFilter(selectedType);
+    setSelectedEventType(selectedType);
   };
+
 
   useEffect(() => {
     const fetch = async () => {
@@ -91,6 +101,35 @@ const ArchivedRegistrations = () => {
     setCurrentPage(selected);
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
+        );
+
+        if (response.status === 200) {
+          const officialsData = response.data.result || [];
+
+          if (officialsData.length > 0) {
+            setOfficials(officialsData);
+          } else {
+            setOfficials([]);
+            console.log(`No officials found for Barangay ${brgy}`);
+          }
+        } else {
+          setOfficials([]);
+          console.error("Failed to fetch officials:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setOfficials([]);
+      }
+    };
+
+    fetchData();
+  }, [currentPage, brgy]); // Add positionFilter dependency
+
   const Applications = applications.filter((item) =>
     item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -102,7 +141,8 @@ const ArchivedRegistrations = () => {
   const handleResetFilter = () => {
     setStatusFilter("all");
     setSearchQuery("");
-    setEventFilter("all")
+    setEventFilter("all");
+    setSelectedEventType("EVENT TYPE");
   };
 
   const DateFormat = (date) => {
@@ -147,7 +187,7 @@ const ArchivedRegistrations = () => {
     }
   };
 
-  const tableHeader = ["EVENT ID", "EVENT NAME", "SENDER", "DATE", "STATUS", "ACTIONS"];
+  const tableHeader = ["APP ID", "EVENT NAME", "SENDER", "DATE", "STATUS", "ACTIONS"];
 
   const handleView = (item) => {
     setApplication(item);
@@ -470,15 +510,17 @@ const ArchivedRegistrations = () => {
                 </ul>
               </div>
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
-                <button
+              <button
                   id="hs-dropdown"
                   type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  " style={{ backgroundColor: information?.theme?.primary }}
+                  className="sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md font-medium shadow-sm align-middle transition-all text-sm"
+                  style={{ backgroundColor: information?.theme?.primary }}
                 >
-                  EVENT TYPE
+                  {selectedEventType}
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -628,7 +670,7 @@ const ArchivedRegistrations = () => {
                     </td>
                     <td className="px-6 py-3">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.event_id}
+                      {item.application_id}
                       </span>
                     </td>
                     <td className="px-6 py-3">
@@ -648,7 +690,8 @@ const ArchivedRegistrations = () => {
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {DateFormat(item.createdAt) || ""} - {TimeFormat(item.createdAt) || ""}
+                        {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
+                          {TimeFormat(item.createdAt) || ""}
                         </span>
                       </div>
                     </td>
@@ -760,7 +803,7 @@ const ArchivedRegistrations = () => {
         />
       </div>
       {Object.hasOwn(application, "event_id") ? (
-        <ViewRegistrationModal application={application} />
+        <ViewRegistrationModal application={application} brgy={brgy} officials={officials}/>
       ) : null}
       <ArchiveRegistrationModal />
       <RequestsReportsModal />

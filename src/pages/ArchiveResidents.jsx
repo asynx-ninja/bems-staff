@@ -431,7 +431,7 @@ const Residents = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <ViewResidentModal user={user} setUser={setUser} />
+      <ViewResidentModal user={user} setUser={setUser} brgy={brgy}/>
       <RestoreResidentModal selectedItems={selectedItems} />
       <GenerateReportsModal />
     </div>

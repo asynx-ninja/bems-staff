@@ -468,7 +468,7 @@ const StaffManagement = () => {
       <AddStaffModal brgy={brgy} />
       <ArchiveStaffModal selectedItems={selectedItems} />
       <GenerateReportsModal />
-      <ManageStaffModal user={user} setUser={setUser} />
+      <ManageStaffModal user={user} setUser={setUser} brgy={brgy} />
     </div>
   );
 };

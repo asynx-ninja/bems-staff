@@ -3,8 +3,10 @@ import axios from "axios";
 import API_LINK from "../../config/API";
 import StatusLoader from "./loaders/StatusLoader";
 import { useState } from "react";
+import GetBrgy from "../GETBrgy/getbrgy";
 
 function StatusResident({ user, setUser, brgy, status, setStatus }) {
+  const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -35,7 +37,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
     try {
       e.preventDefault();
       setSubmitClicked(true);
-  
+
       const response = await axios.patch(
         `${API_LINK}/users/status/${status.id}`,
         {
@@ -43,7 +45,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
         },
         { headers: { "Content-Type": "application/json" } }
       );
-  
+
       if (response.status === 200) {
         // Check if the status is "Registered" before sending notification
         if (status.status === "Registered") {
@@ -62,17 +64,16 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
             banner: banner,
             logo: logo,
           };
-  
+
           console.log("Notify: ", notify);
           console.log("Result: ", response);
-          
-  
+
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {
               "Content-Type": "application/json",
             },
           });
-  
+
           if (result.status === 200) {
             setTimeout(() => {
               setSubmitClicked(false);
@@ -121,7 +122,12 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
           <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-xl">
             <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto">
               {/* Header */}
-              <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] overflow-hidden rounded-t-2xl">
+              <div
+                className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl"
+                style={{
+                  background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+                }}
+              >
                 <h3
                   className="font-bold text-white mx-auto md:text-xl text-center"
                   style={{ letterSpacing: "0.3em" }}

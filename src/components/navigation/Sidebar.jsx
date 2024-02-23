@@ -10,7 +10,7 @@ import { MdOutlineMiscellaneousServices } from "react-icons/md";
 import { HiMiniInformationCircle } from "react-icons/hi2";
 import { FaServicestack, FaChalkboardTeacher } from "react-icons/fa";
 import { FaPeopleGroup } from "react-icons/fa6";
-import { GoGitPullRequest } from "react-icons/go";
+import { GoGitPullRequest, GoLaw } from "react-icons/go";
 import { MdManageAccounts } from "react-icons/md";
 import { ImStatsBars } from "react-icons/im";
 import { useLocation, useNavigate, matchRoutes } from "react-router-dom";
@@ -20,6 +20,7 @@ import API_LINK from "../../config/API";
 import axios from "axios";
 import default_pfp from "../../assets/sample-image/default-pfp.png";
 import GetBrgy from "../GETBrgy/getbrgy";
+
 const Sidebar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [userData, setUserData] = useState({});
@@ -38,6 +39,7 @@ const Sidebar = () => {
   const [inquiries, setInquiries] = useState(0);
   const [residentResponseCount, setResidentInquiriesLength] = useState(0);
   const information = GetBrgy(brgy);
+  
   useEffect(() => {
     const fetchInquiries = async () => {
       try {
@@ -156,6 +158,8 @@ const Sidebar = () => {
           setSelectedOption("events_management");
         } else if (currentPath.includes("/events_registrations")) {
           setSelectedOption("events_registrations");
+        } else if (currentPath.includes("/blotters")) {
+          setSelectedOption("blotters");
         } else if (currentPath.includes("/inquiries")) {
           setSelectedOption("inquiries");
         } else if (currentPath.includes("/residents")) {
@@ -439,79 +443,8 @@ const Sidebar = () => {
                     </Link>
                   </div>
                 </li>
-                <li>
-                  <Link
-                    to={`/inquiries/?id=${id}&brgy=${brgy}`}
-                    onClick={() => {
-                      window.innerWidth >= 320 && window.innerWidth <= 1023
-                        ? document
-                            .getQuerySelector(
-                              "[data-hs-overlay-backdrop-template]"
-                            )
-                            .remove()
-                        : null;
-                    }}
-                     style={{
-                      background:
-                        selectedOption === "inquiries" ||
-                        hoverStates["inquiries"]
-                          ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
-                          : null,
-                      color:
-                        selectedOption === "inquiries" ||
-                        hoverStates["inquiries"]
-                          ? `${information?.theme.hover}`
-                          : null,
-                    }}
-                    onMouseEnter={() => handleMouseEnter("inquiries")}
-                    onMouseLeave={() => handleMouseLeave("inquiries")}
-                    className={`flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-md `}
-                  >
-                    <FaRegNoteSticky size={15} />
-                    Inquiries
-                    <span className="flex relative">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600" />
-                      {residentResponseCount > 0 && (
-                        <span className="relative inline-flex text-xs bg-red-500 text-white rounded-full py-0.5 px-1.5">
-                          {residentResponseCount}
-                        </span>
-                      )}
-                    </span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to={`/residents/?id=${id}&brgy=${brgy}`}
-                    onClick={() => {
-                      window.innerWidth >= 320 && window.innerWidth <= 1023
-                        ? document
-                            .querySelector(
-                              "[data-hs-overlay-backdrop-template]"
-                            )
-                            .remove()
-                        : null;
-                    }}
-                    style={{
-                      background:
-                        selectedOption === "residents" ||
-                        hoverStates["residents"]
-                          ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
-                          : null,
-                      color:
-                        selectedOption === "residents" ||
-                        hoverStates["residents"]
-                          ? `${information?.theme.hover}`
-                          : null,
-                    }}
-                    onMouseEnter={() => handleMouseEnter("residents")}
-                    onMouseLeave={() => handleMouseLeave("residents")}
-                    className={`flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-md `}
-                  >
-                    <BsPeopleFill size={15} />
-                    Residents
-                  </Link>
-                </li>
 
+                
                 <li>
                   <button
                     id="hs-unstyled-collapse"
@@ -634,6 +567,121 @@ const Sidebar = () => {
                       </span>
                     </Link>
                   </div>
+                </li>
+
+                <li>
+                  <Link
+                    to={`/inquiries/?id=${id}&brgy=${brgy}`}
+                    onClick={() => {
+                      window.innerWidth >= 320 && window.innerWidth <= 1023
+                        ? document
+                            .getQuerySelector(
+                              "[data-hs-overlay-backdrop-template]"
+                            )
+                            .remove()
+                        : null;
+                    }}
+                     style={{
+                      background:
+                        selectedOption === "inquiries" ||
+                        hoverStates["inquiries"]
+                          ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
+                          : null,
+                      color:
+                        selectedOption === "inquiries" ||
+                        hoverStates["inquiries"]
+                          ? `${information?.theme.hover}`
+                          : null,
+                    }}
+                    onMouseEnter={() => handleMouseEnter("inquiries")}
+                    onMouseLeave={() => handleMouseLeave("inquiries")}
+                    className={`flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-md `}
+                  >
+                    <FaRegNoteSticky size={15} />
+                    Inquiries
+                    <span className="flex relative">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600" />
+                      {residentResponseCount > 0 && (
+                        <span className="relative inline-flex text-xs bg-red-500 text-white rounded-full py-0.5 px-1.5">
+                          {residentResponseCount}
+                        </span>
+                      )}
+                    </span>
+                  </Link>
+                </li>
+
+                <li>
+                  <Link
+                    to={`/blotters/?id=${id}&brgy=${brgy}`}
+                    onClick={() => {
+                      window.innerWidth >= 320 && window.innerWidth <= 1023
+                        ? document
+                            .getQuerySelector(
+                              "[data-hs-overlay-backdrop-template]"
+                            )
+                            .remove()
+                        : null;
+                    }}
+                     style={{
+                      background:
+                        selectedOption === "blotters" ||
+                        hoverStates["blotters"]
+                          ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
+                          : null,
+                      color:
+                        selectedOption === "blotters" ||
+                        hoverStates["blotters"]
+                          ? `${information?.theme.hover}`
+                          : null,
+                    }}
+                    onMouseEnter={() => handleMouseEnter("blotters")}
+                    onMouseLeave={() => handleMouseLeave("blotters")}
+                    className={`flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-md `}
+                  >
+                    <GoLaw size={15} />
+                    Blotters
+                    <span className="flex relative">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600" />
+                      {residentResponseCount > 0 && (
+                        <span className="relative inline-flex text-xs bg-red-500 text-white rounded-full py-0.5 px-1.5">
+                          {residentResponseCount}
+                        </span>
+                      )}
+                    </span>
+                  </Link>
+                </li>
+
+                <li>
+                  <Link
+                    to={`/residents/?id=${id}&brgy=${brgy}`}
+                    onClick={() => {
+                      window.innerWidth >= 320 && window.innerWidth <= 1023
+                        ? document
+                            .querySelector(
+                              "[data-hs-overlay-backdrop-template]"
+                            )
+                            .remove()
+                        : null;
+                    }}
+                    style={{
+                      background:
+                        selectedOption === "residents" ||
+                        hoverStates["residents"]
+                          ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
+                          : null,
+                      color:
+                        selectedOption === "residents" ||
+                        hoverStates["residents"]
+                          ? `${information?.theme.hover}`
+                          : null,
+                    }}
+                    onMouseEnter={() => handleMouseEnter("residents")}
+                    onMouseLeave={() => handleMouseLeave("residents")}
+                    className={`flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-md `}
+                  >
+                    <BsPeopleFill size={15} />
+                    Residents
+                  </Link>
                 </li>
 
                 {userData.type === "Brgy Admin" ? (

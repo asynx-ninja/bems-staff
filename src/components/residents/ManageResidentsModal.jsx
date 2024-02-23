@@ -7,8 +7,10 @@ import { LiaRandomSolid } from "react-icons/lia";
 import { FaFacebookSquare, FaInstagram } from "react-icons/fa";
 import { FaSquareXTwitter } from "react-icons/fa6";
 import EditLoader from "./loaders/EditLoader";
+import GetBrgy from "../GETBrgy/getbrgy";
 
-function ManageResidentModal({ user, setUser }) {
+function ManageResidentModal({ user, setUser, brgy }) {
+  const information = GetBrgy(brgy);
   const [edit, setEdit] = useState(false);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
@@ -113,6 +115,46 @@ function ManageResidentModal({ user, setUser }) {
     return age;
   };
 
+  const [logo, setLogo] = useState();
+  const [banner, setBanner] = useState();
+
+  useEffect(() => {
+    // Primary files
+    var primary1 = document.getElementById("primary-1");
+    primary1.src =
+      user.length === 0 || !user.verification?.primary_file[0]?.link
+        ? ""
+        : user.verification.primary_file[0].link;
+
+    var primary2 = document.getElementById("primary-2");
+    primary2.src =
+      user.length === 0 || !user.verification?.primary_file[1]?.link
+        ? ""
+        : user.verification.primary_file[1].link;
+
+    // Secondary files
+    var secondary1 = document.getElementById("secondary-1");
+    secondary1.src =
+      user.length === 0 || !user.verification?.secondary_file[0]?.link
+        ? ""
+        : user.verification.secondary_file[0].link;
+
+    var secondary2 = document.getElementById("secondary-2");
+    secondary2.src =
+      user.length === 0 || !user.verification?.secondary_file[1]?.link
+        ? ""
+        : user.verification.secondary_file[1].link;
+
+    // Selfie
+    var selfie = document.getElementById("selfie");
+    selfie.src =
+      user.length === 0 || !user.verification?.selfie?.link
+        ? ""
+        : user.verification.selfie.link;
+  }, [user]);
+
+  // console.log("verification", user.verification?.primary_file[0].link);
+
   return (
     <div>
       <div className="">
@@ -124,7 +166,12 @@ function ManageResidentModal({ user, setUser }) {
           <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
             <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full   md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
               {/* Header */}
-              <div className="py-5 px-3 flex justify-between items-center bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#4b7c80] to-[#21556d] overflow-hidden rounded-t-2xl">
+              <div
+                className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl"
+                style={{
+                  background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+                }}
+              >
                 <h3
                   className="font-bold text-white mx-auto md:text-xl text-center"
                   style={{ letterSpacing: "0.3em" }}
@@ -137,8 +184,7 @@ function ManageResidentModal({ user, setUser }) {
                 <form>
                   <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                     <div className="flex flex-col mb-1 w-full">
-                      {/* Service Description */}
-
+                      {/* user Description */}
                       {/* Section 1 */}
                       <div className="relative p-1 pb-6 flex flex-col w-full h-full">
                         <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg">
@@ -797,6 +843,86 @@ function ManageResidentModal({ user, setUser }) {
                               placeholder=""
                               disabled
                             />
+                          </div>
+                        </div>
+                      </div>
+
+                      <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium mt-5 text-lg md:text-lg mb-2">
+                        ACCOUNT VERIFICATION
+                      </b>
+                      <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
+                        <div className="w-full">
+                          <div className="flex flex-col items-center space-y-2 relative">
+                            <div className="w-full border border-gray-300 rounded-xl">
+                              <img
+                                className="w-full h-[250px] object-cover rounded-xl"
+                                id="primary-1"
+                                alt="Current profile photo"
+                              />
+                              <div className="absolute bottom-0 left-0 right-0 bg-[rgba(0,0,0,0.5)] text-white p-1 text-center rounded-b-xl">
+                               Primary (Front)
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="w-full">
+                          <div className="flex flex-col items-center space-y-2 relative">
+                            <div className="w-full border border-gray-300 rounded-xl">
+                              <img
+                                className="w-full h-[250px] object-cover rounded-xl"
+                                id="primary-2"
+                                alt="Current profile photo"
+                              />
+                              <div className="absolute bottom-0 left-0 right-0 bg-[rgba(0,0,0,0.5)] text-white p-1 text-center rounded-b-xl">
+                               Primary (Back)
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
+                        <div className="w-full">
+                          <div className="flex flex-col items-center space-y-2 relative">
+                            <div className="w-full border border-gray-300 rounded-xl">
+                              <img
+                                className="w-full h-[250px] object-cover rounded-xl"
+                                id="secondary-1"
+                                alt="Current profile photo"
+                              />
+                              <div className="absolute bottom-0 left-0 right-0 bg-[rgba(0,0,0,0.5)] text-white p-1 text-center rounded-b-xl">
+                               Secondary (Front)
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="w-full">
+                          <div className="flex flex-col items-center space-y-2 relative">
+                            <div className="w-full border border-gray-300 rounded-xl">
+                              <img
+                                className="w-full h-[250px] object-cover rounded-xl"
+                                id="secondary-2"
+                                alt="Current profile photo"
+                              />
+                              <div className="absolute bottom-0 left-0 right-0 bg-[rgba(0,0,0,0.5)] text-white p-1 text-center rounded-b-xl">
+                               Secondary (Back)
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 items-center justify-center">
+                        <div className="w-1/2">
+                          <div className="flex flex-col items-center space-y-2 relative">
+                            <div className="w-full border border-gray-300 rounded-xl">
+                              <img
+                                className="w-full h-[250px] object-cover rounded-xl"
+                                id="selfie"
+                                alt="Current profile photo"
+                              />
+                              <div className="absolute bottom-0 left-0 right-0 bg-[rgba(0,0,0,0.5)] text-white p-1 text-center rounded-b-xl">
+                               Resident's Selfie
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>

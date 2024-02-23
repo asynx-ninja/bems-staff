@@ -414,7 +414,7 @@ const ArchivedStaffsManagement = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <ViewArchivedStaff user={user} setUser={setUser} />
+      <ViewArchivedStaff user={user} setUser={setUser} brgy={brgy} />
       <RestoreStaffModal selectedItems={selectedItems} />
       <GenerateReportsModal />
     </div>

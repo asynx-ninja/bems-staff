@@ -29,6 +29,8 @@ import EventsRegistrations from "../pages/EventsRegistrations";
 import ArchivedEvents from "../pages/ArchivedEvents";
 import ArchivedRegistrations from "../pages/ArchivedRegistrations";
 import ViewNotifications from "../pages/ViewNotifications";
+import Blotters from "../pages/Blotters";
+import ArchivedBlotters from "../pages/ArchivedBlotters";
 
 const pages = [
   {
@@ -82,6 +84,14 @@ const pages = [
   {
     path: "/inquiries",
     element: <Navbar comp={<Inquiries />} />,
+  },
+  {
+    path: "/blotters",
+    element: <Navbar comp={<Blotters />} />,
+  },
+  {
+    path: "/archivedblotters",
+    element: <Navbar comp={<ArchivedBlotters />} />,
   },
   {
     path: "/residents",

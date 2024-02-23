@@ -145,6 +145,7 @@ const Information = () => {
 
     setInformation((prev) => ({
       ...prev,
+      [name]: value,
       theme: {
         ...prev.theme,
         [name]: value,
@@ -155,6 +156,7 @@ const Information = () => {
       },
     }));
   };
+
 
   return (
     <div className="mx-4 overflow-y-auto lg:h-[calc(100vh_-_80px)]">
@@ -297,7 +299,7 @@ const Information = () => {
                         className="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-10 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded shadow-sm dark:bg-slate-700"
                         role="tooltip"
                       >
-                        This secondary color must be lighter <br></br>than the primary color 
+                        This secondary color must be lighter <br></br>than the primary color
                       </span>
                     </div>
                     <input
@@ -405,7 +407,7 @@ const Information = () => {
                 </div>
               )}
               <div className="flex flex-col md:flex-row mx-8 my-8 xxxl:mx-36 xxxl:my-10">
-              <div
+                <div
                   className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center  rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]"
                   style={{
                     background: `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
@@ -421,7 +423,7 @@ const Information = () => {
                 <div className="w-full md:w-2/3 px-6 py-4 border md:rounded-tr-[20px] rounded-b-[20px] md:rounded-br-[20px] flex flex-col">
                   <textarea
                     name="story"
-                    readOnly={!isEditingMode}
+                    readOnly={!isEditingMode} // This makes the textarea read-only when isEditingMode is false
                     className="font-base text-black text-sm h-36 lg:h-40 overflow-y-auto mb-5"
                     style={{ letterSpacing: "0.1em", whiteSpace: "pre-line" }}
                     value={information.story}
@@ -448,20 +450,19 @@ const Information = () => {
                 </div>
                 <div className="w-full md:w-2/3 px-6 py-4 border md:rounded-tr-[20px] rounded-b-[20px] md:rounded-br-[20px] flex flex-col">
                   <textarea
-                    readOnly={!isEditingMode}
+                    readOnly={!isEditingMode} // This makes the textarea read-only when isEditingMode is false
                     className="font-base text-black text-sm h-36 lg:h-40 overflow-y-auto mb-5"
                     style={{ letterSpacing: "0.1em", whiteSpace: "pre-line" }}
                     value={information.mission}
                     name="mission"
                     onChange={handleChange}
                   />
-
                   <div className="self-end"></div>
                 </div>
               </div>
 
               <div className="flex flex-col md:flex-row mx-8 my-8 xxxl:mx-36 xxxl:my-10">
-              <div
+                <div
                   className="w-full md:w-1/3 py-5 md:py-0 flex items-center justify-center  rounded-t-[20px] md:rounded-t-[0px] md:rounded-tl-[20px] md:rounded-bl-[20px]"
                   style={{
                     background: `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
@@ -476,7 +477,7 @@ const Information = () => {
                 </div>
                 <div className="w-full md:w-2/3 px-6 py-4 border md:rounded-tr-[20px] rounded-b-[20px] md:rounded-br-[20px] flex flex-col">
                   <textarea
-                    readOnly={!isEditingMode}
+                    readOnly={!isEditingMode} // This makes the textarea read-only when isEditingMode is false
                     className="font-base text-black text-sm h-36 lg:h-40 overflow-y-auto mb-5"
                     style={{ letterSpacing: "0.1em", whiteSpace: "pre-line" }}
                     value={information.vision}

@@ -10,7 +10,7 @@ import axios from "axios";
 import API_LINK from "../config/API";
 import GetBrgy from "../components/GETBrgy/getbrgy";
 
-const ViewNotifications = ({ setNotification}) => {
+const ViewNotifications = ({ setNotification }) => {
   const location = useLocation();
   const [searchParams2, setSearchParams2] = useSearchParams();
   const brgy = searchParams2.get("brgy");
@@ -30,18 +30,19 @@ const ViewNotifications = ({ setNotification}) => {
 
   const TimeFormat = (date) => {
     if (!date) return "";
-  
+
     const formattedTime = moment(date).format("hh:mm A");
     return formattedTime;
   };
-
 
   useEffect(() => {
     const getSpecificID = async () => {
       try {
         const id = notification._id; // Replace with the actual notification ID
 
-        const response = await axios.get(`${API_LINK}/notification/get_id/?id=${id}`);
+        const response = await axios.get(
+          `${API_LINK}/notification/get_id/?id=${id}`
+        );
 
         console.log("itoba", response.data[0]);
         // Handle the response data here
@@ -57,18 +58,22 @@ const ViewNotifications = ({ setNotification}) => {
   useEffect(() => {
     const updateReadBy = async () => {
       try {
-        const response = await axios.get(`${API_LINK}/notification/check/?user_id=${id}&notification_id=${notification._id}`);
-  
-        console.log("itoulit", response.data);
-  
-        if (response.status === 200) {
+        const response = await axios.get(
+          `${API_LINK}/notification/check/?user_id=${id}&notification_id=${notification._id}`
+        );
 
+        console.log("itoulit", response.data);
+
+        if (response.status === 200) {
           if (!response.data.length > 0) {
             // Proceed with updating the 'read_by' array
-            const updateResponse = await axios.patch(`${API_LINK}/notification/?notification_id=${notification._id}`, {
-              readerId: id,
-            });
-  
+            const updateResponse = await axios.patch(
+              `${API_LINK}/notification/?notification_id=${notification._id}`,
+              {
+                readerId: id,
+              }
+            );
+
             console.log("Update response", updateResponse.data);
             // Handle the update response data here
           } else {
@@ -81,9 +86,27 @@ const ViewNotifications = ({ setNotification}) => {
         // Handle the error here
       }
     };
-  
+
     updateReadBy();
   }, [id, notification._id]);
+
+  const getLinkBasedOnGoTo = () => {
+    switch (notification.compose.go_to) {
+      case "Events":
+        return `/events_management/?id=${id}&brgy=${brgy}`;
+      case "Application":
+        return `/events_registrations/?id=${id}&brgy=${brgy}`;
+      case "Services":
+        return `/services/?id=${id}&brgy=${brgy}`;
+      case "Requests":
+        return `/requests/?id=${id}&brgy=${brgy}`;
+      case "Inquiries":
+        return `/inquiries/?id=${id}&brgy=${brgy}`;
+      default:
+        // Default link when go_to is not recognized
+        return `/dashboard/?id=${id}&brgy=${brgy}`;
+    }
+  };
 
   return (
     <div>
@@ -101,7 +124,10 @@ const ViewNotifications = ({ setNotification}) => {
             <div className="absolute md:top-[16%] lg:top-[28%] transform -translate-y-1/2 flex justify-center w-full">
               <div className="flex flex-col items-center">
                 <div className="relative sm:w-32 md:w-full lg:w-56 lg:h-56 ">
-                  <div className="w-[130px] h-[130px] md:w-[200px] md:h-[200px] lg:w-full lg:h-full  lg:mt-0 mt-8 flex mx-auto justify-center overflow-hidden rounded-full object-cover border-[5px] " style={{ borderColor: information?.theme?.primary }}>
+                  <div
+                    className="w-[130px] h-[130px] md:w-[200px] md:h-[200px] lg:w-full lg:h-full  lg:mt-0 mt-8 flex mx-auto justify-center overflow-hidden rounded-full object-cover border-[5px] "
+                    style={{ borderColor: information?.theme?.primary }}
+                  >
                     <img
                       id="pfp"
                       className="w-full h-full object-cover"
@@ -121,7 +147,8 @@ const ViewNotifications = ({ setNotification}) => {
                   {notification.compose.subject}
                 </h6>
                 <span className="font-light mb-2 uppercase text-normal sm:text-md">
-                  {dateFormat(notification.createdAt) || ""} at {TimeFormat(notification.createdAt) || ""}
+                  {dateFormat(notification.createdAt) || ""} at{" "}
+                  {TimeFormat(notification.createdAt) || ""}
                 </span>
               </div>
               <div className="lg:flex sm:grid lg:py-0 py-2 h-[600px] w-full overflow-hidden overflow-y-auto gap-6 justify-center items-center mx-auto">
@@ -131,21 +158,22 @@ const ViewNotifications = ({ setNotification}) => {
               </div>
             </div>
             <Link
-              to={`/dashboard/?id=${id}&brgy=${brgy}`}
+              to={getLinkBasedOnGoTo()}
               className="w-full"
               onClick={() => {
                 window.innerWidth >= 300 && window.innerWidth <= 1920
                   ? document
-                      .getQuerySelector("[data-hs-overlay-backdrop-template]")
+                      .querySelector("[data-hs-overlay-backdrop-template]")
                       .remove()
                   : null;
               }}
             >
               <button
                 type="button"
-                className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-b-xl borde text-sm font-base  text-white shadow-sm" style={{ backgroundColor: information?.theme?.primary }}
+                className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-b-xl borde text-sm font-base  text-white shadow-sm"
+                style={{ backgroundColor: information?.theme?.primary }}
               >
-                RETURN TO DASHBOARD
+                CHECK {notification.compose.go_to.toUpperCase()} MANAGEMENT PAGE
               </button>
             </Link>
           </div>
