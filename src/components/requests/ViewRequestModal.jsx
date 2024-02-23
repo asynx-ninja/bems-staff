@@ -10,9 +10,11 @@ import PrintDocumentTypeC from "./form/PrintDocumentTypeC";
 import PrintDocumentTypeD from "./form/PrintDocumentTypeD";
 import PrintDocumentTypeE from "./form/PrintDocumentTypeE";
 import PrintDocumentTypeF from "./form/PrintDocumentTypeF";
+import PrintDocumentTypeG from "./form/PrintDocumentTypeG";
 import PrintDocumentTypeH from "./form/PrintDocumentTypeH";
 import PrintDocumentTypeI from "./form/PrintDocumentTypeI";
 import PrintDocumentTypeJ from "./form/PrintDocumentTypeJ";
+import PrintDocumentTypeK from "./form/PrintDocumentTypeK";
 import axios from "axios";
 import API_LINK from "../../config/API";
 
@@ -173,7 +175,55 @@ function ViewRequestModal({ request, brgy, officials }) {
                 {request.status === "Transaction Completed" && (
                   <PDFDownloadLink
                     document={
+                      <PrintDocumentTypeC
+                        detail={detail}
+                        officials={officials}
+                        docDetails={docDetails}
+                        brgy={brgy}
+                      />
+                    }
+                    fileName={fileName}
+                    className="h-[2.5rem] flex text-center justify-center items-center w-full py-1 px-6 gap-2 rounded-md border text-[9px] xxl:text-xs font-base bg-[#22687a] text-white shadow-sm"
+                  >
+                    GENERATE DOCUMENT REQUEST (TYPE C)
+                  </PDFDownloadLink>
+                )}
+                {request.status === "Transaction Completed" && (
+                  <PDFDownloadLink
+                    document={
+                      <PrintDocumentTypeD
+                        detail={detail}
+                        officials={officials}
+                        docDetails={docDetails}
+                        brgy={brgy}
+                      />
+                    }
+                    fileName={fileName}
+                    className="h-[2.5rem] flex text-center justify-center items-center w-full py-1 px-6 gap-2 rounded-md border text-[9px] xxl:text-xs font-base bg-[#22687a] text-white shadow-sm"
+                  >
+                    GENERATE DOCUMENT REQUEST (TYPE D)
+                  </PDFDownloadLink>
+                )}
+                {request.status === "Transaction Completed" && (
+                  <PDFDownloadLink
+                    document={
                       <PrintDocumentTypeE
+                        detail={detail}
+                        officials={officials}
+                        docDetails={docDetails}
+                        brgy={brgy}
+                      />
+                    }
+                    fileName={fileName}
+                    className="h-[2.5rem] flex text-center justify-center items-center w-full py-1 px-6 gap-2 rounded-md border text-[9px] xxl:text-xs font-base bg-[#22687a] text-white shadow-sm"
+                  >
+                    GENERATE DOCUMENT REQUEST (TYPE E)
+                  </PDFDownloadLink>
+                )}
+                {request.status === "Transaction Completed" && (
+                  <PDFDownloadLink
+                    document={
+                      <PrintDocumentTypeF
                         detail={detail}
                         officials={officials}
                         docDetails={docDetails}
@@ -183,10 +233,26 @@ function ViewRequestModal({ request, brgy, officials }) {
                     fileName={fileName}
                     className="h-[2.5rem] flex justify-center text-center items-center w-full py-1 px-6 gap-2 rounded-md border text-[9px] xxl:text-xs font-base bg-[#22687a] text-white shadow-sm"
                   >
-                    GENERATE DOCUMENT REQUEST (TYPE E)
+                    GENERATE DOCUMENT REQUEST (TYPE F)
                   </PDFDownloadLink>
                 )}
-                 {request.status === "Transaction Completed" && (
+                {request.status === "Transaction Completed" && (
+                  <PDFDownloadLink
+                    document={
+                      <PrintDocumentTypeG
+                        detail={detail}
+                        officials={officials}
+                        docDetails={docDetails}
+                        brgy={brgy}
+                      />
+                    }
+                    fileName={fileName}
+                    className="h-[2.5rem] flex justify-center text-center items-center w-full py-1 px-6 gap-2 rounded-md border text-[9px] xxl:text-xs font-base bg-[#22687a] text-white shadow-sm"
+                  >
+                    GENERATE DOCUMENT REQUEST (TYPE G)
+                  </PDFDownloadLink>
+                )}
+                {request.status === "Transaction Completed" && (
                   <PDFDownloadLink
                     document={
                       <PrintDocumentTypeH
@@ -234,7 +300,24 @@ function ViewRequestModal({ request, brgy, officials }) {
                     GENERATE DOCUMENT REQUEST (TYPE J)
                   </PDFDownloadLink>
                 )}
-                
+
+                {request.status === "Transaction Completed" && (
+                  <PDFDownloadLink
+                    document={
+                      <PrintDocumentTypeK
+                        detail={detail}
+                        officials={officials}
+                        docDetails={docDetails}
+                        brgy={brgy}
+                      />
+                    }
+                    fileName={fileName}
+                    className="h-[2.5rem] flex justify-center text-center items-center w-full py-1 px-6 gap-2 rounded-md border text-[9px] xxl:text-xs font-base bg-[#22687a] text-white shadow-sm"
+                  >
+                    GENERATE DOCUMENT REQUEST (TYPE K)
+                  </PDFDownloadLink>
+                )}
+
                 <PDFDownloadLink
                   document={<PrintPDF detail={detail} brgy={brgy} />}
                   fileName={fileName}

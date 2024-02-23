@@ -23,6 +23,8 @@ import SAN_JOSE from "../../../assets/logo/SAN_JOSE.png";
 import SAN_RAFAEL from "../../../assets/logo/SAN_RAFAEL.png";
 import OETMT from "../../../assets/fonts/Old-English-Text-MT.otf";
 import ESITC from "../../../assets/fonts/Edwardian-Script-ITC.otf";
+import iconEmail from "../../../assets/icons/doc-email.png";
+import iconContact from "../../../assets/icons/doc-contact.png";
 import axios from "axios";
 import API_LINK from "../../../config/API";
 
@@ -111,6 +113,32 @@ const PrintDocumentTypeI = ({
 
   const day = date.getDate();
   const ordinalSuffix = getOrdinalSuffix(day);
+
+  const monthsFilipino = [
+    "Enero",
+    "Pebrero",
+    "Marso",
+    "Abril",
+    "Mayo",
+    "Hunyo",
+    "Hulyo",
+    "Agosto",
+    "Septyembre",
+    "Octubre",
+    "Nobyembre",
+    "Disyembre",
+  ];
+
+  const filipinoDate = date
+    .toLocaleDateString("en-PH", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    })
+    .replace(
+      date.toLocaleDateString("en-PH", { month: "long" }),
+      monthsFilipino[date.getMonth()]
+    );
 
   const formattedDate = `${day}${ordinalSuffix} day of ${date.toLocaleDateString(
     "en-PH",
@@ -462,12 +490,175 @@ const PrintDocumentTypeI = ({
     </View>
   );
 
-  const Title = () => (
-    <View style={styles.title.view1}>
-      <Text style={styles.title.req}>Barangay Certification</Text>
-      <Text style={styles.title.id}>
-        Barangay Clearance for {detail.service_name}
+  const PinoyDate = () => (
+    <View
+      style={{
+        paddingTop: 5,
+        paddingBottom: 10,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-end", // Align items to the end (right side)
+        justifyContent: "center", // Center vertically
+        marginVertical: 10,
+      }}
+    >
+      <Text
+        style={{
+          ...styles.terms.bold,
+          textAlign: "end",
+          fontSize: 10,
+          marginTop: 5,
+          marginRight: 50,
+          fontFamily: "Times-Bold",
+        }}
+      >
+        {filipinoDate}
       </Text>
+    </View>
+  );
+
+  const Title = () => (
+    <View>
+      <View style={styles.title.view1}>
+        <Text
+          style={{
+            ...styles.terms.bold,
+            textAlign: "center",
+            fontSize: 14,
+            marginBottom: 10,
+            fontFamily: "Times-Bold",
+            textDecoration: "underline",
+          }}
+        >
+          TANGGAPAN NG BCPC/VAWC
+        </Text>
+      </View>
+
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-around",
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 12,
+              marginBottom: 5,
+              fontFamily: "Times-Roman",
+            }}
+          >
+            {detail.form && detail.form[1]?.[0]?.form[0]?.value}
+          </Text>
+          <Text
+            style={{
+              fontSize: 12,
+              marginBottom: 5,
+              fontFamily: "Times-Roman",
+            }}
+          >
+            {detail.form && detail.form[1]?.[0]?.form[1]?.value}
+          </Text>
+          <Text
+            style={{
+              fontSize: 12,
+              marginBottom: 20,
+              fontFamily: "Times-Roman",
+            }}
+          >
+            (Mga) Nagreklamo
+          </Text>
+        </View>
+
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-around",
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 12,
+              marginBottom: 5,
+              fontFamily: "Times-Roman",
+            }}
+          >
+            Usapin ng Barangay Blg: 2024-0001
+          </Text>
+          <Text
+            style={{
+              fontSize: 12,
+              marginBottom: 20,
+              fontFamily: "Times-Roman",
+            }}
+          >
+            Para sa : Pag babayad sa kakulangan
+          </Text>
+        </View>
+      </View>
+
+      <Text
+        style={{
+          fontSize: 12,
+          marginVertical: 15,
+          fontFamily: "Times-Roman",
+          alignSelf: "flex-end",
+        }}
+      >
+        PATAWAG: IKA-LAWANG PATAWAG
+      </Text>
+
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-around",
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 12,
+              marginBottom: 5,
+              fontFamily: "Times-Roman",
+            }}
+          >
+            {detail.form && detail.form[1]?.[1]?.form[0]?.value}
+          </Text>
+          <Text
+            style={{
+              fontSize: 12,
+              marginBottom: 5,
+              fontFamily: "Times-Roman",
+            }}
+          >
+            {detail.form && detail.form[1]?.[1]?.form[1]?.value}
+          </Text>
+          <Text
+            style={{
+              fontSize: 12,
+              marginBottom: 20,
+              fontFamily: "Times-Roman",
+            }}
+          >
+            (Mga) Inireklamo
+          </Text>
+        </View>
+      </View>
     </View>
   );
 
@@ -477,16 +668,43 @@ const PrintDocumentTypeI = ({
       <View style={{ marginLeft: 10, marginRight: 10 }}>
         <Text
           style={{
+            ...styles.terms.bold,
+            textAlign: "center",
+            fontSize: 14,
+            marginBottom: 5,
+            fontFamily: "Times-Bold",
+            textDecoration: "underline",
+          }}
+        >
+          PATAWAG
+        </Text>
+
+        {/* <Text
+          style={{
             marginTop: 20,
             textAlign: "justify",
             fontSize: 12,
-            lineHeight: 2,
+            lineHeight: 1.3,
             fontFamily: "Times-Roman",
           }}
         >
-          TO WHOM IT MAY CONCERN:
+          Para kay / kina: {detail.form && detail.form[1]?.[0]?.form[0]?.value}{" "}
+          / {detail.form && detail.form[1]?.[1]?.form[0]?.value}
         </Text>
-        
+
+        <Text
+          style={{
+            marginBottom: 5,
+            textAlign: "justify",
+            fontSize: 12,
+            lineHeight: 1,
+            // marginLeft: 75,
+            fontFamily: "Times-Roman",
+          }}
+        >
+          (Mga) Nagreklamo / Inireklamo
+        </Text> */}
+
         <Text
           style={{
             marginTop: 10,
@@ -502,208 +720,123 @@ const PrintDocumentTypeI = ({
               {Object.entries(doc.inputs)
                 .reduce((text, [key, value]) => {
                   const placeholder = new RegExp(`\\(\\(${key}\\)\\)`, "g");
+                  let replacementValue = "";
 
-                  // Check if [value] matches with any variable in the nested structure
-                  const matchingVariable = detail.form?.[1]?.[0]?.form?.find(
-                    (entry) => entry.variable === value
-                  )?.variable;
+                  // Loop through all possible data in detail.form?.[1]
+                  for (let i = 0; i < detail.form?.[1]?.length; i++) {
+                    const possibleData = detail.form?.[1]?.[i]?.form;
 
-                  // Get the value from the matching form entry, otherwise use an empty string
-                  const replacementValue = matchingVariable
-                    ? detail.form?.[1]?.[0]?.form?.find(
-                        (entry) => entry.variable === matchingVariable
-                      )?.value || ""
-                    : detail.form?.[0]?.[value]?.value || "";
+                    // Check if possibleData is an array and has matching variable
+                    if (Array.isArray(possibleData)) {
+                      const matchingEntry = possibleData.find(
+                        (entry) => entry.variable === value
+                      );
 
-                  return text.replace(placeholder, replacementValue);
+                      // If matching entry is found, get its value
+                      if (matchingEntry) {
+                        replacementValue = matchingEntry.value || "";
+                        break; // Stop searching if a matching entry is found
+                      }
+                    }
+                  }
+
+                  // If no matching entry is found in detail.form?.[1]?.[all possible data]?.form?,
+                  // check detail.form?.[0]?.[value]?.value
+                  if (!replacementValue) {
+                    replacementValue = detail.form?.[0]?.[value]?.value || "";
+                  }
+
+                  // Replace the placeholder in the text
+                  return text.replace(placeholder, replacementValue || "");
                 }, doc.details)
                 .replace(/\{CurrentDate\}/g, formattedDate)}
-              {/* <br /> */}
-              {/* Add additional line breaks or formatting as needed */}
             </React.Fragment>
           ))}
         </Text>
+      </View>
 
-        <View
-          style={{
-            ...styles.terms.parentSign,
-            justifyContent: "flex-end",
-            marginTop: 50,
-            fontFamily: "Times-Roman",
-          }}
-        >
-          <View style={styles.terms.half}>
-            {officials
-              .filter((official) => official.position === "Barangay Chairman")
-              .map((official) => (
-                <Text
-                  style={{
-                    fontSize: 12,
-                    textAlign: "center",
-                    lineHeight: 1.5, // Adjust the lineHeight as needed
-                  }}
-                >
-                  {official.lastName}, {official.firstName}{" "}
-                  {official.middleName}
-                </Text>
-              ))}
-            <View style={styles.terms.signText}>
+      <View style={{ ...styles.terms.parentSign, justifyContent: "flex-end" }}>
+        <View style={styles.terms.half}>
+          {officials
+            .filter((official) => official.position === "Barangay Chairman")
+            .map((official) => (
               <Text
-                style={{ ...styles.terms.center, fontFamily: "Times-Roman" }}
+                style={{
+                  fontSize: 11,
+                  textAlign: "center",
+                  marginTop: 25,
+                  lineHeight: 1, // Adjust the lineHeight as needed
+                  fontFamily: "Times-Bold",
+                  textDecoration: "underline",
+                }}
               >
-                Punong Barangay
+                {official.lastName}, {official.firstName} {official.middleName}
               </Text>
-            </View>
-          </View>
-        </View>
+            ))}
 
-        <View style={{ ...styles.terms.parentSign, marginTop: 30 }}>
-          <View style={styles.terms.half}>
-            <Text
-              style={{
-                fontSize: 12,
-                textAlign: "center",
-                lineHeight: 1.5, // Adjust the lineHeight as needed
-                fontFamily: "Times-Roman",
-              }}
-            >
-              {detail.form && detail.form[0].firstName.value}{" "}
-              {detail.form && detail.form[0].middleName.value}{" "}
-              {detail.form && detail.form[0].lastName.value}
-            </Text>
-            <View style={styles.terms.signText}>
-              <Text
-                style={{ ...styles.terms.center, fontFamily: "Times-Roman" }}
-              >
-                Applicant's Signature
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Box with a background color */}
-        <View
-          style={{
-            width: 70,
-            height: 55,
-            marginTop: 10,
-            marginLeft: 90,
-            borderColor: "black",
-            alignSelf: "stretch",
-            borderWidth: 1,
-          }}
-        />
-
-        <View style={{ ...styles.terms.parentSign, marginTop: 30 }}>
           <Text
             style={{
-              fontSize: 11,
-              textAlign: "center",
-              lineHeight: 0.75, // Adjust the lineHeight as needed
               fontFamily: "Times-Roman",
+              fontSize: "12",
+              lineHeight: 1,
+              textAlign: "center",
             }}
           >
-            Brgy. Clearance No.
-          </Text>
-          <Text
-            style={{
-              fontSize: 11,
-              textAlign: "center",
-              lineHeight: 0.75, // Adjust the lineHeight as needed
-              marginLeft: 10,
-              textDecoration: "underline",
-              fontFamily: "Times-Roman",
-            }}
-          >
-            {detail.req_id}
-          </Text>
-        </View>
-        <View style={{ ...styles.terms.parentSign }}>
-          <Text
-            style={{
-              fontSize: 11,
-              textAlign: "center",
-              lineHeight: 0.75, // Adjust the lineHeight as needed
-              fontFamily: "Times-Roman",
-            }}
-          >
-            Amount:
-          </Text>
-          <Text
-            style={{
-              fontSize: 11,
-              textAlign: "center",
-              lineHeight: 0.75, // Adjust the lineHeight as needed
-              marginLeft: 60,
-              textDecoration: "underline",
-              fontFamily: "Times-Roman",
-            }}
-          >
-            PHP {detail.fee}
-          </Text>
-        </View>
-        <View style={{ ...styles.terms.parentSign }}>
-          <Text
-            style={{
-              fontSize: 11,
-              textAlign: "center",
-              lineHeight: 0.75, // Adjust the lineHeight as needed
-              fontFamily: "Times-Roman",
-            }}
-          >
-            Date Issued:
-          </Text>
-          <Text
-            style={{
-              fontSize: 11,
-              textAlign: "center",
-              lineHeight: 0.75, // Adjust the lineHeight as needed
-              marginLeft: 45,
-              textDecoration: "underline",
-              fontFamily: "Times-Roman",
-            }}
-          >
-            {createdAtFormatted}
-          </Text>
-        </View>
-        <View style={{ ...styles.terms.parentSign }}>
-          <Text
-            style={{
-              fontSize: 11,
-              textAlign: "center",
-              lineHeight: 0.75, // Adjust the lineHeight as needed
-              fontFamily: "Times-Roman",
-            }}
-          >
-            Place Issued:
-          </Text>
-          <Text
-            style={{
-              fontSize: 11,
-              textAlign: "center",
-              lineHeight: 0.75, // Adjust the lineHeight as needed
-              marginLeft: 41,
-              textDecoration: "underline",
-              fontFamily: "Times-Roman",
-            }}
-          >
-            BARANGAY {detail.brgy}
-          </Text>
-        </View>
-        <View style={{ ...styles.terms.parentSign }}>
-          <Text
-            style={{
-              fontSize: 11,
-              textAlign: "center",
-              lineHeight: 0.75, // Adjust the lineHeight as needed
-              fontFamily: "Times-Roman",
-            }}
-          >
-            O.R No.:
+            Bcpc / Vawc
           </Text>
         </View>
       </View>
-      {/* END OF TERMS */}
+
+      <View style={{ ...styles.terms.parentSign }}>
+        <View style={styles.terms.half}>
+          {docDetails && docDetails.length > 0 && (
+            <>
+              <View
+                style={{
+                  marginTop: 40,
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Image src={iconEmail} style={{ width: 25 }} />
+                <Text
+                  style={{
+                    ...styles.terms.bold,
+                    marginBottom: 10,
+                    marginLeft: 10, // Adjust the margin as needed
+                    fontSize: 12,
+                    fontFamily: "Times-Roman",
+                    lineHeight: 0.5,
+                  }}
+                >
+                  {docDetails[0].email}
+                </Text>
+              </View>
+              <View
+                style={{
+                  marginTop: 10,
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Image src={iconContact} style={{ width: 25 }} />
+                <Text
+                  style={{
+                    ...styles.terms.bold,
+                    marginBottom: 10,
+                    marginLeft: 10, // Adjust the margin as needed
+                    fontSize: 12,
+                    fontFamily: "Times-Roman",
+                    lineHeight: 0.5,
+                  }}
+                >
+                  {docDetails[0].tel}
+                </Text>
+              </View>
+            </>
+          )}
+        </View>
+      </View>
     </View>
   );
 
@@ -719,6 +852,7 @@ const PrintDocumentTypeI = ({
       <Page size="A4" style={styles.body}>
         <LetterHead />
         <Divider />
+        <PinoyDate />
         <Title />
         <Body />
         {/* <Footer /> */}
