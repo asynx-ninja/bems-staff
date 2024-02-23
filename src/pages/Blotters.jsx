@@ -45,56 +45,35 @@ const Blotters = () => {
 
   const [officials, setOfficials] = useState([]);
 
-  useEffect(() => {
-    const fetch = async () => {
-        try {
-            let page = 0;
-            let arr = [];
-            while (true) {
-                const response = await axios.get(
-                    `${API_LINK}/services/?brgy=${brgy}&archived=false&page=${page}`
-                );
-                if (response.status === 200 && response.data.result.length > 0) {
-                    response.data.result.map((item) => {
-                        arr.push(item.name);
-                    });
-                    page++;
-                } else {
-                    break;
-                }
-            }
-            setRequestFilter(arr);
-        } catch (err) {
-            console.log(err)
-        }
-    }
-    fetch()
-}, [brgy]);
+  
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchRequests = async () => {
       try {
-        console.log("brgy:", brgy);
-        console.log("statusFilter:", statusFilter);
-        console.log("requestFilter:", requestFilter);
         const response = await axios.get(
-          `${API_LINK}/requests/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${selectedReqFilter}&page=${currentPage}`
+          `http://localhost:8800/api/requests/getdoneblotters?brgy=${brgy}&archived=false&status=Transaction Completed&type=Barangay - Blotters`
         );
-
+  
         if (response.status === 200) {
-          console.log("Filtered Requests:", response.data.result);
-          setRequests(response.data.result);
-          setPageCount(response.data.pageCount);
-          setFilteredRequests(response.data.result);
-        } else setRequests([]);
-      } catch (err) {
-        console.log(err);
+          // Extracting data from the response
+          const { result, pageCount } = response.data;
+  
+          // Update state variables
+          setRequests(result);
+          setPageCount(pageCount);
+          setFilteredRequests(result);
+        } else {
+          // Handle the case when request is unsuccessful
+          setRequests([]);
+        }
+      } catch (error) {
+        console.error(error);
       }
     };
-
-    fetch();
-  }, [brgy, statusFilter, selectedReqFilter, currentPage]);
-
+  
+    fetchRequests();
+  }, [brgy, currentPage]);
+  
   useEffect(() => {
     const fetchData = async () => {
       try {

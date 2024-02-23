@@ -241,7 +241,7 @@ const Sidebar = () => {
         >
           <div className="max-h-screen flex flex-col ">
             <div className='bg-[url("/src/assets/image/bg-sidebar.jpg")] w-full shrink-0 flex flex-col items-center justify-center py-5 px-2 space-y-3 object-cover'>
-              {/* <img src={logo} alt="" className="" width={80} /> */}
+          
               <img
                 id="logoSidebar"
                 className="w-[100px] h-[100px] rounded-full object-cover"
@@ -258,7 +258,7 @@ const Sidebar = () => {
                 background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
               }}
             >
-              {/* <img src={logo} alt="" className="" width={80} /> */}
+             
               <div className="flex flex-row items-center justify-between w-full">
                 <div className="w-4/12">
                   <img
