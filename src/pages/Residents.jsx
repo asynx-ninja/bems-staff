@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { FaArchive, FaPlus, FaTrash } from "react-icons/fa";
 import { BsPrinter } from "react-icons/bs";
 import { AiOutlineEye, AiOutlineStop } from "react-icons/ai";
-import { FiEdit } from "react-icons/fi";
+import { FiEdit, FiMail } from "react-icons/fi";
 import ReactPaginate from "react-paginate";
 import AddResidentsModal from "../components/residents/AddResidentModal";
 import GenerateReportsModal from "../components/services/GenerateReportsModal";
@@ -14,6 +14,7 @@ import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
 import StatusResident from "../components/residents/StatusResident";
 import ManageResidentModal from "../components/residents/ManageResidentsModal";
+import MessageResidentModal from "../components/residents/messageResident";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
 const Residents = () => {
@@ -270,7 +271,15 @@ const Residents = () => {
                       statusFilter === "Verified" && "bg-[#b3c5cc]"
                     }`}
                   >
-                    Verified
+                    VERIFIED
+                  </li>
+                  <li
+                    onClick={() => handleStatusFilter("Verification Approval")}
+                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
+                      statusFilter === "Verified" && "bg-[#b3c5cc]"
+                    }`}
+                  >
+                    VERIFICATION APPROVAL
                   </li>
                   <li
                     onClick={() => handleStatusFilter("Registered")}
@@ -437,6 +446,13 @@ const Residents = () => {
                           </span>
                         </div>
                       )}
+                      {item.isApproved === "Verification Approval" && (
+                        <div className="flex w-full items-center justify-center bg-[#cf8455] xl:m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
+                            VERIFICATION APPROVAL
+                          </span>
+                        </div>
+                      )}
                       {item.isApproved === "Registered" && (
                         <div className="flex w-full items-center justify-center bg-custom-green-button3 xl:m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
@@ -485,7 +501,7 @@ const Residents = () => {
                             type="button"
                             data-hs-overlay="#hs-modal-statusResident"
                             onClick={() => handleCombinedActions(item)}
-                            className="hs-tooltip-toggle text-white bg-yellow-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                            className="hs-tooltip-toggle text-white bg-yellow-600 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                           >
                             <FiEdit size={24} style={{ color: "#ffffff" }} />
                           </button>
@@ -494,6 +510,22 @@ const Residents = () => {
                             role="tooltip"
                           >
                             Change Status
+                          </span>
+                        </div>
+                        <div className="hs-tooltip inline-block">
+                          <button
+                            type="button"
+                            data-hs-overlay="#hs-modal-messageResident"
+                            onClick={() => handleCombinedActions(item)}
+                            className="hs-tooltip-toggle text-white bg-red-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                          >
+                            <FiMail size={24} style={{ color: "#ffffff" }} />
+                          </button>
+                          <span
+                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                            role="tooltip"
+                          >
+                            Send Message
                           </span>
                         </div>
                       </div>
@@ -548,6 +580,11 @@ const Residents = () => {
           status={status}
           setStatus={setStatus}
         />
+        <MessageResidentModal 
+         user={user}
+         setUser={setUser}
+         brgy={brgy}
+         />
         <ManageResidentModal user={user} setUser={setUser} brgy={brgy} />
       </div>
     </div>

@@ -158,6 +158,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
                           <option value="Registered">REGISTERED</option>
                           <option value="Pending">PENDING</option>
                           <option value="Denied">DENIED</option>
+                          <option value="Verification Approval">VERIFICATION APPROVAL</option>
                         </select>
                       </div>
                     </div>
