@@ -11,6 +11,7 @@ import { TiDelete } from "react-icons/ti";
 import EditLoader from "./loaders/EditLoader";
 import GetBrgy from "../GETBrgy/getbrgy";
 import Webcam from "react-webcam";
+import moment from "moment";
 
 function ManageResidentModal({ user, setUser, brgy }) {
   const WebcamComponent = () => <Webcam />;
@@ -35,6 +36,8 @@ function ManageResidentModal({ user, setUser, brgy }) {
   }, [user]);
 
   console.log("Verification: ", verification);
+
+ 
 
   const religions = [
     "Roman Catholic",
@@ -226,16 +229,16 @@ function ManageResidentModal({ user, setUser, brgy }) {
 
   const handleFileVerification = (name, files) => {
     // Map the selected files to create a flattened array of file properties
-    const fileObjects = Array.from(files).map((file) => ({
-      name: file.name,
-      uri: URL.createObjectURL(file), // Use createObjectURL to get a blob URL
-      type: file.type,
-      size: file.size,
-    }));
+    // const fileObjects = Array.from(files).map((file) => ({
+    //   name: file.name,
+    //   uri: URL.createObjectURL(file), // Use createObjectURL to get a blob URL
+    //   type: file.type,
+    //   size: file.size,
+    // }));
 
     setVerification((prev) => ({
       ...prev,
-      [name]: [...prev[name], ...fileObjects],
+      [name]: [...prev[name], ...files],
     }));
   };
 
@@ -268,6 +271,16 @@ function ManageResidentModal({ user, setUser, brgy }) {
         .reduce((obj, key) => obj[key], verification);
       return value === null || value === "" || value.length === 0;
     });
+  };
+
+  const handleImageTab = (item) => {
+    if (item.link) {
+      // If the item has a direct link, open it in a new tab
+      window.open(item.link, "_blank");
+    } else {
+      // Handle the case when the item doesn't have a direct link (e.g., show a message)
+      console.warn("Image link not available");
+    }
   };
 
   const handleSave = async (e) => {
@@ -334,32 +347,28 @@ function ManageResidentModal({ user, setUser, brgy }) {
           if (primaryUpload.length > 0) {
             for (let i = 0; i < primaryUpload.length; i += 1) {
               let file = {
-                name: `${user.lastName}, ${user.firstName} - PRIMARY ID ${
-                  primarySaved.length + (i + 1)
-                }`,
+                name: `${user.lastName}, ${user.firstName} - PRIMARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
                 size: primaryUpload[i].size,
                 type: primaryUpload[i].type,
                 uri: primaryUpload[i].uri,
               };
-
+          
               console.log("check file: ", file);
-
-              formData.append("files", file);
+          
+              formData.append("files", new File([primaryUpload[i]], file.name, { type: file.type }));
             }
           }
 
           if (secondaryUpload.length > 0)
             for (let i = 0; i < secondaryUpload.length; i += 1) {
               let file = {
-                name: `${user.lastName}, ${user.firstName} - SECONDARY ID ${
-                  secondarySaved.length + (i + 1)
-                }`,
+                name: `${user.lastName}, ${user.firstName} - SECONDARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
                 uri: secondaryUpload[i].uri,
                 type: secondaryUpload[i].type,
                 size: secondaryUpload[i].size,
               };
 
-              formData.append("files", file);
+              formData.append("files", new File([secondaryUpload[i]], file.name, { type: file.type }));
             }
 
           const response = await axios.patch(
@@ -393,13 +402,13 @@ function ManageResidentModal({ user, setUser, brgy }) {
 
       if (userResponse.status === 200) {
         console.log("User update successful:", userResponse.data);
-        // setTimeout(() => {
-        //   setSubmitClicked(false);
-        //   setUpdatingStatus("success");
-        //   setTimeout(() => {
-        //     window.location.reload();
-        //   }, 3000);
-        // }, 1000);
+        setTimeout(() => {
+          setSubmitClicked(false);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        }, 1000);
       } else {
         console.error("User update failed. Status:", userResponse.status);
       }
@@ -1195,6 +1204,7 @@ function ManageResidentModal({ user, setUser, brgy }) {
                                         }
                                         alt={`Primary File ${idx + 1}`}
                                         className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
+                                        onClick={() => handleImageTab(item)}
                                       />
                                       {/* You can customize the following section based on your needs */}
                                       <div className="text-black rounded-b-xl py-1 flex justify-between items-center">
@@ -1307,6 +1317,7 @@ function ManageResidentModal({ user, setUser, brgy }) {
                                       e.target.files
                                     )
                                   }
+                                  multiple
                                   disabled={!edit}
                                   className="block w-full text-sm border rounded-md text-slate-500 file:mr-4 file:py-2 file:px-4  file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
                                 />
@@ -1329,6 +1340,7 @@ function ManageResidentModal({ user, setUser, brgy }) {
                                           }
                                           alt={`Secondary File ${idx + 1}`}
                                           className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
+                                          onClick={() => handleImageTab(item)}
                                         />
                                         {/* You can customize the following section based on your needs */}
                                         <div className="text-black rounded-b-xl py-1 flex justify-between items-center">
