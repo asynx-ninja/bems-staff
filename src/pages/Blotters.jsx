@@ -51,7 +51,7 @@ const Blotters = () => {
     const fetchRequests = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8800/api/requests/getdoneblotters?brgy=${brgy}&archived=false&status=Transaction Completed&type=Barangay - Blotters`
+          `${API_LINK}/requests/getdoneblotters?brgy=${brgy}&archived=false&status=Transaction Completed&type=Barangay - Blotters`
         );
   
         if (response.status === 200) {

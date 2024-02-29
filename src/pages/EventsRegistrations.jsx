@@ -14,6 +14,7 @@ import API_LINK from "../config/API";
 import axios from "axios";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+
 const EventsRegistrations = () => {
   const [applications, setApplications] = useState([]);
   const [application, setApplication] = useState({ response: [{ file: [] }] });

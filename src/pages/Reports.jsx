@@ -6,6 +6,7 @@ import API_LINK from "../config/API";
 import Chart from "react-apexcharts";
 import moment from "moment";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+
 const Reports = () => {
   const [services, setServices] = useState([]);
   const [requests, setRequests] = useState([]);
