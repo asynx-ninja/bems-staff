@@ -17,6 +17,7 @@ import ManageResidentModal from "../components/residents/ManageResidentsModal";
 import MessageResidentModal from "../components/residents/messageResident";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+
 const Residents = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [users, setUsers] = useState([]);
@@ -440,14 +441,14 @@ const Residents = () => {
                     </td>
                     <td className="py-3">
                     {item.isApproved === "Verified" && (
-                        <div className="flex w-full items-center justify-center bg-[#9BCF53] xl:m-2 rounded-lg">
+                        <div className="flex w-full items-center justify-center bg-[#6f75c2] xl:m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
                             VERIFIED
                           </span>
                         </div>
                       )}
                       {item.isApproved === "Verification Approval" && (
-                        <div className="flex w-full items-center justify-center bg-[#cf8455] xl:m-2 rounded-lg">
+                        <div className="flex w-full items-center justify-center bg-[#5586cf] xl:m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
                             VERIFICATION APPROVAL
                           </span>
