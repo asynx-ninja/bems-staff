@@ -119,7 +119,7 @@ function AddResidentModal({ brgy }) {
           password: user.password,
         };
 
-        const result = await axios.post(`${API_LINK}/users/`, obj);
+        const result = await axios.post(`${API_LINK}/users/CreateUserStaff`, obj);
 
         if (result.status === 200) {
           setUser({

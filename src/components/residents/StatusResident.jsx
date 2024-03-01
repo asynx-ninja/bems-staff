@@ -154,9 +154,11 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
                           className="w-full mt-3 p-2 border border-gray-300 rounded"
                           value={status.status}
                         >
+                          <option value="Verified">VERIFIED</option>
                           <option value="Registered">REGISTERED</option>
                           <option value="Pending">PENDING</option>
                           <option value="Denied">DENIED</option>
+                          <option value="Verification Approval">VERIFICATION APPROVAL</option>
                         </select>
                       </div>
                     </div>

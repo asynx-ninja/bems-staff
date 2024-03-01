@@ -6,6 +6,7 @@ import API_LINK from "../config/API";
 import Chart from "react-apexcharts";
 import moment from "moment";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+
 const Reports = () => {
   const [services, setServices] = useState([]);
   const [requests, setRequests] = useState([]);
@@ -19,7 +20,10 @@ const Reports = () => {
   const [registeredCount, setRegisteredCount] = useState(0);
   const [pendingCount, setPendingCount] = useState(0);
   const [deniedCount, setDeniedCount] = useState(0);
+  const [verifiedCount, setVerifiedCount] = useState(0);
+  const [verificationApprovalCount, setVerificationApprovalCount] = useState(0);
   const information = GetBrgy(brgy);
+
   useEffect(() => {
     document.title = "Reports | Barangay E-Services Management";
     const fetchData = async () => {
@@ -130,10 +134,18 @@ const Reports = () => {
           const deniedCount = residents.filter(
             (resident) => resident.status === "Denied"
           ).length;
+          const verifiedCount = residents.filter(
+            (resident) => resident.status === "Verified"
+          ).length;
+          const verificationApprovalCount = residents.filter(
+            (resident) => resident.status === "Verification Approval"
+          ).length;
 
           setRegisteredCount(registeredCount);
           setPendingCount(pendingCount);
           setDeniedCount(deniedCount);
+          setVerifiedCount(verifiedCount);
+          setVerificationApprovalCount(verificationApprovalCount);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -153,13 +165,13 @@ const Reports = () => {
   }, [brgy]); // Dependency on brgy to update counts when barangay changes
 
   const chartDataResidentStatus = {
-    series: [registeredCount, pendingCount, deniedCount],
+    series: [registeredCount, pendingCount, deniedCount, verifiedCount, verificationApprovalCount],
     options: {
-      colors: ["#4caf50", "#ff9800", "#ac4646"], // Colors for Registered, Pending, Denied
+      colors: ["#4caf50", "#ff9800", "#ac4646", "#6f75c2", "#5586cf"], // Colors for Registered, Pending, Denied
       chart: {
         background: "transparent",
       },
-      labels: ["Registered", "Pending", "Denied"],
+      labels: ["Registered", "Pending", "Denied", "Verified", "Verification Approval"],
     },
   };
 

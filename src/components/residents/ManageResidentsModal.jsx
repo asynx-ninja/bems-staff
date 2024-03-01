@@ -6,19 +6,38 @@ import OccupationList from "./OccupationList";
 import { LiaRandomSolid } from "react-icons/lia";
 import { FaFacebookSquare, FaInstagram } from "react-icons/fa";
 import { FaSquareXTwitter } from "react-icons/fa6";
+import { FaCameraRetro } from "react-icons/fa";
+import { TiDelete } from "react-icons/ti";
 import EditLoader from "./loaders/EditLoader";
 import GetBrgy from "../GETBrgy/getbrgy";
+import Webcam from "react-webcam";
+import moment from "moment";
 
 function ManageResidentModal({ user, setUser, brgy }) {
+  const WebcamComponent = () => <Webcam />;
+  const [viewerVisible, setViewerVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [capturedImage, setCapturedImage] = useState(null);
+
   const information = GetBrgy(brgy);
   const [edit, setEdit] = useState(false);
+  const [capture, setCapture] = useState(false);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
+  const [emptyFields, setEmptyFields] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [verification, setVerification] = useState({
+    ...user.verification,
+  });
 
-  const handleOnEdit = () => {
-    setEdit(!edit);
-  };
+  useEffect(() => {
+    setVerification({ ...user.verification });
+  }, [user]);
+
+  console.log("Verification: ", verification);
+
+ 
 
   const religions = [
     "Roman Catholic",
@@ -34,6 +53,8 @@ function ManageResidentModal({ user, setUser, brgy }) {
     "Other Religous Affiliation",
     // Add more religions here...
   ];
+
+  // USER INFO
 
   const handleChange2 = (e) => {
     const { name, value, type } = e.target;
@@ -62,39 +83,6 @@ function ManageResidentModal({ user, setUser, brgy }) {
     }));
   };
 
-  const handleSave = async (e) => {
-    try {
-      e.preventDefault();
-      setSubmitClicked(true);
-
-      var formData = new FormData();
-      formData.append("users", JSON.stringify(user));
-
-      const response = await axios.patch(
-        `${API_LINK}/users/?doc_id=${user._id}`,
-        formData
-      );
-
-      if (response.status === 200) {
-        console.log("Update successful:", response.data);
-        setTimeout(() => {
-          setSubmitClicked(false);
-          setUpdatingStatus("success");
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
-        }, 1000);
-      } else {
-        console.error("Update failed. Status:", response.status);
-      }
-    } catch (err) {
-      console.log(err);
-      setSubmitClicked(false);
-      setUpdatingStatus("error");
-      setError("An error occurred while creating the announcement.");
-    }
-  };
-
   const birthdayFormat = (date) => {
     const birthdate = date === undefined ? "" : date.substr(0, 10);
     return birthdate;
@@ -115,45 +103,322 @@ function ManageResidentModal({ user, setUser, brgy }) {
     return age;
   };
 
-  const [logo, setLogo] = useState();
-  const [banner, setBanner] = useState();
+  const handleOnEdit = () => {
+    setEdit(!edit);
+  };
 
-  useEffect(() => {
-    // Primary files
-    var primary1 = document.getElementById("primary-1");
-    primary1.src =
-      user.length === 0 || !user.verification?.primary_file[0]?.link
-        ? ""
-        : user.verification.primary_file[0].link;
+  const handleOnCapture = () => {
+    setCapture(!capture);
+  };
 
-    var primary2 = document.getElementById("primary-2");
-    primary2.src =
-      user.length === 0 || !user.verification?.primary_file[1]?.link
-        ? ""
-        : user.verification.primary_file[1].link;
+  // WEBCAM
+  const videoConstraints = {
+    width: 1280,
+    height: 720,
+    facingMode: "user",
+  };
 
-    // Secondary files
-    var secondary1 = document.getElementById("secondary-1");
-    secondary1.src =
-      user.length === 0 || !user.verification?.secondary_file[0]?.link
-        ? ""
-        : user.verification.secondary_file[0].link;
+  function WebcamCapture() {
+    const webcamRef = React.useRef(null);
+    const [capturedImage, setCapturedImage] = useState(null);
 
-    var secondary2 = document.getElementById("secondary-2");
-    secondary2.src =
-      user.length === 0 || !user.verification?.secondary_file[1]?.link
-        ? ""
-        : user.verification.secondary_file[1].link;
+    const capture = React.useCallback(
+      async (e) => {
+        e.preventDefault(); // Prevent the default behavior
+        const imageSrc = webcamRef.current.getScreenshot();
+        setCapturedImage(imageSrc);
 
-    // Selfie
-    var selfie = document.getElementById("selfie");
-    selfie.src =
-      user.length === 0 || !user.verification?.selfie?.link
-        ? ""
-        : user.verification.selfie.link;
-  }, [user]);
+        try {
+          const response = await fetch(imageSrc);
+          const file = await response.blob();
 
-  // console.log("verification", user.verification?.primary_file[0].link);
+          // Use the existing Blob for selfie with data:image/jpeg;base64 format
+          let selfieFile = new File(
+            [file],
+            `${user.lastName}, ${user.firstName} - SELFIE`,
+            {
+              type: "image/jpeg",
+              size: file.size,
+              uri: `data:image/jpeg;base64,${imageSrc.split(",")[1]}`,
+            }
+          );
+
+          console.log("selfieFile: ", selfieFile);
+
+          setVerification((prev) => ({
+            ...prev,
+            selfie: selfieFile,
+          }));
+        } catch (error) {
+          console.error("Error fetching image:", error);
+        }
+      },
+      [webcamRef]
+    );
+
+    return (
+      <>
+        <div className="relative">
+          <Webcam
+            audio={false}
+            height={720}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            width={1280}
+            className="rounded-xl"
+          />
+          <button
+            onClick={capture}
+            className="h-12 w-12 py-1 px-2 rounded-full border text-sm font-base bg-teal-900 text-white shadow-sm absolute bottom-4 left-1/2 transform -translate-x-1/2"
+          >
+            <div className="flex items-center justify-center">
+              <FaCameraRetro size={20} />
+            </div>
+          </button>
+        </div>
+        {capturedImage && (
+          <img
+            src={capturedImage}
+            alt="Captured Photo"
+            className="w-full h-full px-2 py-2 object-cover rounded-xl mt-2"
+          />
+        )}
+      </>
+    );
+  }
+
+  // VIEW IMAGE
+
+  const handleImageClick = (image) => {
+    setSelectedImage(image);
+    setViewerVisible(true);
+  };
+
+  const ImageViewer = () => {
+    if (!viewerVisible || !selectedImage) {
+      return null;
+    }
+
+    return (
+      <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center z-[60] bg-black bg-opacity-75">
+        <div className="max-w-3xl w-full max-h-3/4 h-full overflow-hidden">
+          <img
+            src={selectedImage.link || selectedImage.uri}
+            alt="Full Image"
+            className="w-full h-full p-10 object-contain"
+          />
+          <button
+            onClick={() => setViewerVisible(false)}
+            className="absolute top-4 right-4 text-white cursor-pointer"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // VERIFICATION
+
+  const handleVerification = (name, value) => {
+    setVerification((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleFileVerification = (name, files) => {
+    // Map the selected files to create a flattened array of file properties
+    // const fileObjects = Array.from(files).map((file) => ({
+    //   name: file.name,
+    //   uri: URL.createObjectURL(file), // Use createObjectURL to get a blob URL
+    //   type: file.type,
+    //   size: file.size,
+    // }));
+
+    setVerification((prev) => ({
+      ...prev,
+      [name]: [...prev[name], ...files],
+    }));
+  };
+
+  const handleDelete = (name, idx, e) => {
+    e.preventDefault();
+    e.stopPropagation(); // Stop the event from propagating to the parent container
+
+    const newArray = verification[name].filter((item, index) => index !== idx);
+
+    console.log("newArray: ", newArray);
+
+    setVerification((prev) => ({
+      ...prev,
+      [name]: newArray,
+    }));
+  };
+
+  const checkEmptyVerification = () => {
+    const fieldsToCheck = [
+      "primary_id",
+      "primary_file",
+      "secondary_id",
+      "secondary_file",
+      "selfie",
+    ];
+
+    return fieldsToCheck.filter((field) => {
+      const value = field
+        .split(".")
+        .reduce((obj, key) => obj[key], verification);
+      return value === null || value === "" || value.length === 0;
+    });
+  };
+
+  const handleImageTab = (item) => {
+    if (item.link) {
+      // If the item has a direct link, open it in a new tab
+      window.open(item.link, "_blank");
+    } else {
+      // Handle the case when the item doesn't have a direct link (e.g., show a message)
+      console.warn("Image link not available");
+    }
+  };
+
+  const handleSave = async (e) => {
+    try {
+      e.preventDefault();
+      setSubmitClicked(true);
+
+      // Common logic from handleSubmit
+      const arr = checkEmptyVerification();
+
+      if (arr.length === 0) {
+        setEmptyFields([]);
+
+        const folderResponse = await axios.get(
+          `${API_LINK}/folder/specific/?brgy=${user.address.brgy}`
+        );
+
+        if (folderResponse.status === 200) {
+          var formData = new FormData();
+
+          const [primarySaved, primaryUpload] =
+            verification.primary_file.reduce(
+              ([a, b], elem) => {
+                return elem.hasOwnProperty("link")
+                  ? [[...a, elem], b]
+                  : [a, [...b, elem]];
+              },
+              [[], []]
+            );
+
+          const [secondarySaved, secondaryUpload] =
+            verification.secondary_file.reduce(
+              ([a, b], elem) => {
+                return elem.hasOwnProperty("link")
+                  ? [[...a, elem], b]
+                  : [a, [...b, elem]];
+              },
+              [[], []]
+            );
+
+          formData.append("primarySaved", JSON.stringify(primarySaved));
+          formData.append("secondarySaved", JSON.stringify(secondarySaved));
+          formData.append("oldVerification", JSON.stringify(user.verification));
+          formData.append("newVerification", JSON.stringify(verification));
+
+          console.log("Primary Upload: ", primaryUpload);
+          console.log("Primary Saved: ", primarySaved);
+
+          if (!verification.selfie.hasOwnProperty("link")) {
+            // Use the existing Blob for selfie
+            let selfieFile = new File(
+              [verification.selfie],
+              `${user.lastName}, ${user.firstName} - SELFIE`,
+              {
+                type: "image/jpeg",
+                size: verification.selfie.size,
+                uri: verification.selfie.uri,
+              }
+            );
+
+            formData.append("files", selfieFile);
+          }
+
+          if (primaryUpload.length > 0) {
+            for (let i = 0; i < primaryUpload.length; i += 1) {
+              let file = {
+                name: `${user.lastName}, ${user.firstName} - PRIMARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
+                size: primaryUpload[i].size,
+                type: primaryUpload[i].type,
+                uri: primaryUpload[i].uri,
+              };
+          
+              console.log("check file: ", file);
+          
+              formData.append("files", new File([primaryUpload[i]], file.name, { type: file.type }));
+            }
+          }
+
+          if (secondaryUpload.length > 0)
+            for (let i = 0; i < secondaryUpload.length; i += 1) {
+              let file = {
+                name: `${user.lastName}, ${user.firstName} - SECONDARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
+                uri: secondaryUpload[i].uri,
+                type: secondaryUpload[i].type,
+                size: secondaryUpload[i].size,
+              };
+
+              formData.append("files", new File([secondaryUpload[i]], file.name, { type: file.type }));
+            }
+
+          const response = await axios.patch(
+            `${API_LINK}/users/verification/?doc_id=${user._id}&user_id=${user.user_id}&root_folder=${folderResponse.data[0].verification}`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+
+          console.log(response);
+
+          if (response.status === 200) {
+            setVerification(response.data.verification);
+          }
+        }
+      } else {
+        setEmptyFields(arr);
+      }
+
+      // Common logic for updating user data
+      var userFormData = new FormData();
+      userFormData.append("users", JSON.stringify(user));
+
+      const userResponse = await axios.patch(
+        `${API_LINK}/users/?doc_id=${user._id}`,
+        userFormData
+      );
+
+      if (userResponse.status === 200) {
+        console.log("User update successful:", userResponse.data);
+        setTimeout(() => {
+          setSubmitClicked(false);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        }, 1000);
+      } else {
+        console.error("User update failed. Status:", userResponse.status);
+      }
+    } catch (err) {
+      console.log(err);
+      setSubmitClicked(false);
+      setUpdatingStatus("error");
+      setError("An error occurred while updating data.");
+    }
+  };
 
   return (
     <div>
@@ -617,19 +882,6 @@ function ManageResidentModal({ user, setUser, brgy }) {
                               value={user.type}
                               disabled
                             >
-                              {/* <option selected>-- Select User Type --</option>
-                              <option
-                                value="Admin"
-                                selected={user.type === "Admin"}
-                              >
-                                Admin
-                              </option>
-                              <option
-                                value="Staff"
-                                selected={user.type === "Staff"}
-                              >
-                                Barangay Staff
-                              </option> */}
                               <option value="Resident">Resident</option>
                             </select>
                           </div>
@@ -853,75 +1105,347 @@ function ManageResidentModal({ user, setUser, brgy }) {
                       <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                         <div className="w-full">
                           <div className="flex flex-col items-center space-y-2 relative">
-                            <div className="w-full border border-gray-300 rounded-xl">
-                              <img
-                                className="w-full h-[250px] object-cover rounded-xl"
-                                id="primary-1"
-                                alt="Current profile photo"
-                              />
-                              <div className="absolute bottom-0 left-0 right-0 bg-[rgba(0,0,0,0.5)] text-white p-1 text-center rounded-b-xl">
-                               Primary (Front)
+                            <div className="w-full">
+                              <label
+                                className="block text-gray-700 text-sm font-bold mb-2 mt-2"
+                                htmlFor="name"
+                              >
+                                Primary ID
+                              </label>
+                              <select
+                                name="type"
+                                onChange={(event) => {
+                                  handleVerification(
+                                    "primary_id",
+                                    event.target.value
+                                  );
+                                }}
+                                className="shadow border w-full py-1.5 px-4 mb-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                                disabled={!edit}
+                                value={verification.primary_id}
+                              >
+                                <option>-- Select Primary ID --</option>
+                                <option value="Philippine Passport">
+                                  Philippine Passport
+                                </option>
+                                <option value="SSS/GSIS/UMID">
+                                  SSS/GSIS/UMID
+                                </option>
+                                <option value="Driver's License">
+                                  Driver's License
+                                </option>
+                                <option value="PRC ID">PRC ID</option>
+                                <option value="OWWA ID">OWWA ID</option>
+                                <option value="iDOLE Card">iDOLE Card</option>
+                                <option value="Voter's ID">Voter's ID</option>
+                                <option value="Voter's Certification">
+                                  Voter's Certification
+                                </option>
+                                <option value="Firearms License">
+                                  Firearms License
+                                </option>
+                                <option value="Senior Citizen ID">
+                                  Senior Citizen ID
+                                </option>
+                                <option value="PWD ID">PWD ID</option>
+                                <option value="NBI Clearance">
+                                  NBI Clearance
+                                </option>
+                                <option value="Alien Certification of Registration or Immigrant Certificate of Registration">
+                                  Alien Certification of Registration or
+                                  Immigrant Certificate of Registration
+                                </option>
+                                <option value="PhilHealth ID">
+                                  PhilHealth ID
+                                </option>
+                                <option value="GOCC ID">GOCC ID</option>
+                                <option value="IBP ID">IBP ID</option>
+                                <option value="School ID">School ID</option>
+                                <option value="Current Valid ePassport">
+                                  Current Valid ePassport
+                                </option>
+                              </select>
+                            </div>
+
+                            <div className="w-full">
+                              <div className="mb-4">
+                                <span className="sr-only">
+                                  Choose profile photo
+                                </span>
+                                <input
+                                  type="file"
+                                  name="primary"
+                                  accept="image/*"
+                                  onChange={(e) =>
+                                    handleFileVerification(
+                                      "primary_file",
+                                      e.target.files
+                                    )
+                                  }
+                                  multiple
+                                  disabled={!edit}
+                                  className="block w-full text-sm border rounded-md text-slate-500 file:mr-4 file:py-2 file:px-4  file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
+                                />
+                              </div>
+
+                              <div className="flex flex-row gap-2 overflow-hidden overflow-x-auto">
+                                {verification.primary_file &&
+                                  verification.primary_file.length > 0 &&
+                                  verification.primary_file.map((item, idx) => (
+                                    <div
+                                      key={idx}
+                                      className="flex-none w-[250px] border border-gray-300 rounded-xl bg-gray-300 cursor-pointer"
+                                    >
+                                      <img
+                                        src={
+                                          item.hasOwnProperty("link")
+                                            ? item.link
+                                            : item.uri
+                                        }
+                                        alt={`Primary File ${idx + 1}`}
+                                        className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
+                                        onClick={() => handleImageTab(item)}
+                                      />
+                                      {/* You can customize the following section based on your needs */}
+                                      <div className="text-black rounded-b-xl py-1 flex justify-between items-center">
+                                        <label className="text-xs pl-2">
+                                          {item.name}
+                                        </label>
+
+                                        {edit && (
+                                          <button
+                                            onClick={(e) =>
+                                              handleDelete(
+                                                "primary_file",
+                                                idx,
+                                                e
+                                              )
+                                            }
+                                            className="border-black bg-red-500 hover:bg-white rounded-full justify-center items-center self-center mr-2"
+                                          >
+                                            <TiDelete
+                                              size={20}
+                                              className="text-white hover:text-red-500 hover:border-2 rounded-full"
+                                            />
+                                          </button>
+                                        )}
+                                      </div>
+                                    </div>
+                                  ))}
                               </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="w-full">
-                          <div className="flex flex-col items-center space-y-2 relative">
-                            <div className="w-full border border-gray-300 rounded-xl">
-                              <img
-                                className="w-full h-[250px] object-cover rounded-xl"
-                                id="primary-2"
-                                alt="Current profile photo"
-                              />
-                              <div className="absolute bottom-0 left-0 right-0 bg-[rgba(0,0,0,0.5)] text-white p-1 text-center rounded-b-xl">
-                               Primary (Back)
+
+                          <div className="flex flex-col items-center space-y-2 relative mt-3">
+                            <div className="w-full">
+                              <label
+                                className="block text-gray-700 text-sm font-bold mb-2 mt-2"
+                                htmlFor="name"
+                              >
+                                Secondary ID
+                              </label>
+                              <select
+                                name="type"
+                                onChange={(event) => {
+                                  handleVerification(
+                                    "secondary_id",
+                                    event.target.value
+                                  );
+                                }}
+                                className="shadow border w-full py-1.5 px-4 mb-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                                disabled={!edit}
+                                value={verification.secondary_id}
+                              >
+                                <option>-- Select Secondary ID --</option>
+                                <option value="TIN ID">TIN ID</option>
+                                <option value="Postal ID">Postal ID</option>
+                                <option value="Barangay Certification">
+                                  Barangay Certification
+                                </option>
+                                <option value="GSIS e-Card">GSIS e-Card</option>
+                                <option value="Seaman's Book">
+                                  Seaman's Book
+                                </option>
+                                <option value="NCWDP Certification">
+                                  NCWDP Certification
+                                </option>
+                                <option value="DSWD Certification">
+                                  DSWD Certification
+                                </option>
+                                <option value="Company ID">Company ID</option>
+                                <option value="Police Clearance">
+                                  Police Clearance
+                                </option>
+                                <option value="Barangay Clearance">
+                                  Barangay Clearance
+                                </option>
+                                <option value="Cedula">Cedula</option>
+                                <option value="Government Service Record">
+                                  Government Service Record
+                                </option>
+                                <option value="Elementary or High School Form 137 Records">
+                                  Elementary or High School Form 137 Records
+                                </option>
+                                <option value="Transcript of Records from University">
+                                  Transcript of Records from University
+                                </option>
+                                <option value="Land Title">Land Title</option>
+                                <option value="PSA Marriage Contract">
+                                  PSA Marriage Contract
+                                </option>
+                                <option value="PSA Birth Certificate">
+                                  PSA Birth Certificate
+                                </option>
+                                <option value="Homeowner's Certification">
+                                  Homeowner's Certification
+                                </option>
+                              </select>
+                            </div>
+
+                            <div className="w-full">
+                              <div className="mb-4">
+                                <span className="sr-only">
+                                  Choose profile photo
+                                </span>
+                                <input
+                                  type="file"
+                                  name="secondary"
+                                  accept="image/*"
+                                  onChange={(e) =>
+                                    handleFileVerification(
+                                      "secondary_file",
+                                      e.target.files
+                                    )
+                                  }
+                                  multiple
+                                  disabled={!edit}
+                                  className="block w-full text-sm border rounded-md text-slate-500 file:mr-4 file:py-2 file:px-4  file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
+                                />
+                              </div>
+
+                              <div className="flex flex-row gap-2 overflow-hidden overflow-x-auto">
+                                {verification.secondary_file &&
+                                  verification.secondary_file.length > 0 &&
+                                  verification.secondary_file.map(
+                                    (item, idx) => (
+                                      <div
+                                        key={idx}
+                                        className="flex-none w-[250px] border border-gray-300 rounded-xl bg-gray-300 cursor-pointer"
+                                      >
+                                        <img
+                                          src={
+                                            item.hasOwnProperty("link")
+                                              ? item.link
+                                              : item.uri
+                                          }
+                                          alt={`Secondary File ${idx + 1}`}
+                                          className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
+                                          onClick={() => handleImageTab(item)}
+                                        />
+                                        {/* You can customize the following section based on your needs */}
+                                        <div className="text-black rounded-b-xl py-1 flex justify-between items-center">
+                                          <label className="text-xs pl-2">
+                                            {item.name}
+                                          </label>
+
+                                          {edit && (
+                                            <button
+                                              onClick={(e) =>
+                                                handleDelete(
+                                                  "secondary_file",
+                                                  idx,
+                                                  e
+                                                )
+                                              }
+                                              className="border-black bg-red-500 hover:bg-white rounded-full justify-center items-center self-center mr-2"
+                                            >
+                                              <TiDelete
+                                                size={20}
+                                                className="text-white hover:text-red-500 hover:border-2 rounded-full"
+                                              />
+                                            </button>
+                                          )}
+                                        </div>
+                                      </div>
+                                    )
+                                  )}
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                      <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
-                        <div className="w-full">
-                          <div className="flex flex-col items-center space-y-2 relative">
-                            <div className="w-full border border-gray-300 rounded-xl">
-                              <img
-                                className="w-full h-[250px] object-cover rounded-xl"
-                                id="secondary-1"
-                                alt="Current profile photo"
-                              />
-                              <div className="absolute bottom-0 left-0 right-0 bg-[rgba(0,0,0,0.5)] text-white p-1 text-center rounded-b-xl">
-                               Secondary (Front)
-                              </div>
+
+                          <div className="flex flex-col items-center space-y-2 relative mt-3">
+                            <div className="w-full">
+                              <label
+                                className="block text-gray-700 text-sm font-bold mb-2 mt-2"
+                                htmlFor="name"
+                              >
+                                Selfie of the Resident
+                              </label>
                             </div>
-                          </div>
-                        </div>
-                        <div className="w-full">
-                          <div className="flex flex-col items-center space-y-2 relative">
-                            <div className="w-full border border-gray-300 rounded-xl">
-                              <img
-                                className="w-full h-[250px] object-cover rounded-xl"
-                                id="secondary-2"
-                                alt="Current profile photo"
-                              />
-                              <div className="absolute bottom-0 left-0 right-0 bg-[rgba(0,0,0,0.5)] text-white p-1 text-center rounded-b-xl">
-                               Secondary (Back)
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 items-center justify-center">
-                        <div className="w-1/2">
-                          <div className="flex flex-col items-center space-y-2 relative">
-                            <div className="w-full border border-gray-300 rounded-xl">
-                              <img
-                                className="w-full h-[250px] object-cover rounded-xl"
-                                id="selfie"
-                                alt="Current profile photo"
-                              />
-                              <div className="absolute bottom-0 left-0 right-0 bg-[rgba(0,0,0,0.5)] text-white p-1 text-center rounded-b-xl">
-                               Resident's Selfie
-                              </div>
+
+                            <div className="w-full">
+                              {!edit ? (
+                                <div></div>
+                              ) : (
+                                <div>
+                                  {capture ? (
+                                    <button
+                                      type="button"
+                                      className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-900 text-white shadow-sm mb-2"
+                                      onClick={handleOnCapture}
+                                    >
+                                      CANCEL
+                                    </button>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm mb-2"
+                                      onClick={handleOnCapture}
+                                    >
+                                      TAKE A NEW PHOTO
+                                    </button>
+                                  )}
+
+                                  {!capture ? (
+                                    <div></div>
+                                  ) : (
+                                    <div>
+                                      <WebcamCapture />
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+
+                              {verification.selfie &&
+                                (Array.isArray(verification.selfie) ? (
+                                  verification.selfie.map((item, idx) => <></>)
+                                ) : (
+                                  <div
+                                    className="w-full border border-gray-300 rounded-xl bg-gray-300 cursor-pointer mt-2"
+                                    onClick={() =>
+                                      handleImageClick(verification.selfie)
+                                    }
+                                  >
+                                    <img
+                                      src={
+                                        verification.selfie instanceof File
+                                          ? URL.createObjectURL(
+                                              verification.selfie
+                                            )
+                                          : verification.selfie.hasOwnProperty(
+                                              "link"
+                                            )
+                                          ? verification.selfie.link
+                                          : verification.selfie.uri
+                                      }
+                                      alt={`Selfie`}
+                                      className="w-full h-[400px] px-2 py-2 object-cover rounded-xl"
+                                    />
+                                    <div className="text-black pb-2 ml-2 rounded-b-xl">
+                                      {verification.selfie.name}
+                                    </div>
+                                  </div>
+                                ))}
                             </div>
                           </div>
                         </div>
@@ -976,6 +1500,7 @@ function ManageResidentModal({ user, setUser, brgy }) {
           )}
         </div>
       </div>
+      <ImageViewer />
     </div>
   );
 }

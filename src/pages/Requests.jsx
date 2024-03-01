@@ -47,29 +47,29 @@ const Requests = () => {
 
   useEffect(() => {
     const fetch = async () => {
-        try {
-            let page = 0;
-            let arr = [];
-            while (true) {
-                const response = await axios.get(
-                    `${API_LINK}/services/?brgy=${brgy}&archived=false&page=${page}`
-                );
-                if (response.status === 200 && response.data.result.length > 0) {
-                    response.data.result.map((item) => {
-                        arr.push(item.name);
-                    });
-                    page++;
-                } else {
-                    break;
-                }
-            }
-            setRequestFilter(arr);
-        } catch (err) {
-            console.log(err)
+      try {
+        let page = 0;
+        let arr = [];
+        while (true) {
+          const response = await axios.get(
+            `${API_LINK}/services/?brgy=${brgy}&archived=false&page=${page}`
+          );
+          if (response.status === 200 && response.data.result.length > 0) {
+            response.data.result.map((item) => {
+              arr.push(item.name);
+            });
+            page++;
+          } else {
+            break;
+          }
         }
-    }
-    fetch()
-}, [brgy]);
+        setRequestFilter(arr);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetch();
+  }, [brgy]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -313,7 +313,8 @@ const Requests = () => {
                     <button
                       type="button"
                       data-hs-overlay="#hs-modal-add"
-                      className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg b w-full text-white font-medium text-sm text-center inline-flex items-center"  style={{
+                      className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg b w-full text-white font-medium text-sm text-center inline-flex items-center"
+                      style={{
                         background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
                       }}
                     >
@@ -343,7 +344,8 @@ const Requests = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  " style={{ backgroundColor: information?.theme?.primary }}
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                  style={{ backgroundColor: information?.theme?.primary }}
                 >
                   STATUS
                   <svg
@@ -425,7 +427,8 @@ const Requests = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  " style={{ backgroundColor: information?.theme?.primary }}
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                  style={{ backgroundColor: information?.theme?.primary }}
                 >
                   DATE
                   <svg
@@ -520,8 +523,9 @@ const Requests = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  " style={{ backgroundColor: information?.theme?.primary }}
-                > 
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                  style={{ backgroundColor: information?.theme?.primary }}
+                >
                   SERVICE TYPE
                   <svg
                     className={`hs-dropdown-open:rotate-${
@@ -571,7 +575,10 @@ const Requests = () => {
 
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12 lg:ml-2 xl:ml-0">
               <div className="flex flex-row w-full md:mr-2">
-                <button className="  p-3 rounded-l-md" style={{ backgroundColor: information?.theme?.primary }}>
+                <button
+                  className="  p-3 rounded-l-md"
+                  style={{ backgroundColor: information?.theme?.primary }}
+                >
                   <div className="w-full overflow-hidden">
                     <svg
                       className="h-3.5 w-3.5 text-white"
@@ -639,7 +646,10 @@ const Requests = () => {
         {/* Table */}
         <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_280px)] xl:h-[calc(100vh_-_280px)] xxl:h-[calc(100vh_-_280px)] xxxl:h-[calc(100vh_-_300px)]">
           <table className="relative table-auto w-full">
-            <thead className=" sticky top-0" style={{ backgroundColor: information?.theme?.primary }}>
+            <thead
+              className=" sticky top-0"
+              style={{ backgroundColor: information?.theme?.primary }}
+            >
               <tr className="">
                 <th scope="col" className="px-6 py-4">
                   <div className="flex justify-center items-center">
@@ -813,7 +823,10 @@ const Requests = () => {
           </table>
         </div>
       </div>
-      <div className="md:py-4 md:px-4  flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3" style={{ backgroundColor: information?.theme?.primary }}>
+      <div
+        className="md:py-4 md:px-4  flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3"
+        style={{ backgroundColor: information?.theme?.primary }}
+      >
         <span className="font-medium text-white sm:text-xs text-sm">
           Showing {currentPage + 1} out of {pageCount} pages
         </span>
