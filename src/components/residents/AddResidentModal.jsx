@@ -256,37 +256,104 @@ function AddResidentModal({ brgy }) {
           isApproved: user.isApproved,
           username: user.username,
           password: user.password,
+          verification: user.verification,
+          primary_id: user.verification.primary_id,
+          secondary_id: user.verification.secondary_id,
         };
 
-        const result = await axios.post(
-          `${API_LINK}/users/`,
-          obj
+        const folderResponse = await axios.get(
+          `${API_LINK}/folder/specific/?brgy=${brgy}`
         );
 
-        if (result.status === 200) {
-          setUser({
-            user_id: "",
-            firstName: "",
-            lastName: "",
-            email: "",
-            birthday: "",
-            age: "",
-            contact: "",
-            address: "",
-            type: "",
-            username: "",
-            password: "",
-            isArchived: false,
-            isApproved: "Registered",
-            city: "Rodriguez, Rizal",
-            brgy: brgy,
-          });
+        if (folderResponse.status === 200) {
+          var formData = new FormData();
+  
+          formData.append("user", JSON.stringify(obj));
+  
+          let selfieFile = new File(
+            [user.verification.selfie[0]],
+            `${user.lastName}, ${user.firstName} - SELFIE`,
+            {
+              type: "image/jpeg",
+              size: user.verification.selfie[0].size,
+              uri: user.verification.selfie[0].uri,
+            }
+          );
 
-          setSubmitClicked(false);
-          setCreationStatus("success");
-          // setTimeout(() => {
-          //   window.location.reload();
-          // }, 3000);
+          formData.append("files", selfieFile);
+  
+          for (let i = 0; i < user.verification.primary_file.length; i++) {
+            let file = {
+              name: `${user.lastName}, ${
+                user.firstName
+              } - PRIMARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
+              size: user.verification.primary_file[i].size,
+              type: user.verification.primary_file[i].type,
+              uri: user.verification.primary_file[i].uri,
+            };
+
+            console.log("check file: ", file);
+
+            formData.append(
+              "files",
+              new File([user.verification.primary_file[i]], file.name, { type: file.type })
+            );
+          }
+  
+          for (let i = 0; i < user.verification.secondary_file.length; i++) {
+            let file = {
+              name: `${user.lastName}, ${
+                user.firstName
+              } - SECONDARY ID ${moment(new Date()).format(
+                "MMDDYYYYHHmmss"
+              )}`,
+              uri: user.verification.secondary_file[i].uri,
+              type: user.verification.secondary_file[i].type,
+              size: user.verification.secondary_file[i].size,
+            };
+
+            formData.append(
+              "files",
+              new File([user.verification.secondary_file[i]], file.name, { type: file.type })
+            );
+          }
+  
+          const response = await axios.post(
+            `${API_LINK}/users/?folder_id=${folderResponse.data[0].verification}`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+  
+          if (response.status === 200) {
+            console.log("created");
+            setUser({
+              user_id: "",
+              firstName: "",
+              lastName: "",
+              email: "",
+              birthday: "",
+              age: "",
+              contact: "",
+              address: "",
+              type: "",
+              username: "",
+              password: "",
+              isArchived: false,
+              isApproved: "Registered",
+              city: "Rodriguez, Rizal",
+              brgy: brgy,
+            });
+  
+            setSubmitClicked(false);
+            setCreationStatus("success");
+            // setTimeout(() => {
+            //   window.location.reload();
+            // }, 3000);
+          }
         }
       }
     } catch (err) {
