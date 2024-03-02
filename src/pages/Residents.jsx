@@ -274,12 +274,12 @@ const Residents = () => {
                     VERIFIED
                   </li>
                   <li
-                    onClick={() => handleStatusFilter("Verification Approval")}
+                    onClick={() => handleStatusFilter("For Review")}
                     className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
                       statusFilter === "Verified" && "bg-[#b3c5cc]"
                     }`}
                   >
-                    VERIFICATION APPROVAL
+                    FOR REVIEW
                   </li>
                   <li
                     onClick={() => handleStatusFilter("Registered")}
@@ -446,10 +446,10 @@ const Residents = () => {
                           </span>
                         </div>
                       )}
-                      {item.isApproved === "Verification Approval" && (
+                      {item.isApproved === "For Review" && (
                         <div className="flex w-full items-center justify-center bg-[#cf8455] xl:m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
-                            VERIFICATION APPROVAL
+                            FOR REVIEW
                           </span>
                         </div>
                       )}
