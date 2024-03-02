@@ -7,11 +7,11 @@ import { BsPrinter } from "react-icons/bs";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { AiOutlineSend } from "react-icons/ai";
 import { FaArchive } from "react-icons/fa";
-import ReplyServiceModal from "../components/requests/ReplyServiceModal";
-import ArchiveRequestsModal from "../components/requests/ArchiveRequestsModal";
-import RequestsReportsModal from "../components/requests/RequestsReportsModal";
+import ReplyServiceModal from "../components/blotters/ReplyServiceModal";
+import ArchiveRequestsModal from "../components//blotters/ArchiveRequestsModal";
+import RequestsReportsModal from "../components//blotters/RequestsReportsModal";
 import imgSrc from "/imgs/bg-header.png";
-import ViewRequestModal from "../components/requests/ViewRequestModal";
+import ViewRequestModal from "../components/blotters/ViewRequestModal";
 import { useSearchParams } from "react-router-dom";
 import API_LINK from "../config/API";
 import axios from "axios";
@@ -51,28 +51,27 @@ const Blotters = () => {
     const fetchRequests = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/requests/getdoneblotters?brgy=${brgy}&archived=false&status=Transaction Completed&type=Barangay - Blotters`
+          `${API_LINK}/requests/getdoneblotters?brgy=${brgy}&archived=false`
         );
-  
         if (response.status === 200) {
-          // Extracting data from the response
-          const { result, pageCount } = response.data;
-  
-          // Update state variables
+          const { result } = response.data;
           setRequests(result);
-          setPageCount(pageCount);
           setFilteredRequests(result);
         } else {
-          // Handle the case when request is unsuccessful
+
           setRequests([]);
+          setFilteredRequests([]);
         }
       } catch (error) {
-        console.error(error);
+        console.error(error);   
+        setRequests([]);
+        setFilteredRequests([]);
       }
     };
   
     fetchRequests();
-  }, [brgy, currentPage]);
+  }, [brgy]);
+  
   
   useEffect(() => {
     const fetchData = async () => {

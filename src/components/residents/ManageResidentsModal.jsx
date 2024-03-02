@@ -386,7 +386,7 @@ function ManageResidentModal({ user, setUser, brgy }) {
           console.log(response);
 
           if (response.status === 200) {
-            setVerification(response.data.verification);
+            setVerification(response.data?.verification || {});
           }
         }
       } else {

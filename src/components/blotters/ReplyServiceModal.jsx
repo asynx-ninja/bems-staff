@@ -60,31 +60,23 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     fetch();
   }, [id]);
 
+ 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (!request.service_id) {
-          // If there is no event_id in the application, do not fetch events
-          return;
-        }
-        const serviceResponse = await axios.get(
-          `${API_LINK}/services/?brgy=${brgy}&service_id=${request.service_id}&archived=false`
-        );
-
-        if (serviceResponse.status === 200) {
-          setService(serviceResponse.data.result[0]);
-        } else {
-          // setEventWithCounts([]);
-        }
+        const response = await fetch(`${API_LINK}/blotter/?brgy=${brgy}&patawag_id=${patawag_id}`);
+        const data = await response.json();
+  
+        // Handle the data
+        console.log(data);
       } catch (error) {
-        console.error("Error fetching data:", error);
-        console.error("Error response data:", error.response?.data);
-        console.error("Error response status:", error.response?.status);
+        // Handle the error
+        console.error(error);
       }
     };
-
+  
     fetchData();
-  }, [currentPage, brgy, request.service_id]);
+  }, []);
 
   useEffect(() => {
     if (request && request.response.length !== 0) {
@@ -333,7 +325,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                 className="font-bold text-white mx-auto md:text-xl text-center"
                 style={{ letterSpacing: "0.3em" }}
               >
-                REPLY TO REQUESTED SERVICE
+                PATAWAG
               </h3>
             </div>
 

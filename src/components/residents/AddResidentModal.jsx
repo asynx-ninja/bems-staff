@@ -267,57 +267,67 @@ function AddResidentModal({ brgy }) {
 
         if (folderResponse.status === 200) {
           var formData = new FormData();
-  
+
           formData.append("user", JSON.stringify(obj));
-  
-          let selfieFile = new File(
-            [user.verification.selfie[0]],
-            `${user.lastName}, ${user.firstName} - SELFIE`,
-            {
-              type: "image/jpeg",
-              size: user.verification.selfie[0].size,
-              uri: user.verification.selfie[0].uri,
+
+          if (user.verification && user.verification.selfie) {
+            let selfieFile = new File(
+              [user.verification.selfie[0]],
+              `${user.lastName}, ${user.firstName} - SELFIE`,
+              {
+                type: "image/jpeg",
+                size: user.verification.selfie[0].size,
+                uri: user.verification.selfie[0].uri,
+              }
+            );
+
+            formData.append("files", selfieFile);
+          }
+
+          if (user.verification && user.verification.primary_file) {
+            for (let i = 0; i < user.verification.primary_file.length; i++) {
+              let file = {
+                name: `${user.lastName}, ${
+                  user.firstName
+                } - PRIMARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
+                size: user.verification.primary_file[i].size,
+                type: user.verification.primary_file[i].type,
+                uri: user.verification.primary_file[i].uri,
+              };
+
+              console.log("check file: ", file);
+
+              formData.append(
+                "files",
+                new File([user.verification.primary_file[i]], file.name, {
+                  type: file.type,
+                })
+              );
             }
-          );
-
-          formData.append("files", selfieFile);
-  
-          for (let i = 0; i < user.verification.primary_file.length; i++) {
-            let file = {
-              name: `${user.lastName}, ${
-                user.firstName
-              } - PRIMARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
-              size: user.verification.primary_file[i].size,
-              type: user.verification.primary_file[i].type,
-              uri: user.verification.primary_file[i].uri,
-            };
-
-            console.log("check file: ", file);
-
-            formData.append(
-              "files",
-              new File([user.verification.primary_file[i]], file.name, { type: file.type })
-            );
           }
-  
-          for (let i = 0; i < user.verification.secondary_file.length; i++) {
-            let file = {
-              name: `${user.lastName}, ${
-                user.firstName
-              } - SECONDARY ID ${moment(new Date()).format(
-                "MMDDYYYYHHmmss"
-              )}`,
-              uri: user.verification.secondary_file[i].uri,
-              type: user.verification.secondary_file[i].type,
-              size: user.verification.secondary_file[i].size,
-            };
 
-            formData.append(
-              "files",
-              new File([user.verification.secondary_file[i]], file.name, { type: file.type })
-            );
+          if (user.verification && user.verification.secondary_file) {
+            for (let i = 0; i < user.verification.secondary_file.length; i++) {
+              let file = {
+                name: `${user.lastName}, ${
+                  user.firstName
+                } - SECONDARY ID ${moment(new Date()).format(
+                  "MMDDYYYYHHmmss"
+                )}`,
+                uri: user.verification.secondary_file[i].uri,
+                type: user.verification.secondary_file[i].type,
+                size: user.verification.secondary_file[i].size,
+              };
+
+              formData.append(
+                "files",
+                new File([user.verification.secondary_file[i]], file.name, {
+                  type: file.type,
+                })
+              );
+            }
           }
-  
+
           const response = await axios.post(
             `${API_LINK}/users/?folder_id=${folderResponse.data[0].verification}`,
             formData,
@@ -327,7 +337,7 @@ function AddResidentModal({ brgy }) {
               },
             }
           );
-  
+
           if (response.status === 200) {
             console.log("created");
             setUser({
@@ -346,13 +356,20 @@ function AddResidentModal({ brgy }) {
               isApproved: "Registered",
               city: "Rodriguez, Rizal",
               brgy: brgy,
+              verification: {
+                primary_id: "",
+                primary_file: [],
+                secondary_id: "",
+                secondary_file: [],
+                selfie: [],
+              },
             });
-  
+
             setSubmitClicked(false);
             setCreationStatus("success");
-            // setTimeout(() => {
-            //   window.location.reload();
-            // }, 3000);
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
           }
         }
       }
