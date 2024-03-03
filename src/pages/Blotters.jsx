@@ -56,16 +56,24 @@ const Blotters = () => {
           `${API_LINK}/requests/getdoneblotters?brgy=${brgy}&archived=false`
         );
         if (response.status === 200) {
-          const { result } = response.data;
+          let { result } = response.data;
+  
+          // Convert status of fetched requests to "IN PROGRESS"
+          result = result.map(request => {
+            return {
+              ...request,
+              status: "IN PROGRESS"
+            };
+          });
+  
           setRequests(result);
           setFilteredRequests(result);
         } else {
-
           setRequests([]);
           setFilteredRequests([]);
         }
       } catch (error) {
-        console.error(error);   
+        console.error(error);
         setRequests([]);
         setFilteredRequests([]);
       }
@@ -357,46 +365,18 @@ const Blotters = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handleStatusFilter("IN PROGRESS")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    PENDING
+                    IN PROGRESS
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Paid")}
+                    onClick={() => handleStatusFilter("COMPLETED")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    PAID
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Processing")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    PROCESSING
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Cancelled")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    CANCELLED
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Transaction Completed")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    TRANSACTION COMPLETED
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Rejected")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    REJECTED
+                    COMPLETED
                   </a>
                 </ul>
               </div>
@@ -631,50 +611,21 @@ const Blotters = () => {
                       </div>
                     </td>
                     <td className="px-2 xl:px-6 py-3 xxl:w-3/12">
-                      {item.status === "Transaction Completed" && (
+                      {item.status === "COMPLETED" && (
                         <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
-                            TRANSACTION COMPLETED
+                          COMPLETED
                           </span>
                         </div>
                       )}
-                      {item.status === "Rejected" && (
+                      {item.status === "IN PROGRESS" && (
                         <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
-                            REJECTED
+                            IN PROGRESS
                           </span>
                         </div>
                       )}
-                      {item.status === "Pending" && (
-                        <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
-                            PENDING
-                          </span>
-                        </div>
-                      )}
-                      {item.status === "Paid" && (
-                        <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
-                            PAID
-                          </span>
-                        </div>
-                      )}
-
-                      {item.status === "Processing" && (
-                        <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
-                            PROCESSING
-                          </span>
-                        </div>
-                      )}
-
-                      {item.status === "Cancelled" && (
-                        <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
-                            CANCELLED
-                          </span>
-                        </div>
-                      )}
+                     
                     </td>
                     <td className="px-2 xl:px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">
