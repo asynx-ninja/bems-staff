@@ -9,6 +9,7 @@ import { MdEvent } from "react-icons/md";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import GetBrgy from "../GETBrgy/getbrgy";
+
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [notification, setNotification] = useState([]);
@@ -184,12 +185,12 @@ const Notifications = () => {
           ))}
         </ul>
       </div>
-      <ViewNotification
+      {/* <ViewNotification
         notification={notification}
         setNotification={setNotification}
         brgy={brgy}
         id={id}
-      />
+      /> */}
     </>
   );
 };

@@ -193,6 +193,36 @@ const Residents = () => {
                       Add Residents
                     </span>
                   </button>
+
+                  {/* <Link
+                    onClick={() => handleView({ ...item })}
+                    to={{
+                      pathname: `/create_residents/`,
+                      search: `?id=${id}&brgy=${brgy}
+                      )}`,
+                    }}
+                  >
+                    <button
+                      type="button"
+                      data-hs-overlay="#hs-modal-addResident"
+                      className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg w-full text-white font-medium text-sm text-center inline-flex items-center "
+                      style={{
+                        background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+                      }}
+                    >
+                      <FaPlus size={24} style={{ color: "#ffffff" }} />
+                      <span className="sm:block md:hidden sm:pl-5">
+                        Add Residents
+                      </span>
+
+                      <span
+                        className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                        role="tooltip"
+                      >
+                        Add Residents
+                      </span>
+                    </button>
+                  </Link> */}
                 </div>
               </div>
               <div className="w-full rounded-lg ">
@@ -440,7 +470,7 @@ const Residents = () => {
                       </div>
                     </td>
                     <td className="py-3">
-                    {item.isApproved === "Verified" && (
+                      {item.isApproved === "Verified" && (
                         <div className="flex w-full items-center justify-center bg-[#6f75c2] xl:m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
                             VERIFIED
@@ -581,11 +611,7 @@ const Residents = () => {
           status={status}
           setStatus={setStatus}
         />
-        <MessageResidentModal 
-         user={user}
-         setUser={setUser}
-         brgy={brgy}
-         />
+        <MessageResidentModal user={user} setUser={setUser} brgy={brgy} />
         <ManageResidentModal user={user} setUser={setUser} brgy={brgy} />
       </div>
     </div>
