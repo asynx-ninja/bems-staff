@@ -769,14 +769,12 @@ const Blotters = () => {
       <ArchiveRequestsModal selectedItems={selectedItems} />
       <RequestsReportsModal />
       <AddBlotterDocument
-        // service_id={service.service_id}
+        request={request}
         brgy={brgy}
-        // officials={officials}
       />
       <EditBlotterDocument
-        // service_id={service.service_id}
-        brgy={brgy}
-        // officials={officials}
+         request={request}
+         brgy={brgy}
       />
     </div>
   );

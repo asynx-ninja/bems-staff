@@ -6,122 +6,98 @@ import EditSectionDocument from "./EditSectionDocument";
 import EditFormLoader from "../../loaders/EditFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 
-const EditBlotterDocument = ({ service_id, brgy, officials}) => {
+const EditBlotterDocument = ({ request, brgy }) => {
   const information = GetBrgy(brgy);
-  // const [details, setDetails] = useState([]);
-  // const [detail, setDetail] = useState({});
-  // const [docDetails, setDocDetails] = useState([]);
-  // const [docDetail, setDocDetail] = useState({});
-  // const [submitClicked, setSubmitClicked] = useState(false);
-  // const [updatingStatus, setUpdatingStatus] = useState(null);
-  // const [error, setError] = useState(null);
-  // const [document, setDocument] = useState({
-  //   form_id: "",
-  //   doc_title: "",
-  //   details: "",
-  //   type: "",
-  //   punong_brgy: "",
-  //   witnessed_by: "",
-  //   inputs: [""],
-  //   email: "",
-  //   address: "",
-  //   tel: "",
-  // });
+  const [details, setDetails] = useState([]);
+  const [detail, setDetail] = useState({});
+  const [docDetails, setDocDetails] = useState([]);
+  const [docDetail, setDocDetail] = useState({});
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
+  const [error, setError] = useState(null);
+  const [document, setDocument] = useState({
+    req_id: request.req_id,
+    doc_title: "",
+    date: "",
+    usapin_blg: "",
+    reason: "",
+    patawag: "",
+    complainant: "",
+    complainant_address: "",
+    accused: "",
+    accused_address: "",
+    message: "",
+    bcpc_vawc: "",
+    email: "",
+    contact: "",
+  });
 
-  // useEffect(() => {
-  //   // function to filter
-  //   const fetch = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `${API_LINK}/forms/?brgy=${brgy}&service_id=${service_id}`
-  //       );
+  useEffect(() => {
+    // function to filter
+    const fetch = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/blotter_documents/?brgy=${brgy}&req_id=${request.req_id}`
+        );
 
-  //       // filter
-  //       setDetails(response.data);
-  //     } catch (err) {
-  //       console.log(err.message);
-  //     }
-  //   };
+        // filter
+        setDocDetails(response.data);
+      } catch (err) {
+        console.log(err.message);
+      }
+    };
 
-  //   fetch();
-  // }, [brgy, service_id]);
+    fetch();
+  }, [brgy, request]);
 
-  // useEffect(() => {
-  //   // function to filter
-  //   const fetch = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `${API_LINK}/document/?brgy=${brgy}&service_id=${service_id}`
-  //       );
-
-  //       // filter
-  //       setDocDetails(response.data);
-  //     } catch (err) {
-  //       console.log(err.message);
-  //     }
-  //   };
-
-  //   fetch();
-  // }, [brgy, service_id]);
-
-
-  // const handleFormChange = (e, key) => {
-  //   const newState = detail.form[0];
-  //   newState[key].checked = e.target.checked;
-
-  //   setDetail((prev) => ({
-  //     ...prev,
-  //     form: [newState, detail.form[1]],
-  //   }));
-  // };
-
-  // const handleSubmit = async (e) => {
-  //   try {
-  //     setSubmitClicked(true);
-
-  //     const response = await axios.patch(
-  //       `http://localhost:8800/api/document/`,
-  //       {
-  //         document: docDetail,
-  //       },
-  //       {
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-
-  //     console.log(response);
-  //     setTimeout(() => {
-  //       setSubmitClicked(false);
-  //       setUpdatingStatus("success");
-  //       setTimeout(() => {
-  //         window.location.reload();
-  //       }, 3000);
-  //     }, 1000);
-  //   } catch (err) {
-  //     setSubmitClicked(false);
-  //     setUpdatingStatus("error");
-  //     setError(err.message);
-  //   }
-  // };
-
-  // const handleSelectChange = (e) => {
-  //   setDocDetail(docDetails[e.target.value]);
-  // };
-
-  // const handleChange = (e) => {
-  //   setDocDetail((prev) => ({
-  //     ...prev,
-  //     [e.target.name]: e.target.value,
-  //   }));
-  // };
+  const handleSelectChange = (e) => {
+    setDocDetail(docDetails[e.target.value]);
+  };
 
   
-  // console.log("Edit document: ", document);
-  // console.log("details: ", details);
-  // console.log("Doc details: ", docDetails);
-  // console.log("Doc detail: ", docDetail);
+  const handleChange = (e) => {
+    setDocDetail((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  
+  console.log("Edit document: ", document);
+  console.log("details: ", details);
+  console.log("Doc details: ", docDetails);
+  console.log("Doc detail: ", docDetail);
+
+  const handleSubmit = async (e) => {
+    try {
+      setSubmitClicked(true);
+
+      const response = await axios.patch(
+        `${API_LINK}/blotter_documents/`,
+        {
+          document: docDetail,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log(response);
+      setTimeout(() => {
+        setSubmitClicked(false);
+        setUpdatingStatus("success");
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      }, 1000);
+    } catch (err) {
+      setSubmitClicked(false);
+      setUpdatingStatus("error");
+      setError(err.message);
+    }
+  };
 
   return (
     <div>
@@ -151,42 +127,22 @@ const EditBlotterDocument = ({ service_id, brgy, officials}) => {
                 <select
                   name="form"
                   className="border border-1 border-gray-300 shadow bg-white w-full md:w-6/12 mt-2 md:mt-0 border p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                  // onChange={handleSelectChange}
+                  onChange={handleSelectChange}
                   defaultValue={""}
                 >
                   <option value="" disabled>
                     Select Document
                   </option>
-                  {/* {docDetails &&
+                  {docDetails &&
                     docDetails.map((item, idx) => (
                       <option key={idx} value={idx}>
                         {item.doc_title}
                       </option>
-                    ))} */}
+                    ))}
                 </select>
               </div>
               <div className="px-4 pb-4">
-                <div className="flex items-center justify-between mb-4">
-                  <label className="block  text-black font-bold">
-                    SERVE AS ACTIVE FORM?
-                  </label>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      name="isOpen"
-                      // onChange={(e) =>
-                      //   setDocDetail((prev) => ({
-                      //     ...prev,
-                      //     isActive: e.target.checked,
-                      //   }))
-                      // }
-                      // checked={docDetail.isActive}
-                      // disabled={docDetail.isArchived}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-400 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
-                  </label>
-                </div>
+                
                 {/* DOCUMENT INFORMATION */}
                 <fieldset className="border-2 border-black">
                   <legend className="ml-2 px-2 text-lg font-medium">
@@ -205,9 +161,153 @@ const EditBlotterDocument = ({ service_id, brgy, officials}) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="doc_title"
                         type="text"
-                        // value={docDetail.doc_title}
-                        // onChange={handleChange}
-                        placeholder="Service Name"
+                        value={docDetail.doc_title}
+                        onChange={handleChange}
+                        placeholder="Document Name"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="fee"
+                      >
+                        Date
+                      </label>
+                      <input
+                        className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        id="date"
+                        name="date"
+                        type="date"
+                        value={docDetail.date}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="name"
+                      >
+                        Usapin ng Barangay Blg
+                      </label>
+                      <input
+                        id="usapin_blg"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="usapin_blg"
+                        type="text"
+                        value={docDetail.usapin_blg}
+                        onChange={handleChange}
+                        placeholder="E-mail"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="name"
+                      >
+                        Para sa:
+                      </label>
+                      <input
+                        id="reason"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="reason"
+                        type="text"
+                        value={docDetail.reason}
+                        onChange={handleChange}
+                        placeholder="Address"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="name"
+                      >
+                        Patawag
+                      </label>
+                      <input
+                        id="patawag"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="patawag"
+                        type="text"
+                        value={docDetail.patawag}
+                        onChange={handleChange}
+                        placeholder="Pang ilang patawag..."
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="name"
+                      >
+                        Complainant (Nagreklamo)
+                      </label>
+                      <input
+                        id="complainant"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="complainant"
+                        type="text"
+                        value={docDetail.complainant}
+                        onChange={handleChange}
+                        placeholder="Name of Complainant"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="name"
+                      >
+                        Complainant Address
+                      </label>
+                      <input
+                        id="complainant_address"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="complainant_address"
+                        type="text"
+                        value={docDetail.complainant_address}
+                        onChange={handleChange}
+                        placeholder="Complainant Address"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="name"
+                      >
+                        Accused (Inereklamo)
+                      </label>
+                      <input
+                        id="accused"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="accused"
+                        type="text"
+                        value={docDetail.accused}
+                        onChange={handleChange}
+                        placeholder="Name of Accused"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="name"
+                      >
+                        Accused Address
+                      </label>
+                      <input
+                        id="accused_address"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="accused_address"
+                        type="text"
+                        value={docDetail.accused_address}
+                        onChange={handleChange}
+                        placeholder="Complainant Address"
                       />
                     </div>
 
@@ -216,14 +316,14 @@ const EditBlotterDocument = ({ service_id, brgy, officials}) => {
                         htmlFor="message"
                         className="block mb-2 text-sm font-bold text-gray-700 "
                       >
-                        Details
+                        Message
                       </label>
                       <textarea
-                        id="details"
+                        id="message"
                         rows={7}
-                        name="details"
-                        // value={docDetail.details}
-                        // onChange={handleChange}
+                        name="message"
+                        value={docDetail.message}
+                        onChange={handleChange}
                         className="shadow appearance-none border w-full p-2.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         placeholder="Enter service details..."
                       />
@@ -232,99 +332,19 @@ const EditBlotterDocument = ({ service_id, brgy, officials}) => {
                     <div className="mb-4">
                       <label
                         className="block text-gray-700 text-sm font-bold mb-2"
-                        htmlFor="type"
+                        htmlFor="name"
                       >
-                        TYPE OF DOCUMENT LAYOUT:
+                        Bcpc / Vawc
                       </label>
-                      <select
-                        name="type"
-                        // onChange={handleChange}
-                        // value={docDetail.type}
-                        className="shadow  border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                      >
-                        <option>-- Select a Document Type --</option>
-                        <option value="Type A">
-                          Barangay Certificate without Officials
-                        </option>
-                        <option value="Type B">
-                          Barangay Certificate with Officials
-                        </option>
-                        <option value="Type C">Cedula</option>
-                        <option value="Type D">Barangay ID</option>
-                        <option value="Type E">
-                          First Time Job Seeker with Oath of Undertaking
-                        </option>
-                        <option value="Type F">Barangay Clearance</option>
-                        <option value="Type G">Certificate of Indigency</option>
-                        <option value="Type H">Solo Parent Certification</option>
-                        <option value="Type I">Barangay Blotter</option>
-                        <option value="Type J">Late Registration</option>
-                        <option value="Type K">Residency Certification</option>
-                      </select>
-                    </div>
-
-                    <div className="mb-4">
-                      <label
-                        className="block text-gray-700 text-sm font-bold mb-2"
-                        htmlFor="type"
-                      >
-                        Punong Barangay
-                      </label>
-                      <select
-                        name="punong_brgy"
-                        // onChange={handleChange}
-                        // value={docDetail.punong_brgy}
-                        className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                      >
-                        <option>-- Select an Official --</option>
-                        {/* Map filtered officials with position "Barangay Chairman" to options */}
-                        {/* {officials
-                          .filter(
-                            (official) =>
-                              official.position === "Barangay Chairman"
-                          )
-                          .map((official) => (
-                            <option
-                              key={official.user_id}
-                              value={official.user_id}
-                            >
-                              {official.lastName}, {official.firstName}{" "}
-                              {official.middleName}
-                            </option>
-                          ))} */}
-                      </select>
-                    </div>
-
-                    <div className="mb-4">
-                      <label
-                        className="block text-gray-700 text-sm font-bold mb-2"
-                        htmlFor="type"
-                      >
-                        Witnessed By:
-                      </label>
-                      <select
-                        name="witnessed_by"
-                        // onChange={handleChange}
-                        // value={docDetail.witnessed_by}
-                        className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                      >
-                        <option>-- Select an Official --</option>
-                        {/* Map filtered officials with position "Barangay Chairman" to options */}
-                        {/* {officials
-                          .filter(
-                            (official) =>
-                              official.position === "Secretary"
-                          )
-                          .map((official) => (
-                            <option
-                              key={official.user_id}
-                              value={official.user_id}
-                            >
-                              {official.lastName}, {official.firstName}{" "}
-                              {official.middleName}
-                            </option>
-                          ))} */}
-                      </select>
+                      <input
+                        id="bcpc_vawc"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="bcpc_vawc"
+                        type="text"
+                        value={docDetail.bcpc_vawc}
+                        onChange={handleChange}
+                        placeholder="Address"
+                      />
                     </div>
 
                     <div className="mb-4">
@@ -339,26 +359,8 @@ const EditBlotterDocument = ({ service_id, brgy, officials}) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="email"
                         type="text"
-                        // value={docDetail.email}
-                        // onChange={handleChange}
-                        placeholder="E-mail"
-                      />
-                    </div>
-
-                    <div className="mb-4">
-                      <label
-                        className="block text-gray-700 text-sm font-bold mb-2"
-                        htmlFor="name"
-                      >
-                        Address
-                      </label>
-                      <input
-                        id="address"
-                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                        name="address"
-                        type="text"
-                        // value={docDetail.address}
-                        // onChange={handleChange}
+                        value={docDetail.email}
+                        onChange={handleChange}
                         placeholder="Address"
                       />
                     </div>
@@ -368,36 +370,19 @@ const EditBlotterDocument = ({ service_id, brgy, officials}) => {
                         className="block text-gray-700 text-sm font-bold mb-2"
                         htmlFor="name"
                       >
-                        Telephone Number
+                        Contact Number
                       </label>
                       <input
-                        id="tel"
+                        id="contact"
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                        name="tel"
-                        type="number"
-                        // value={docDetail.tel}
-                        // onChange={handleChange}
-                        placeholder="Telephone Number"
+                        name="contact"
+                        type="text"
+                        value={docDetail.contact}
+                        onChange={handleChange}
+                        placeholder="Address"
                       />
                     </div>
                   </div>
-                </fieldset>
-              </div>
-
-              {/* CUSTOMIZE DOCUMENT */}
-              <div className="px-4 w-full h-auto overflow-y-auto">
-                <fieldset className="border-2 border-black">
-                  <legend className=" ml-2 px-2 text-lg font-bold">
-                    CUSTOMIZE FIELDS
-                  </legend>
-                  {/* <EditSectionDocument
-                    brgy={brgy}
-                    service_id={service_id}
-                    document={document}
-                    setDocument={setDocument}
-                    docDetail={docDetail}
-                    setDocDetail={setDocDetail}
-                  /> */}
                 </fieldset>
               </div>
             </div>
@@ -408,7 +393,7 @@ const EditBlotterDocument = ({ service_id, brgy, officials}) => {
                 <button
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                  // onClick={handleSubmit}
+                  onClick={handleSubmit}
                 >
                   UPDATE
                 </button>
@@ -423,10 +408,10 @@ const EditBlotterDocument = ({ service_id, brgy, officials}) => {
             </div>
           </div>
         </div>
-        {/* {submitClicked && <EditFormLoader updatingStatus="updating" />}
+        {submitClicked && <EditFormLoader updatingStatus="updating" />}
         {updatingStatus && (
           <EditFormLoader updatingStatus={updatingStatus} error={error} />
-        )} */}
+        )}
       </div>
     </div>
   );

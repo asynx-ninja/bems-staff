@@ -4,23 +4,19 @@ import axios from "axios";
 import AddSectionDocument from "./AddSectionDocument";
 import AddFormLoader from "../../loaders/AddFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
+import API_LINK from "../../../../config/API";
 
-const AddBlotterDocument = ({ service_id, brgy, officials }) => {
+const AddBlotterDocument = ({ request, brgy }) => {
   const information = GetBrgy(brgy);
-  // const [submitClicked, setSubmitClicked] = useState(false);
-  // const [creationStatus, setCreationStatus] = useState(null);
-  // const [error, setError] = useState(null);
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [creationStatus, setCreationStatus] = useState(null);
+  const [error, setError] = useState(null);
 
-  // const handleChange = (e) => {
-  //   setDocument((prev) => ({
-  //     ...prev,
-  //     [e.target.name]: e.target.value,
-  //   }));
-  // };
+  console.log("request sa add: ", request)
 
   // const [section, setSection] = useState([]);
 
-  // const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(false);
 
   // const handleFormChange = (e, key) => {
   //   const newState = { ...form };
@@ -29,59 +25,73 @@ const AddBlotterDocument = ({ service_id, brgy, officials }) => {
   //   setForm(newState);
   // };
 
-  // const [document, setDocument] = useState({
-  //   form_id: "",
-  //   service_id: "",
-  //   doc_title: "",
-  //   details: "",
-  //   type: "",
-  //   punong_brgy: "",
-  //   witnessed_by: "",
-  //   inputs: [""],
-  //   email: "",
-  //   address: "",
-  //   tel: "",
-  // });
+  const [document, setDocument] = useState({
+    req_id: request.req_id,
+    doc_title: "",
+    date: "",
+    usapin_blg: "",
+    reason: "",
+    patawag: "",
+    complainant: "",
+    complainant_address: "",
+    accused: "",
+    accused_address: "",
+    message: "",
+    bcpc_vawc: "",
+    email: "",
+    contact: "",
+  });
 
-  // const handleSubmit = async (e) => {
-  //   try {
-  //     setSubmitClicked(true);
+  const handleChange = (e) => {
+    setDocument((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
-  //     const response = await axios.post(
-  //       `http://localhost:8800/api/document/?brgy=${brgy}&form_id=${document.form_id}&checked=${checked}`,
-  //       {
-  //         service_id: service_id,
-  //         doc_title: document.doc_title,
-  //         details: document.details,
-  //         type: document.type,
-  //         punong_brgy: document.punong_brgy,
-  //         witnessed_by: document.witnessed_by,
-  //         inputs: document.inputs,
-  //         email: document.email,
-  //         address: document.address,
-  //         tel: document.tel,
-  //       },
-  //       {
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
+  const handleSubmit = async (e) => {
+    try {
+      setSubmitClicked(true);
 
-  //     setSubmitClicked(false);
-  //     setCreationStatus("success");
-  //     setTimeout(() => {
-  //       window.location.reload();
-  //     }, 3000);
-  //   } catch (err) {
-  //     console.log(err.message);
-  //     setSubmitClicked(false);
-  //     setCreationStatus("error");
-  //     setError(err.message);
-  //   }
-  // };
+      const response = await axios.post(
+        `${API_LINK}/blotter_documents/?brgy=${brgy}`,
+        {
+          req_id: request.req_id,
+          doc_title: document.doc_title,
+          date: document.date,
+          usapin_blg: document.usapin_blg,
+          reason: document.reason,
+          patawag: document.patawag,
+          complainant: document.complainant,
+          complainant_address: document.complainant_address,
+          accused: document.accused,
+          accused_address: document.accused_address,
+          message: document.message,
+          bcpc_vawc: document.bcpc_vawc,
+          email: document.email,
+          contact: document.contact,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-  // console.log("Document: ", document);
+      setSubmitClicked(false);
+      setCreationStatus("success");
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+    } catch (err) {
+      console.log(err.message);
+      setSubmitClicked(false);
+      setCreationStatus("error");
+      setError(err.message);
+    }
+  };
+
+  console.log("Document: ", document);
 
   return (
     <div>
@@ -93,9 +103,12 @@ const AddBlotterDocument = ({ service_id, brgy, officials }) => {
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
             {/* Header */}
-            <div className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl" style={{
+            <div
+              className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl"
+              style={{
                 background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-              }}>
+              }}
+            >
               <h3
                 className="font-bold text-white mx-auto md:text-xl text-center"
                 style={{ letterSpacing: "0.3em" }}
@@ -105,21 +118,6 @@ const AddBlotterDocument = ({ service_id, brgy, officials }) => {
             </div>
             <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb my-2 py-5 px-2 overflow-y-auto relative h-[470px]">
               <div className="px-4 pb-4">
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-black font-medium">
-                    SERVE AS ACTIVE DOCUMENT?
-                  </label>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      name="isOpen"
-                      // onChange={(e) => setChecked(e.target.checked)}
-                      // checked={checked}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-400 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
-                  </label>
-                </div>
                 {/* DOCUMENT INFORMATION */}
                 <fieldset className="border-2 border-black">
                   <legend className="ml-2 px-2 text-lg font-medium">
@@ -139,8 +137,152 @@ const AddBlotterDocument = ({ service_id, brgy, officials }) => {
                         name="doc_title"
                         type="text"
                         // value={service.name}
-                        // onChange={handleChange}
+                        onChange={handleChange}
                         placeholder="Document Name"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="fee"
+                      >
+                        Date
+                      </label>
+                      <input
+                        className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        id="date"
+                        name="date"
+                        type="date"
+                        // value={announcement.date}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="name"
+                      >
+                        Usapin ng Barangay Blg
+                      </label>
+                      <input
+                        id="usapin_blg"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="usapin_blg"
+                        type="text"
+                        // value={service.name}
+                        onChange={handleChange}
+                        placeholder="E-mail"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="name"
+                      >
+                        Para sa:
+                      </label>
+                      <input
+                        id="reason"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="reason"
+                        type="text"
+                        // value={service.name}
+                        onChange={handleChange}
+                        placeholder="Address"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="name"
+                      >
+                        Patawag
+                      </label>
+                      <input
+                        id="patawag"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="patawag"
+                        type="text"
+                        // value={service.name}
+                        onChange={handleChange}
+                        placeholder="Pang ilang patawag..."
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="name"
+                      >
+                        Complainant (Nagreklamo)
+                      </label>
+                      <input
+                        id="complainant"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="complainant"
+                        type="text"
+                        // value={service.name}
+                        onChange={handleChange}
+                        placeholder="Complainant"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="name"
+                      >
+                        Complainant Address
+                      </label>
+                      <input
+                        id="complainant_address"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="complainant_address"
+                        type="text"
+                        // value={service.name}
+                        onChange={handleChange}
+                        placeholder="Complainant"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="name"
+                      >
+                        Accused (Inereklamo)
+                      </label>
+                      <input
+                        id="accused"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="accused"
+                        type="text"
+                        // value={service.name}
+                        onChange={handleChange}
+                        placeholder="Address"
+                      />
+                    </div>
+
+                    <div className="mb-4">
+                      <label
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                        htmlFor="name"
+                      >
+                        Accused Address
+                      </label>
+                      <input
+                        id="accused_address"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="accused_address"
+                        type="text"
+                        // value={service.name}
+                        onChange={handleChange}
+                        placeholder="Complainant"
                       />
                     </div>
 
@@ -149,14 +291,14 @@ const AddBlotterDocument = ({ service_id, brgy, officials }) => {
                         htmlFor="message"
                         className="block mb-2 text-sm font-bold text-gray-700 "
                       >
-                        Details
+                        Message
                       </label>
                       <textarea
-                        id="details"
+                        id="message"
                         rows={7}
-                        name="details"
+                        name="message"
                         // value={service.details}
-                        // onChange={handleChange}
+                        onChange={handleChange}
                         className="shadow appearance-none border w-full p-2.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         placeholder="Enter service details..."
                       />
@@ -165,96 +307,19 @@ const AddBlotterDocument = ({ service_id, brgy, officials }) => {
                     <div className="mb-4">
                       <label
                         className="block text-gray-700 text-sm font-bold mb-2"
-                        htmlFor="type"
+                        htmlFor="name"
                       >
-                        Type of Document Layout:
+                        Bcpc / Vawc
                       </label>
-                      <select
-                        name="type"
-                        // onChange={handleChange}
-                        className="shadow  border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                      >
-                        <option>-- Select a Document Type --</option>
-                        <option value="Type A">
-                          Barangay Certificate without Officials
-                        </option>
-                        <option value="Type B">
-                          Barangay Certificate with Officials
-                        </option>
-                        <option value="Type C">Cedula</option>
-                        <option value="Type D">Barangay ID</option>
-                        <option value="Type E">
-                          First Time Job Seeker with Oath of Undertaking
-                        </option>
-                        <option value="Type F">Barangay Clearance</option>
-                        <option value="Type G">Certificate of Indigency</option>
-                        <option value="Type H">Solo Parent Certification</option>
-                        <option value="Type I">Barangay Blotter</option>
-                        <option value="Type J">Late Registration</option>
-                        <option value="Type K">Residency Certification</option>
-                      </select>
-                    </div>
-
-                    <div className="mb-4">
-                      <label
-                        className="block text-gray-700 text-sm font-bold mb-2"
-                        htmlFor="type"
-                      >
-                        Punong Barangay
-                      </label>
-                      <select
-                        name="punong_brgy"
-                        // onChange={handleChange}
-                        className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                      >
-                        <option>-- Select an Official --</option>
-                        {/* Map filtered officials with position "Barangay Chairman" to options */}
-                        {/* {officials
-                          .filter(
-                            (official) =>
-                              official.position === "Barangay Chairman"
-                          )
-                          .map((official) => (
-                            <option
-                              key={official.user_id}
-                              value={official.user_id}
-                            >
-                              {official.lastName}, {official.firstName}{" "}
-                              {official.middleName}
-                            </option>
-                          ))} */}
-                      </select>
-                    </div>
-
-                    <div className="mb-4">
-                      <label
-                        className="block text-gray-700 text-sm font-bold mb-2"
-                        htmlFor="type"
-                      >
-                        Witnessed By:
-                      </label>
-                      <select
-                        name="witnessed_by"
-                        // onChange={handleChange}
-                        className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                      >
-                        <option>-- Select an Official --</option>
-                        {/* Map filtered officials with position "Barangay Chairman" to options */}
-                        {/* {officials
-                          .filter(
-                            (official) =>
-                              official.position === "Secretary"
-                          )
-                          .map((official) => (
-                            <option
-                              key={official.user_id}
-                              value={official.user_id}
-                            >
-                              {official.lastName}, {official.firstName}{" "}
-                              {official.middleName}
-                            </option>
-                          ))} */}
-                      </select>
+                      <input
+                        id="bcpc_vawc"
+                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                        name="bcpc_vawc"
+                        type="text"
+                        // value={service.name}
+                        onChange={handleChange}
+                        placeholder="Address"
+                      />
                     </div>
 
                     <div className="mb-4">
@@ -270,25 +335,7 @@ const AddBlotterDocument = ({ service_id, brgy, officials }) => {
                         name="email"
                         type="text"
                         // value={service.name}
-                        // onChange={handleChange}
-                        placeholder="E-mail"
-                      />
-                    </div>
-
-                    <div className="mb-4">
-                      <label
-                        className="block text-gray-700 text-sm font-bold mb-2"
-                        htmlFor="name"
-                      >
-                        Address
-                      </label>
-                      <input
-                        id="address"
-                        className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                        name="address"
-                        type="text"
-                        // value={service.name}
-                        // onChange={handleChange}
+                        onChange={handleChange}
                         placeholder="Address"
                       />
                     </div>
@@ -298,36 +345,19 @@ const AddBlotterDocument = ({ service_id, brgy, officials }) => {
                         className="block text-gray-700 text-sm font-bold mb-2"
                         htmlFor="name"
                       >
-                        Telephone Number
+                        Contact Number
                       </label>
                       <input
-                        id="tel"
+                        id="contact"
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                        name="tel"
-                        type="number"
+                        name="contact"
+                        type="text"
                         // value={service.name}
-                        // onChange={handleChange}
-                        placeholder="Telephone Number"
+                        onChange={handleChange}
+                        placeholder="Address"
                       />
                     </div>
                   </div>
-                </fieldset>
-              </div>
-
-              {/* CUSTOMIZE DOCUMENT */}
-              <div className="px-4 w-full h-auto overflow-y-auto">
-                <fieldset className="border-2 border-black">
-                  <legend className=" ml-2 px-2 text-lg font-bold">
-                    CUSTOMIZE FIELDS
-                  </legend>
-                  {/* <AddSectionDocument
-                    section={section}
-                    setSection={setSection}
-                    brgy={brgy}
-                    service_id={service_id}
-                    document={document}
-                    setDocument={setDocument}
-                  /> */}
                 </fieldset>
               </div>
             </div>
@@ -338,7 +368,7 @@ const AddBlotterDocument = ({ service_id, brgy, officials }) => {
                 <button
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                  // onClick={handleSubmit}
+                  onClick={handleSubmit}
                 >
                   CREATE
                 </button>
@@ -353,10 +383,10 @@ const AddBlotterDocument = ({ service_id, brgy, officials }) => {
             </div>
           </div>
         </div>
-        {/* {submitClicked && <AddFormLoader creationStatus="creating" />}
+        {submitClicked && <AddFormLoader creationStatus="creating" />}
         {creationStatus && (
           <AddFormLoader creationStatus={creationStatus} error={error} />
-        )} */}
+        )}
       </div>
     </div>
   );
