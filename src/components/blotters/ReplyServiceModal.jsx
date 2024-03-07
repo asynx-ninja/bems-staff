@@ -14,7 +14,6 @@ import ReplyLoader from "./loaders/ReplyLoader";
 import moment from "moment";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-
 function ReplyServiceModal({ request, setRequest, brgy }) {
   const information = GetBrgy(brgy);
   const [reply, setReply] = useState(false);
@@ -35,11 +34,8 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
   const [replyingStatus, setReplyingStatus] = useState(null);
   const [error, setError] = useState(null);
   const [service, setService] = useState([]);
-  const [eventWithCounts, setEventWithCounts] = useState([]);
-  const [filteredEvents, setFilteredEvents] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [pageCount, setPageCount] = useState(0);
-  const [specificEvent, setSpecificEvent] = useState(null);
+
+  const [blotterDetails, setBlotterDetails] = useState([]);
 
   useEffect(() => {
     setFiles(request.length === 0 ? [] : request.file);
@@ -60,29 +56,57 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     fetch();
   }, [id]);
 
- 
+  console.log("userData: ", userData);
+  console.log("newMessage: ", newMessage);
+
   useEffect(() => {
-    const fetchData = async () => {
+    // function to filter
+    const fetch = async () => {
       try {
-        const response = await fetch(`${API_LINK}/blotter/?brgy=${brgy}&patawag_id=${patawag_id}`);
-        const data = await response.json();
-  
-        // Handle the data
-        console.log(data);
-      } catch (error) {
-        // Handle the error
-        console.error(error);
+        const response = await axios.get(
+          `${API_LINK}/blotter/?brgy=${brgy}&req_id=${request.req_id}`
+        );
+
+        // filter
+        setBlotterDetails(response.data);
+      } catch (err) {
+        console.log(err.message);
       }
     };
-  
-    fetchData();
-  }, []);
+
+    fetch();
+  }, [brgy, request]);
+
+  console.log("blotterDetails: ", blotterDetails);
+  console.log("request: ", request);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch(`${API_LINK}/blotter/?brgy=${brgy}&patawag_id=${request.req_id}`);
+  //       const data = await response.json();
+
+  //       // Handle the data
+  //       console.log(data);
+  //     } catch (error) {
+  //       // Handle the error
+  //       console.error(error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
 
   useEffect(() => {
-    if (request && request.response.length !== 0) {
-      const lastResponse = request.response[request.response.length - 1];
+    if (
+      blotterDetails &&
+      blotterDetails.responses &&
+      blotterDetails.responses.length !== 0
+    ) {
+      const lastResponse =
+        blotterDetails.responses[blotterDetails.responses.length - 1];
 
-      if (lastResponse.file && lastResponse.file.length > 0) {
+      if (lastResponse && lastResponse.file && lastResponse.file.length > 0) {
         setViewFiles(lastResponse.file);
       } else {
         setViewFiles([]);
@@ -90,13 +114,15 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     } else {
       setViewFiles([]);
     }
-  }, [request]);
+  }, [blotterDetails]);
 
   // Initialize with the last index expanded
   useEffect(() => {
-    const lastIndex = request.response ? request.response.length - 1 : 0;
+    const lastIndex = blotterDetails.responses
+      ? blotterDetails.responses.length - 1
+      : 0;
     setExpandedIndexes([lastIndex]);
-  }, [request.response]);
+  }, [blotterDetails.responses]);
 
   const fileInputRef = useRef();
 
@@ -111,17 +137,21 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
   };
 
   useEffect(() => {
-    if (request && request.response && request.response.length > 0) {
+    if (
+      blotterDetails &&
+      blotterDetails.responses &&
+      blotterDetails.responses.length > 0
+    ) {
       // Sort the responses based on date in ascending order
-      request.response.sort(
+      blotterDetails.responses.sort(
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
       );
 
       // Initialize with the last index expanded
-      const lastIndex = request.response.length - 1;
+      const lastIndex = blotterDetails.responses.length - 1;
       setExpandedIndexes([lastIndex]);
     }
-  }, [request]);
+  }, [blotterDetails]);
 
   const handleChange = (e) => {
     const inputValue = e.target.value;
@@ -206,13 +236,11 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
       const obj = {
         sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
         message: newMessage.message,
-        status: request.status,
-        isRepliable: newMessage.isRepliable,
-        folder_id: request.folder_id,
+        type: `Staff`,
         date: new Date(), // Add the current date and time
+        // folder_id: request.folder_id,
       };
 
-      console.log("obj", obj);
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
 
@@ -220,82 +248,87 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-      console.log("brgy: ", brgy);
-      console.log("res_folder: ", res_folder);
+      // console.log("obj", obj);
+      // console.log("brgy: ", brgy);
+      // console.log("res_folder: ", res_folder);
+      // console.log("patawag_id: ", blotterDetails.patawag_id);
+      console.log("createFiles: ", createFiles);
 
       if (res_folder.status === 200) {
         for (let i = 0; i < createFiles.length; i++) {
           formData.append("files", createFiles[i]);
         }
 
+        console.log("formData: ", formData);
+
         const response = await axios.patch(
-          `${API_LINK}/requests/?req_id=${request._id}&?request_folder_id=${res_folder.data[0].request}`,
+          `${API_LINK}/blotter/response/?patawag_id=${blotterDetails.patawag_id}`,
           formData
         );
 
-        if (response.status === 200) {
-          const notify = {
-            category: "One",
-            compose: {
-              subject: `REQUEST - ${request.service_name}`,
-              message: `A barangay staff has updated/replied your request for the barangay service of ${
-                request.service_name
-              }.\n\n
-        
-              Request Details:\n
-              - Name: ${
-                request.form && request.form[0]
-                  ? request.form[0].lastName.value
-                  : ""
-              }, ${
-                request.form && request.form[0]
-                  ? request.form[0].firstName.value
-                  : ""
-              } ${
-                request.form && request.form[0]
-                  ? request.form[0].middleName.value
-                  : ""
-              }
-              - Service Applied: ${request.service_name}\n
-              - Request ID: ${request.req_id}\n
-              - Date Created: ${moment(request.createdAt).format(
-                "MMM. DD, YYYY h:mm a"
-              )}\n
-              - Status: ${response.data.status}\n
-              - Staff Handled: ${userData.lastName}, ${userData.firstName} ${
-                userData.middleName
-              }\n\n
-              Please update this service request as you've seen this notification!\n\n
-              Thank you!!,`,
-              go_to: "Requests",
-            },
-            target: {
-              user_id: request.form[0].user_id.value,
-              area: request.brgy,
-            },
-            type: "Resident",
-            banner: service.collections.banner,
-            logo: service.collections.logo,
-          };
+        // if (response.status === 200) {
+        //   const notify = {
+        //     category: "One",
+        //     compose: {
+        //       subject: `REQUEST - ${request.service_name}`,
+        //       message: `A barangay staff has updated/replied your request for the barangay service of ${
+        //         request.service_name
+        //       }.\n\n
 
-          console.log("Notify: ", notify);
+        //       Request Details:\n
+        //       - Name: ${
+        //         request.form && request.form[0]
+        //           ? request.form[0].lastName.value
+        //           : ""
+        //       }, ${
+        //         request.form && request.form[0]
+        //           ? request.form[0].firstName.value
+        //           : ""
+        //       } ${
+        //         request.form && request.form[0]
+        //           ? request.form[0].middleName.value
+        //           : ""
+        //       }
+        //       - Service Applied: ${request.service_name}\n
+        //       - Request ID: ${request.req_id}\n
+        //       - Date Created: ${moment(request.createdAt).format(
+        //         "MMM. DD, YYYY h:mm a"
+        //       )}\n
+        //       - Status: ${response.data.status}\n
+        //       - Staff Handled: ${userData.lastName}, ${userData.firstName} ${
+        //         userData.middleName
+        //       }\n\n
+        //       Please update this service request as you've seen this notification!\n\n
+        //       Thank you!!,`,
+        //       go_to: "Requests",
+        //     },
+        //     target: {
+        //       user_id: request.form[0].user_id.value,
+        //       area: request.brgy,
+        //     },
+        //     type: "Resident",
+        //     banner: service.collections.banner,
+        //     logo: service.collections.logo,
+        //   };
 
-          const result = await axios.post(`${API_LINK}/notification/`, notify, {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
+        //   console.log("Notify: ", notify);
 
-          if (result.status === 200) {
-            setTimeout(() => {
-              setSubmitClicked(false);
-              setReplyingStatus("success");
-              setTimeout(() => {
-                window.location.reload();
-              }, 3000);
-            }, 1000);
-          }
-        }
+        //   const result = await axios.post(`${API_LINK}/notification/`, notify, {
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //     },
+        //   });
+
+        //   if (result.status === 200) {
+        //     setTimeout(() => {
+        //       setSubmitClicked(false);
+        //       setReplyingStatus("success");
+        //       setTimeout(() => {
+        //         window.location.reload();
+        //       }, 3000);
+        //     }, 1000);
+        //   }
+        // }
       }
     } catch (error) {
       console.log(error);
@@ -335,7 +368,8 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                   Conversation History
                 </b>
                 <form>
-                  {!request.response || request.response.length === 0 ? (
+                  {!blotterDetails.responses ||
+                  blotterDetails.responses.length === 0 ? (
                     <div className="flex flex-col items-center">
                       <div className="relative w-full mx-2">
                         <div className="relative w-full">
@@ -514,9 +548,9 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                       </div>
                     </div>
                   ) : null}
-                  {request &&
-                    request.response &&
-                    request.response.map((responseItem, index) => (
+                  {blotterDetails &&
+                    blotterDetails.responses &&
+                    blotterDetails.responses.map((responseItem, index) => (
                       <div
                         key={index}
                         className={`flex flex-col lg:flex-row h-16 mb-2 border-b ${
@@ -571,7 +605,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                 setViewFiles={setViewFiles}
                               />
                             )}
-                            {index === request.response.length - 1 && (
+                            {index === blotterDetails.responses.length - 1 && (
                               <div className="flex flex-row items-center">
                                 <button
                                   type="button"

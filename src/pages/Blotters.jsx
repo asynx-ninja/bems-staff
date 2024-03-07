@@ -13,7 +13,7 @@ import ReplyServiceModal from "../components/blotters/ReplyServiceModal";
 import ArchiveRequestsModal from "../components//blotters/ArchiveRequestsModal";
 import RequestsReportsModal from "../components//blotters/RequestsReportsModal";
 import imgSrc from "/imgs/bg-header.png";
-import ViewRequestModal from "../components/blotters/ViewRequestModal";
+import ViewBlotterModal from "../components/blotters/ViewBlotterModal";
 import { useSearchParams } from "react-router-dom";
 import API_LINK from "../config/API";
 import axios from "axios";
@@ -759,7 +759,7 @@ const Blotters = () => {
         />
       </div>
       {Object.hasOwn(request, "service_id") ? (
-        <ViewRequestModal request={request} brgy={brgy} officials={officials} />
+        <ViewBlotterModal request={request} brgy={brgy} officials={officials} />
       ) : null}
       <ReplyServiceModal
         request={request}

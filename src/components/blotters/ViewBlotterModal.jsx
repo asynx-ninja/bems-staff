@@ -13,7 +13,7 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import { IoMdDownload } from "react-icons/io";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function ViewRequestModal({ request, brgy, officials }) {
+function ViewBlotterModal({ request, brgy, officials }) {
   const information = GetBrgy(brgy);
   const [detail, setDetail] = useState(request);
   const [empty] = useState(false);
@@ -157,7 +157,7 @@ function ViewRequestModal({ request, brgy, officials }) {
                 <OtherDetails detail={detail} returnFile={returnFile} />
               </form>
 
-              <div className="">
+              <div className="mt-5">
                 <table className="relative table-auto w-full">
                   <thead
                     className=" sticky top-0 "
@@ -188,7 +188,7 @@ function ViewRequestModal({ request, brgy, officials }) {
                     {blotterDetails.map((blotterItem, index) => (
                       <tr key={index} className="border">
                         <td className="px-6 py-3">
-                          <span className="text-xs sm:text-sm justify-center text-center text-black line-clamp-4">
+                          <span className="text-xs justify-center text-center text-black line-clamp-4">
                             {blotterItem.version_id}
                           </span>
                         </td>
@@ -241,4 +241,4 @@ function ViewRequestModal({ request, brgy, officials }) {
   );
 }
 
-export default ViewRequestModal;
+export default ViewBlotterModal;

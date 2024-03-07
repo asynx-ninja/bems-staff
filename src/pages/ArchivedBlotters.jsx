@@ -10,7 +10,7 @@ import { AiOutlineSend } from "react-icons/ai";
 import { MdRestartAlt } from "react-icons/md";
 import ArchiveRequestsModal from "../components/blotters/ArchiveRequestsModal";
 import RequestsReportsModal from "../components/blotters/RequestsReportsModal";
-import ViewRequestModal from "../components/blotters/ViewRequestModal";
+import ViewBlotterModal from "../components/blotters/ViewBlotterModal";
 import Breadcrumbs from "../components/archivedBlotters/Breadcrumbs";
 import RestoreRequestsModal from "../components/archivedBlotters/RestoreRequestsModal";
 import noData from "../assets/image/no-data.png";
@@ -782,7 +782,7 @@ const ArchivedBlotters = () => {
         />
       </div>
       {Object.hasOwn(request, "service_id") ? (
-        <ViewRequestModal request={request} brgy={brgy} officials={officials} />
+        <ViewBlotterModal request={request} brgy={brgy} officials={officials} />
       ) : null}
       <ArchiveRequestsModal />
       <RequestsReportsModal />
