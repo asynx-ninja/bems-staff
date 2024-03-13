@@ -50,22 +50,32 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     middleName: "",
     lastName: "",
     user_id: "",
+    type: "Complainant",
   });
   const [DefendantData, setDefendantData] = useState({
     firstName: "",
     middleName: "",
     lastName: "",
     user_id: "",
+    type: "Defendant",
+  });
+  const [ResponseData, setResponseData] = useState({
+    sender: "Nyle Chua",
+    type: "Staff",
+    message: "",
+    date: new Date().toISOString(),
   });
   const [patawagData, setPatawagData] = useState({
     name: "",
     to: [ComplainantData, DefendantData],
-    response: [],
+    response: [ResponseData],
     brgy: "",
     req_id: "",
   });
 
-  console.log("patawag data: ", patawagData);
+  // console.log("patawag data: ", patawagData);
+  // console.log("response data: ", ResponseData);
+  // console.log("userData: ", userData);
 
   const handleComplainantChange = (e) => {
     const selectedUserId = e.target.value;
@@ -97,8 +107,8 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     });
   };
 
-  console.log("complainant data: ", ComplainantData);
-  console.log("defendant data: ", DefendantData);
+  // console.log("complainant data: ", ComplainantData);
+  // console.log("defendant data: ", DefendantData);
 
   useEffect(() => {
     setDetail(request);
@@ -122,9 +132,6 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     };
     fetch();
   }, [id]);
-
-  // console.log("userData: ", userData);
-  // console.log("newMessage: ", newMessage);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -167,6 +174,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
         setBlotterDetails(response.data);
       } catch (err) {
         console.log(err.message);
+        setBlotterDetails([]);
       }
     };
 
@@ -238,23 +246,23 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
 
     if (e.target.name === "isRepliable") {
       // If isRepliable checkbox is changed, update isRepliable accordingly
-      setNewMessage((prev) => ({
+      setResponseData((prev) => ({
         ...prev,
         [e.target.name]: e.target.checked,
       }));
     } else if (
       statusChanger &&
-      (!newMessage.message || newMessage.message.trim() === "")
+      (!ResponseData.message || ResponseData.message.trim() === "")
     ) {
       // If statusChanger is true and message is not set, update message with status
-      setNewMessage((prev) => ({
+      setResponseData((prev) => ({
         ...prev,
         message: `The status of your event application is ${inputValue}`,
         [e.target.name]: inputValue,
       }));
     } else {
       // Otherwise, update the input value normally
-      setNewMessage((prev) => ({
+      setResponseData((prev) => ({
         ...prev,
         [e.target.name]: inputValue,
       }));
@@ -321,6 +329,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
       middleName: "",
       lastName: "",
       user_id: "",
+      type: "Complainant",
     });
   };
 
@@ -330,6 +339,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
       middleName: "",
       lastName: "",
       user_id: "",
+      type: "Defendant",
     });
   };
 
@@ -374,6 +384,14 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
         name: patawagData.name,
         to: [ComplainantData, DefendantData],
         brgy: detail.brgy,
+        responses: [
+          {
+            sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
+            type: "Staff",
+            message: `${ResponseData.message}`,
+            date: `${ResponseData.date}`,
+          },
+        ],
         req_id: detail.req_id,
       };
 
@@ -385,17 +403,14 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
       );
 
       console.log("obj", obj);
-      console.log("brgy: ", brgy);
-      console.log("res_folder: ", res_folder);
-      console.log("createFiles: ", createFiles);
+      // console.log("brgy: ", brgy);
+      // console.log("res_folder: ", res_folder);
+      // console.log("createFiles: ", createFiles);
 
       if (res_folder.status === 200) {
         for (let i = 0; i < createFiles.length; i++) {
           formData.append("files", createFiles[i]);
         }
-
-        console.log("res_folder: ", res_folder);
-        console.log("formData: ", formData);
 
         const response = await axios.post(
           `${API_LINK}/blotter/?patawag_folder_id=${res_folder.data[0].blotters}`,
@@ -403,67 +418,62 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
         );
 
         if (response.status === 200) {
-          // const notify = {
-          //   category: "One",
-          //   compose: {
-          //     subject: `REQUEST - ${request.service_name}`,
-          //     message: `A barangay staff has updated/replied your request for the barangay service of ${
-          //       request.service_name
-          //     }.\n\n
-
-          //     Request Details:\n
-          //     - Name: ${
-          //       request.form && request.form[0]
-          //         ? request.form[0].lastName.value
-          //         : ""
-          //     }, ${
-          //       request.form && request.form[0]
-          //         ? request.form[0].firstName.value
-          //         : ""
-          //     } ${
-          //       request.form && request.form[0]
-          //         ? request.form[0].middleName.value
-          //         : ""
-          //     }
-          //     - Service Applied: ${request.service_name}\n
-          //     - Request ID: ${request.req_id}\n
-          //     - Date Created: ${moment(request.createdAt).format(
-          //       "MMM. DD, YYYY h:mm a"
-          //     )}\n
-          //     - Status: ${response.data.status}\n
-          //     - Staff Handled: ${userData.lastName}, ${userData.firstName} ${
-          //       userData.middleName
-          //     }\n\n
-          //     Please update this service request as you've seen this notification!\n\n
-          //     Thank you!!,`,
-          //     go_to: "Requests",
-          //   },
-          //   target: {
-          //     user_id: request.form[0].user_id.value,
-          //     area: request.brgy,
-          //   },
-          //   type: "Resident",
-          //   banner: service.collections.banner,
-          //   logo: service.collections.logo,
-          // };
-
-          // console.log("Notify: ", notify);
-
-          // const result = await axios.post(`${API_LINK}/notification/`, notify, {
-          //   headers: {
-          //     "Content-Type": "application/json",
-          //   },
-          // });
-
-          if (result.status === 200) {
+          setTimeout(() => {
+            setSubmitClicked(false);
+            setReplyingStatus("success");
             setTimeout(() => {
-              setSubmitClicked(false);
-              setReplyingStatus("success");
-              setTimeout(() => {
-                window.location.reload();
-              }, 3000);
-            }, 1000);
-          }
+              window.location.reload();
+            }, 3000);
+          }, 1000);
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+      setSubmitClicked(false);
+      setReplyingStatus("error");
+      setError("An error occurred while replying to the service request.");
+    }
+  };
+
+  const handleSendReply = async (e) => {
+    try {
+      e.preventDefault();
+      setSubmitClicked(true);
+
+      const obj = {
+        sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
+        type: "Staff",
+        message: `${ResponseData.message}`,
+        date: `${ResponseData.date}`,
+        folder_id: blotterDetails.folder_id,
+      };
+
+      console.log("obj", obj);
+      var formData = new FormData();
+      formData.append("response", JSON.stringify(obj));
+
+      const res_folder = await axios.get(
+        `${API_LINK}/folder/specific/?brgy=${brgy}`
+      );
+
+      if (res_folder.status === 200) {
+        for (let i = 0; i < createFiles.length; i++) {
+          formData.append("files", createFiles[i]);
+        }
+
+        const response = await axios.patch(
+          `${API_LINK}/blotter/?patawag_id=${blotterDetails._id}&patawag_folder_id=${res_folder.data[0].blotters}`,
+          formData
+        );
+        
+        if (response.status === 200) {
+          setTimeout(() => {
+            setSubmitClicked(false);
+            setReplyingStatus("success");
+            setTimeout(() => {
+              window.location.reload();
+            }, 3000);
+          }, 1000);
         }
       }
     } catch (error) {
@@ -839,8 +849,8 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                             onChange={handleChange}
                             rows={7}
                             value={
-                              newMessage.message
-                                ? newMessage.message
+                              ResponseData.message
+                                ? ResponseData.message
                                 : statusChanger
                                 ? `The status of your service request is ${request.status}`
                                 : ""
@@ -925,10 +935,11 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                         onChange={(e) => {
                                           if (
                                             statusChanger &&
-                                            (!newMessage.message ||
-                                              newMessage.message.trim() === "")
+                                            (!ResponseData.message ||
+                                              ResponseData.message.trim() ===
+                                                "")
                                           ) {
-                                            setNewMessage((prev) => ({
+                                            setResponseData((prev) => ({
                                               ...prev,
                                               message: `The status of your service request is ${e.target.value}`,
                                             }));
@@ -968,7 +979,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                     <input
                                       type="checkbox"
                                       name="isRepliable"
-                                      checked={newMessage.isRepliable}
+                                      checked={ResponseData.isRepliable}
                                       onChange={handleChange}
                                       className="hs-tooltip-toggle sr-only peer"
                                     />
@@ -1088,8 +1099,8 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                         onChange={handleChange}
                                         rows={7}
                                         value={
-                                          newMessage.message
-                                            ? newMessage.message
+                                          ResponseData.message
+                                            ? ResponseData.message
                                             : statusChanger
                                             ? `The status of your service request is ${request.status}`
                                             : ""
@@ -1182,11 +1193,11 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                                     onChange={(e) => {
                                                       if (
                                                         statusChanger &&
-                                                        (!newMessage.message ||
-                                                          newMessage.message.trim() ===
+                                                        (!ResponseData.message ||
+                                                          ResponseData.message.trim() ===
                                                             "")
                                                       ) {
-                                                        setNewMessage(
+                                                        setResponseData(
                                                           (prev) => ({
                                                             ...prev,
                                                             message: `The status of your service request is ${e.target.value}`,
@@ -1233,7 +1244,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                                   type="checkbox"
                                                   name="isRepliable"
                                                   checked={
-                                                    newMessage.isRepliable
+                                                    ResponseData.isRepliable
                                                   }
                                                   onChange={handleChange}
                                                   className="hs-tooltip-toggle sr-only peer"
@@ -1249,7 +1260,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                             </div>
                                             <button
                                               type="submit"
-                                              onClick={handleOnSend}
+                                              onClick={handleSendReply}
                                               className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700"
                                             >
                                               <span>SEND</span>

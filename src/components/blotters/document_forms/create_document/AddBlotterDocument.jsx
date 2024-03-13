@@ -12,7 +12,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
 
-  console.log("request sa add: ", request)
+  // console.log("request sa add: ", request)
 
   // const [section, setSection] = useState([]);
 

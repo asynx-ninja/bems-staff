@@ -298,13 +298,13 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
           });
 
           if (result.status === 200) {
-            // setTimeout(() => {
-            //   setSubmitClicked(false);
-            //   setReplyingStatus("success");
-            //   setTimeout(() => {
-            //     window.location.reload();
-            //   }, 3000);
-            // }, 1000);
+            setTimeout(() => {
+              setSubmitClicked(false);
+              setReplyingStatus("success");
+              setTimeout(() => {
+                window.location.reload();
+              }, 3000);
+            }, 1000);
           }
         }
       }
