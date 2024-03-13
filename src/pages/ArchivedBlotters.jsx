@@ -64,7 +64,7 @@ const ArchivedBlotters = () => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/requests/?brgy=${brgy}&archived=true&status=${statusFilter}&type=${selectedReqFilter}&page=${currentPage}`
+          `${API_LINK}/requests/getdoneblotters?brgy=${brgy}&archived=true`
         );
 
         if (response.status === 200) {
