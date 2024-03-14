@@ -49,6 +49,9 @@ const Blotters = () => {
 
   const [officials, setOfficials] = useState([]);
 
+  // blotter related
+  const [blotterDetails, setBlotterDetails] = useState([]);
+
   useEffect(() => {
     const fetchRequests = async () => {
       try {
@@ -57,15 +60,15 @@ const Blotters = () => {
         );
         if (response.status === 200) {
           let { result } = response.data;
-  
+
           // Convert status of fetched requests to "IN PROGRESS"
-          result = result.map(request => {
+          result = result.map((request) => {
             return {
               ...request,
-              status: "IN PROGRESS"
+              status: "In Progress",
             };
           });
-  
+
           setRequests(result);
           setFilteredRequests(result);
         } else {
@@ -80,6 +83,25 @@ const Blotters = () => {
     };
 
     fetchRequests();
+  }, [brgy]);
+
+  useEffect(() => {
+    // function to filter
+    const fetch = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/blotter/all_patawag/?brgy=${brgy}&archived=false`
+        );
+
+        // filter
+        setBlotterDetails(response.data);
+      } catch (err) {
+        console.log(err.message);
+        setBlotterDetails([]);
+      }
+    };
+
+    fetch();
   }, [brgy]);
 
   useEffect(() => {
@@ -366,18 +388,32 @@ const Blotters = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    onClick={() => handleStatusFilter("IN PROGRESS")}
+                    onClick={() => handleStatusFilter("In Progress")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     IN PROGRESS
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("COMPLETED")}
+                    onClick={() => handleStatusFilter("Completed")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     COMPLETED
+                  </a>
+                  <a
+                    onClick={() => handleStatusFilter("Rejected")}
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    REJECTED
+                  </a>
+                  <a
+                    onClick={() => handleStatusFilter("Newly Arrived")}
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    NEWLY ARRIVED
                   </a>
                 </ul>
               </div>
@@ -579,146 +615,192 @@ const Blotters = () => {
             </thead>
             <tbody className="odd:bg-slate-100">
               {filteredRequests.length > 0 ? (
-                filteredRequests.map((item, index) => (
-                  <tr key={index} className="odd:bg-slate-100 text-center">
-                    <td className="px-6 py-3">
-                      <div className="flex justify-center items-center">
-                        <input
-                          type="checkbox"
-                          checked={selectedItems.includes(item._id)}
-                          value={item._id}
-                          onChange={checkboxHandler}
-                        />
-                      </div>
-                    </td>
-                    <td className="px-6 py-3">
-                      <span className="text-xs sm:text-sm text-black line-clamp-4">
-                        {item.req_id}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.service_name}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.form[0].lastName.value +
-                          ", " +
-                          item.form[0].firstName.value +
-                          " " +
-                          item.form[0].middleName.value}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3 xxl:w-3/12">
-                      <div className="flex justify-center items-center">
-                        <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
-                          {TimeFormat(item.createdAt) || ""}
+                filteredRequests.map((item, index) => {
+                  // Find the corresponding data in blotterDetails based on req_id
+                  const correspondingBlotterDetail = blotterDetails.find(
+                    (blotterItem) => blotterItem.req_id === item.req_id
+                  );
+
+                  // Extract status from blotterDetails
+                  let status = correspondingBlotterDetail
+                    ? correspondingBlotterDetail.status
+                    : "";
+
+                  // If blotter_status is empty or blank, set status to "In Progress"
+                  if (!status || status.trim() === "") {
+                    status = "Newly Arrived";
+                  }
+
+                  // Merge the status with the current item
+                  const mergedItem = {
+                    ...item,
+                    blotter_status: status,
+                  };
+
+                  // Apply status filter
+                  if (
+                    statusFilter !== "all" &&
+                    mergedItem.blotter_status !== statusFilter
+                  ) {
+                    return null; // Skip rendering if status doesn't match the filter
+                  }
+
+                  console.log("blotterDetail sa table: ", mergedItem);
+
+                  return (
+                    <tr key={index} className="odd:bg-slate-100 text-center">
+                      <td className="w-auto px-6 py-3">
+                        <div className="flex justify-center items-center">
+                          <input
+                            type="checkbox"
+                            checked={selectedItems.includes(item._id)}
+                            value={item._id}
+                            onChange={checkboxHandler}
+                          />
+                        </div>
+                      </td>
+                      <td className="w-auto px-6 py-3">
+                        <span className="text-xs sm:text-sm text-black line-clamp-4">
+                          {item.req_id}
                         </span>
-                      </div>
-                    </td>
-                    <td className="px-2 xl:px-6 py-3 xxl:w-3/12">
-                      {item.status === "COMPLETED" && (
-                        <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
-                          COMPLETED
+                      </td>
+                      <td className="w-auto px-6 py-3">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {item.service_name}
+                        </span>
+                      </td>
+                      <td className="w-auto px-6 py-3">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {item.form[0].lastName.value +
+                            ", " +
+                            item.form[0].firstName.value +
+                            " " +
+                            item.form[0].middleName.value}
+                        </span>
+                      </td>
+                      <td className="px-6 py-3 xxl:w-auto">
+                        <div className="flex justify-center items-center">
+                          <span className="text-xs sm:text-sm text-black line-clamp-2">
+                            {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
+                            {TimeFormat(item.createdAt) || ""}
                           </span>
                         </div>
-                      )}
-                      {item.status === "IN PROGRESS" && (
-                        <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
-                            IN PROGRESS
-                          </span>
-                        </div>
-                      )}
-                     
-                    </td>
-                    <td className="px-2 xl:px-6 py-3">
-                      <div className="flex justify-center space-x-1 sm:space-x-none">
-                        <div className="hs-tooltip inline-block">
-                          <button
-                            type="button"
-                            data-hs-overlay="#hs-view-request-modal"
-                            onClick={() => handleView({ ...item })}
-                            className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                          >
-                            <AiOutlineEye
-                              size={24}
-                              style={{ color: "#ffffff" }}
-                            />
-                          </button>
-                          <span
-                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                            role="tooltip"
-                          >
-                            View Request
-                          </span>
-                        </div>
+                      </td>
+                      <td className="px-2 xl:px-6 py-3 xxl:w-3/12">
+                        {mergedItem.blotter_status === "Completed" && (
+                          <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
+                            <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
+                              COMPLETED
+                            </span>
+                          </div>
+                        )}
+                        {mergedItem.blotter_status === "In Progress" && (
+                          <div className="flex items-center justify-center bg-[#d68f3d] m-2 rounded-lg">
+                            <span className="text-sm text-white font-bold p-3 xl:mx-3">
+                              IN PROGRESS
+                            </span>
+                          </div>
+                        )}
+                        {mergedItem.blotter_status === "Rejected" && (
+                          <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
+                            <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
+                              REJECTED
+                            </span>
+                          </div>
+                        )}
+                        {mergedItem.blotter_status === "Newly Arrived" && (
+                          <div className="flex items-center justify-center bg-[#6d6fcc] m-2 rounded-lg">
+                            <span className="text-sm text-white font-bold p-3 xl:mx-1">
+                              NEWLY ARRIVED
+                            </span>
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-2 xl:px-6 py-3">
+                        <div className="flex justify-center space-x-1 sm:space-x-none">
+                          <div className="hs-tooltip inline-block">
+                            <button
+                              type="button"
+                              data-hs-overlay="#hs-view-request-modal"
+                              onClick={() => handleView({ ...item })}
+                              className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                            >
+                              <AiOutlineEye
+                                size={24}
+                                style={{ color: "#ffffff" }}
+                              />
+                            </button>
+                            <span
+                              className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                              role="tooltip"
+                            >
+                              View Request
+                            </span>
+                          </div>
 
-                        <div className="hs-tooltip inline-block">
-                          <button
-                            type="button"
-                            data-hs-overlay="#hs-reply-modal"
-                            onClick={() => handleView({ ...item })}
-                            className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                          >
-                            <AiOutlineSend
-                              size={24}
-                              style={{ color: "#ffffff" }}
-                            />
-                          </button>
-                          <span
-                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                            role="tooltip"
-                          >
-                            Reply to Request
-                          </span>
-                        </div>
+                          <div className="hs-tooltip inline-block">
+                            <button
+                              type="button"
+                              data-hs-overlay="#hs-reply-modal"
+                              onClick={() => handleView({ ...item })}
+                              className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                            >
+                              <AiOutlineSend
+                                size={24}
+                                style={{ color: "#ffffff" }}
+                              />
+                            </button>
+                            <span
+                              className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                              role="tooltip"
+                            >
+                              Reply to Request
+                            </span>
+                          </div>
 
-                        <div className="hs-tooltip inline-block">
-                          <button
-                            type="button"
-                            data-hs-overlay="#hs-create-serviceDocument-modal"
-                            onClick={() => handleView({ ...item })}
-                            className="hs-tooltip-toggle text-white bg-[#8b1814] font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                          >
-                            <HiDocumentAdd
-                              size={24}
-                              style={{ color: "#ffffff" }}
-                            />
-                          </button>
-                          <span
-                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                            role="tooltip"
-                          >
-                            Create Blotter Document
-                          </span>
+                          <div className="hs-tooltip inline-block">
+                            <button
+                              type="button"
+                              data-hs-overlay="#hs-create-serviceDocument-modal"
+                              onClick={() => handleView({ ...item })}
+                              className="hs-tooltip-toggle text-white bg-[#8b1814] font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                            >
+                              <HiDocumentAdd
+                                size={24}
+                                style={{ color: "#ffffff" }}
+                              />
+                            </button>
+                            <span
+                              className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                              role="tooltip"
+                            >
+                              Create Blotter Document
+                            </span>
+                          </div>
+                          <div className="hs-tooltip inline-block">
+                            <button
+                              type="button"
+                              data-hs-overlay="#hs-edit-serviceDocument-modal"
+                              onClick={() => handleView({ ...item })}
+                              className="hs-tooltip-toggle text-white bg-[#144c8b] font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                            >
+                              <MdEditDocument
+                                size={24}
+                                style={{ color: "#ffffff" }}
+                              />
+                            </button>
+                            <span
+                              className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                              role="tooltip"
+                            >
+                              Edit Blotter Document
+                            </span>
+                          </div>
                         </div>
-                        <div className="hs-tooltip inline-block">
-                          <button
-                            type="button"
-                            data-hs-overlay="#hs-edit-serviceDocument-modal"
-                            onClick={() => handleView({ ...item })}
-                            className="hs-tooltip-toggle text-white bg-[#144c8b] font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                          >
-                            <MdEditDocument
-                              size={24}
-                              style={{ color: "#ffffff" }}
-                            />
-                          </button>
-                          <span
-                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                            role="tooltip"
-                          >
-                            Edit Blotter Document
-                          </span>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                      </td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
                   <td
@@ -768,14 +850,8 @@ const Blotters = () => {
       />
       <ArchiveRequestsModal selectedItems={selectedItems} />
       <RequestsReportsModal />
-      <AddBlotterDocument
-        request={request}
-        brgy={brgy}
-      />
-      <EditBlotterDocument
-         request={request}
-         brgy={brgy}
-      />
+      <AddBlotterDocument request={request} brgy={brgy} />
+      <EditBlotterDocument request={request} brgy={brgy} />
     </div>
   );
 };

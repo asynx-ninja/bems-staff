@@ -64,6 +64,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     type: "Staff",
     message: "",
     date: new Date().toISOString(),
+    status: "",
   });
   const [patawagData, setPatawagData] = useState({
     name: "",
@@ -74,7 +75,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
   });
 
   // console.log("patawag data: ", patawagData);
-  // console.log("response data: ", ResponseData);
+  console.log("response data: ", ResponseData);
   // console.log("userData: ", userData);
 
   const handleComplainantChange = (e) => {
@@ -184,6 +185,16 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
   console.log("blotterDetails: ", blotterDetails);
   // console.log("request: ", request);
   // console.log("detail: ", detail);
+
+  useEffect(() => {
+    if (blotterDetails && blotterDetails.status) {
+      // If blotterDetails has status, set it as the default status for ResponseData
+      setResponseData((prev) => ({
+        ...prev,
+        status: blotterDetails.status,
+      }));
+    }
+  }, [blotterDetails]);
 
   useEffect(() => {
     if (
@@ -446,6 +457,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
         message: `${ResponseData.message}`,
         date: `${ResponseData.date}`,
         folder_id: blotterDetails.folder_id,
+        status: `${ResponseData.status}`,
       };
 
       console.log("obj", obj);
@@ -465,7 +477,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
           `${API_LINK}/blotter/?patawag_id=${blotterDetails._id}&patawag_folder_id=${res_folder.data[0].blotters}`,
           formData
         );
-        
+
         if (response.status === 200) {
           setTimeout(() => {
             setSubmitClicked(false);
@@ -944,25 +956,21 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                               message: `The status of your service request is ${e.target.value}`,
                                             }));
                                           }
-                                          setRequest((prev) => ({
+                                          setResponseData((prev) => ({
                                             ...prev,
                                             status: e.target.value,
                                           }));
                                         }}
                                         className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
-                                        value={request.status}
+                                        value={ResponseData.status}
                                         hidden={!statusChanger}
                                       >
-                                        <option value="Pending">PENDING</option>
-                                        <option value="Paid">PAID</option>
-                                        <option value="Processing">
-                                          PROCESSING
+                                        <option>-- Select Status --</option>
+                                        <option value="In Progress">
+                                          IN PROGRESS
                                         </option>
-                                        <option value="Cancelled">
-                                          CANCELLED
-                                        </option>
-                                        <option value="Transaction Completed">
-                                          TRANSACTION COMPLETED
+                                        <option value="Completed">
+                                          COMPLETED
                                         </option>
                                         <option value="Rejected">
                                           REJECTED
@@ -974,24 +982,6 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                               </div>
 
                               <div className="flex justify-center items-center gap-x-2">
-                                <div className="hs-tooltip inline-block">
-                                  <label className="relative flex  justify-center items-center cursor-pointer">
-                                    <input
-                                      type="checkbox"
-                                      name="isRepliable"
-                                      checked={ResponseData.isRepliable}
-                                      onChange={handleChange}
-                                      className="hs-tooltip-toggle sr-only peer"
-                                    />
-                                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
-                                  </label>
-                                  <span
-                                    className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                    role="tooltip"
-                                  >
-                                    Client can Reply
-                                  </span>
-                                </div>
                                 <button
                                   type="submit"
                                   onClick={handleOnSend}
@@ -1204,29 +1194,26 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                                           })
                                                         );
                                                       }
-                                                      setRequest((prev) => ({
-                                                        ...prev,
-                                                        status: e.target.value,
-                                                      }));
+                                                      setResponseData(
+                                                        (prev) => ({
+                                                          ...prev,
+                                                          status:
+                                                            e.target.value,
+                                                        })
+                                                      );
                                                     }}
                                                     className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
-                                                    value={request.status}
+                                                    value={ResponseData.status}
                                                     hidden={!statusChanger}
                                                   >
-                                                    <option value="Pending">
-                                                      PENDING
+                                                    <option>
+                                                      -- Select Status --
                                                     </option>
-                                                    <option value="Paid">
-                                                      PAID
+                                                    <option value="In Progress">
+                                                      IN PROGRESS
                                                     </option>
-                                                    <option value="Processing">
-                                                      PROCESSING
-                                                    </option>
-                                                    <option value="Cancelled">
-                                                      CANCELLED
-                                                    </option>
-                                                    <option value="Transaction Completed">
-                                                      TRANSACTION COMPLETED
+                                                    <option value="Completed">
+                                                      COMPLETED
                                                     </option>
                                                     <option value="Rejected">
                                                       REJECTED
@@ -1238,26 +1225,6 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                           </div>
 
                                           <div className="flex justify-center items-center gap-x-2">
-                                            <div className="hs-tooltip inline-block">
-                                              <label className="relative flex  justify-center items-center cursor-pointer">
-                                                <input
-                                                  type="checkbox"
-                                                  name="isRepliable"
-                                                  checked={
-                                                    ResponseData.isRepliable
-                                                  }
-                                                  onChange={handleChange}
-                                                  className="hs-tooltip-toggle sr-only peer"
-                                                />
-                                                <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
-                                              </label>
-                                              <span
-                                                className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                                role="tooltip"
-                                              >
-                                                Client can Reply
-                                              </span>
-                                            </div>
                                             <button
                                               type="submit"
                                               onClick={handleSendReply}

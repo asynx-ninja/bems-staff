@@ -617,7 +617,7 @@ const PrintPatawag = ({
           alignSelf: "flex-end",
         }}
       >
-        PATAWAG: IKA-LAWANG PATAWAG
+        PATAWAG: {blotter?.patawag}
       </Text>
 
       <View

@@ -8,6 +8,8 @@ import axios from "axios";
 import { AiOutlineEye } from "react-icons/ai";
 import { AiOutlineSend } from "react-icons/ai";
 import { MdRestartAlt } from "react-icons/md";
+import { HiDocumentAdd } from "react-icons/hi";
+import { MdEditDocument } from "react-icons/md";
 import ArchiveRequestsModal from "../components/blotters/ArchiveRequestsModal";
 import RequestsReportsModal from "../components/blotters/RequestsReportsModal";
 import ViewBlotterModal from "../components/blotters/ViewBlotterModal";
@@ -38,27 +40,31 @@ const ArchivedBlotters = () => {
   const [selected, setSelected] = useState("date");
   const [officials, setOfficials] = useState([]);
 
+  // blotter related
+  const [blotterDetails, setBlotterDetails] = useState([]);
+
+  console.log("Blotter Details in blotter: ", blotterDetails);
+
   useEffect(() => {
     const fetch = async () => {
-       try{
-     const response = await axios.get(
-      `${API_LINK}/services/?brgy=${brgy}&archived=false&page=${currentPage}`
-    );
-      console.log(response.data.result)
-     if (response.status === 200){
-         let arr = [];
-         response.data.result.map((item) => {
-         arr.push(item.name);
-         })
-         setRequestFilter(arr);
-         }
- 
-       }catch(err){
-     console.log(err)
-       }
-    }
-    fetch()
- }, [brgy]);
+      try {
+        const response = await axios.get(
+          `${API_LINK}/services/?brgy=${brgy}&archived=false&page=${currentPage}`
+        );
+        console.log(response.data.result);
+        if (response.status === 200) {
+          let arr = [];
+          response.data.result.map((item) => {
+            arr.push(item.name);
+          });
+          setRequestFilter(arr);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetch();
+  }, [brgy]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -79,6 +85,25 @@ const ArchivedBlotters = () => {
 
     fetch();
   }, [brgy, statusFilter, selectedReqFilter, currentPage]);
+
+  useEffect(() => {
+    // function to filter
+    const fetch = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/blotter/all_patawag/?brgy=${brgy}&archived=true`
+        );
+
+        // filter
+        setBlotterDetails(response.data);
+      } catch (err) {
+        console.log(err.message);
+        setBlotterDetails([]);
+      }
+    };
+
+    fetch();
+  }, [brgy]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -164,7 +189,6 @@ const ArchivedBlotters = () => {
     "Control #",
     "SERVICE NAME",
     "SENDER",
-    "TYPE OF SERVICE",
     "DATE",
     "STATUS",
     "ACTIONS",
@@ -181,7 +205,7 @@ const ArchivedBlotters = () => {
 
   const TimeFormat = (date) => {
     if (!date) return "";
-  
+
     const formattedTime = moment(date).format("hh:mm A");
     return formattedTime;
   };
@@ -193,7 +217,7 @@ const ArchivedBlotters = () => {
           console.log(typeof new Date(item.createdAt), selectedDate);
           return (
             new Date(item.createdAt).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
             new Date(item.createdAt).getDate() === selectedDate.getDate()
           );
@@ -208,7 +232,7 @@ const ArchivedBlotters = () => {
         return requests.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-            startDate.getFullYear() &&
+              startDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === startDate.getMonth() &&
             new Date(item.createdAt).getDate() >= startDate.getDate() &&
             new Date(item.createdAt).getDate() <= endDate.getDate()
@@ -217,7 +241,7 @@ const ArchivedBlotters = () => {
         return requests.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -274,9 +298,12 @@ const ArchivedBlotters = () => {
       <div>
         {/* Header */}
         <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
-          <div className="sm:mt-5 md:mt-4 lg:mt-0  py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]" style={{
+          <div
+            className="sm:mt-5 md:mt-4 lg:mt-0  py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]"
+            style={{
               background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-            }}>
+            }}
+          >
             <h1
               className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
@@ -294,12 +321,14 @@ const ArchivedBlotters = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  " style={{ backgroundColor: information?.theme?.primary }}
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                  style={{ backgroundColor: information?.theme?.primary }}
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -327,39 +356,18 @@ const ArchivedBlotters = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handleStatusFilter("In Progress")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    PENDING
+                    IN PROGRESS
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Paid")}
+                    onClick={() => handleStatusFilter("Completed")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    PAID
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Processing")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    PROCESSING
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Cancelled")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    CANCELLED
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Transaction Completed")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    TRANSACTION COMPLETED
+                    COMPLETED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Rejected")}
@@ -368,6 +376,13 @@ const ArchivedBlotters = () => {
                   >
                     REJECTED
                   </a>
+                  <a
+                    onClick={() => handleStatusFilter("Newly Arrived")}
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    NEWLY ARRIVED
+                  </a>
                 </ul>
               </div>
 
@@ -375,7 +390,8 @@ const ArchivedBlotters = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  " style={{ backgroundColor: information?.theme?.primary }}
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                  style={{ backgroundColor: information?.theme?.primary }}
                 >
                   DATE
                   <svg
@@ -450,7 +466,7 @@ const ArchivedBlotters = () => {
                       )}
                       {selected === "year" && (
                         <input
-                        className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
+                          className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
                           type="number"
                           id="year"
                           name="year"
@@ -464,63 +480,14 @@ const ArchivedBlotters = () => {
                   </div>
                 </ul>
               </div>
-
-              {/* Service Type Sort */}
-              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
-                <button
-                  id="hs-dropdown"
-                  type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  " style={{ backgroundColor: information?.theme?.primary }}
-                >
-                  SERVICE TYPE
-                  <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </button>
-                <ul
-                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
-                  aria-labelledby="hs-dropdown"
-                >
-                  <a
-                    onClick={handleResetFilter}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    RESET FILTERS
-                  </a>
-                  <hr className="border-[#4e4e4e] my-1" />
-                  <div className="flex flex-col scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll h-44">
-                  {requestFilter.map((service_name, index) => (
-                    <a
-                      key={index}
-                      onClick={() => handleRequestFilter(service_name)}
-                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                      href="#"
-                    >
-                      {service_name}
-                    </a>
-                  ))}
-                  </div>
-                </ul>
-              </div>
             </div>
 
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:ml-2 xl:ml-0 lg:w-7/12">
               <div className="flex flex-row w-full md:mr-2">
-                <button className="  p-3 rounded-l-md" style={{ backgroundColor: information?.theme?.primary }}>
+                <button
+                  className="  p-3 rounded-l-md"
+                  style={{ backgroundColor: information?.theme?.primary }}
+                >
                   <div className="w-full overflow-hidden">
                     <svg
                       className="h-3.5 w-3.5 text-white"
@@ -550,13 +517,18 @@ const ArchivedBlotters = () => {
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
                     const Requests = requests.filter((item) => {
-                        const fullName = `${item.form[0].firstName.value} ${item.form[0].lastName.value}`;
-                        const serviceId = item.req_id.toString(); // Assuming service_id is a number, convert it to string for case-insensitive comparison
-                        return fullName.toLowerCase().includes(e.target.value.toLowerCase()) || serviceId.includes(e.target.value.toLowerCase());
+                      const fullName = `${item.form[0].firstName.value} ${item.form[0].lastName.value}`;
+                      const serviceId = item.req_id.toString(); // Assuming service_id is a number, convert it to string for case-insensitive comparison
+                      return (
+                        fullName
+                          .toLowerCase()
+                          .includes(e.target.value.toLowerCase()) ||
+                        serviceId.includes(e.target.value.toLowerCase())
+                      );
                     });
-                
+
                     setFilteredRequests(Requests);
-                }}
+                  }}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
@@ -583,7 +555,10 @@ const ArchivedBlotters = () => {
         {/* Table */}
         <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_325px)] xxxl:h-[calc(100vh_-_345px)]">
           <table className="relative table-auto w-full">
-            <thead className="sticky top-0" style={{ backgroundColor: information?.theme?.primary }}>
+            <thead
+              className="sticky top-0"
+              style={{ backgroundColor: information?.theme?.primary }}
+            >
               <tr className="">
                 <th scope="col" className="px-6 py-4">
                   <div className="flex justify-center items-center">
@@ -608,144 +583,134 @@ const ArchivedBlotters = () => {
             </thead>
             <tbody className="odd:bg-slate-100">
               {filteredRequests.length > 0 ? (
-                filteredRequests.map((item, index) => (
-                  <tr key={index} className="odd:bg-slate-100 text-center">
-                    <td className="px-6 py-3">
-                      <div className="flex justify-center items-center">
-                        <input
-                          type="checkbox"
-                          checked={selectedItems.includes(item._id)}
-                          value={item._id}
-                          onChange={checkboxHandler}
-                        />
-                      </div>
-                    </td>
-                    <td className="px-6 py-3">
-                      <span className="text-xs sm:text-sm text-black line-clamp-4">
-                        {item.req_id}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.service_name}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3">
-                      <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {item.form[0].lastName.value +
-                          ", " +
-                          item.form[0].firstName.value +
-                          " " +
-                          item.form[0].middleName.value}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3">
-                      <div className="flex justify-center items-center">
-                        <span className="text-xs sm:text-sm text-black line-clamp-2">
-                          {item.type}
+                filteredRequests.map((item, index) => {
+                  // Find the corresponding data in blotterDetails based on req_id
+                  const correspondingBlotterDetail = blotterDetails.find(
+                    (blotterItem) => blotterItem.req_id === item.req_id
+                  );
+
+                  // Extract status from blotterDetails
+                  let status = correspondingBlotterDetail
+                    ? correspondingBlotterDetail.status
+                    : "";
+
+                  // If blotter_status is empty or blank, set status to "In Progress"
+                  if (!status || status.trim() === "") {
+                    status = "Newly Arrived";
+                  }
+
+                  // Merge the status with the current item
+                  const mergedItem = {
+                    ...item,
+                    blotter_status: status,
+                  };
+
+                  // Apply status filter
+                  if (
+                    statusFilter !== "all" &&
+                    mergedItem.blotter_status !== statusFilter
+                  ) {
+                    return null; // Skip rendering if status doesn't match the filter
+                  }
+
+                  console.log("blotterDetail sa table: ", mergedItem);
+
+                  return (
+                    <tr key={index} className="odd:bg-slate-100 text-center">
+                      <td className="px-6 py-3">
+                        <div className="flex justify-center items-center">
+                          <input
+                            type="checkbox"
+                            checked={selectedItems.includes(item._id)}
+                            value={item._id}
+                            onChange={checkboxHandler}
+                          />
+                        </div>
+                      </td>
+                      <td className="w-auto px-6 py-3">
+                        <span className="text-xs sm:text-sm text-black line-clamp-4">
+                          {item.req_id}
                         </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-3">
-                      <div className="flex justify-center items-center">
+                      </td>
+                      <td className="w-auto px-6 py-3">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {DateFormat(item.createdAt) || ""} - {TimeFormat(item.createdAt) || ""}
+                          {item.service_name}
                         </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-3 xxl:w-3/12">
-                      {item.status === "Transaction Completed" && (
-                        <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            TRANSACTION COMPLETED
+                      </td>
+                      <td className="w-auto px-6 py-3">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {item.form[0].lastName.value +
+                            ", " +
+                            item.form[0].firstName.value +
+                            " " +
+                            item.form[0].middleName.value}
+                        </span>
+                      </td>
+                      <td className="px-6 py-3 xxl:w-auto">
+                        <div className="flex justify-center items-center">
+                          <span className="text-xs sm:text-sm text-black line-clamp-2">
+                            {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
+                            {TimeFormat(item.createdAt) || ""}
                           </span>
                         </div>
-                      )}
-
-                      {item.status === "Rejected" && (
-                        <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            REJECTED
-                          </span>
+                      </td>
+                      <td className="px-2 xl:px-6 py-3 xxl:w-3/12">
+                        {mergedItem.blotter_status === "Completed" && (
+                          <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
+                            <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
+                              COMPLETED
+                            </span>
+                          </div>
+                        )}
+                        {mergedItem.blotter_status === "In Progress" && (
+                          <div className="flex items-center justify-center bg-[#d68f3d] m-2 rounded-lg">
+                            <span className="text-sm text-white font-bold p-3 xl:mx-3">
+                              IN PROGRESS
+                            </span>
+                          </div>
+                        )}
+                        {mergedItem.blotter_status === "Rejected" && (
+                          <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
+                            <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
+                              REJECTED
+                            </span>
+                          </div>
+                        )}
+                        {mergedItem.blotter_status === "Newly Arrived" && (
+                          <div className="flex items-center justify-center bg-[#6d6fcc] m-2 rounded-lg">
+                            <span className="text-sm text-white font-bold p-3 xl:mx-1">
+                              NEWLY ARRIVED
+                            </span>
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-2 xl:px-6 py-3">
+                        <div className="flex justify-center space-x-1 sm:space-x-none">
+                          <div className="hs-tooltip inline-block">
+                            <button
+                              type="button"
+                              data-hs-overlay="#hs-view-request-modal"
+                              onClick={() => handleView({ ...item })}
+                              className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                            >
+                              <AiOutlineEye
+                                size={24}
+                                style={{ color: "#ffffff" }}
+                              />
+                            </button>
+                            <span
+                              className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                              role="tooltip"
+                            >
+                              View Request
+                            </span>
+                          </div>
                         </div>
-                      )}
-
-                      {item.status === "Pending" && (
-                        <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            PENDING
-                          </span>
-                        </div>
-                      )}
-                      {item.status === "Paid" && (
-                        <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            PAID
-                          </span>
-                        </div>
-                      )}
-
-                      {item.status === "Processing" && (
-                        <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            PROCESSING
-                          </span>
-                        </div>
-                      )}
-
-                      {item.status === "Cancelled" && (
-                        <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            CANCELLED
-                          </span>
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-3">
-                      <div className="flex justify-center space-x-1 sm:space-x-none">
-                        <div className="hs-tooltip inline-block">
-                          <button
-                            type="button"
-                            data-hs-overlay="#hs-view-request-modal"
-                            onClick={() => handleView({ ...item })}
-                            className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                          >
-                            <AiOutlineEye
-                              size={24}
-                              style={{ color: "#ffffff" }}
-                            />
-                          </button>
-                          <span
-                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                            role="tooltip"
-                          >
-                            View Request
-                          </span>
-                        </div>
-
-                        {/* <div className="hs-tooltip inline-block">
-                          <button
-                            type="button"
-                            data-hs-overlay="#hs-reply-modal"
-                            onClick={() => handleView({ ...item })}
-                            className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                          >
-                            <AiOutlineSend
-                              size={24}
-                              style={{ color: "#ffffff" }}
-                            />
-                          </button>
-                          <span
-                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                            role="tooltip"
-                          >
-                            Reply to Request
-                          </span>
-                        </div> */}
-                      </div>
-                    </td>
-                  </tr>
-                ))) : (
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
                 <tr>
                   <td
                     colSpan={tableHeader.length + 1}
@@ -764,7 +729,10 @@ const ArchivedBlotters = () => {
           </table>
         </div>
       </div>
-      <div className="md:py-4 md:px-4  flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3" style={{ backgroundColor: information?.theme?.primary }}>
+      <div
+        className="md:py-4 md:px-4  flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3"
+        style={{ backgroundColor: information?.theme?.primary }}
+      >
         <span className="font-medium text-white sm:text-xs text-sm">
           Showing {currentPage + 1} out of {pageCount} pages
         </span>
