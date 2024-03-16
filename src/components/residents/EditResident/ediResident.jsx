@@ -1436,9 +1436,9 @@ const EditResidents = ({ props }) => {
                               (Array.isArray(verification.selfie) ? (
                                 verification.selfie.map((item, idx) => <></>)
                               ) : (
-                                <div>
+                                <div className="flex justify-center items-center">
                                   <div
-                                    className="w-full border border-gray-300 rounded-xl bg-gray-300 cursor-pointer mt-2"
+                                    className="w-1/2  border border-gray-300 rounded-xl bg-gray-300 cursor-pointer mt-2"
                                     onClick={() =>
                                       handleImageClick(verification.selfie)
                                     }
