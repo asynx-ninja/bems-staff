@@ -46,6 +46,8 @@ const EditResidents = ({ props }) => {
     }, [user]);
 
     console.log("Verification: ", verification);
+    console.log("user: ", user);
+    console.log("state: ", state);
 
     const religions = [
         "Roman Catholic",
@@ -414,13 +416,13 @@ const EditResidents = ({ props }) => {
 
             if (userResponse.status === 200) {
                 console.log("User update successful:", userResponse.data);
-                // setTimeout(() => {
-                //     setSubmitClicked(false);
-                //     setUpdatingStatus("success");
-                //     setTimeout(() => {
-                //         window.location.reload();
-                //     }, 3000);
-                // }, 1000);
+                setTimeout(() => {
+                    setSubmitClicked(false);
+                    setUpdatingStatus("success");
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 3000);
+                }, 1000);
             } else {
                 console.error("User update failed. Status:", userResponse.status);
             }
