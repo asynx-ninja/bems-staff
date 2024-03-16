@@ -173,9 +173,9 @@ const Residents = () => {
             <div className="sm:w-full md:w-full lg:w-2/5 flex sm:flex-col md:flex-row md:justify-center md:items-center sm:space-y-2 md:space-y-0 md:space-x-2 ">
               <div className="w-full rounded-lg flex justify-center">
                 <div className="hs-tooltip inline-block w-full">
-                  <button
+                  <Link 
+                    to={`/addresidents/?id=${id}&brgy=${brgy}`}
                     type="button"
-                    data-hs-overlay="#hs-modal-addResident"
                     className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg  w-full text-white font-medium text-sm  text-center inline-flex items-center "
                     style={{
                       background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
@@ -192,7 +192,7 @@ const Residents = () => {
                     >
                       Add Residents
                     </span>
-                  </button>
+                  </Link>
 
                   {/* <Link
                     onClick={() => handleView({ ...item })}
@@ -509,17 +509,16 @@ const Residents = () => {
                     <td className="xl:px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">
                         <div className="hs-tooltip inline-block">
-                          <button
-                            type="button"
-                            data-hs-overlay="#hs-modal-editResident"
-                            onClick={() => handleView({ ...item })}
+                          <Link
+                             to={`/editresidents/?id=${id}&brgy=${brgy}`} 
+                             state={{...item}}
                             className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                           >
                             <AiOutlineEye
                               size={24}
                               style={{ color: "#ffffff" }}
                             />
-                          </button>
+                          </Link>
                           <span
                             className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                             role="tooltip"
