@@ -187,6 +187,32 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
   // console.log("detail: ", detail);
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (!request.service_id) {
+          // If there is no event_id in the application, do not fetch events
+          return;
+        }
+        const serviceResponse = await axios.get(
+          `${API_LINK}/services/?brgy=${brgy}&service_id=${request.service_id}&archived=false`
+        );
+
+        if (serviceResponse.status === 200) {
+          setService(serviceResponse.data.result[0]);
+        } else {
+          // setEventWithCounts([]);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        console.error("Error response data:", error.response?.data);
+        console.error("Error response status:", error.response?.status);
+      }
+    };
+
+    fetchData();
+  }, [brgy, request.service_id]);
+
+  useEffect(() => {
     if (blotterDetails && blotterDetails.status) {
       // If blotterDetails has status, set it as the default status for ResponseData
       setResponseData((prev) => ({
@@ -391,6 +417,8 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
       e.preventDefault();
       setSubmitClicked(true);
 
+      const targetUserIds = [ComplainantData.user_id, DefendantData.user_id];
+
       const obj = {
         name: patawagData.name,
         to: [ComplainantData, DefendantData],
@@ -414,7 +442,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
       );
 
       console.log("obj", obj);
-      // console.log("brgy: ", brgy);
+      console.log("targetUserIds: ", targetUserIds);
       // console.log("res_folder: ", res_folder);
       // console.log("createFiles: ", createFiles);
 
@@ -429,13 +457,42 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
         );
 
         if (response.status === 200) {
-          setTimeout(() => {
-            setSubmitClicked(false);
-            setReplyingStatus("success");
+          const notify = {
+            category: "One",
+            compose: {
+              subject: `PATAWAG - ${request.service_name}`,
+              message: `A barangay staff has started your blotter request.\n\n
+        
+              Please update this service request as you've seen this notification!\n\n
+              Thank you!!,`,
+              go_to: "Patawag",
+            },
+            target: {
+              user_id: targetUserIds,
+              area: request.brgy,
+            },
+            type: "Resident",
+            banner: service.collections.banner,
+            logo: service.collections.logo,
+          };
+
+          console.log("Notify: ", notify);
+
+          const result = await axios.post(`${API_LINK}/notification/`, notify, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (result.status === 200) {
             setTimeout(() => {
-              window.location.reload();
-            }, 3000);
-          }, 1000);
+              setSubmitClicked(false);
+              setReplyingStatus("success");
+              setTimeout(() => {
+                window.location.reload();
+              }, 3000);
+            }, 1000);
+          }
         }
       }
     } catch (error) {
@@ -450,6 +507,8 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     try {
       e.preventDefault();
       setSubmitClicked(true);
+
+      const targetUserIds = [blotterDetails?.to[0]?.user_id, blotterDetails?.to[1]?.user_id];
 
       const obj = {
         sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
@@ -479,13 +538,42 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
         );
 
         if (response.status === 200) {
-          setTimeout(() => {
-            setSubmitClicked(false);
-            setReplyingStatus("success");
+          const notify = {
+            category: "One",
+            compose: {
+              subject: `PATAWAG - ${request.service_name}`,
+              message: `A barangay staff has replied to your patawag conversation.\n\n
+        
+              Please view and respond as you've seen this notification!\n\n
+              Thank you!!,`,
+              go_to: "Patawag",
+            },
+            target: {
+              user_id: targetUserIds,
+              area: request.brgy,
+            },
+            type: "Resident",
+            banner: service.collections.banner,
+            logo: service.collections.logo,
+          };
+
+          console.log("Notify: ", notify);
+
+          const result = await axios.post(`${API_LINK}/notification/`, notify, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (result.status === 200) {
             setTimeout(() => {
-              window.location.reload();
-            }, 3000);
-          }, 1000);
+              setSubmitClicked(false);
+              setReplyingStatus("success");
+              setTimeout(() => {
+                window.location.reload();
+              }, 3000);
+            }, 1000);
+          }
         }
       }
     } catch (error) {

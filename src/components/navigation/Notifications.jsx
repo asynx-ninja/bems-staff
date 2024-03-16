@@ -20,6 +20,7 @@ const Notifications = () => {
   const [isButtonClicked, setIsButtonClicked] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const information = GetBrgy(brgy);
+  
   useEffect(() => {
     const fetch = async () => {
       try {

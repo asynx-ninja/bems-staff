@@ -377,11 +377,11 @@ const ArchivedBlotters = () => {
                     REJECTED
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Newly Arrived")}
+                    onClick={() => handleStatusFilter("NEW")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    NEWLY ARRIVED
+                    NEW
                   </a>
                 </ul>
               </div>
@@ -596,7 +596,7 @@ const ArchivedBlotters = () => {
 
                   // If blotter_status is empty or blank, set status to "In Progress"
                   if (!status || status.trim() === "") {
-                    status = "Newly Arrived";
+                    status = "NEW";
                   }
 
                   // Merge the status with the current item
@@ -676,10 +676,10 @@ const ArchivedBlotters = () => {
                             </span>
                           </div>
                         )}
-                        {mergedItem.blotter_status === "Newly Arrived" && (
+                        {mergedItem.blotter_status === "NEW" && (
                           <div className="flex items-center justify-center bg-[#6d6fcc] m-2 rounded-lg">
                             <span className="text-sm text-white font-bold p-3 xl:mx-1">
-                              NEWLY ARRIVED
+                              NEW
                             </span>
                           </div>
                         )}
