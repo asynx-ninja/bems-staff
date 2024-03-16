@@ -15,6 +15,7 @@ import EditLoader from "../loaders/EditLoader";
 import GetBrgy from "../../GETBrgy/getbrgy";
 import Webcam from "react-webcam";
 import moment from "moment";
+import { Link } from "react-router-dom";
 
 const EditResidents = ({ props }) => {
     const location = useLocation();
@@ -22,6 +23,7 @@ const EditResidents = ({ props }) => {
     const [user, setUser] = useState(state)
     const searchParams = new URLSearchParams(location.search);
     const brgy = searchParams.get('brgy');
+    const id = searchParams.get("id");
     const encodedUser = searchParams.get('user');
 
     const WebcamComponent = () => <Webcam />;
@@ -414,13 +416,13 @@ const EditResidents = ({ props }) => {
 
             if (userResponse.status === 200) {
                 console.log("User update successful:", userResponse.data);
-                // setTimeout(() => {
-                //     setSubmitClicked(false);
-                //     setUpdatingStatus("success");
-                //     setTimeout(() => {
-                //         window.location.reload();
-                //     }, 3000);
-                // }, 1000);
+                setTimeout(() => {
+                    setSubmitClicked(false);
+                    setUpdatingStatus("success");
+                    setTimeout(() => {
+                        window.location.href = `/residents/?id=${id}&brgy=${brgy}`;
+                    }, 3000);
+                }, 1000);
             } else {
                 console.error("User update failed. Status:", userResponse.status);
             }
@@ -1467,13 +1469,14 @@ const EditResidents = ({ props }) => {
                             </div>
                         ) : (
                             <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
-                                <button
+                                <Link
                                     type="submit"
                                     onClick={handleSave}
-                                    className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
+                                    to={`/residents/?id=${id}&brgy=${brgy}`}
+                                    className="flex justify-center items-center h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
                                 >
                                     SAVE CHANGES
-                                </button>
+                                </Link>
                                 <button
                                     type="button"
                                     className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
