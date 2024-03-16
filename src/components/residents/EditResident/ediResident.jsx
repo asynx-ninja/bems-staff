@@ -179,7 +179,7 @@ const EditResidents = ({ props }) => {
             ref={webcamRef}
             screenshotFormat="image/jpeg"
             width={1280}
-            className="rounded-xl w-full"
+            className="rounded-xl w-full h-auto p-2"
           />
           <button
             onClick={capture}
@@ -442,7 +442,7 @@ const EditResidents = ({ props }) => {
     <div className="mx-4 mt-8">
       <Breadcrumbs />
       <div className="flex flex-col ">
-        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[750px]">
+        <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative lg:h-[calc(100vh_-_180px)] xxl:h-[calc(100vh_-_210px)]">
           <form>
             <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
               <div className="flex flex-col mb-1 w-full">
@@ -1396,7 +1396,12 @@ const EditResidents = ({ props }) => {
                             ) : (
                               <div className="flex flex-row gap-2">
                                 <div className="w-1/2">
-                                  <WebcamCapture />
+                                  <div className="w-full border border-gray-300 rounded-xl bg-gray-300 cursor-pointer">
+                                    <WebcamCapture />
+                                    <div className="flex text-gray-700 text-sm font-bold pb-2 ml-2 rounded-b-xl justify-center">
+                                      LIVE CAMERA FEED
+                                    </div>
+                                  </div>
                                 </div>
                                 <div className="w-1/2">
                                   <div
@@ -1418,9 +1423,9 @@ const EditResidents = ({ props }) => {
                                           : verification.selfie.uri
                                       }
                                       alt={`Selfie`}
-                                      className="w-full h-[540px] px-2 py-2 object-cover rounded-xl"
+                                      className="w-full p-2 object-cover rounded-xl"
                                     />
-                                    <div className="text-black pb-2 ml-2 rounded-b-xl">
+                                    <div className="flex text-gray-700 text-sm font-bold pb-2 ml-2 rounded-b-xl justify-center">
                                       {verification.selfie.name}
                                     </div>
                                   </div>
@@ -1438,7 +1443,7 @@ const EditResidents = ({ props }) => {
                               ) : (
                                 <div className="flex justify-center items-center">
                                   <div
-                                    className="w-1/2  border border-gray-300 rounded-xl bg-gray-300 cursor-pointer mt-2"
+                                    className="w-1/2 border border-gray-300 rounded-xl bg-gray-300 cursor-pointer mt-2"
                                     onClick={() =>
                                       handleImageClick(verification.selfie)
                                     }
@@ -1456,7 +1461,7 @@ const EditResidents = ({ props }) => {
                                           : verification.selfie.uri
                                       }
                                       alt={`Selfie`}
-                                      className="w-full h-[400px] px-2 py-2 object-cover rounded-xl"
+                                      className="w-full xl:h-[400px] px-2 py-2 object-cover rounded-xl"
                                     />
                                     <div className="text-black pb-2 ml-2 rounded-b-xl">
                                       {verification.selfie.name}
