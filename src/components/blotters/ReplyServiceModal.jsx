@@ -76,7 +76,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
 
   // console.log("patawag data: ", patawagData);
   console.log("response data: ", ResponseData);
-  // console.log("userData: ", userData);
+  console.log("userData: ", userData);
 
   const handleComplainantChange = (e) => {
     const selectedUserId = e.target.value;
@@ -508,7 +508,10 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
       e.preventDefault();
       setSubmitClicked(true);
 
-      const targetUserIds = [blotterDetails?.to[0]?.user_id, blotterDetails?.to[1]?.user_id];
+      const targetUserIds = [
+        blotterDetails?.to[0]?.user_id,
+        blotterDetails?.to[1]?.user_id,
+      ];
 
       const obj = {
         sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
@@ -541,7 +544,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
           const notify = {
             category: "One",
             compose: {
-              subject: `PATAWAG - ${request.service_name}`,
+              subject: `PATAWAG REPLIED - ${request.service_name}`,
               message: `A barangay staff has replied to your patawag conversation.\n\n
         
               Please view and respond as you've seen this notification!\n\n
@@ -713,15 +716,23 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                     <option>
                                       -- Select An Existing Resident --
                                     </option>
-                                    {filteredUsersComplainant.map((user) => (
-                                      <option key={user.id} value={user._id}>
-                                        {`${user.firstName} ${
-                                          user.middleName
-                                            ? user.middleName + " "
-                                            : ""
-                                        } ${user.lastName}`}
-                                      </option>
-                                    ))}
+                                    {filteredUsersComplainant
+                                      .filter(
+                                        (user, index, self) =>
+                                          index ===
+                                          self.findIndex(
+                                            (u) => u._id === user._id
+                                          )
+                                      )
+                                      .map((user) => (
+                                        <option key={user.id} value={user._id}>
+                                          {`${user.firstName} ${
+                                            user.middleName
+                                              ? user.middleName + " "
+                                              : ""
+                                          } ${user.lastName}`}
+                                        </option>
+                                      ))}
                                   </select>
                                 </div>
                               ) : (
@@ -865,15 +876,23 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                     <option>
                                       -- Select An Existing Resident --
                                     </option>
-                                    {filteredUsersDefendant.map((user) => (
-                                      <option key={user.id} value={user._id}>
-                                        {`${user.firstName} ${
-                                          user.middleName
-                                            ? user.middleName + " "
-                                            : ""
-                                        } ${user.lastName}`}
-                                      </option>
-                                    ))}
+                                    {filteredUsersDefendant
+                                      .filter(
+                                        (user, index, self) =>
+                                          index ===
+                                          self.findIndex(
+                                            (u) => u._id === user._id
+                                          )
+                                      )
+                                      .map((user) => (
+                                        <option key={user.id} value={user._id}>
+                                          {`${user.firstName} ${
+                                            user.middleName
+                                              ? user.middleName + " "
+                                              : ""
+                                          } ${user.lastName}`}
+                                        </option>
+                                      ))}
                                   </select>
                                 </div>
                               ) : (
