@@ -639,7 +639,7 @@ const Sidebar = () => {
                     className={`flex items-center gap-x-3 py-2 px-2.5 text-sm rounded-md `}
                   >
                     <GoLaw size={15} />
-                    Blotters
+                    PATAWAG (BLOTTERS)
                     <span className="flex relative">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600" />
                       {residentResponseCount > 0 && (

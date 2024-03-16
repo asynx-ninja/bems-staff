@@ -224,6 +224,9 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
 
+      console.log("formData: ", formData);
+      console.log("createFiles: ", createFiles);
+
       const res_folder = await axios.get(
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );

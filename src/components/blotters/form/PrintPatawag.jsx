@@ -25,8 +25,6 @@ import OETMT from "../../../assets/fonts/Old-English-Text-MT.otf";
 import ESITC from "../../../assets/fonts/Edwardian-Script-ITC.otf";
 import iconEmail from "../../../assets/icons/doc-email.png";
 import iconContact from "../../../assets/icons/doc-contact.png";
-import moment from "moment";
-import { IconContext } from "react-icons";
 import axios from "axios";
 import API_LINK from "../../../config/API";
 
@@ -40,14 +38,16 @@ Font.register({
   src: ESITC,
 });
 
-const PrintDocumentTypeJ = ({
+const PrintPatawag = ({
   detail,
   officials = { officials },
   docDetails,
+  blotter,
   brgy,
 }) => {
   const [date, setDate] = useState(new Date());
-  console.log("docDetails sa pdfsss: ", docDetails);
+  // console.log("docDetails sa pdf: ", docDetails);
+  // console.log("blotter sa pdf: ", blotter);
 
   const returnLogo = () => {
     switch (detail.brgy) {
@@ -96,10 +96,6 @@ const PrintDocumentTypeJ = ({
     return formattedBirthday;
   };
 
-
-  const birthdayFormat = "MMMM DD, YYYY";
-
-  
   const getOrdinalSuffix = (day) => {
     if (day >= 11 && day <= 13) {
       return "th";
@@ -119,6 +115,34 @@ const PrintDocumentTypeJ = ({
 
   const day = date.getDate();
   const ordinalSuffix = getOrdinalSuffix(day);
+
+  const monthsFilipino = [
+    "Enero",
+    "Pebrero",
+    "Marso",
+    "Abril",
+    "Mayo",
+    "Hunyo",
+    "Hulyo",
+    "Agosto",
+    "Septyembre",
+    "Octubre",
+    "Nobyembre",
+    "Disyembre",
+  ];
+
+  const filipinoDate = blotter?.date
+    ? new Date(blotter.date)
+        .toLocaleDateString("en-PH", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })
+        .replace(
+          new Date(blotter.date).toLocaleDateString("en-PH", { month: "long" }),
+          monthsFilipino[new Date(blotter.date).getMonth()]
+        )
+    : "";
 
   const formattedDate = `${day}${ordinalSuffix} day of ${date.toLocaleDateString(
     "en-PH",
@@ -470,30 +494,175 @@ const PrintDocumentTypeJ = ({
     </View>
   );
 
+  const PinoyDate = () => (
+    <View
+      style={{
+        paddingTop: 5,
+        paddingBottom: 10,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-end", // Align items to the end (right side)
+        justifyContent: "center", // Center vertically
+        marginVertical: 10,
+      }}
+    >
+      <Text
+        style={{
+          ...styles.terms.bold,
+          textAlign: "end",
+          fontSize: 10,
+          marginTop: 5,
+          marginRight: 50,
+          fontFamily: "Times-Bold",
+        }}
+      >
+        {filipinoDate}
+      </Text>
+    </View>
+  );
+
   const Title = () => (
-    <View style={styles.title.view1}>
-      <Text
+    <View>
+      <View style={styles.title.view1}>
+        <Text
+          style={{
+            ...styles.terms.bold,
+            textAlign: "center",
+            fontSize: 14,
+            marginBottom: 10,
+            fontFamily: "Times-Bold",
+            textDecoration: "underline",
+          }}
+        >
+          TANGGAPAN NG BCPC/VAWC
+        </Text>
+      </View>
+
+      <View
         style={{
-          ...styles.terms.bold,
-          textAlign: "center",
-          fontSize: 20,
-          marginVertical: 20,
-          fontFamily: "Times-Bold",
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
         }}
       >
-        BARANGAY CERTIFICATION
-      </Text>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-around",
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 12,
+              marginBottom: 5,
+              fontFamily: "Times-Roman",
+            }}
+          >
+            {blotter?.complainant}
+          </Text>
+          <Text
+            style={{
+              fontSize: 12,
+              marginBottom: 5,
+              fontFamily: "Times-Roman",
+            }}
+          >
+            {blotter?.complainant_address}
+          </Text>
+          <Text
+            style={{
+              fontSize: 12,
+              marginBottom: 20,
+              fontFamily: "Times-Roman",
+            }}
+          >
+            (Mga) Nagreklamo
+          </Text>
+        </View>
+
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-around",
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 12,
+              marginBottom: 5,
+              fontFamily: "Times-Roman",
+            }}
+          >
+            Usapin ng Barangay Blg: {blotter?.usapin_blg}
+          </Text>
+          <Text
+            style={{
+              fontSize: 12,
+              marginBottom: 20,
+              fontFamily: "Times-Roman",
+            }}
+          >
+            Para sa : {blotter?.reason}
+          </Text>
+        </View>
+      </View>
+
       <Text
         style={{
-          ...styles.terms.bold,
-          textAlign: "center",
-          fontSize: 16,
-          marginBottom: 20,
-          fontFamily: "Times-Bold",
+          fontSize: 12,
+          marginVertical: 15,
+          fontFamily: "Times-Roman",
+          alignSelf: "flex-end",
         }}
       >
-        (Late Registration)
+        PATAWAG: {blotter?.patawag}
       </Text>
+
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-around",
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 12,
+              marginBottom: 5,
+              fontFamily: "Times-Roman",
+            }}
+          >
+            {blotter?.accused}
+          </Text>
+          <Text
+            style={{
+              fontSize: 12,
+              marginBottom: 5,
+              fontFamily: "Times-Roman",
+            }}
+          >
+            {blotter?.accused_address}
+          </Text>
+          <Text
+            style={{
+              fontSize: 12,
+              marginBottom: 20,
+              fontFamily: "Times-Roman",
+            }}
+          >
+            (Mga) Inireklamo
+          </Text>
+        </View>
+      </View>
     </View>
   );
 
@@ -503,14 +672,40 @@ const PrintDocumentTypeJ = ({
       <View style={{ marginLeft: 10, marginRight: 10 }}>
         <Text
           style={{
+            ...styles.terms.bold,
+            textAlign: "center",
+            fontSize: 14,
+            marginBottom: 5,
+            fontFamily: "Times-Bold",
+            textDecoration: "underline",
+          }}
+        >
+          PATAWAG
+        </Text>
+
+        <Text
+          style={{
             marginTop: 20,
             textAlign: "justify",
             fontSize: 12,
-            lineHeight: 2,
+            lineHeight: 1.3,
             fontFamily: "Times-Roman",
           }}
         >
-          TO WHOM IT MAY CONCERN:
+          Para kay / kina: {blotter?.complainant} / {blotter?.accused}
+        </Text>
+
+        <Text
+          style={{
+            marginBottom: 5,
+            textAlign: "justify",
+            fontSize: 12,
+            lineHeight: 1,
+            // marginLeft: 75,
+            fontFamily: "Times-Roman",
+          }}
+        >
+          (Mga) Nagreklamo / Inireklamo
         </Text>
 
         <Text
@@ -523,152 +718,99 @@ const PrintDocumentTypeJ = ({
             textIndent: 30,
           }}
         >
-          {docDetails.map((doc, index) => (
-            <React.Fragment key={index}>
-              {Object.entries(doc.inputs)
-                .reduce((text, [key, value]) => {
-                  const placeholder = new RegExp(`\\(\\(${key}\\)\\)`, "g");
-                  let replacementValue = "";
-
-                  // Loop through all possible data in detail.form?.[1]
-                  for (let i = 0; i < detail.form?.[1]?.length; i++) {
-                    const possibleData = detail.form?.[1]?.[i]?.form;
-
-                    // Check if possibleData is an array and has matching variable
-                    if (Array.isArray(possibleData)) {
-                      const matchingEntry = possibleData.find(
-                        (entry) => entry.variable === value
-                      );
-
-                      // If matching entry is found, get its value
-                      if (matchingEntry) {
-                        replacementValue = matchingEntry.value || "";
-                        break; // Stop searching if a matching entry is found
-                      }
-                    }
-                  }
-
-                  // If no matching entry is found in detail.form?.[1]?.[all possible data]?.form?,
-                  // check detail.form?.[0]?.[value]?.value
-                  if (!replacementValue) {
-                    replacementValue = detail.form?.[0]?.[value]?.value || "";
-                  }
-
-                  // Format birthday value using moment if the key is 'birthday'
-                  if (value === 'birthday' && replacementValue) {
-                    const dateMoment = moment(replacementValue, "YYYY-MM-DD");
-                    replacementValue = dateMoment.isValid() ? dateMoment.format(birthdayFormat) : replacementValue;
-                  }
-
-                  // Replace the placeholder in the text
-                  return text.replace(placeholder, replacementValue || "");
-                }, doc.details)
-                .replace(/\{CurrentDate\}/g, formattedDate)}
-            </React.Fragment>
-          ))}
+          {blotter?.message}
         </Text>
+      </View>
 
-        <View
-          style={{ ...styles.terms.parentSign, justifyContent: "flex-end" }}
-        >
-          <View style={styles.terms.half}>
-            <View style={{ marginTop: 40 }}>
+      <View style={{ ...styles.terms.parentSign, justifyContent: "flex-end" }}>
+        <View style={styles.terms.half}>
+          {officials
+            .filter((official) => official.position === "Barangay Chairman")
+            .map((official) => (
               <Text
                 style={{
-                  ...styles.terms.bold,
-                  // textAlign: "center",
-                  marginBottom: 30,
-                  marginLeft: 20,
-                  fontSize: 12,
-                  fontFamily: "Times-Italic",
+                  fontSize: 11,
+                  textAlign: "center",
+                  marginTop: 25,
+                  lineHeight: 1, // Adjust the lineHeight as needed
+                  fontFamily: "Times-Bold",
+                  textDecoration: "underline",
                 }}
               >
-                Certified by:
+                {blotter?.bcpc_vawc}
               </Text>
-            </View>
+            ))}
 
-            {officials
-              .filter((official) => official.position === "Barangay Chairman")
-              .map((official) => (
-                <Text
-                  style={{
-                    fontSize: 12,
-                    textAlign: "center",
-                    lineHeight: 1, // Adjust the lineHeight as needed
-                    fontFamily: "Times-Bold",
-                  }}
-                >
-                  {official.lastName.toUpperCase()},{" "}
-                  {official.firstName.toUpperCase()}{" "}
-                  {official.middleName.toUpperCase()}
-                </Text>
-              ))}
-
-            <Text
-              style={{
-                fontFamily: "Times-Roman",
-                fontSize: "12",
-                lineHeight: 1,
-                textAlign: "center",
-              }}
-            >
-              Barangay Chairman
-            </Text>
-          </View>
-        </View>
-
-        <View style={{ ...styles.terms.parentSign }}>
-          <View style={styles.terms.half}>
-            {docDetails && docDetails.length > 0 && (
-              <>
-                <View
-                  style={{
-                    marginTop: 40,
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <Image src={iconEmail} style={{ width: 25 }} />
-                  <Text
-                    style={{
-                      ...styles.terms.bold,
-                      marginBottom: 10,
-                      marginLeft: 10, // Adjust the margin as needed
-                      fontSize: 12,
-                      fontFamily: "Times-Roman",
-                      lineHeight: 0.5,
-                    }}
-                  >
-                    {docDetails[0].email}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    marginTop: 10,
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <Image src={iconContact} style={{ width: 25 }} />
-                  <Text
-                    style={{
-                      ...styles.terms.bold,
-                      marginBottom: 10,
-                      marginLeft: 10, // Adjust the margin as needed
-                      fontSize: 12,
-                      fontFamily: "Times-Roman",
-                      lineHeight: 0.5,
-                    }}
-                  >
-                    {docDetails[0].tel}
-                  </Text>
-                </View>
-              </>
-            )}
-          </View>
+          <Text
+            style={{
+              fontFamily: "Times-Roman",
+              fontSize: "12",
+              lineHeight: 1,
+              textAlign: "center",
+            }}
+          >
+            Bcpc / Vawc
+          </Text>
         </View>
       </View>
-      {/* END OF TERMS */}
+
+      <View style={{ ...styles.terms.parentSign }}>
+        <View style={styles.terms.half}>
+          {docDetails && docDetails.length > 0 && (
+            <>
+              <View
+                style={{
+                  marginTop: 40,
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Image src={iconEmail} style={{ width: 25 }} />
+                <Text
+                  style={{
+                    ...styles.terms.bold,
+                    marginBottom: 10,
+                    marginLeft: 10, // Adjust the margin as needed
+                    fontSize: 12,
+                    fontFamily: "Times-Roman",
+                    lineHeight: 0.5,
+                  }}
+                >
+                  {blotter?.email}
+                </Text>
+              </View>
+              <View
+                style={{
+                  marginTop: 10,
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Image src={iconContact} style={{ width: 25 }} />
+                <Text
+                  style={{
+                    ...styles.terms.bold,
+                    marginBottom: 10,
+                    marginLeft: 10, // Adjust the margin as needed
+                    fontSize: 12,
+                    fontFamily: "Times-Roman",
+                    lineHeight: 0.5,
+                  }}
+                >
+                  {blotter?.contact}
+                </Text>
+              </View>
+            </>
+          )}
+        </View>
+      </View>
+    </View>
+  );
+
+  const Footer = () => (
+    <View style={{ ...styles.footer.view, marginTop: 30 }}>
+      <Text style={styles.footer.text}>THIS FORM IS NOT FOR SALE</Text>
+      <Text style={styles.footer.text}>{detail.version}</Text>
     </View>
   );
 
@@ -677,11 +819,13 @@ const PrintDocumentTypeJ = ({
       <Page size="A4" style={styles.body}>
         <LetterHead />
         <Divider />
+        <PinoyDate />
         <Title />
         <Body />
+        {/* <Footer /> */}
       </Page>
     </Document>
   );
 };
 
-export default PrintDocumentTypeJ;
+export default PrintPatawag;

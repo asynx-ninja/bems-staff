@@ -31,6 +31,8 @@ import ArchivedRegistrations from "../pages/ArchivedRegistrations";
 import ViewNotifications from "../pages/ViewNotifications";
 import Blotters from "../pages/Blotters";
 import ArchivedBlotters from "../pages/ArchivedBlotters";
+import AddResidents from "../components/residents/AddResident/AddResidents"
+import EditResidents from "../components/residents/EditResident/ediResident";
 
 const pages = [
   {
@@ -96,6 +98,14 @@ const pages = [
   {
     path: "/residents",
     element: <Navbar comp={<Residents />} />,
+  },
+  {
+    path: "/addresidents",
+    element: <Navbar comp={<AddResidents />} />,
+  },
+  {
+    path: "/editresidents",
+    element: <Navbar comp={<EditResidents />} />,
   },
   {
     path: "/archivedresidents",

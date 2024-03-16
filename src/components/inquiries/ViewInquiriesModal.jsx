@@ -264,6 +264,8 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
     setStatusChanger(!statusChanger);
   };
 
+  console.log("inquiry: ", inquiry)
+
   return (
     <div>
       <div className="">
