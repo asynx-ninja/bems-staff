@@ -337,9 +337,8 @@ function ManageResidentModal({ user, setUser, brgy }) {
           if (primaryUpload.length > 0) {
             for (let i = 0; i < primaryUpload.length; i += 1) {
               let file = {
-                name: `${user.lastName}, ${
-                  user.firstName
-                } - PRIMARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
+                name: `${user.lastName}, ${user.firstName
+                  } - PRIMARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
                 size: primaryUpload[i].size,
                 type: primaryUpload[i].type,
                 uri: primaryUpload[i].uri,
@@ -357,11 +356,10 @@ function ManageResidentModal({ user, setUser, brgy }) {
           if (secondaryUpload.length > 0)
             for (let i = 0; i < secondaryUpload.length; i += 1) {
               let file = {
-                name: `${user.lastName}, ${
-                  user.firstName
-                } - SECONDARY ID ${moment(new Date()).format(
-                  "MMDDYYYYHHmmss"
-                )}`,
+                name: `${user.lastName}, ${user.firstName
+                  } - SECONDARY ID ${moment(new Date()).format(
+                    "MMDDYYYYHHmmss"
+                  )}`,
                 uri: secondaryUpload[i].uri,
                 type: secondaryUpload[i].type,
                 size: secondaryUpload[i].size,
@@ -404,13 +402,13 @@ function ManageResidentModal({ user, setUser, brgy }) {
 
       if (userResponse.status === 200) {
         console.log("User update successful:", userResponse.data);
-        setTimeout(() => {
-          setSubmitClicked(false);
-          setUpdatingStatus("success");
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
-        }, 1000);
+        // setTimeout(() => {
+        //   setSubmitClicked(false);
+        //   setUpdatingStatus("success");
+        //   setTimeout(() => {
+        //     // window.location.reload();
+        //   }, 3000);
+        // }, 1000);
       } else {
         console.error("User update failed. Status:", userResponse.status);
       }
@@ -1442,13 +1440,13 @@ function ManageResidentModal({ user, setUser, brgy }) {
                                       src={
                                         verification.selfie instanceof File
                                           ? URL.createObjectURL(
-                                              verification.selfie
-                                            )
+                                            verification.selfie
+                                          )
                                           : verification.selfie.hasOwnProperty(
-                                              "link"
-                                            )
-                                          ? verification.selfie.link
-                                          : verification.selfie.uri
+                                            "link"
+                                          )
+                                            ? verification.selfie.link
+                                            : verification.selfie.uri
                                       }
                                       alt={`Selfie`}
                                       className="w-full h-[400px] px-2 py-2 object-cover rounded-xl"
@@ -1465,45 +1463,46 @@ function ManageResidentModal({ user, setUser, brgy }) {
                     </div>
                   </div>
                 </form>
+                <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
+                  {!edit ? (
+                    <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
+                      <button
+                        type="button"
+                        className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
+                        onClick={handleOnEdit}
+                      >
+                        EDIT
+                      </button>
+                      <button
+                        type="button"
+                        className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
+                        data-hs-overlay="#hs-modal-editResident"
+                      >
+                        CLOSE
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
+                      <button
+                        type="submit"
+                        onClick={handleSave}
+                        className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
+                      >
+                        SAVE CHANGES
+                      </button>
+                      <button
+                        type="button"
+                        className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
+                        onClick={handleOnEdit}
+                      >
+                        CANCEL
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
-              {/* Buttons */}
-              <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
-                {!edit ? (
-                  <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
-                    <button
-                      type="button"
-                      className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                      onClick={handleOnEdit}
-                    >
-                      EDIT
-                    </button>
-                    <button
-                      type="button"
-                      className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
-                      data-hs-overlay="#hs-modal-editResident"
-                    >
-                      CLOSE
-                    </button>
-                  </div>
-                ) : (
-                  <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
-                    <button
-                      type="submit"
-                      onClick={handleSave}
-                      className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                    >
-                      SAVE CHANGES
-                    </button>
-                    <button
-                      type="button"
-                      className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
-                      onClick={handleOnEdit}
-                    >
-                      CANCEL
-                    </button>
-                  </div>
-                )}
-              </div>
+
+
             </div>
           </div>
           {submitClicked && <EditLoader updatingStatus="updating" />}

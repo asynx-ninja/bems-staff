@@ -509,17 +509,16 @@ const Residents = () => {
                     <td className="xl:px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">
                         <div className="hs-tooltip inline-block">
-                          <button
-                            type="button"
-                            data-hs-overlay="#hs-modal-editResident"
-                            
+                          <Link
+                             to={`/editresidents/?id=${id}&brgy=${brgy}`} 
+                             state={{...item}}
                             className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                           >
                             <AiOutlineEye
                               size={24}
                               style={{ color: "#ffffff" }}
                             />
-                          </button>
+                          </Link>
                           <span
                             className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                             role="tooltip"
@@ -604,7 +603,6 @@ const Residents = () => {
         <AddResidentsModal brgy={brgy} />
         <ArchiveResidentModal selectedItems={selectedItems} />
         <GenerateReportsModal />
-        <ManageResidentModal user={user} setUser={setUser} brgy={brgy}/>
         <StatusResident
           user={user}
           setUser={setUser}

@@ -16,12 +16,12 @@ import GetBrgy from "../../GETBrgy/getbrgy";
 import Webcam from "react-webcam";
 import moment from "moment";
 
-const EditResidents = ({setUser, user}) => {
+const EditResidents = ({ props }) => {
     const location = useLocation();
+    const { state } = location;
+    const [user, setUser] = useState(state)
     const searchParams = new URLSearchParams(location.search);
-    const id = searchParams.get('id');
     const brgy = searchParams.get('brgy');
-    const user_id = searchParams.get('user_id');
     const encodedUser = searchParams.get('user');
 
     const WebcamComponent = () => <Webcam />;
@@ -114,7 +114,9 @@ const EditResidents = ({setUser, user}) => {
     const handleOnEdit = () => {
         setEdit(!edit);
     };
-
+    const handleClose = () => {
+        setEdit(edit);
+    };
     const handleOnCapture = () => {
         setCapture(!capture);
     };
@@ -412,13 +414,13 @@ const EditResidents = ({setUser, user}) => {
 
             if (userResponse.status === 200) {
                 console.log("User update successful:", userResponse.data);
-                setTimeout(() => {
-                    setSubmitClicked(false);
-                    setUpdatingStatus("success");
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 3000);
-                }, 1000);
+                // setTimeout(() => {
+                //     setSubmitClicked(false);
+                //     setUpdatingStatus("success");
+                //     setTimeout(() => {
+                //         window.location.reload();
+                //     }, 3000);
+                // }, 1000);
             } else {
                 console.error("User update failed. Status:", userResponse.status);
             }
@@ -434,7 +436,7 @@ const EditResidents = ({setUser, user}) => {
         <div className="mx-4 mt-8">
             <Breadcrumbs />
             <div className="flex flex-col ">
-                <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
+                <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[750px]">
                     <form>
                         <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
                             <div className="flex flex-col mb-1 w-full">
@@ -1452,8 +1454,43 @@ const EditResidents = ({setUser, user}) => {
                             </div>
                         </div>
                     </form>
+                    <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
+                        {!edit ? (
+                            <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-[20%] flex sm:flex-col md:flex-row">
+                                <button
+                                    type="button"
+                                    className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
+                                    onClick={handleOnEdit}
+                                >
+                                    EDIT
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
+                                <button
+                                    type="submit"
+                                    onClick={handleSave}
+                                    className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
+                                >
+                                    SAVE CHANGES
+                                </button>
+                                <button
+                                    type="button"
+                                    className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
+                                    onClick={handleOnEdit}
+                                >
+                                    CANCEL
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
+            {submitClicked && <EditLoader updatingStatus="updating" />}
+            {updatingStatus && (
+                <EditLoader updatingStatus={updatingStatus} error={error} />
+            )}
+            <ImageViewer />
         </div>
     );
 };

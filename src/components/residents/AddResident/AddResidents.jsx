@@ -1191,7 +1191,7 @@ const AddResidents = () => {
                                                     </label>
                                                 </div>
 
-                                                <div className="w-full">
+                                                <div className="w-full flex flex-col justify-center items-center">
                                                     <div>
                                                         {capture ? (
                                                             <button
@@ -1204,7 +1204,7 @@ const AddResidents = () => {
                                                         ) : (
                                                             <button
                                                                 type="button"
-                                                                className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm mb-2"
+                                                                className="h-[2.5rem] w-[100%] py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm mb-2"
                                                                 onClick={handleOnCapture}
                                                             >
                                                                 TAKE A NEW PHOTO
