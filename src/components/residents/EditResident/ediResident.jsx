@@ -179,7 +179,7 @@ const EditResidents = ({ props }) => {
                         ref={webcamRef}
                         screenshotFormat="image/jpeg"
                         width={1280}
-                        className="rounded-xl"
+                        className="rounded-xl w-full"
                     />
                     <button
                         onClick={capture}
@@ -1458,7 +1458,9 @@ const EditResidents = ({ props }) => {
                             </div>
                         </div>
                     </form>
-                    <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
+                    
+                </div>
+                <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
                         {!edit ? (
                             <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-[20%] flex sm:flex-col md:flex-row">
                                 <button
@@ -1489,7 +1491,6 @@ const EditResidents = ({ props }) => {
                             </div>
                         )}
                     </div>
-                </div>
             </div>
             {submitClicked && <EditLoader updatingStatus="updating" />}
             {updatingStatus && (
