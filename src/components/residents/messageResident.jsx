@@ -1,8 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import API_LINK from "../../config/API";
 import StatusLoader from "./loaders/StatusLoader";
-import { useState } from "react";
 import GetBrgy from "../GETBrgy/getbrgy";
 
 function StatusResident({ user, setUser, brgy, status, setStatus }) {
@@ -16,28 +15,27 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
         name: "resident_logo.jpg",
         id: "1RqjWYc2RilU54XlQejedZ_apmjDQbcP8",
     });
-
     const [logo, setLogo] = useState({
-        link: "https://drive.google.com/file/d/1RqjWYc2RilU54XlQejedZ_apmjDQbcP8/view?usp=sharing",
+        link: "https://drive.google.com/file/d/1RqjWYc2RilU54XlQejedZ_apmjDQbcP8/view?usp=drive_link",
         name: "resident_logo.png",
         id: "1RqjWYc2RilU54XlQejedZ_apmjDQbcP8",
     });
 
+    const [subject, setSubject] = useState(""); // State variable for subject
+
     const handleSave = async (e) => {
         try {
-           
             const messageContent = document.getElementById("message").value;
 
-           
             const notificationData = {
                 category: "One",
                 compose: {
-                    subject: "AYOKO NA", 
-                    message: messageContent, 
+                    subject: subject, // Use dynamic subject here
+                    message: messageContent,
                     go_to: null,
                 },
                 target: {
-                    user_id: user.user_id, 
+                    user_id: user.user_id,
                     area: brgy,
                 },
                 type: "Resident",
@@ -46,11 +44,11 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
             };
 
             const response = await axios.post(`${API_LINK}/notification/`, notificationData);
-            console.log(response.data); 
+            console.log(response.data);
             setUpdatingStatus("success");
             setTimeout(() => {
                 window.location.reload();
-              }, 3000);
+            }, 3000);
             document.getElementById("message").value = "";
         } catch (err) {
             console.error(err);
@@ -61,14 +59,12 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
         }
     };
 
-
     const handleOnChange = (e) => {
         setStatus((prev) => ({
             ...prev,
             [e.target.name]: e.target.value,
         }));
     };
-
 
     const handleClose = () => {
         window.location.reload();
@@ -107,7 +103,15 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
                                             <h1 className="font-bold mb-2 text-xl">
                                                 SEND MESSAGE:
                                             </h1>
-                                            <textarea name="message" id="message" cols="30" rows="10" className="border-2 w-full">
+                                            {/* Add input field for subject */}
+                                            <input
+                                                type="text"
+                                                placeholder="Enter subject"
+                                                value={subject}
+                                                onChange={(e) => setSubject(e.target.value)}
+                                                className="border-2 w-full mb-2"
+                                            />
+                                            <textarea name="message" id="message" cols="30" rows="10" className="border-2 w-full" placeholder="Enter message">
 
                                             </textarea>
                                         </div>
