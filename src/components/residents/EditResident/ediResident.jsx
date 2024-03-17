@@ -9,6 +9,7 @@ import { LiaRandomSolid } from "react-icons/lia";
 import { FaFacebookSquare, FaInstagram } from "react-icons/fa";
 import { FaSquareXTwitter } from "react-icons/fa6";
 import { FaCameraRetro } from "react-icons/fa";
+import { MdOutlineCancel } from "react-icons/md";
 import { TiDelete } from "react-icons/ti";
 import OccupationList from "../OccupationList";
 import EditLoader from "../loaders/EditLoader";
@@ -179,16 +180,26 @@ const EditResidents = ({ props }) => {
             ref={webcamRef}
             screenshotFormat="image/jpeg"
             width={1280}
-            className="rounded-xl w-full h-auto p-2"
+            className="rounded-xl w-full h-full p-2"
           />
-          <button
-            onClick={capture}
-            className="h-12 w-12 py-1 px-2 rounded-full border text-sm font-base bg-teal-900 text-white shadow-sm absolute bottom-4 left-1/2 transform -translate-x-1/2"
-          >
-            <div className="flex items-center justify-center">
-              <FaCameraRetro size={20} />
-            </div>
-          </button>
+          <div className="flex items-center justify-center absolute bottom-4 left-1/2 transform -translate-x-1/2 gap-5">
+            <button
+              onClick={capture}
+              className="h-12 w-12 py-1 px-2 rounded-full border text-sm font-base bg-teal-900 text-white shadow-sm "
+            >
+              <div className="flex items-center justify-center">
+                <FaCameraRetro size={20} />
+              </div>
+            </button>
+            <button
+              onClick={handleOnCapture}
+              className="h-12 w-12 py-1 px-2 rounded-full border text-sm font-base bg-pink-900 text-white shadow-sm"
+            >
+              <div className="flex items-center justify-center">
+                <MdOutlineCancel size={27} />
+              </div>
+            </button>
+          </div>
         </div>
         {capturedImage && (
           <img
@@ -1373,24 +1384,6 @@ const EditResidents = ({ props }) => {
                           <div></div>
                         ) : (
                           <div>
-                            {capture ? (
-                              <button
-                                type="button"
-                                className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-900 text-white shadow-sm mb-2"
-                                onClick={handleOnCapture}
-                              >
-                                CANCEL
-                              </button>
-                            ) : (
-                              <button
-                                type="button"
-                                className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm mb-2"
-                                onClick={handleOnCapture}
-                              >
-                                TAKE A NEW PHOTO
-                              </button>
-                            )}
-
                             {!capture ? (
                               <div></div>
                             ) : (
@@ -1436,39 +1429,48 @@ const EditResidents = ({ props }) => {
                         )}
 
                         {!capture ? (
-                          <div>
-                            {verification.selfie &&
-                              (Array.isArray(verification.selfie) ? (
-                                verification.selfie.map((item, idx) => <></>)
-                              ) : (
-                                <div className="flex justify-center items-center">
-                                  <div
-                                    className="w-1/2 border border-gray-300 rounded-xl bg-gray-300 cursor-pointer mt-2"
-                                    onClick={() =>
-                                      handleImageClick(verification.selfie)
-                                    }
-                                  >
-                                    <img
-                                      src={
-                                        verification.selfie instanceof File
-                                          ? URL.createObjectURL(
-                                              verification.selfie
-                                            )
-                                          : verification.selfie.hasOwnProperty(
-                                              "link"
-                                            )
-                                          ? verification.selfie.link
-                                          : verification.selfie.uri
-                                      }
-                                      alt={`Selfie`}
-                                      className="w-full xl:h-[400px] px-2 py-2 object-cover rounded-xl"
-                                    />
-                                    <div className="text-black pb-2 ml-2 rounded-b-xl">
-                                      {verification.selfie.name}
-                                    </div>
-                                  </div>
+                          <div className="flex flex-row gap-2">
+                            <div className="w-1/2 h-[410px]">
+                              <div className="flex flex-col w-full h-full border border-gray-300 rounded-xl bg-gray-300 cursor-pointer items-center justify-center">
+                                <div className="flex text-gray-700 text-sm font-bold pb-5 rounded-b-xl justify-center">
+                                  TAKE A NEW PHOTO
                                 </div>
-                              ))}
+
+                                <button
+                                  type="button"
+                                  className="h-[2.5rem] w-1/2 justify-center py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm mb-2"
+                                  onClick={handleOnCapture}
+                                  disabled={!edit}
+                                >
+                                  OPEN CAMERA
+                                </button>
+                              </div>
+                            </div>
+                            <div className="w-1/2 h-[410px]">
+                              <div
+                                className="w-full border border-gray-300 rounded-xl bg-gray-300 cursor-pointer"
+                                onClick={() =>
+                                  handleImageClick(verification.selfie)
+                                }
+                              >
+                                <img
+                                  src={
+                                    verification.selfie instanceof File
+                                      ? URL.createObjectURL(verification.selfie)
+                                      : verification.selfie.hasOwnProperty(
+                                          "link"
+                                        )
+                                      ? verification.selfie.link
+                                      : verification.selfie.uri
+                                  }
+                                  alt={`Selfie`}
+                                  className="w-full p-2 object-cover rounded-xl"
+                                />
+                                <div className="flex text-gray-700 text-sm font-bold pb-2 ml-2 rounded-b-xl justify-center">
+                                  {verification.selfie.name}
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         ) : (
                           <div></div>
@@ -1493,7 +1495,7 @@ const EditResidents = ({ props }) => {
               </button>
             </div>
           ) : (
-            <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
+            <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full lg:w-1/2 flex sm:flex-col md:flex-row">
               <Link
                 type="submit"
                 onClick={handleSave}
@@ -1507,7 +1509,7 @@ const EditResidents = ({ props }) => {
                 className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                 onClick={handleOnEdit}
               >
-                CANCEL
+                BACK
               </button>
             </div>
           )}
