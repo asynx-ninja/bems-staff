@@ -1,73 +1,70 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import API_LINK from "../../config/API";
 import StatusLoader from "./loaders/StatusLoader";
-import { useState } from "react";
 import GetBrgy from "../GETBrgy/getbrgy";
 
 function StatusResident({ user, setUser, brgy, status, setStatus }) {
-  const information = GetBrgy(brgy);
-  const [submitClicked, setSubmitClicked] = useState(false);
-  const [updatingStatus, setUpdatingStatus] = useState(null);
-  const [error, setError] = useState(null);
-  const [sendMessage, setSendMessage] = useState();
-  const [banner, setBanner] = useState({
-    link: "https://drive.google.com/file/d/1RqjWYc2RilU54XlQejedZ_apmjDQbcP8/view?usp=drive_link",
-    name: "resident_logo.jpg",
-    id: "1SM_QPFb_NmyMTLdsjtEd-2M6ersJhBUc",
-  });
+    const information = GetBrgy(brgy);
+    const [submitClicked, setSubmitClicked] = useState(false);
+    const [updatingStatus, setUpdatingStatus] = useState(null);
+    const [error, setError] = useState(null);
+    const [sendMessage, setSendMessage] = useState();
+    const [banner, setBanner] = useState({
+        link: "https://drive.google.com/thumbnail?id=1RqjWYc2RilU54XlQejedZ_apmjDQbcP8",
+        name: "resident_logo.png",
+        id: "1SM_QPFb_NmyMTLdsjtEd-2M6ersJhBUc",
+    });
+    const [logo, setLogo] = useState({
+        link: "https://drive.google.com/thumbnail?id=1RqjWYc2RilU54XlQejedZ_apmjDQbcP8",
+        name: "resident_logo.png",
+        id: "1SM_QPFb_NmyMTLdsjtEd-2M6ersJhBUc",
+    });
 
-  const [logo, setLogo] = useState({
-    link: "https://drive.google.com/file/d/1RqjWYc2RilU54XlQejedZ_apmjDQbcP8/view?usp=drive_link",
-    name: "resident_logo.png",
-    id: "1SM_QPFb_NmyMTLdsjtEd-2M6ersJhBUc",
-  });
+    const [subject, setSubject] = useState(""); // State variable for subject
 
-  const handleSave = async (e) => {
-    try {
-      const messageContent = document.getElementById("message").value;
+    const handleSave = async (e) => {
+        try {
+            const messageContent = document.getElementById("message").value;
 
-      const notificationData = {
-        category: "One",
-        compose: {
-          subject: "AYOKO NA",
-          message: messageContent,
-          go_to: null,
-        },
-        target: {
-          user_id: user.user_id,
-          area: brgy,
-        },
-        type: "Resident",
-        banner: banner,
-        logo: logo,
-      };
+            const notificationData = {
+                category: "One",
+                compose: {
+                    subject: subject, // Use dynamic subject here
+                    message: messageContent,
+                    go_to: null,
+                },
+                target: {
+                    user_id: user.user_id,
+                    area: brgy,
+                },
+                type: "Resident",
+                banner: banner,
+                logo: logo,
+            };
 
-      const response = await axios.post(
-        `${API_LINK}/notification/`,
-        notificationData
-      );
-      console.log(response.data);
-      setUpdatingStatus("success");
-      setTimeout(() => {
-        window.location.reload();
-      }, 3000);
-      document.getElementById("message").value = "";
-    } catch (err) {
-      console.error(err);
-      setUpdatingStatus("error");
-      setError("An error occurred while sending the message.");
-    } finally {
-      setSubmitClicked(false);
-    }
-  };
+            const response = await axios.post(`${API_LINK}/notification/`, notificationData);
+            console.log(response.data);
+            setUpdatingStatus("success");
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000);
+            document.getElementById("message").value = "";
+        } catch (err) {
+            console.error(err);
+            setUpdatingStatus("error");
+            setError("An error occurred while sending the message.");
+        } finally {
+            setSubmitClicked(false);
+        }
+    };
 
-  const handleOnChange = (e) => {
-    setStatus((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
+    const handleOnChange = (e) => {
+        setStatus((prev) => ({
+            ...prev,
+            [e.target.name]: e.target.value,
+        }));
+    };
 
   const handleClose = () => {
     window.location.reload();
@@ -98,53 +95,59 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
                 </h3>
               </div>
 
-              <div className="mt-5">
-                <form>
-                  <div className="flex justify-center flex-col lg:flex-row px-7">
-                    <div className="w-5/6 flex flex-col">
-                      <h1> SEND TO: {user.firstName} </h1>
-                      <h1 className="font-bold mb-2 text-xl">SEND MESSAGE:</h1>
-                      <textarea
-                        name="message"
-                        id="message"
-                        cols="30"
-                        rows="10"
-                        className="border-2 w-full"
-                      ></textarea>
+                            <div className="mt-5">
+                                <form>
+                                    <div className="flex justify-center flex-col lg:flex-row px-7">
+                                        <div className="w-5/6 flex flex-col">
+                                            <h1> SEND TO: {user.firstName} </h1>
+                                            <h1 className="font-bold mb-2 text-xl">
+                                                SEND MESSAGE:
+                                            </h1>
+                                            {/* Add input field for subject */}
+                                            <input
+                                                type="text"
+                                                placeholder="Enter subject"
+                                                value={subject}
+                                                onChange={(e) => setSubject(e.target.value)}
+                                                className="border-2 w-full mb-2"
+                                            />
+                                            <textarea name="message" id="message" cols="30" rows="10" className="border-2 w-full" placeholder="Enter message">
+
+                                            </textarea>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            {/* Buttons */}
+                            <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700 mx-auto">
+                                <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
+                                    <button
+                                        type="button"
+                                        onClick={handleSave}
+                                        className="h-[2.5rem] w-full md:w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm align-middle"
+                                    >
+                                        SEND NOTIFICATION
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="h-[2.5rem] w-full md:w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
+                                        data-hs-overlay="#hs-modal-messageResident"
+                                        onClick={handleClose}
+                                    >
+                                        CLOSE
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
-                </form>
-              </div>
-              {/* Buttons */}
-              <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700 mx-auto">
-                <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
-                  <button
-                    type="button"
-                    onClick={handleSave}
-                    className="h-[2.5rem] w-full md:w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm align-middle"
-                  >
-                    SEND NOTIFICATION
-                  </button>
-                  <button
-                    type="button"
-                    className="h-[2.5rem] w-full md:w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
-                    data-hs-overlay="#hs-modal-messageResident"
-                    onClick={handleClose}
-                  >
-                    CLOSE
-                  </button>
+                    {submitClicked && <StatusLoader updatingStatus="updating" />}
+                    {updatingStatus && (
+                        <StatusLoader updatingStatus={updatingStatus} error={error} />
+                    )}
                 </div>
-              </div>
             </div>
-          </div>
-          {submitClicked && <StatusLoader updatingStatus="updating" />}
-          {updatingStatus && (
-            <StatusLoader updatingStatus={updatingStatus} error={error} />
-          )}
         </div>
-      </div>
-    </div>
-  );
+    );
 }
 
 export default StatusResident;
