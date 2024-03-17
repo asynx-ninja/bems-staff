@@ -223,7 +223,7 @@ const Inquiries = () => {
       <div>
         <Breadcrumbs />
         <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
-          <div className="flex justify-center items-center sm:mt-5 md:mt-4 lg:mt-0  py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]" style={{
+          <div className="flex justify-center bg-teal-700 items-center sm:mt-5 md:mt-4 lg:mt-0  py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]" style={{
             background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
           }}>
             <h1
@@ -243,7 +243,7 @@ const Inquiries = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  " style={{ backgroundColor: information?.theme?.primary }}
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  bg-teal-700" style={{ backgroundColor: information?.theme?.primary }}
                 >
                   STATUS
                   <svg
@@ -303,7 +303,7 @@ const Inquiries = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  " style={{ backgroundColor: information?.theme?.primary }}
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  bg-teal-700" style={{ backgroundColor: information?.theme?.primary }}
                 >
                   DATE
                   <svg
@@ -396,7 +396,7 @@ const Inquiries = () => {
 
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12">
               <div className="flex flex-row w-full md:mr-2">
-                <button className="  p-3 rounded-l-md" style={{ backgroundColor: information?.theme?.primary }}>
+                <button className="bg-teal-700  p-3 rounded-l-md" style={{ backgroundColor: information?.theme?.primary }}>
                   <div className="w-full overflow-hidden">
                     <svg
                       className="h-3.5 w-3.5 text-white"
@@ -461,7 +461,7 @@ const Inquiries = () => {
 
         <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_320px)] xl:h-[calc(100vh_-_315px)] xxl:h-[calc(100vh_-_320px)] xxxl:h-[calc(100vh_-_340px)]">
           <table className="w-full relative table-auto">
-            <thead className=" sticky top-0" style={{ backgroundColor: information?.theme?.primary }}>
+            <thead className="bg-teal-700 sticky top-0" style={{ backgroundColor: information?.theme?.primary }}>
               <tr className="">
                 <th scope="col" className="px-2 xl:px-6 py-4">
                   <div className="flex justify-center items-center">
@@ -594,7 +594,7 @@ const Inquiries = () => {
             </tbody>
           </table>
         </div>
-        <div className="md:py-4 md:px-4  flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3" style={{ backgroundColor: information?.theme?.primary }}>
+        <div className="md:py-4 md:px-4  flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3 bg-teal-700" style={{ backgroundColor: information?.theme?.primary }}>
           <span className="font-medium text-white sm:text-xs text-sm">
             Showing {currentPage + 1} out of {pageCount} pages
           </span>

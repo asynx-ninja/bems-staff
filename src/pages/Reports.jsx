@@ -1300,11 +1300,11 @@ const Reports = () => {
           <div className="flex flex-col w-full lg:w-auto">
             <div
               id="toggle-count"
-              className="flex p-0.5  rounded-lg w-full lg:w-auto items-center overflow-y-hidden"
+              className="flex p-0.5 bg-teal-700 rounded-lg w-full lg:w-auto items-center overflow-y-hidden"
               style={{ backgroundColor: information?.theme?.primary }}
             >
               <button
-                className={`px-3 py-2 w-full   rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none`}
+                className={`px-3 py-2 w-full bg-teal-700  rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none`}
                 style={{
                   backgroundColor:
                     timeRange === "specific"
@@ -1317,7 +1317,7 @@ const Reports = () => {
                 Specific
               </button>
               <button
-                className={`px-3 py-2 w-full   rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none`}
+                className={`px-3 py-2 w-full  bg-teal-700 font-medium text-sm lg:text-base  focus:outline-none`}
                 style={{
                   backgroundColor:
                     timeRange === "today"
@@ -1330,7 +1330,7 @@ const Reports = () => {
                 Today
               </button>
               <button
-                className={`px-3 py-2 w-full   rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none`}
+                className={`px-3 py-2 w-full bg-teal-700 font-medium text-sm lg:text-base  focus:outline-none`}
                 style={{
                   backgroundColor:
                     timeRange === "weekly"
@@ -1343,7 +1343,7 @@ const Reports = () => {
                 Weekly
               </button>
               <button
-                className={`px-3 py-2 w-full   rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none`}
+                className={`px-3 py-2 w-full  bg-teal-700 font-medium text-sm lg:text-base  focus:outline-none`}
                 style={{
                   backgroundColor:
                     timeRange === "monthly"
@@ -1356,7 +1356,7 @@ const Reports = () => {
                 Monthly
               </button>
               <button
-                className={`px-3 py-2 w-full   rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none`}
+                className={`px-3 py-2 w-full bg-teal-700 font-medium text-sm lg:text-base  focus:outline-none`}
                 style={{
                   backgroundColor:
                     timeRange === "annual"
@@ -1439,7 +1439,7 @@ const Reports = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 lg:items-center shadow-sm rounded-xl gap-3 ">
           <div
-            className="flex flex-col p-4  rounded-xl "
+            className="flex flex-col p-4 bg-teal-700 rounded-xl "
             style={{
               background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
             }}
@@ -1458,7 +1458,7 @@ const Reports = () => {
           </div>
 
           <div
-            className="flex flex-col p-4  rounded-xl "
+            className="flex flex-col p-4 bg-teal-700 rounded-xl "
             style={{
               background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
             }}
@@ -1478,7 +1478,7 @@ const Reports = () => {
             </div>
           </div>
           <div
-            className="flex flex-col p-4  rounded-xl "
+            className="flex flex-col p-4 bg-teal-700 rounded-xl "
             style={{
               background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
             }}
@@ -1501,7 +1501,7 @@ const Reports = () => {
             </div>
           </div>
           <div
-            className="flex flex-col p-4  rounded-xl "
+            className="flex flex-col p-4 bg-teal-700 rounded-xl "
             style={{
               background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
             }}

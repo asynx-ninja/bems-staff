@@ -236,7 +236,7 @@ const Sidebar = () => {
         className="sm:fixed lg:relative overflow-y-auto lg:block lg:end-auto lg:bottom-0 sm:block flex items-center justify-center hs-overlay-basic h-full overflow-hidden hs-overlay hs-overlay-open:translate-x-0 -translate-x-full transition-all duration-300 transform hidden top-0 z-[60] lg:z-0 lg:translate-x-0 w-[17rem]"
       >
         <div
-          className="h-screen  "
+          className="h-screen bg-teal-700 "
           style={{ backgroundColor: information?.theme?.primary }}
         >
           <div className="max-h-screen flex flex-col ">
@@ -253,7 +253,7 @@ const Sidebar = () => {
               </div>
             </div>
             <div
-              className="w-full shrink-0 flex flex-row items-center justify-between px-2 border-0 py-2 border-y-[1px] space-y-3"
+              className="w-full shrink-0 flex flex-row items-center justify-between px-2 border-0 py-2 border-y-[1px] space-y-3 bg-teal-700"
               style={{
                 background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
               }}
