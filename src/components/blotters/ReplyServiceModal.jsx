@@ -548,7 +548,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
               message: `A barangay staff has replied to your patawag conversation.\n\n
         
               Please view and respond as you've seen this notification!\n\n
-              Thank you!!,`,
+              Thank you!`,
               go_to: "Patawag",
             },
             target: {

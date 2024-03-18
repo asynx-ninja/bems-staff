@@ -19,7 +19,7 @@ const Breadcrumbs = () => {
         <li>
           <GrFormNext size={24} style={{ color: "#ffffff" }} />
         </li>
-        <li className="text-sm md:text-lg text-[#295141] font-bold">ADD RESSIDENTS</li>
+        <li className="text-sm md:text-lg text-[#295141] font-bold">ADD RESIDENT</li>
       </ol>
     </nav>
   );

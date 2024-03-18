@@ -62,19 +62,69 @@ function ViewOfficialModal({
                       Personal Information
                     </b>
                     <h1
-                      class="font-medium mb-1 text-black text-sm"
-                      style={{ letterSpacing: "0.1em" }}
-                    >
-                      FULL NAME
-                    </h1>
-                    <input
-                      type="search"
-                      id="search-dropdown"
-                      className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                      placeholder=""
-                      value={selectedOfficial.name || ""}
-                      readOnly
-                    />
+                    className="font-medium mb-1 mt-2 text-black text-sm"
+                    style={{ letterSpacing: "0.1em" }}
+                  >
+                    FIRST NAME
+                  </h1>
+                  <input
+                    type="text"
+                    id="firstName"
+                    name="firstName"
+                    className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                    placeholder=""
+                    value={selectedOfficial.firstName || ""}
+                    disabled
+                  />
+
+                  <h1
+                    className="font-medium mb-1 mt-2 text-black text-sm"
+                    style={{ letterSpacing: "0.1em" }}
+                  >
+                    MIDDLE NAME
+                  </h1>
+                  <input
+                    type="text"
+                    id="middleName"
+                    name="middleName"
+                    className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                    placeholder=""
+               
+                    value={selectedOfficial.middleName || ""}
+                    disabled
+                  />
+
+                  <h1
+                    className="font-medium mb-1 mt-2 text-black text-sm"
+                    style={{ letterSpacing: "0.1em" }}
+                  >
+                    SUFFIX
+                  </h1>
+                  <input
+                    type="text"
+                    id="suffix"
+                    name="suffix"
+                    className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                    placeholder=""
+                    value={selectedOfficial.suffix || ""}
+                    disabled
+                  />
+
+                  <h1
+                    className="font-medium mb-1 mt-2 text-black text-sm"
+                    style={{ letterSpacing: "0.1em" }}
+                  >
+                    LAST NAME
+                  </h1>
+                  <input
+                    type="text"
+                    id="lastName"
+                    name="lastName"
+                    className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                    placeholder=""
+                    value={selectedOfficial.lastName || ""}
+                    disabled
+                  />
                   </div>
                 </div>
 
@@ -111,10 +161,10 @@ function ViewOfficialModal({
 
                     {/* Date 1 */}
                     <div className="flex flex-row">
-                      <div className="w-full md:w-1/5 lg:w-1/6">
+                      <div className="w-full md:w-1/5 lg:w-1/6 flex items-center">
                         <label
                           htmlFor="from_year"
-                          className=" w-full font-base flex items-center"
+                          className="font-medium text-sm w-full font-base flex items-center"
                         >
                           FROM YEAR:{" "}
                         </label>
@@ -133,10 +183,10 @@ function ViewOfficialModal({
                     </div>
                     {/* Date 2 */}
                     <div className="flex flex-col  md:flex-row mt-3">
-                      <div className="w-full md:w-1/5 lg:w-1/6">
+                      <div className="w-full md:w-1/5 lg:w-1/6 flex items-center">
                         <label
                           htmlFor="To_year"
-                          className=" w-[6rem] flex items-center"
+                          className="font-medium text-sm w-[6rem] flex items-center"
                         >
                           TO YEAR:{" "}
                         </label>

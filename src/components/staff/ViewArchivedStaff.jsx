@@ -453,11 +453,12 @@ function ViewArchivedStaff({ user, setUser, brgy }) {
                               password
                             </label>
                             <input
-                              type="text"
+                              type="password"
+                              name="password"
                               id="password"
                               className="block w-full p-2 text-sm text-black bg-gray-200 rounded-lg"
                               readOnly
-                              value={"User12345"}
+                              value={user.password?.substring(0, 24)}
                             />
                           </div>
                         </div>
