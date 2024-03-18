@@ -209,7 +209,7 @@ const ArchivedRegistrations = () => {
           : b.service_name.localeCompare(a.service_name);
       } else if (sortBy === "status") {
         const order = {
-          "Transaction Completed": 1,
+          "Application Completed": 1,
           Pending: 2,
           Paid: 3,
           Processing: 4,
@@ -400,11 +400,11 @@ const ArchivedRegistrations = () => {
                     CANCELLED
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Transaction Completed")}
+                    onClick={() => handleStatusFilter("Application Completed")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    TRANSACTION COMPLETED
+                    APPLICATION COMPLETED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Rejected")}

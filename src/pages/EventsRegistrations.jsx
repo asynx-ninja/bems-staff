@@ -132,9 +132,8 @@ const EventsRegistrations = () => {
 
   const handleResetFilter = () => {
     setStatusFilter("all");
-    setApplications([]);
     setSearchQuery("");
-    setSelectedEventFilter("all");
+    setEventFilter("all");
     setSelectedEventType("EVENT TYPE");
   };
 

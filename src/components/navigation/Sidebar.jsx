@@ -38,8 +38,52 @@ const Sidebar = () => {
   const [pendingEventsAndApp, setPendingEventsAndApp] = useState(0);
   const [inquiries, setInquiries] = useState(0);
   const [residentResponseCount, setResidentInquiriesLength] = useState(0);
+  const [patawag, setPatawag] = useState(0);
+  const [residentBlotterResponseCount, setResidentBlotterLength] = useState(0);
   const information = GetBrgy(brgy);
-  
+
+  useEffect(() => {
+    const fetchPatawag = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/blotter/staffblotter/?label=Staff&brgy=${brgy}`
+        );
+
+        if (response.status === 200) {
+          const patawag = response.data.result;
+          setPatawag(patawag);
+
+          const residentPatawags = patawags.filter((patawag) => {
+            const latestResponse =
+              patawag.response[patawag.response.length - 1];
+            console.log(latestResponse);
+            return (
+              latestResponse &&
+              latestResponse.type === "Resident" &&
+              (inquiry.status === "In Progress")
+            );
+          });
+
+          const residentPatawagsLength = residentPatawags.length;
+          setResidentBlotterLength(residentPatawagsLength);
+        } else {
+          console.error("Error fetching patawags:", response.error);
+        }
+      } catch (err) {
+        console.error("Uncaught error:", err.message);
+      }
+    };
+
+    // Fetch inquiries initially
+    fetchPatawag();
+
+    // Set up a timer to fetch inquiries every 5 minutes (adjust as needed)
+    const intervalId = setInterval(fetchPatawag, 5 * 60 * 1000);
+
+    // Clear the interval when the component is unmounted
+    return () => clearInterval(intervalId);
+  }, [to, brgy]);
+
   useEffect(() => {
     const fetchInquiries = async () => {
       try {
@@ -241,7 +285,6 @@ const Sidebar = () => {
         >
           <div className="max-h-screen flex flex-col ">
             <div className='bg-[url("/src/assets/image/bg-sidebar.jpg")] w-full shrink-0 flex flex-col items-center justify-center py-5 px-2 space-y-3 object-cover'>
-          
               <img
                 id="logoSidebar"
                 className="w-[100px] h-[100px] rounded-full object-cover"
@@ -258,7 +301,6 @@ const Sidebar = () => {
                 background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
               }}
             >
-             
               <div className="flex flex-row items-center justify-between w-full">
                 <div className="w-4/12">
                   <img
@@ -335,7 +377,9 @@ const Sidebar = () => {
                         (selectedOption === "events_management" ||
                           selectedOption === "events_registrations")
                           ? `${information?.theme?.hover}`
-                          : hoverStates["events"] ?`${information?.theme?.hover}` : null,
+                          : hoverStates["events"]
+                          ? `${information?.theme?.hover}`
+                          : null,
                     }}
                     onMouseEnter={() => handleMouseEnter("events")}
                     onMouseLeave={() => handleMouseLeave("events")}
@@ -423,8 +467,12 @@ const Sidebar = () => {
                             ? `${information?.theme.hover}`
                             : null,
                       }}
-                      onMouseEnter={() => handleMouseEnter("events_registrations")}
-                      onMouseLeave={() => handleMouseLeave("events_registrations")}
+                      onMouseEnter={() =>
+                        handleMouseEnter("events_registrations")
+                      }
+                      onMouseLeave={() =>
+                        handleMouseLeave("events_registrations")
+                      }
                       className={`flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md `}
                     >
                       <SiGoogleforms size={15} />
@@ -444,7 +492,6 @@ const Sidebar = () => {
                   </div>
                 </li>
 
-                
                 <li>
                   <button
                     id="hs-unstyled-collapse"
@@ -457,9 +504,12 @@ const Sidebar = () => {
                       color:
                         isClicked &&
                         (selectedOption === "services" ||
-                          selectedOption === "requests"|| hoverStates["parent_services"])
+                          selectedOption === "requests" ||
+                          hoverStates["parent_services"])
                           ? `${information?.theme?.hover}`
-                          : hoverStates["parent_services"] ?`${information?.theme?.hover}` : null,
+                          : hoverStates["parent_services"]
+                          ? `${information?.theme?.hover}`
+                          : null,
                     }}
                     onMouseEnter={() => handleMouseEnter("parent_services")}
                     onMouseLeave={() => handleMouseLeave("parent_services")}
@@ -581,7 +631,7 @@ const Sidebar = () => {
                             .remove()
                         : null;
                     }}
-                     style={{
+                    style={{
                       background:
                         selectedOption === "inquiries" ||
                         hoverStates["inquiries"]
@@ -622,15 +672,13 @@ const Sidebar = () => {
                             .remove()
                         : null;
                     }}
-                     style={{
+                    style={{
                       background:
-                        selectedOption === "blotters" ||
-                        hoverStates["blotters"]
+                        selectedOption === "blotters" || hoverStates["blotters"]
                           ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
                           : null,
                       color:
-                        selectedOption === "blotters" ||
-                        hoverStates["blotters"]
+                        selectedOption === "blotters" || hoverStates["blotters"]
                           ? `${information?.theme.hover}`
                           : null,
                     }}
@@ -642,9 +690,9 @@ const Sidebar = () => {
                     PATAWAG (BLOTTERS)
                     <span className="flex relative">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 dark:bg-red-600" />
-                      {residentResponseCount > 0 && (
+                      {residentBlotterResponseCount > 0 && (
                         <span className="relative inline-flex text-xs bg-red-500 text-white rounded-full py-0.5 px-1.5">
-                          {residentResponseCount}
+                          {residentBlotterResponseCount}
                         </span>
                       )}
                     </span>
@@ -697,11 +745,14 @@ const Sidebar = () => {
                         color:
                           isClicked &&
                           (selectedOption === "reports" ||
-                          selectedOption === "officials" ||
-                          selectedOption === "staff_management" ||
-                          selectedOption === "info" || hoverStates["information"])
+                            selectedOption === "officials" ||
+                            selectedOption === "staff_management" ||
+                            selectedOption === "info" ||
+                            hoverStates["information"])
                             ? `${information?.theme?.hover}`
-                            : hoverStates["information"] ?`${information?.theme?.hover}` : null,
+                            : hoverStates["information"]
+                            ? `${information?.theme?.hover}`
+                            : null,
                       }}
                       onMouseEnter={() => handleMouseEnter("information")}
                       onMouseLeave={() => handleMouseLeave("information")}
@@ -819,8 +870,12 @@ const Sidebar = () => {
                               ? `${information?.theme.hover}`
                               : null,
                         }}
-                        onMouseEnter={() => handleMouseEnter("staff_management")}
-                        onMouseLeave={() => handleMouseLeave("staff_management")}
+                        onMouseEnter={() =>
+                          handleMouseEnter("staff_management")
+                        }
+                        onMouseLeave={() =>
+                          handleMouseLeave("staff_management")
+                        }
                         className={`flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md `}
                       >
                         <MdManageAccounts size={15} />
@@ -840,13 +895,11 @@ const Sidebar = () => {
                         }}
                         style={{
                           background:
-                            selectedOption === "info" ||
-                            hoverStates["info"]
+                            selectedOption === "info" || hoverStates["info"]
                               ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
                               : null,
                           color:
-                            selectedOption === "info" ||
-                            hoverStates["info"]
+                            selectedOption === "info" || hoverStates["info"]
                               ? `${information?.theme.hover}`
                               : null,
                         }}
@@ -874,13 +927,11 @@ const Sidebar = () => {
                     }}
                     style={{
                       background:
-                        selectedOption === "settings" ||
-                        hoverStates["settings"]
+                        selectedOption === "settings" || hoverStates["settings"]
                           ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
                           : null,
                       color:
-                        selectedOption === "settings" ||
-                        hoverStates["settings"]
+                        selectedOption === "settings" || hoverStates["settings"]
                           ? `${information?.theme.hover}`
                           : null,
                     }}
@@ -908,13 +959,11 @@ const Sidebar = () => {
                     }}
                     style={{
                       background:
-                        selectedOption === "/" ||
-                        hoverStates["/"]
+                        selectedOption === "/" || hoverStates["/"]
                           ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
                           : null,
                       color:
-                        selectedOption === "/" ||
-                        hoverStates["/"]
+                        selectedOption === "/" || hoverStates["/"]
                           ? `${information?.theme.hover}`
                           : null,
                     }}

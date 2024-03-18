@@ -1216,7 +1216,6 @@ const EditResidents = ({ props }) => {
                                   <label className="text-xs pl-2">
                                     {item.name}
                                   </label>
-
                                   {edit && (
                                     <button
                                       onClick={(e) =>
@@ -1348,7 +1347,6 @@ const EditResidents = ({ props }) => {
                                   <label className="text-xs pl-2">
                                     {item.name}
                                   </label>
-
                                   {edit && (
                                     <button
                                       onClick={(e) =>
@@ -1409,17 +1407,20 @@ const EditResidents = ({ props }) => {
                                           ? URL.createObjectURL(
                                               verification.selfie
                                             )
-                                          : verification.selfie.hasOwnProperty(
+                                          : verification.selfie &&
+                                            verification.selfie.hasOwnProperty(
                                               "link"
                                             )
                                           ? verification.selfie.link
-                                          : verification.selfie.uri
+                                          : verification.selfie &&
+                                            verification.selfie.uri
                                       }
                                       alt={`Selfie`}
-                                      className="w-full p-2 object-cover rounded-xl"
+                                      className="w-full h-[570px] p-2 object-cover rounded-xl"
                                     />
                                     <div className="flex text-gray-700 text-sm font-bold pb-2 ml-2 rounded-b-xl justify-center">
-                                      {verification.selfie.name}
+                                      {verification.selfie?.name ||
+                                        "No Image Taken"}
                                     </div>
                                   </div>
                                 </div>
@@ -1457,17 +1458,20 @@ const EditResidents = ({ props }) => {
                                   src={
                                     verification.selfie instanceof File
                                       ? URL.createObjectURL(verification.selfie)
-                                      : verification.selfie.hasOwnProperty(
+                                      : verification.selfie &&
+                                        verification.selfie.hasOwnProperty(
                                           "link"
                                         )
                                       ? verification.selfie.link
-                                      : verification.selfie.uri
+                                      : verification.selfie &&
+                                        verification.selfie.uri
                                   }
                                   alt={`Selfie`}
-                                  className="w-full p-2 object-cover rounded-xl"
+                                  className="w-full h-[380px] p-2 object-cover rounded-xl"
                                 />
                                 <div className="flex text-gray-700 text-sm font-bold pb-2 ml-2 rounded-b-xl justify-center">
-                                  {verification.selfie.name}
+                                  {verification.selfie?.name ||
+                                    "No Image Taken"}
                                 </div>
                               </div>
                             </div>

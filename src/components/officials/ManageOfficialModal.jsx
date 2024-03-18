@@ -260,10 +260,10 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
 
                     {/* Date 1 */}
                     <div className="flex flex-row">
-                      <div className="w-full md:w-1/5 lg:w-1/6">
+                      <div className="w-full md:w-1/5 lg:w-1/6 flex items-center">
                         <label
                           htmlFor="from_year"
-                          className=" w-full font-base flex items-center"
+                          className="font-medium w-full text-sm flex items-center"
                         >
                           FROM YEAR:{" "}
                         </label>
@@ -283,10 +283,10 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
                     </div>
                     {/* Date 2 */}
                     <div className="flex flex-col  md:flex-row mt-3">
-                      <div className="w-full md:w-1/5 lg:w-1/6">
+                      <div className="w-full md:w-1/5 lg:w-1/6 flex items-center">
                         <label
                           htmlFor="To_year"
-                          className=" w-[6rem] flex items-center"
+                          className="font-medium w-[6rem] text-sm flex items-center"
                         >
                           TO YEAR:{" "}
                         </label>

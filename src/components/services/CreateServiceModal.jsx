@@ -122,14 +122,15 @@ function CreateServiceModal({ brgy }) {
         console.log("response: ", response);
 
         if (response.status === 200) {
-          var logoSrc = document.getElementById("logo");
-          logoSrc.src =
-            "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+          // var logoSrc = document.getElementById("logo");
+          // logoSrc.src =
+          //   "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
 
-          var bannerSrc = document.getElementById("banner");
-          bannerSrc.src =
-            "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
-          setService({
+          // var bannerSrc = document.getElementById("banner");
+          // bannerSrc.src =
+          //   "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+         
+            setService({
             name: "",
             type: "",
             details: "",
