@@ -115,7 +115,6 @@ const ArchivedRegistrations = () => {
             setOfficials(officialsData);
           } else {
             setOfficials([]);
-            console.log(`No officials found for Barangay ${brgy}`);
           }
         } else {
           setOfficials([]);
@@ -235,7 +234,6 @@ const ArchivedRegistrations = () => {
     switch (choice) {
       case "date":
         return applications.filter((item) => {
-          console.log(typeof new Date(item.createdAt), selectedDate);
           return (
             new Date(item.createdAt).getFullYear() ===
             selectedDate.getFullYear() &&
@@ -248,7 +246,6 @@ const ArchivedRegistrations = () => {
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
 
-        console.log("start and end", startDate, endDate);
 
         return applications.filter(
           (item) =>
@@ -275,11 +272,7 @@ const ArchivedRegistrations = () => {
   };
 
   const onSelect = (e) => {
-    console.log("select", e.target.value);
-
     setSelected(e.target.value);
-
-    console.log("specified select", filters(e.target.value, specifiedDate));
   };
 
   const onChangeDate = (e) => {
@@ -306,8 +299,6 @@ const ArchivedRegistrations = () => {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      console.log("selected year converted date", date);
-      console.log("specified year", filters(selected, date));
       setFilteredApplications(filters(selected, date));
     }
   };

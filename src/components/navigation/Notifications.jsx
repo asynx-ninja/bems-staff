@@ -25,7 +25,7 @@ const Notifications = () => {
     const fetch = async () => {
       try {
         const res = await axios.get(`${API_LINK}/users/specific/${id}`);
-        console.log(res.data);
+  
         const res1 = await axios.get(
           `${API_LINK}/brgyinfo/?brgy=${brgy}&logo=true`
         );
@@ -46,7 +46,7 @@ const Notifications = () => {
         const response = await axios.get(
           `${API_LINK}/notification/?user_id=${userData.user_id}&area=${brgy}&type=Barangay`
         );
-        // console.log(response.data);
+
         if (response.status === 200) {
           const notificationsWithTimestamp = response.data.map(
             (notification) => {

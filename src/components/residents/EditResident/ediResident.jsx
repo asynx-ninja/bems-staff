@@ -48,9 +48,6 @@ const EditResidents = ({ props }) => {
     setVerification({ ...user.verification });
   }, [user]);
 
-  console.log("Verification: ", verification);
-  console.log("user: ", user);
-  console.log("state: ", state);
 
   const religions = [
     "Roman Catholic",
@@ -158,7 +155,7 @@ const EditResidents = ({ props }) => {
             }
           );
 
-          console.log("selfieFile: ", selfieFile);
+         
 
           setVerification((prev) => ({
             ...prev,
@@ -265,7 +262,7 @@ const EditResidents = ({ props }) => {
 
     const newArray = verification[name].filter((item, index) => index !== idx);
 
-    console.log("newArray: ", newArray);
+   
 
     setVerification((prev) => ({
       ...prev,
@@ -343,8 +340,7 @@ const EditResidents = ({ props }) => {
           formData.append("oldVerification", JSON.stringify(user.verification));
           formData.append("newVerification", JSON.stringify(verification));
 
-          console.log("Primary Upload: ", primaryUpload);
-          console.log("Primary Saved: ", primarySaved);
+   
 
           if (!verification.selfie.hasOwnProperty("link")) {
             // Use the existing Blob for selfie
@@ -372,7 +368,7 @@ const EditResidents = ({ props }) => {
                 uri: primaryUpload[i].uri,
               };
 
-              console.log("check file: ", file);
+           
 
               formData.append(
                 "files",
@@ -410,7 +406,7 @@ const EditResidents = ({ props }) => {
             }
           );
 
-          console.log(response);
+         
 
           if (response.status === 200) {
             setVerification(response.data?.verification || {});
@@ -430,7 +426,7 @@ const EditResidents = ({ props }) => {
       );
 
       if (userResponse.status === 200) {
-        console.log("User update successful:", userResponse.data);
+       
         setTimeout(() => {
           setSubmitClicked(false);
           setUpdatingStatus("success");

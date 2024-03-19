@@ -71,7 +71,7 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
   };
 
   const handleChange = (e) => {
-    console.log(e.target.name);
+
     setAnnouncement((prev) => ({
       ...prev,
       [e.target.name]:
@@ -123,7 +123,7 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
           formData.append("files", newFiles[f]);
         }
 
-      console.log("announcement", announcement);
+
 
       formData.append("announcement", JSON.stringify(announcement));
 
@@ -131,8 +131,7 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-      console.log("brgy: ", brgy);
-      console.log("res_folder: ", res_folder);
+
 
       if (res_folder.status === 200) {
         const response = await axios.patch(
@@ -192,8 +191,6 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
             };
           }
 
-          console.log("Notify: ", notify);
-          console.log("Result: ", response);
 
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {

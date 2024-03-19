@@ -154,7 +154,6 @@ const ArchivedEvents = () => {
     switch (choice) {
       case "date":
         return announcements.filter((item) => {
-          console.log(typeof new Date(item.createdAt), selectedDate);
           return (
             new Date(item.createdAt).getFullYear() ===
               selectedDate.getFullYear() &&
@@ -166,8 +165,6 @@ const ArchivedEvents = () => {
         const startDate = selectedDate;
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
-
-        console.log("start and end", startDate, endDate);
 
         return announcements.filter(
           (item) =>
@@ -194,11 +191,7 @@ const ArchivedEvents = () => {
   };
 
   const onSelect = (e) => {
-    console.log("select", e.target.value);
-
     setSelected(e.target.value);
-
-    console.log("specified select", filters(e.target.value, specifiedDate));
   };
 
   const onChangeDate = (e) => {
@@ -225,8 +218,6 @@ const ArchivedEvents = () => {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      console.log("selected year converted date", date);
-      console.log("specified year", filters(selected, date));
       setFilteredAnnouncements(filters(selected, date));
     }
   };

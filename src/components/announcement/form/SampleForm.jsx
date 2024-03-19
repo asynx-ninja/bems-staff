@@ -78,7 +78,7 @@ const SampleForm = ({
     fetch();
   }, [brgy, service_id]);
 
-  console.log(detail)
+
 
   return (
     <>

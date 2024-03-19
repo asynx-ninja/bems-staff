@@ -63,10 +63,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
   };
 
   
-  // console.log("Edit document: ", document);
-  // console.log("details: ", details);
-  // console.log("Doc details: ", docDetails);
-  // console.log("Doc detail: ", docDetail);
+
 
   const handleSubmit = async (e) => {
     try {
@@ -84,7 +81,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
         }
       );
 
-      console.log(response);
+
       setTimeout(() => {
         setSubmitClicked(false);
         setUpdatingStatus("success");

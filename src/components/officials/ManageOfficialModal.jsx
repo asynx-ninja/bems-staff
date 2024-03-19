@@ -7,7 +7,7 @@ import EditLoader from "./loaders/EditLoader";
 import GetBrgy from "../GETBrgy/getbrgy";
 
 function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
-  console.log(selectedOfficial);
+
   const information = GetBrgy(brgy);
 
   const [edit, setEdit] = useState(false);
@@ -21,7 +21,7 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
 
   const dateFormat = (date) => {
     const eventdate = date === undefined ? "" : date.substr(0, 7);
-    console.log(eventdate);
+
     return eventdate;
   };
 
@@ -60,8 +60,7 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-      console.log("brgy: ", brgy);
-      console.log("res_folder: ", res_folder);
+
 
       if (res_folder.status === 200) {
         const result = await axios.patch(

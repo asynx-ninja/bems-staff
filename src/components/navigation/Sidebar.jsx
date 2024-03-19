@@ -56,7 +56,7 @@ const Sidebar = () => {
           const residentPatawags = patawags.filter((patawag) => {
             const latestResponse =
               patawag.response[patawag.response.length - 1];
-            console.log(latestResponse);
+
             return (
               latestResponse &&
               latestResponse.type === "Resident" &&
@@ -98,7 +98,7 @@ const Sidebar = () => {
           const residentInquiries = inquiries.filter((inquiry) => {
             const latestResponse =
               inquiry.response[inquiry.response.length - 1];
-            console.log(latestResponse);
+     
             return (
               latestResponse &&
               latestResponse.type === "Resident" &&

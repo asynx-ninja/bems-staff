@@ -35,7 +35,6 @@ const EditServicesForm = ({ service_id, brgy }) => {
     fetch();
   }, [brgy, service_id]);
 
-  console.log("Detail", detail);
 
   const handleFormChange = (e, key) => {
     const newState = detail.form[0];
@@ -63,7 +62,7 @@ const EditServicesForm = ({ service_id, brgy }) => {
         }
       );
 
-      console.log(response);
+
       setTimeout(() => {
         setSubmitClicked(false);
         setUpdatingStatus("success");
@@ -89,8 +88,6 @@ const EditServicesForm = ({ service_id, brgy }) => {
     }));
   };
 
-  console.log("details: ", details);
-  console.log("detail: ", detail);
 
   return (
     <div>

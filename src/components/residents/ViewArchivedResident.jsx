@@ -9,8 +9,7 @@ function ViewResidentModal({ user, setUser, brgy }) {
     ...user.verification,
   });
 
-  console.log("Verification: ", verification);
-  console.log("user: ", user);
+
 
   const information = GetBrgy(brgy);
   const religions = [

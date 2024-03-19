@@ -138,8 +138,6 @@ const EditSectionDocument = ({brgy, service_id, document, setDocument, docDetail
         )
       );
 
-      console.log("formOptions:", formOptions);
-      console.log("formOptions2:", formOptions2);
 
       setFormOptions2(formOptions2);
     } else {

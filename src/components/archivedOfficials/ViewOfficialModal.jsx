@@ -8,11 +8,10 @@ function ViewOfficialModal({
   officials,
 }) {
   const information = GetBrgy(brgy);
-  console.log("selected", selectedOfficial);
-  console.log("selected", officials);
+
   const dateFormat = (date) => {
     const eventdate = date === undefined ? "" : date.substr(0, 7);
-    console.log(eventdate);
+
     return eventdate;
   };
   return (

@@ -55,7 +55,7 @@ const AddSectionDocument = ({
             )
           );
 
-          console.log("formOptions2:", formOptions2);
+       
 
           setFormOptions2(formOptions2);
         }
@@ -98,7 +98,7 @@ const AddSectionDocument = ({
     setSection(updatedData);
   };
 
-  console.log("Section: ", section);
+
 
   const handleSectionChange = (e, index) => {
     const updatedSectionFields = [...section];

@@ -350,7 +350,7 @@ const PrintPDF = ({ detail }) => {
     },
   });
 
-  console.log("detail: ", detail)
+
 
   const LetterHead = () => (
     <View style={styles.letterHead.view1}>

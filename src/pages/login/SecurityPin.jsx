@@ -40,7 +40,7 @@ const SecurityPin = ({ numberOfDigits = 4 }) => {
 
     const response = await axios.get(`${API_LINK}/auth/check_pin/${email}/${userPin}`);
     if (response.status === 200) {
-      console.log("PIN validation successful.");
+     
       navigate(`/change/${encodedEmail}`);
     } else {
       setErrorMessage("❌ Wrong PIN. Please check again.");

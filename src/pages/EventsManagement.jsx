@@ -110,7 +110,6 @@ const EventsManagement = () => {
   const checkAllHandler = () => {
     const announcementsToCheck =
       Announcements.length > 0 ? Announcements : announcements;
-    console.log("Checked", announcementsToCheck);
     if (announcementsToCheck.length === selectedItems.length) {
       setSelectedItems([]);
     } else {
@@ -151,8 +150,6 @@ const EventsManagement = () => {
     const formattedTime = moment(date).format("hh:mm A");
     return formattedTime;
   };
-
-  console.log(selectedItems);
 
   const handleResetFilter = () => {
     setSearchQuery("");
@@ -206,11 +203,7 @@ const EventsManagement = () => {
   };
 
   const onSelect = (e) => {
-    console.log("select", e.target.value);
-
     setSelected(e.target.value);
-
-    console.log("specified select", filters(e.target.value, specifiedDate));
   };
 
   const onChangeDate = (e) => {
@@ -238,8 +231,6 @@ const EventsManagement = () => {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      console.log("selected year converted date", date);
-      console.log("specified year", filters(selected, date));
       setFilteredAnnouncements(filters(selected, date));
     }
   };

@@ -232,9 +232,6 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
           logo: logo,
         };
 
-        console.log("Inquiry: ", inquiry);
-        console.log("Notify: ", notify);
-        console.log("Result: ", response);
 
         const result = await axios.post(`${API_LINK}/notification/`, notify, {
           headers: {
@@ -264,7 +261,6 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
     setStatusChanger(!statusChanger);
   };
 
-  console.log("inquiry: ", inquiry)
 
   return (
     <div>

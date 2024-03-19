@@ -63,7 +63,6 @@ const Residents = () => {
       if (response.status === 200) {
         setUsers(response.data.result);
         setPageCount(response.data.pageCount);
-        console.log("Users data:", response.data);
       } else {
         setUsers([]);
       }

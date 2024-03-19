@@ -33,7 +33,6 @@ const StaffManagement = () => {
   const [position, setPosition] = useState({});
   const [positionFilter, setPositionFilter] = useState("all");
   const information = GetBrgy(brgy);
-  console.log("checkkkk: ", users);
 
   useEffect(() => {
     const fetch = async () => {

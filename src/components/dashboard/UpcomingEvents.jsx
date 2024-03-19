@@ -43,7 +43,7 @@ const UpcomingEvents = () => {
     setAnnouncement(item);
   };
 
-  console.log("announcements: ", announcement);
+
 
   return (
     <div className="w-full lg:w-6/12 flex flex-col h-full">

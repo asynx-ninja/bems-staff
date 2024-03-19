@@ -81,7 +81,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
     }
   };
 
-  console.log("Document: ", document);
+
 
   return (
     <div>

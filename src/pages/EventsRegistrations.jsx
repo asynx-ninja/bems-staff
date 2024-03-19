@@ -78,13 +78,11 @@ const EventsRegistrations = () => {
         const response = await axios.get(
           `${API_LINK}/application/?brgy=${brgy}&archived=false&status=${statusFilter}&title=${selecteEventFilter}&page=${currentPage}`
         );
-        console.log(selecteEventFilter);
         if (response.status === 200) {
           setApplications(response.data.result);
           setPageCount(response.data.pageCount);
           setFilteredApplications(response.data.result);
         } else setApplications([]);
-        console.log(response.data.result);
       } catch (err) {
         console.log(err);
       }
@@ -107,7 +105,6 @@ const EventsRegistrations = () => {
             setOfficials(officialsData);
           } else {
             setOfficials([]);
-            console.log(`No officials found for Barangay ${brgy}`);
           }
         } else {
           setOfficials([]);
@@ -204,7 +201,6 @@ const EventsRegistrations = () => {
     switch (choice) {
       case "date":
         return applications.filter((item) => {
-          console.log(typeof new Date(item.createdAt), selectedDate);
           return (
             new Date(item.createdAt).getFullYear() ===
               selectedDate.getFullYear() &&
@@ -217,7 +213,6 @@ const EventsRegistrations = () => {
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
 
-        console.log("start and end", startDate, endDate);
 
         return applications.filter(
           (item) =>
@@ -244,11 +239,8 @@ const EventsRegistrations = () => {
   };
 
   const onSelect = (e) => {
-    console.log("select", e.target.value);
 
     setSelected(e.target.value);
-
-    console.log("specified select", filters(e.target.value, specifiedDate));
   };
 
   const onChangeDate = (e) => {
@@ -275,8 +267,6 @@ const EventsRegistrations = () => {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      console.log("selected year converted date", date);
-      console.log("specified year", filters(selected, date));
       setFilteredApplications(filters(selected, date));
     }
   };

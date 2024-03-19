@@ -191,8 +191,7 @@ const AddResidents = () => {
             }
           );
 
-          console.log("selfieFile: ", selfieFile);
-
+        
           setUser((prev) => ({
             ...prev,
             verification: {
@@ -249,7 +248,7 @@ const AddResidents = () => {
       const emptyFieldsArr = checkEmptyFields();
 
       if (emptyFieldsArr.length > 0) {
-        console.log(emptyFieldsArr);
+       
         setEmpty(true);
         setSubmitClicked(false);
       } else {
@@ -315,7 +314,7 @@ const AddResidents = () => {
                 uri: user.verification.primary_file[i].uri,
               };
 
-              console.log("check file: ", file);
+          
 
               formData.append(
                 "files",
@@ -359,7 +358,7 @@ const AddResidents = () => {
           );
 
           if (response.status === 200) {
-            console.log("created");
+          
             setUser({
               user_id: "",
               firstName: "",

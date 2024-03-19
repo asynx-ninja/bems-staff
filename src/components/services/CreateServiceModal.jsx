@@ -23,7 +23,7 @@ function CreateServiceModal({ brgy }) {
     brgy: brgy,
   });
 
-  console.log(emptyFields);
+
 
   const [isLogoSelected, setIsLogoSelected] = useState(false);
   const [isBannerSelected, setIsBannerSelected] = useState(false);
@@ -110,8 +110,6 @@ function CreateServiceModal({ brgy }) {
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-      console.log("brgy: ", brgy);
-      console.log("res_folder: ", res_folder);
 
       if (res_folder.status === 200) {
         const response = await axios.post(
@@ -119,7 +117,7 @@ function CreateServiceModal({ brgy }) {
           formData
         );
 
-        console.log("response: ", response);
+     
 
         if (response.status === 200) {
           // var logoSrc = document.getElementById("logo");
@@ -166,8 +164,6 @@ function CreateServiceModal({ brgy }) {
             },
           });
 
-          console.log("Notify: ", notify);
-          console.log("Result: ", response);
 
           if (result.status === 200) {
             setLogo();

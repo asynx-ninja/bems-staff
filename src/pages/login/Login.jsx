@@ -26,7 +26,6 @@ const Login = () => {
     try {
       const res = await axios.get(`${API_LINK}/auth/${obj.username}/${obj.password}`);
       setErrorMessage("");
-      console.log(res);
       if (res.status === 200) {
         if (res.data[0].type === "Brgy Admin" || res.data[0].type === "Staff"){
           const id = res.data[0]._id;

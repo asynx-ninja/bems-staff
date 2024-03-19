@@ -35,7 +35,6 @@ const EditEventsForm = ({ announcement_id, brgy }) => {
     fetch();
   }, [brgy, announcement_id]);
 
-  console.log("Detail", detail);
 
   const handleFormChange = (e, key) => {
     const newState = detail.form[0];
@@ -71,8 +70,7 @@ const EditEventsForm = ({ announcement_id, brgy }) => {
             }
           );
 
-          console.log(response);
-
+         
           setTimeout(() => {
             setSubmitClicked(false);
             setUpdatingStatus("success");
@@ -98,7 +96,7 @@ const EditEventsForm = ({ announcement_id, brgy }) => {
           }
         );
 
-        console.log(response);
+     
 
         setTimeout(() => {
           setSubmitClicked(false);

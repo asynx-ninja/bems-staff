@@ -91,7 +91,7 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
         }
       );
 
-      console.log(response);
+
       setTimeout(() => {
         setSubmitClicked(false);
         setUpdatingStatus("success");
@@ -117,11 +117,7 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
     }));
   };
 
-  
-  console.log("Edit document: ", document);
-  console.log("details: ", details);
-  console.log("Doc details: ", docDetails);
-  console.log("Doc detail: ", docDetail);
+
 
   return (
     <div>

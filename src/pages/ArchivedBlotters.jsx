@@ -43,7 +43,7 @@ const ArchivedBlotters = () => {
   // blotter related
   const [blotterDetails, setBlotterDetails] = useState([]);
 
-  console.log("Blotter Details in blotter: ", blotterDetails);
+
 
   useEffect(() => {
     const fetch = async () => {
@@ -119,7 +119,7 @@ const ArchivedBlotters = () => {
             setOfficials(officialsData);
           } else {
             setOfficials([]);
-            console.log(`No officials found for Barangay ${brgy}`);
+
           }
         } else {
           setOfficials([]);
@@ -214,7 +214,7 @@ const ArchivedBlotters = () => {
     switch (choice) {
       case "date":
         return requests.filter((item) => {
-          console.log(typeof new Date(item.createdAt), selectedDate);
+        
           return (
             new Date(item.createdAt).getFullYear() ===
               selectedDate.getFullYear() &&
@@ -227,7 +227,7 @@ const ArchivedBlotters = () => {
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
 
-        console.log("start and end", startDate, endDate);
+      
 
         return requests.filter(
           (item) =>
@@ -254,11 +254,11 @@ const ArchivedBlotters = () => {
   };
 
   const onSelect = (e) => {
-    console.log("select", e.target.value);
+ 
 
     setSelected(e.target.value);
 
-    console.log("specified select", filters(e.target.value, specifiedDate));
+
   };
 
   const onChangeDate = (e) => {
@@ -285,8 +285,6 @@ const ArchivedBlotters = () => {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      console.log("selected year converted date", date);
-      console.log("specified year", filters(selected, date));
       setFilteredRequests(filters(selected, date));
     }
   };
@@ -613,7 +611,7 @@ const ArchivedBlotters = () => {
                     return null; // Skip rendering if status doesn't match the filter
                   }
 
-                  console.log("blotterDetail sa table: ", mergedItem);
+                 
 
                   return (
                     <tr key={index} className="odd:bg-slate-100 text-center">

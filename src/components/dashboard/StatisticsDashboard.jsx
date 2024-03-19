@@ -31,7 +31,7 @@ const StatisticsDashboard = () => {
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
 
-  // console.log(userData);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -164,7 +164,7 @@ const StatisticsDashboard = () => {
             InquiriesResponse.status === 200
               ? InquiriesResponse.data.total
               : 0
-          );console.log("inquiries", InquiriesResponse)
+          );
         } catch (err) {
           console.log("err", err.message);
         }
@@ -208,7 +208,6 @@ const StatisticsDashboard = () => {
     { gradient1: "from-[#C33764]", gradient2: "to-[#1D2671]" },
   ];
 
-  // console.log("requests: ", requests);
 
   const titles = [
     {
@@ -276,7 +275,7 @@ const StatisticsDashboard = () => {
     : null,
   ];
 
-  // console.log("titles: ", titles);
+
 
   return (
     <div className="flex flex-col w-full">

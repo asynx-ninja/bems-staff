@@ -103,7 +103,6 @@ const ArchivedOfficials = () => {
             setOfficials(officialsData);
           } else {
             setOfficials([]);
-            console.log(`No officials found for Barangay ${brgy}`);
           }
         } else {
           setOfficials([]);

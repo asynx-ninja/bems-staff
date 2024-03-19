@@ -38,7 +38,7 @@ const ForgotPassword = () => {
   
       if (resetResponse.status === 200) {
         setSuccessMessage("Password reset initiated. Check your email for instructions.");
-        console.log(email);
+     
         navigate(`/pin/${encodedEmail}`);
       } else {
         setError("Error sending PIN");

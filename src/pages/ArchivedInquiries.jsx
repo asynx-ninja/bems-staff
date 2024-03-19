@@ -48,7 +48,6 @@ const Inquiries = () => {
         setFilteredInquiries(response.data.result);
         setPageCount(response.data.pageCount);
       } else setInquiries([]);
-      console.log(response.data);
     };
 
     fetch();
@@ -140,7 +139,6 @@ const Inquiries = () => {
     switch (choice) {
       case "date":
         return inquiries.filter((item) => {
-          console.log(typeof new Date(item.compose.date), selectedDate);
           return (
             new Date(item.compose.date).getFullYear() ===
             selectedDate.getFullYear() &&
@@ -154,7 +152,6 @@ const Inquiries = () => {
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
 
-        console.log("start and end", startDate, endDate);
 
         return inquiries.filter(
           (item) =>
@@ -181,11 +178,9 @@ const Inquiries = () => {
   };
 
   const onSelect = (e) => {
-    console.log("select", e.target.value);
-
+  
     setSelected(e.target.value);
 
-    console.log("specified select", filters(e.target.value, specifiedDate));
   };
 
   const onChangeDate = (e) => {
@@ -212,8 +207,6 @@ const Inquiries = () => {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      console.log("selected year converted date", date);
-      console.log("specified year", filters(selected, date));
       setFilteredInquiries(filters(selected, date));
     }
   };
