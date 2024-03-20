@@ -22,6 +22,7 @@ const Reports = () => {
   const [deniedCount, setDeniedCount] = useState(0);
   const [verifiedCount, setVerifiedCount] = useState(0);
   const [verificationApprovalCount, setVerificationApprovalCount] = useState(0);
+  const [forReviewCount, setForReviewCount] = useState(0);
   const information = GetBrgy(brgy);
 
   useEffect(() => {
@@ -121,9 +122,11 @@ const Reports = () => {
           }
         );
 
-        const data = response.data[0];
+        if (response.status === 200) {
+          const data = response.data[0];
 
-        if (data) {
+          console.log("total residents: ", data);
+
           const { residents } = data;
           const registeredCount = residents.filter(
             (resident) => resident.status === "Registered"
@@ -140,12 +143,16 @@ const Reports = () => {
           const verificationApprovalCount = residents.filter(
             (resident) => resident.status === "Verification Approval"
           ).length;
+          const forReviewCount = residents.filter(
+            (resident) => resident.status === "Unknown"
+          ).length;
 
           setRegisteredCount(registeredCount);
           setPendingCount(pendingCount);
           setDeniedCount(deniedCount);
           setVerifiedCount(verifiedCount);
           setVerificationApprovalCount(verificationApprovalCount);
+          setForReviewCount(forReviewCount);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -165,13 +172,34 @@ const Reports = () => {
   }, [brgy]); // Dependency on brgy to update counts when barangay changes
 
   const chartDataResidentStatus = {
-    series: [registeredCount, pendingCount, deniedCount, verifiedCount, verificationApprovalCount],
+    series: [
+      registeredCount,
+      pendingCount,
+      deniedCount,
+      verifiedCount,
+      verificationApprovalCount,
+      forReviewCount,
+    ],
     options: {
-      colors: ["#4caf50", "#ff9800", "#ac4646", "#6f75c2", "#5586cf"], // Colors for Registered, Pending, Denied
+      colors: [
+        "#4caf50",
+        "#ff9800",
+        "#ac4646",
+        "#6f75c2",
+        "#5586cf",
+        "#91406f",
+      ], // Colors for Registered, Pending, Denied
       chart: {
         background: "transparent",
       },
-      labels: ["Registered", "Pending", "Denied", "Verified", "Verification Approval"],
+      labels: [
+        "Registered",
+        "Pending",
+        "Denied",
+        "Verified",
+        "Verification Approval",
+        "For Review",
+      ],
     },
   };
 
@@ -258,8 +286,6 @@ const Reports = () => {
         );
 
         const data = response.data;
-
-
 
         // Assuming the API response has the structure similar to statusPercentages
         setStatusPercentages(data);
@@ -350,7 +376,6 @@ const Reports = () => {
         );
 
         const data = response.data;
-
 
         // Assuming the API response has the structure similar to serviceSummary
         setStatusPercentagesInquiries(data);
