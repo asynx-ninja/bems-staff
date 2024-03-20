@@ -164,9 +164,8 @@ const ArchivedStaffsManagement = () => {
                 >
                   TYPE
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -315,9 +314,10 @@ const ArchivedStaffsManagement = () => {
                       <span className="text-xs sm:text-sm text-black line-clamp-2 ">
                         {item.lastName +
                           ", " +
-                          item.middleName +
-                          " " +
-                          item.firstName}
+                          item.firstName +
+                          (item.middleName !== undefined
+                            ? " " + item.middleName
+                            : "")}
                       </span>
                     </td>
                     <td className="px-2 xl:px-6 py-3">

@@ -585,16 +585,26 @@ const ArchivedRegistrations = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    const Applications = applications.filter((item) =>
-                      item.event_name
-                        .toLowerCase()
-                        .includes(e.target.value.toLowerCase()) ||
-                      item.event_id
-                        .toLowerCase()
-                        .includes(e.target.value.toLowerCase())
+                    const Application = applications.filter(
+                      (item) =>
+                        item.event_name
+                          .toLowerCase()
+                          .includes(e.target.value.toLowerCase()) ||
+                        item.application_id
+                          .toLowerCase()
+                          .includes(e.target.value.toLowerCase()) ||
+                        item.form[0].firstName.value
+                          .toLowerCase()
+                          .includes(e.target.value.toLowerCase()) ||
+                        item.form[0].lastName.value
+                          .toLowerCase()
+                          .includes(e.target.value.toLowerCase()) ||
+                        item.form[0].middleName.value
+                          .toLowerCase()
+                          .includes(e.target.value.toLowerCase())
                     );
 
-                    setFilteredApplications(Applications);
+                    setFilteredApplications(Application);
                   }}
                 />
               </div>

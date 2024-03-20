@@ -171,7 +171,7 @@ const StatisticsDashboard = () => {
 
         try {
           const archivedInquiriesResponse = await axios.get(
-            `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=true`
+            `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=true&label=Staff`
           );
           setArchivedInquiries(
             archivedInquiriesResponse.status === 200

@@ -237,6 +237,27 @@ const ArchivedOfficials = () => {
                     BARANGAY KAGAWAD
                   </a>
                   <a
+                    onClick={() => handlePositionFilter("Secretary")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    SECRETARY
+                  </a>
+                  <a
+                    onClick={() => handlePositionFilter("Assistant Secretary")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    ASSISTANT SECRETARY
+                  </a>
+                  <a
+                    onClick={() => handlePositionFilter("Treasurer")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    TREASURER
+                  </a>
+                  <a
                     onClick={() => handlePositionFilter("SK Chairman")}
                     class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
@@ -249,6 +270,20 @@ const ArchivedOfficials = () => {
                     href="#"
                   >
                     SK KAGAWAD
+                  </a>
+                  <a
+                    onClick={() => handlePositionFilter("SK Secretary")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    SK Secretary
+                  </a>
+                  <a
+                    onClick={() => handlePositionFilter("SK Treasurer")}
+                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    SK TREASURER
                   </a>
                 </ul>
               </div>

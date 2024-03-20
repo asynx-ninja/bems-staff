@@ -203,7 +203,7 @@ const EventsRegistrations = () => {
         return applications.filter((item) => {
           return (
             new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
             new Date(item.createdAt).getDate() === selectedDate.getDate()
           );
@@ -217,7 +217,7 @@ const EventsRegistrations = () => {
         return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-              startDate.getFullYear() &&
+            startDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === startDate.getMonth() &&
             new Date(item.createdAt).getDate() >= startDate.getDate() &&
             new Date(item.createdAt).getDate() <= endDate.getDate()
@@ -226,7 +226,7 @@ const EventsRegistrations = () => {
         return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -334,9 +334,8 @@ const EventsRegistrations = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -505,9 +504,8 @@ const EventsRegistrations = () => {
                 >
                   {selectedEventType}
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -590,6 +588,15 @@ const EventsRegistrations = () => {
                           .toLowerCase()
                           .includes(e.target.value.toLowerCase()) ||
                         item.application_id
+                          .toLowerCase()
+                          .includes(e.target.value.toLowerCase()) ||
+                        item.form[0].firstName.value
+                          .toLowerCase()
+                          .includes(e.target.value.toLowerCase()) ||
+                        item.form[0].lastName.value
+                          .toLowerCase()
+                          .includes(e.target.value.toLowerCase()) ||
+                        item.form[0].middleName.value
                           .toLowerCase()
                           .includes(e.target.value.toLowerCase())
                     );

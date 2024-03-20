@@ -159,25 +159,25 @@ const EventsManagement = () => {
   const filters = (choice, selectedDate) => {
     switch (choice) {
       case "date":
-        const newArr = announcements.filter((item) => {
+        const newArr = announcementWithCounts.filter((item) => {
           const createdAt = new Date(item.createdAt.slice(0, 10));
-
+  
           return (
             createdAt.getFullYear() === selectedDate.getFullYear() &&
             createdAt.getMonth() === selectedDate.getMonth() &&
             createdAt.getDate() === selectedDate.getDate()
           );
         });
-
+  
         return newArr;
       case "week":
         const startDate = selectedDate;
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
-
-        return announcements.filter((item) => {
+  
+        return announcementWithCounts.filter((item) => {
           const createdAt = new Date(item.createdAt.slice(0, 10));
-
+  
           return (
             createdAt.getFullYear() === startDate.getFullYear() &&
             createdAt.getMonth() === startDate.getMonth() &&
@@ -186,16 +186,16 @@ const EventsManagement = () => {
           );
         });
       case "month":
-        return announcements.filter((item) => {
+        return announcementWithCounts.filter((item) => {
           const createdAt = new Date(item.createdAt.slice(0, 10));
-
+  
           return (
             createdAt.getFullYear() === selectedDate.getFullYear() &&
             createdAt.getMonth() === selectedDate.getMonth()
           );
         });
       case "year":
-        return announcements.filter((item) => {
+        return announcementWithCounts.filter((item) => {
           const createdAt = new Date(item.createdAt.slice(0, 10));
           return createdAt.getFullYear() === selectedDate.getFullYear();
         });
@@ -227,7 +227,7 @@ const EventsManagement = () => {
 
   const onChangeYear = (e) => {
     if (e.target.value === "") {
-      setFilteredAnnouncements(announcements);
+      setFilteredAnnouncements(announcementWithCounts);
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
@@ -439,7 +439,7 @@ const EventsManagement = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    const Announcements = announcements.filter(
+                    const Announcements = announcementWithCounts.filter(
                       (item) =>
                         item.title
                           .toLowerCase()

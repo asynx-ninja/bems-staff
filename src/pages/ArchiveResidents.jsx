@@ -206,7 +206,7 @@ const Residents = () => {
                   <li
                     onClick={() => handleStatusFilter("For Review")}
                     className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
-                      statusFilter === "Verified" && "bg-[#b3c5cc]"
+                      statusFilter === "For Review" && "bg-[#b3c5cc]"
                     }`}
                   >
                     FOR REVIEW
@@ -333,7 +333,7 @@ const Residents = () => {
                         />
                       </div>
                     </td>
-                    <td className="py-3">
+                    <td className="py-3 w-1/5">
                       <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
                         {item.lastName +
                           ", " +

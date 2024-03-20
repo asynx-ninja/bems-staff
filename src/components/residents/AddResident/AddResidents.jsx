@@ -60,7 +60,6 @@ const AddResidents = () => {
     },
   });
 
-  console.log("user: ", user);
 
   const checkEmptyFields = () => {
     let arr = [];
