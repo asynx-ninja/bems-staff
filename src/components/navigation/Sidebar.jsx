@@ -418,7 +418,7 @@ const Sidebar = () => {
                         setSelectedOption("events_management");
                         window.innerWidth >= 320 && window.innerWidth <= 1023
                           ? document
-                              .querySelector(
+                              .getQuerySelector(
                                 "[data-hs-overlay-backdrop-template]"
                               )
                               .remove()
@@ -449,7 +449,7 @@ const Sidebar = () => {
                         setSelectedOption("events_registrations");
                         window.innerWidth >= 320 && window.innerWidth <= 1023
                           ? document
-                              .querySelector(
+                              .getQuerySelector(
                                 "[data-hs-overlay-backdrop-template]"
                               )
                               .remove()
@@ -548,7 +548,7 @@ const Sidebar = () => {
                         setSelectedOption("services");
                         window.innerWidth >= 320 && window.innerWidth <= 1023
                           ? document
-                              .querySelector(
+                              .getQuerySelector(
                                 "[data-hs-overlay-backdrop-template]"
                               )
                               .remove()
@@ -580,7 +580,7 @@ const Sidebar = () => {
                         setSelectedOption("requests");
                         window.innerWidth >= 320 && window.innerWidth <= 1023
                           ? document
-                              .querySelector(
+                              .getQuerySelector(
                                 "[data-hs-overlay-backdrop-template]"
                               )
                               .remove()
@@ -705,7 +705,7 @@ const Sidebar = () => {
                     onClick={() => {
                       window.innerWidth >= 320 && window.innerWidth <= 1023
                         ? document
-                            .querySelector(
+                            .getQuerySelector(
                               "[data-hs-overlay-backdrop-template]"
                             )
                             .remove()
@@ -790,7 +790,7 @@ const Sidebar = () => {
                         onClick={() => {
                           window.innerWidth >= 320 && window.innerWidth <= 1023
                             ? document
-                                .querySelector(
+                                .getQuerySelector(
                                   "[data-hs-overlay-backdrop-template]"
                                 )
                                 .remove()
@@ -821,7 +821,7 @@ const Sidebar = () => {
                         onClick={() => {
                           window.innerWidth >= 320 && window.innerWidth <= 1023
                             ? document
-                                .querySelector(
+                                .getQuerySelector(
                                   "[data-hs-overlay-backdrop-template]"
                                 )
                                 .remove()
@@ -852,7 +852,7 @@ const Sidebar = () => {
                         onClick={() => {
                           window.innerWidth >= 320 && window.innerWidth <= 1023
                             ? document
-                                .querySelector(
+                                .getQuerySelector(
                                   "[data-hs-overlay-backdrop-template]"
                                 )
                                 .remove()
@@ -887,7 +887,7 @@ const Sidebar = () => {
                         onClick={() => {
                           window.innerWidth >= 320 && window.innerWidth <= 1023
                             ? document
-                                .querySelector(
+                                .getQuerySelector(
                                   "[data-hs-overlay-backdrop-template]"
                                 )
                                 .remove()
@@ -919,7 +919,7 @@ const Sidebar = () => {
                     onClick={() => {
                       window.innerWidth >= 320 && window.innerWidth <= 1023
                         ? document
-                            .querySelector(
+                            .getQuerySelector(
                               "[data-hs-overlay-backdrop-template]"
                             )
                             .remove()
