@@ -12,18 +12,9 @@ const AddBlotterDocument = ({ request, brgy }) => {
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
 
-  // console.log("request sa add: ", request)
-
-  // const [section, setSection] = useState([]);
 
   const [checked, setChecked] = useState(false);
 
-  // const handleFormChange = (e, key) => {
-  //   const newState = { ...form };
-  //   newState[key].checked = e.target.checked;
-
-  //   setForm(newState);
-  // };
 
   const [document, setDocument] = useState({
     req_id: request.req_id,
@@ -91,7 +82,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
     }
   };
 
-  console.log("Document: ", document);
+
 
   return (
     <div>

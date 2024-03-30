@@ -74,9 +74,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     req_id: "",
   });
 
-  // console.log("patawag data: ", patawagData);
-  console.log("response data: ", ResponseData);
-  console.log("userData: ", userData);
+
 
   const handleComplainantChange = (e) => {
     const selectedUserId = e.target.value;
@@ -107,9 +105,6 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
       type: "Defendant",
     });
   };
-
-  // console.log("complainant data: ", ComplainantData);
-  // console.log("defendant data: ", DefendantData);
 
   useEffect(() => {
     setDetail(request);
@@ -161,7 +156,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     fetchUsers();
   }, [brgy]);
 
-  // console.log("users: ", users);
+
 
   useEffect(() => {
     // function to filter
@@ -182,9 +177,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     fetch();
   }, [brgy, request, detail]);
 
-  console.log("blotterDetails: ", blotterDetails);
-  // console.log("request: ", request);
-  // console.log("detail: ", detail);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -441,10 +434,6 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-      console.log("obj", obj);
-      console.log("targetUserIds: ", targetUserIds);
-      // console.log("res_folder: ", res_folder);
-      // console.log("createFiles: ", createFiles);
 
       if (res_folder.status === 200) {
         for (let i = 0; i < createFiles.length; i++) {
@@ -476,7 +465,6 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
             logo: service.collections.logo,
           };
 
-          console.log("Notify: ", notify);
 
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {
@@ -522,7 +510,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
         status: `${ResponseData.status}`,
       };
 
-      console.log("obj", obj);
+
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
 
@@ -548,7 +536,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
               message: `A barangay staff has replied to your patawag conversation.\n\n
         
               Please view and respond as you've seen this notification!\n\n
-              Thank you!!,`,
+              Thank you!`,
               go_to: "Patawag",
             },
             target: {
@@ -560,7 +548,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
             logo: service.collections.logo,
           };
 
-          console.log("Notify: ", notify);
+
 
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {

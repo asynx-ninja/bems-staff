@@ -115,7 +115,7 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
         const activeFormResponse = await axios.get(
           `http://localhost:8800/api/event_form/check/?brgy=${brgy}&event_id=${announcement_id}`
         );
-        console.log(activeFormResponse);
+
         if (activeFormResponse.data.length > 0) {
           throw new Error(
             "There's an active form. Please turn it off before updating the new form."
@@ -166,8 +166,7 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
     }
   };
 
-  console.log("Section in Add Events", section);
-
+  
   return (
     <div>
       <div

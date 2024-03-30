@@ -117,7 +117,7 @@ const AddServicesForm = ({ service_id, brgy }) => {
     }
   };
 
-  console.log("Section in Add Service", section);
+
 
   return (
     <div>

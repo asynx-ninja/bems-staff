@@ -44,7 +44,7 @@ const PrintDocumentTypeF = ({
   brgy,
 }) => {
   const [date, setDate] = useState(new Date());
-  console.log("docDetails sa pdf: ", docDetails);
+
 
   const returnLogo = () => {
     switch (detail.brgy) {
@@ -510,8 +510,6 @@ const PrintDocumentTypeF = ({
                     }
                   }
 
-                  console.log("key", key);
-                  console.log("value", value);
 
                   // If no matching entry is found in detail.form?.[1]?.[all possible data]?.form?,
                   // check detail.form?.[0]?.[value]?.value

@@ -59,8 +59,7 @@ const PrintPDF = ({ detail, officials }) => {
     fetchData();
   }, [detail.brgy]);
 
-  console.log("announcements: ", announcements);
-  console.log("event_id: ", detail.event_id);
+  
 
   const returnLogo = () => {
     switch (detail.brgy) {
@@ -430,8 +429,7 @@ const PrintPDF = ({ detail, officials }) => {
     },
   });
 
-  console.log("detail: ", detail);
-
+ 
   const LetterHead = () => (
     <View style={styles.letterHead.view1}>
       <Image

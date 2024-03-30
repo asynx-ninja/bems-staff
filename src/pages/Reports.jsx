@@ -22,6 +22,7 @@ const Reports = () => {
   const [deniedCount, setDeniedCount] = useState(0);
   const [verifiedCount, setVerifiedCount] = useState(0);
   const [verificationApprovalCount, setVerificationApprovalCount] = useState(0);
+  const [forReviewCount, setForReviewCount] = useState(0);
   const information = GetBrgy(brgy);
 
   useEffect(() => {
@@ -121,9 +122,11 @@ const Reports = () => {
           }
         );
 
-        const data = response.data[0];
+        if (response.status === 200) {
+          const data = response.data[0];
 
-        if (data) {
+          console.log("total residents: ", data);
+
           const { residents } = data;
           const registeredCount = residents.filter(
             (resident) => resident.status === "Registered"
@@ -140,12 +143,16 @@ const Reports = () => {
           const verificationApprovalCount = residents.filter(
             (resident) => resident.status === "Verification Approval"
           ).length;
+          const forReviewCount = residents.filter(
+            (resident) => resident.status === "Unknown"
+          ).length;
 
           setRegisteredCount(registeredCount);
           setPendingCount(pendingCount);
           setDeniedCount(deniedCount);
           setVerifiedCount(verifiedCount);
           setVerificationApprovalCount(verificationApprovalCount);
+          setForReviewCount(forReviewCount);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -165,13 +172,34 @@ const Reports = () => {
   }, [brgy]); // Dependency on brgy to update counts when barangay changes
 
   const chartDataResidentStatus = {
-    series: [registeredCount, pendingCount, deniedCount, verifiedCount, verificationApprovalCount],
+    series: [
+      registeredCount,
+      pendingCount,
+      deniedCount,
+      verifiedCount,
+      verificationApprovalCount,
+      forReviewCount,
+    ],
     options: {
-      colors: ["#4caf50", "#ff9800", "#ac4646", "#6f75c2", "#5586cf"], // Colors for Registered, Pending, Denied
+      colors: [
+        "#4caf50",
+        "#ff9800",
+        "#ac4646",
+        "#6f75c2",
+        "#5586cf",
+        "#91406f",
+      ], // Colors for Registered, Pending, Denied
       chart: {
         background: "transparent",
       },
-      labels: ["Registered", "Pending", "Denied", "Verified", "Verification Approval"],
+      labels: [
+        "Registered",
+        "Pending",
+        "Denied",
+        "Verified",
+        "Verification Approval",
+        "For Review",
+      ],
     },
   };
 
@@ -258,8 +286,6 @@ const Reports = () => {
         );
 
         const data = response.data;
-
-        console.log("data for total status requests: ", data);
 
         // Assuming the API response has the structure similar to statusPercentages
         setStatusPercentages(data);
@@ -350,8 +376,6 @@ const Reports = () => {
         );
 
         const data = response.data;
-
-        console.log("data for total status inquiries: ", data);
 
         // Assuming the API response has the structure similar to serviceSummary
         setStatusPercentagesInquiries(data);
@@ -1127,8 +1151,6 @@ const Reports = () => {
 
         const data = response.data;
 
-        console.log("data for total availed: ", data);
-
         // Assuming your data structure is an array with multiple objects
         if (data.length > 0) {
           // Calculate totalServices by summing up totalRequests for all statuses
@@ -1250,8 +1272,6 @@ const Reports = () => {
 
         const data = response.data;
 
-        console.log("data for completed requests: ", data);
-
         // Assuming your data structure is an array with multiple objects
         if (data.length > 0) {
           // Calculate totalCompletedRequests by summing up totalRequests for "Transaction Completed" status
@@ -1300,11 +1320,11 @@ const Reports = () => {
           <div className="flex flex-col w-full lg:w-auto">
             <div
               id="toggle-count"
-              className="flex p-0.5  rounded-lg w-full lg:w-auto items-center overflow-y-hidden"
+              className="flex p-0.5 bg-teal-700 rounded-lg w-full lg:w-auto items-center overflow-y-hidden"
               style={{ backgroundColor: information?.theme?.primary }}
             >
               <button
-                className={`px-3 py-2 w-full   rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none`}
+                className={`px-3 py-2 w-full bg-teal-700  rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none`}
                 style={{
                   backgroundColor:
                     timeRange === "specific"
@@ -1317,7 +1337,7 @@ const Reports = () => {
                 Specific
               </button>
               <button
-                className={`px-3 py-2 w-full   rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none`}
+                className={`px-3 py-2 w-full  bg-teal-700 font-medium text-sm lg:text-base  focus:outline-none`}
                 style={{
                   backgroundColor:
                     timeRange === "today"
@@ -1330,7 +1350,7 @@ const Reports = () => {
                 Today
               </button>
               <button
-                className={`px-3 py-2 w-full   rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none`}
+                className={`px-3 py-2 w-full bg-teal-700 font-medium text-sm lg:text-base  focus:outline-none`}
                 style={{
                   backgroundColor:
                     timeRange === "weekly"
@@ -1343,7 +1363,7 @@ const Reports = () => {
                 Weekly
               </button>
               <button
-                className={`px-3 py-2 w-full   rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none`}
+                className={`px-3 py-2 w-full  bg-teal-700 font-medium text-sm lg:text-base  focus:outline-none`}
                 style={{
                   backgroundColor:
                     timeRange === "monthly"
@@ -1356,7 +1376,7 @@ const Reports = () => {
                 Monthly
               </button>
               <button
-                className={`px-3 py-2 w-full   rounded-l-lg font-medium text-sm lg:text-base  focus:outline-none`}
+                className={`px-3 py-2 w-full bg-teal-700 font-medium text-sm lg:text-base  focus:outline-none`}
                 style={{
                   backgroundColor:
                     timeRange === "annual"
@@ -1439,7 +1459,7 @@ const Reports = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 lg:items-center shadow-sm rounded-xl gap-3 ">
           <div
-            className="flex flex-col p-4  rounded-xl "
+            className="flex flex-col p-4 bg-teal-700 rounded-xl "
             style={{
               background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
             }}
@@ -1458,7 +1478,7 @@ const Reports = () => {
           </div>
 
           <div
-            className="flex flex-col p-4  rounded-xl "
+            className="flex flex-col p-4 bg-teal-700 rounded-xl "
             style={{
               background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
             }}
@@ -1478,7 +1498,7 @@ const Reports = () => {
             </div>
           </div>
           <div
-            className="flex flex-col p-4  rounded-xl "
+            className="flex flex-col p-4 bg-teal-700 rounded-xl "
             style={{
               background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
             }}
@@ -1501,7 +1521,7 @@ const Reports = () => {
             </div>
           </div>
           <div
-            className="flex flex-col p-4  rounded-xl "
+            className="flex flex-col p-4 bg-teal-700 rounded-xl "
             style={{
               background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
             }}

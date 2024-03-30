@@ -78,13 +78,11 @@ const EventsRegistrations = () => {
         const response = await axios.get(
           `${API_LINK}/application/?brgy=${brgy}&archived=false&status=${statusFilter}&title=${selecteEventFilter}&page=${currentPage}`
         );
-        console.log(selecteEventFilter);
         if (response.status === 200) {
           setApplications(response.data.result);
           setPageCount(response.data.pageCount);
           setFilteredApplications(response.data.result);
         } else setApplications([]);
-        console.log(response.data.result);
       } catch (err) {
         console.log(err);
       }
@@ -107,7 +105,6 @@ const EventsRegistrations = () => {
             setOfficials(officialsData);
           } else {
             setOfficials([]);
-            console.log(`No officials found for Barangay ${brgy}`);
           }
         } else {
           setOfficials([]);
@@ -132,9 +129,8 @@ const EventsRegistrations = () => {
 
   const handleResetFilter = () => {
     setStatusFilter("all");
-    setApplications([]);
     setSearchQuery("");
-    setSelectedEventFilter("all");
+    setEventFilter("all");
     setSelectedEventType("EVENT TYPE");
   };
 
@@ -205,10 +201,9 @@ const EventsRegistrations = () => {
     switch (choice) {
       case "date":
         return applications.filter((item) => {
-          console.log(typeof new Date(item.createdAt), selectedDate);
           return (
             new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
             new Date(item.createdAt).getDate() === selectedDate.getDate()
           );
@@ -218,12 +213,11 @@ const EventsRegistrations = () => {
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
 
-        console.log("start and end", startDate, endDate);
 
         return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-              startDate.getFullYear() &&
+            startDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === startDate.getMonth() &&
             new Date(item.createdAt).getDate() >= startDate.getDate() &&
             new Date(item.createdAt).getDate() <= endDate.getDate()
@@ -232,7 +226,7 @@ const EventsRegistrations = () => {
         return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -245,11 +239,8 @@ const EventsRegistrations = () => {
   };
 
   const onSelect = (e) => {
-    console.log("select", e.target.value);
 
     setSelected(e.target.value);
-
-    console.log("specified select", filters(e.target.value, specifiedDate));
   };
 
   const onChangeDate = (e) => {
@@ -276,8 +267,6 @@ const EventsRegistrations = () => {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      console.log("selected year converted date", date);
-      console.log("specified year", filters(selected, date));
       setFilteredApplications(filters(selected, date));
     }
   };
@@ -289,7 +278,7 @@ const EventsRegistrations = () => {
         {/* Header */}
         <div className="flex flex-row mt-5 sm:flex-col-reverse lg:flex-row w-full">
           <div
-            className="sm:mt-5 md:mt-4 lg:mt-0  py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]"
+            className="sm:mt-5 bg-teal-700 md:mt-4 lg:mt-0  py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]"
             style={{
               background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
             }}
@@ -309,7 +298,7 @@ const EventsRegistrations = () => {
                     <button
                       type="button"
                       data-hs-overlay="#hs-modal-add"
-                      className="hs-tooltip-toggle justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg  w-full text-white font-medium text-sm text-center inline-flex items-center"
+                      className="hs-tooltip-toggle justify-center bg-teal-700 sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg  w-full text-white font-medium text-sm text-center inline-flex items-center"
                       style={{
                         background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
                       }}
@@ -340,14 +329,13 @@ const EventsRegistrations = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className="sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm"
+                  className="sm:w-full md:w-full bg-teal-700 sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm"
                   style={{ backgroundColor: information?.theme?.primary }}
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -416,7 +404,7 @@ const EventsRegistrations = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className="sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                  className="sm:w-full md:w-full bg-teal-700 sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
                   style={{ backgroundColor: information?.theme?.primary }}
                 >
                   DATE
@@ -511,14 +499,13 @@ const EventsRegistrations = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className="sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md font-medium shadow-sm align-middle transition-all text-sm"
+                  className="sm:w-full md:w-full bg-teal-700 sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md font-medium shadow-sm align-middle transition-all text-sm"
                   style={{ backgroundColor: information?.theme?.primary }}
                 >
                   {selectedEventType}
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -564,7 +551,7 @@ const EventsRegistrations = () => {
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12">
               <div className="flex flex-row w-full md:mr-2">
                 <button
-                  className="  p-3 rounded-l-md"
+                  className="bg-teal-700 p-3 rounded-l-md"
                   style={{ backgroundColor: information?.theme?.primary }}
                 >
                   <div className="w-full overflow-hidden">
@@ -602,6 +589,15 @@ const EventsRegistrations = () => {
                           .includes(e.target.value.toLowerCase()) ||
                         item.application_id
                           .toLowerCase()
+                          .includes(e.target.value.toLowerCase()) ||
+                        item.form[0].firstName.value
+                          .toLowerCase()
+                          .includes(e.target.value.toLowerCase()) ||
+                        item.form[0].lastName.value
+                          .toLowerCase()
+                          .includes(e.target.value.toLowerCase()) ||
+                        item.form[0].middleName.value
+                          .toLowerCase()
                           .includes(e.target.value.toLowerCase())
                     );
 
@@ -634,7 +630,7 @@ const EventsRegistrations = () => {
         <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_280px)] xxxl:h-[calc(100vh_-_300px)]">
           <table className="relative table-auto w-full">
             <thead
-              className=" sticky top-0"
+              className="bg-teal-700 sticky top-0"
               style={{ backgroundColor: information?.theme?.primary }}
             >
               <tr className="">
@@ -811,7 +807,7 @@ const EventsRegistrations = () => {
         </div>
       </div>
       <div
-        className="md:py-4 md:px-4  flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3"
+        className="md:py-4 md:px-4 bg-teal-700 flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3"
         style={{ backgroundColor: information?.theme?.primary }}
       >
         <span className="font-medium text-white sm:text-xs text-sm">

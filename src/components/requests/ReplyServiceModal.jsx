@@ -220,19 +220,17 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
         date: new Date(), // Add the current date and time
       };
 
-      console.log("obj", obj);
+
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
 
-      console.log("formData: ", formData);
-      console.log("createFiles: ", createFiles);
+
 
       const res_folder = await axios.get(
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-      console.log("brgy: ", brgy);
-      console.log("res_folder: ", res_folder);
+
 
       if (res_folder.status === 200) {
         for (let i = 0; i < createFiles.length; i++) {
@@ -289,7 +287,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
             logo: service.collections.logo,
           };
 
-          console.log("Notify: ", notify);
+  
 
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {

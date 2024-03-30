@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 function ViewNotification({notification, setNotification, id, brgy }) {
-  // console.log("Notifications: ", notification);
+
   return (
         <div
           id="hs-modal-viewNotification"

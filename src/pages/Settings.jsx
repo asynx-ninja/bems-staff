@@ -101,7 +101,6 @@ const Settings = () => {
         const res = await axios.get(`${API_LINK}/users/specific/${id}`);
         if (res.status === 200) {
           setUserData(res.data[0]);
-          console.log(res.data[0].profile.link);
           setUserAddress({
             street: res.data[0].address.street,
             brgy: res.data[0].address.brgy,
@@ -195,7 +194,7 @@ const Settings = () => {
     });
   };
 
-  // console.log(userSocials)
+
 
   const saveChanges = async (e) => {
     if (
@@ -249,8 +248,6 @@ const Settings = () => {
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-      console.log("brgy: ", brgy);
-      console.log("res_folder: ", res_folder);
 
       if (res_folder.status === 200) {
         const response = await axios.patch(
@@ -298,7 +295,6 @@ const Settings = () => {
         } else if (response.status === 200) {
           setSubmitClicked(true);
           setError(null);
-          console.log("Update successful:", response);
           setUserData(response.data);
           setUserAddress({
             street: response.data.address.street,
@@ -350,8 +346,6 @@ const Settings = () => {
         `${API_LINK}/auth/${oldUsername}/${oldPassword}`
       );
 
-      console.log("mm", user);
-      console.log(response);
       if (response.status === 200) {
         setSubmitClicked(true);
         setError(null);
@@ -474,7 +468,7 @@ const Settings = () => {
                   <label
                     htmlFor="file_input"
                     onClick={handleAdd}
-                    className={`absolute inset-0 flex items-center justify-center rounded-full cursor-pointer opacity-0 ${
+                    className={`absolute bg-teal-700 inset-0 flex items-center justify-center rounded-full cursor-pointer opacity-0 ${
                       editButton ? "hidden" : ""
                     } `}
                     style={{
@@ -501,7 +495,7 @@ const Settings = () => {
                     className="hidden"
                   />
                   <div
-                    className="lg:w-full lg:h-full w-[130px] h-[130px] lg:mt-0 mt-8 flex mx-auto justify-center overflow-hidden rounded-full object-cover border-[5px] "
+                    className="lg:w-full lg:h-full bg-teal-700 w-[130px] h-[130px] lg:mt-0 mt-8 flex mx-auto justify-center overflow-hidden rounded-full object-cover border-[5px] "
                     style={{ borderColor: information?.theme?.primary }}
                   >
                     <img
@@ -520,7 +514,7 @@ const Settings = () => {
               </div>
             </div>
 
-            <div className="flex flex-col bg-white lg:py-0 py-4 text-black justify-center items-center mx-auto rounded-md mt-28 lg:p-4 lg:mt-36 lg:w-11/12 text-center">
+            <div className="flex flex-col bg-white lg:py-0 py-4 text-black justify-center items-center mx-auto rounded-md sm:mt-28 md:mt-[13rem] lg:p-4 lg:mt-36 lg:w-11/12 text-center">
               <div className="border-b-[2px] w-full mb-2 border-b-gray-200">
                 <h6 className="font-bold mb-2 uppercase text-normal sm:text-sm">
                   Socials
@@ -529,7 +523,7 @@ const Settings = () => {
               <div className="lg:flex sm:grid lg:px-0 px-8 lg:py-0 py-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-center items-center mx-auto">
                 {userSocials.facebook && userSocials.facebook.name && (
                   <button
-                    className="flex justify-center gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
+                    className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
                     onMouseEnter={() => handleMouseEnter("facebook")}
                     onMouseLeave={() => handleMouseLeave("facebook")}
                     style={{
@@ -546,7 +540,7 @@ const Settings = () => {
                 )}
                 {userSocials.twitter && userSocials.twitter.name && (
                    <button
-                   className="flex justify-center gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
+                   className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
                    onMouseEnter={() => handleMouseEnter("twitter")}
                    onMouseLeave={() => handleMouseLeave("twitter")}
                    style={{
@@ -563,7 +557,7 @@ const Settings = () => {
                 )}
                 {userSocials.instagram && userSocials.instagram.name && (
                   <button
-                  className="flex justify-center gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
+                  className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
                   onMouseEnter={() => handleMouseEnter("ig")}
                   onMouseLeave={() => handleMouseLeave("ig")}
                   style={{
@@ -580,7 +574,7 @@ const Settings = () => {
                 )}
                 {userData.contact && (
                   <button
-                  className="flex justify-center gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
+                  className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
                   onMouseEnter={() => handleMouseEnter("phone")}
                   onMouseLeave={() => handleMouseLeave("phone")}
                   style={{
@@ -597,7 +591,7 @@ const Settings = () => {
                 )}
                 {userData.email && (
                      <button
-                     className="flex justify-center gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
+                     className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
                      onMouseEnter={() => handleMouseEnter("email")}
                      onMouseLeave={() => handleMouseLeave("email")}
                      style={{
@@ -624,8 +618,8 @@ const Settings = () => {
                   onClick={handleOnActive}
                   className={
                     activeButton.personal
-                      ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md text-white font-medium"
-                      : "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-white text-black font-medium transition-all ease-in-out hover:text-white"
+                      ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md text-white font-medium bg-teal-700"
+                      : "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-white text-black font-medium transition-all ease-in-out hover:text-white bg-teal-700"
                   }
                   onMouseEnter={() => handleMouseEnter("personal")}
                   onMouseLeave={() => handleMouseLeave("personal")}
@@ -643,8 +637,8 @@ const Settings = () => {
                   onClick={handleOnActive}
                   className={
                     activeButton.credential
-                      ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md text-white font-medium"
-                      : "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-white text-black font-medium transition-all ease-in-out hover:text-white"
+                      ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md text-white font-medium bg-teal-700"
+                      : "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-white text-black font-medium transition-all ease-in-out hover:text-white bg-teal-700"
                   }
                   onMouseEnter={() => handleMouseEnter("credential")}
                   onMouseLeave={() => handleMouseLeave("credential")}
@@ -663,8 +657,8 @@ const Settings = () => {
                   onClick={handleOnActive}
                   className={
                     activeButton.pass
-                      ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md text-white font-medium"
-                      : "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-white text-black font-medium transition-all ease-in-out hover:text-white"
+                      ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md text-white font-medium bg-teal-700"
+                      : "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md bg-white text-black font-medium transition-all ease-in-out hover:text-white bg-teal-700"
                   }
                   onMouseEnter={() => handleMouseEnter("pass")}
                   onMouseLeave={() => handleMouseLeave("pass")}
@@ -1590,7 +1584,7 @@ const Settings = () => {
             <button
               name="edit"
               onClick={handleOnEdit}
-              className=" text-white font-medium px-20 py-2 rounded-md"
+              className="bg-teal-700 text-white font-medium px-20 py-2 rounded-md"
               style={{ backgroundColor: information?.theme?.primary }}
             >
               Edit

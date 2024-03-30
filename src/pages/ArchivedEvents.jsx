@@ -116,11 +116,12 @@ const ArchivedEvents = () => {
   };
 
   const tableHeader = [
+    "Event id",
     "title",
     "details",
     "creation date",
     "event date",
-    "# of attendees",
+    "# of applicants",
     "actions",
   ];
 
@@ -153,7 +154,6 @@ const ArchivedEvents = () => {
     switch (choice) {
       case "date":
         return announcements.filter((item) => {
-          console.log(typeof new Date(item.createdAt), selectedDate);
           return (
             new Date(item.createdAt).getFullYear() ===
               selectedDate.getFullYear() &&
@@ -165,8 +165,6 @@ const ArchivedEvents = () => {
         const startDate = selectedDate;
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
-
-        console.log("start and end", startDate, endDate);
 
         return announcements.filter(
           (item) =>
@@ -193,11 +191,7 @@ const ArchivedEvents = () => {
   };
 
   const onSelect = (e) => {
-    console.log("select", e.target.value);
-
     setSelected(e.target.value);
-
-    console.log("specified select", filters(e.target.value, specifiedDate));
   };
 
   const onChangeDate = (e) => {
@@ -224,8 +218,6 @@ const ArchivedEvents = () => {
     } else {
       const date = new Date(e.target.value, 0, 1);
       setSpecifiedDate(date);
-      console.log("selected year converted date", date);
-      console.log("specified year", filters(selected, date));
       setFilteredAnnouncements(filters(selected, date));
     }
   };
@@ -236,7 +228,7 @@ const ArchivedEvents = () => {
         <Breadcrumbs />
         <div className="flex flex-row lg:mt-4 sm:flex-col-reverse lg:flex-row w-full">
           <div
-            className="flex justify-center items-center sm:mt-5 md:mt-4 lg:mt-0  py-4 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]"
+            className="flex justify-center bg-teal-700 items-center sm:mt-5 md:mt-4 lg:mt-0  py-4 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]"
             style={{
               background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
             }}
@@ -259,7 +251,7 @@ const ArchivedEvents = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  " style={{ backgroundColor: information?.theme?.primary }}
+                  className="bg-teal-700 sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  " style={{ backgroundColor: information?.theme?.primary }}
                 >
                   DATE
                   <svg
@@ -352,7 +344,7 @@ const ArchivedEvents = () => {
 
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12">
               <div className="flex flex-row w-full md:mr-2">
-                <button className="  p-3 rounded-l-md" style={{ backgroundColor: information?.theme?.primary }}>
+                <button className=" bg-teal-700 p-3 rounded-l-md" style={{ backgroundColor: information?.theme?.primary }}>
                   <div className="w-full overflow-hidden">
                     <svg
                       className="h-3.5 w-3.5 text-white"
@@ -413,7 +405,7 @@ const ArchivedEvents = () => {
 
         <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_320px)] xxxl:h-[calc(100vh_-_340px)]">
           <table className="relative table-auto w-full">
-            <thead className=" sticky top-0" style={{ backgroundColor: information?.theme?.primary }}>
+            <thead className="bg-teal-700 sticky top-0" style={{ backgroundColor: information?.theme?.primary }}>
               <tr className="">
                 <th scope="col" className="px-6 py-4">
                   <div className="flex justify-center items-center">
@@ -454,13 +446,20 @@ const ArchivedEvents = () => {
                     <td className="px-1 xl:px-3 py-3 w-4/12">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
+                          {item.event_id}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-1 xl:px-3 py-3 w-4/12">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                           {item.title}
                         </span>
                       </div>
                     </td>
-                    <td className="px-2 xl:px-6 py-3 w-4/12">
+                    <td className="px-2 xl:px-6 py-3 ">
                       <div className="flex justify-center items-center">
-                        <span className="text-xs sm:text-sm text-black line-clamp-1 tas w-[300px] text-left">
+                        <span className="text-xs sm:text-sm text-black line-clamp-1 tas w-[100px] text-left ">
                           {item.details}
                         </span>
                       </div>
@@ -530,7 +529,7 @@ const ArchivedEvents = () => {
             </tbody>
           </table>
         </div>
-        <div className="md:py-4 md:px-4  flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3" style={{ backgroundColor: information?.theme?.primary }}>
+        <div className="md:py-4 md:px-4 bg-teal-700 flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3" style={{ backgroundColor: information?.theme?.primary }}>
           <span className="font-medium text-white sm:text-xs text-sm">
             Showing {currentPage + 1} out of {pageCount} pages
           </span>

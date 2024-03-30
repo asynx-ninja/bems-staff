@@ -21,7 +21,7 @@ const ViewNotifications = ({ setNotification }) => {
   const notification = notificationData
     ? JSON.parse(decodeURIComponent(notificationData))
     : null;
-  console.log("Notification Passed: ", notification);
+
 
   const dateFormat = (date) => {
     const eventdate = date === undefined ? "" : date.substr(0, 10);
@@ -44,7 +44,6 @@ const ViewNotifications = ({ setNotification }) => {
           `${API_LINK}/notification/get_id/?id=${id}`
         );
 
-        console.log("itoba", response.data[0]);
         // Handle the response data here
       } catch (error) {
         console.error(error);
@@ -62,7 +61,6 @@ const ViewNotifications = ({ setNotification }) => {
           `${API_LINK}/notification/check/?user_id=${id}&notification_id=${notification._id}`
         );
 
-        console.log("itoulit", response.data);
 
         if (response.status === 200) {
           if (!response.data.length > 0) {

@@ -46,8 +46,7 @@ const PrintPatawag = ({
   brgy,
 }) => {
   const [date, setDate] = useState(new Date());
-  // console.log("docDetails sa pdf: ", docDetails);
-  // console.log("blotter sa pdf: ", blotter);
+
 
   const returnLogo = () => {
     switch (detail.brgy) {

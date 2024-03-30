@@ -44,7 +44,7 @@ const PrintDocumentTypeH = ({
   brgy,
 }) => {
   const [date, setDate] = useState(new Date());
-  console.log("docDetails sa pdf: ", docDetails);
+
 
   const returnLogo = () => {
     switch (detail.brgy) {

@@ -50,7 +50,7 @@ function AddResidentModal({ brgy }) {
     },
   });
 
-  console.log("user: ", user);
+
 
   const checkEmptyFields = () => {
     let arr = [];
@@ -181,7 +181,6 @@ function AddResidentModal({ brgy }) {
             }
           );
 
-          console.log("selfieFile: ", selfieFile);
 
           setUser((prev) => ({
             ...prev,
@@ -229,7 +228,7 @@ function AddResidentModal({ brgy }) {
       const emptyFieldsArr = checkEmptyFields();
 
       if (emptyFieldsArr.length > 0) {
-        console.log(emptyFieldsArr);
+       
         setEmpty(true);
         setSubmitClicked(false);
       } else {
@@ -295,7 +294,6 @@ function AddResidentModal({ brgy }) {
                 uri: user.verification.primary_file[i].uri,
               };
 
-              console.log("check file: ", file);
 
               formData.append(
                 "files",
@@ -339,7 +337,7 @@ function AddResidentModal({ brgy }) {
           );
 
           if (response.status === 200) {
-            console.log("created");
+          
             setUser({
               user_id: "",
               firstName: "",

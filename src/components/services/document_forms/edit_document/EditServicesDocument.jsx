@@ -91,7 +91,7 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
         }
       );
 
-      console.log(response);
+
       setTimeout(() => {
         setSubmitClicked(false);
         setUpdatingStatus("success");
@@ -117,11 +117,7 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
     }));
   };
 
-  
-  console.log("Edit document: ", document);
-  console.log("details: ", details);
-  console.log("Doc details: ", docDetails);
-  console.log("Doc detail: ", docDetail);
+
 
   return (
     <div>
@@ -257,7 +253,7 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
                         <option value="Type F">Barangay Clearance</option>
                         <option value="Type G">Certificate of Indigency</option>
                         <option value="Type H">Solo Parent Certification</option>
-                        <option value="Type I">Barangay Blotter</option>
+                        {/* <option value="Type I">Barangay Blotter</option> */}
                         <option value="Type J">Late Registration</option>
                         <option value="Type K">Residency Certification</option>
                       </select>

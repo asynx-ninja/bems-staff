@@ -120,8 +120,7 @@ function ManageServiceModal({ service, setService, brgy }) {
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-      console.log("brgy: ", brgy);
-      console.log("res_folder: ", res_folder);
+
 
       if (res_folder.status === 200) {
         const response = await axios.patch(
@@ -130,13 +129,13 @@ function ManageServiceModal({ service, setService, brgy }) {
         );
 
         if (response.status === 200) {
-          var logoSrc = document.getElementById("logo");
-          logoSrc.src =
-            "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+          // var logoSrc = document.getElementById("logo");
+          // logoSrc.src =
+          //   "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
 
-          var bannerSrc = document.getElementById("banner");
-          bannerSrc.src =
-            "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+          // var bannerSrc = document.getElementById("banner");
+          // bannerSrc.src =
+          //   "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
 
           const notify = {
             category: "Many",
@@ -164,8 +163,7 @@ function ManageServiceModal({ service, setService, brgy }) {
             },
           });
 
-          console.log("Notify: ", notify);
-          console.log("Result: ", response);
+  
 
           if (result.status === 200) {
             setTimeout(() => {

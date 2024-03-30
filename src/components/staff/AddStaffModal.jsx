@@ -133,7 +133,7 @@ function AddStaffModal({ brgy }) {
               }, 3000);
             }
           } catch (err) {
-            console.log(err);
+       
             setSubmitClicked(false);
             setCreationStatus("error");
             setError("An error occurred while creating the announcement.");

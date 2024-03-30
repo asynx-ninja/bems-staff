@@ -53,8 +53,6 @@ const Information = () => {
           `${API_LINK}/brgyinfo/?brgy=${brgy}&archived=true`
         );
 
-        console.log("Response:", response);
-
         if (response.status === 200) {
           setInformation(response.data[0]);
           var logoSrc = document.getElementById("edit_logo");
@@ -88,8 +86,6 @@ const Information = () => {
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-      console.log("brgy: ", brgy);
-      console.log("res_folder: ", res_folder);
 
       if (res_folder.status === 200) {
         const result = await axios.patch(
@@ -97,7 +93,6 @@ const Information = () => {
           formData
         );
 
-        console.log(result);
         setTimeout(() => {
           setSubmitClicked(false);
           setUpdatingStatus("success");

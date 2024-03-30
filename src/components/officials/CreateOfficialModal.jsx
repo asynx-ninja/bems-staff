@@ -47,7 +47,6 @@ function CreateOfficialModal({ brgy }) {
       const emptyFieldsArr = checkEmptyFields();
 
       if (emptyFieldsArr.length > 0) {
-        console.log(emptyFieldsArr);
         setEmpty(true);
         setSubmitClicked(false);
         return;
@@ -72,8 +71,7 @@ function CreateOfficialModal({ brgy }) {
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-      console.log("brgy: ", brgy);
-      console.log("res_folder: ", res_folder);
+
 
       if (res_folder.status === 200) {
         const result = await axios.post(
@@ -82,7 +80,6 @@ function CreateOfficialModal({ brgy }) {
         );
 
         if (result.status === 200) {
-          console.log("Official added successfully!");
           setOfficial({
             firstName: "",
             middleName: "",

@@ -121,9 +121,6 @@ function CreateAnnouncementModal({ brgy }) {
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-      console.log("brgy: ", brgy);
-      console.log("res_folder: ", res_folder);
-
       if (res_folder.status === 200) {
         const response = await axios.post(
           `${API_LINK}/announcement/?event_folder_id=${res_folder.data[0].events}`,
@@ -181,8 +178,7 @@ function CreateAnnouncementModal({ brgy }) {
             };
           }
 
-          console.log("Notify: ", notify);
-          console.log("Result: ", response);
+
 
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {
