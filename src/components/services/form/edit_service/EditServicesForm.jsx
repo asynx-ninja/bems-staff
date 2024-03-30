@@ -51,7 +51,7 @@ const EditServicesForm = ({ service_id, brgy }) => {
       setSubmitClicked(true);
 
       const response = await axios.patch(
-        `http://localhost:8800/api/forms/`,
+        `${API_LINK}/forms/`,
         {
           detail: detail,
         },
