@@ -48,12 +48,47 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
 
       if (response.status === 200) {
         // Check if the status is "Registered" before sending notification
-        if (status.status === "Registered") {
+        if (status.status === "Verified") {
           const notify = {
             category: "One",
             compose: {
               subject: `ACCOUNT ACTIVATION SUCCESSFUL!`,
               message: `Welcome! Congratulations on successfully activating your account! We're delighted to welcome you to our community. You may now access the system!\n\n`,
+              go_to: null,
+            },
+            target: {
+              user_id: user.user_id,
+              area: brgy,
+            },
+            type: "Resident",
+            banner: banner,
+            logo: logo,
+          };
+
+
+          const result = await axios.post(`${API_LINK}/notification/`, notify, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (result.status === 200) {
+            setTimeout(() => {
+              setSubmitClicked(false);
+              setUpdatingStatus("success");
+              setTimeout(() => {
+                window.location.reload();
+              }, 3000);
+            }, 1000);
+          }
+        } else if (status.status === "Registered") {
+          const notify = {
+            category: "One",
+            compose: {
+              subject: `ACCOUNT ACTIVATION SUCCESSFUL!`,
+              message: `Welcome! You may now access limited features (Inquiries, Dashboard, and Barangay Information) of the system!\n 
+              You may verify your account to gain access to all available features!
+              \n\n`,
               go_to: null,
             },
             target: {
