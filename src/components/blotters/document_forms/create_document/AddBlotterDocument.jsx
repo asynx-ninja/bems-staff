@@ -165,7 +165,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         type="text"
                         // value={service.name}
                         onChange={handleChange}
-                        placeholder="E-mail"
+                        placeholder="XXXX-XXXX"
                       />
                     </div>
 
@@ -183,7 +183,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         type="text"
                         // value={service.name}
                         onChange={handleChange}
-                        placeholder="Address"
+                        placeholder="Reason"
                       />
                     </div>
 
@@ -219,7 +219,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         type="text"
                         // value={service.name}
                         onChange={handleChange}
-                        placeholder="Complainant"
+                        placeholder="Name of Complainant"
                       />
                     </div>
 
@@ -237,7 +237,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         type="text"
                         // value={service.name}
                         onChange={handleChange}
-                        placeholder="Complainant"
+                        placeholder="Complainant Address"
                       />
                     </div>
 
@@ -255,7 +255,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         type="text"
                         // value={service.name}
                         onChange={handleChange}
-                        placeholder="Address"
+                        placeholder="Name of Accused"
                       />
                     </div>
 
@@ -273,7 +273,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         type="text"
                         // value={service.name}
                         onChange={handleChange}
-                        placeholder="Complainant"
+                        placeholder="Accused Address"
                       />
                     </div>
 
@@ -309,7 +309,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         type="text"
                         // value={service.name}
                         onChange={handleChange}
-                        placeholder="Address"
+                        placeholder="Pangalan ng Bcpc / Vawc"
                       />
                     </div>
 
@@ -327,7 +327,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         type="text"
                         // value={service.name}
                         onChange={handleChange}
-                        placeholder="Address"
+                        placeholder="E-mail Address"
                       />
                     </div>
 
@@ -345,7 +345,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         type="text"
                         // value={service.name}
                         onChange={handleChange}
-                        placeholder="Address"
+                        placeholder="Telephone / Mobile Number"
                       />
                     </div>
                   </div>

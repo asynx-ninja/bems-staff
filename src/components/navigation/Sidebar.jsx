@@ -473,7 +473,7 @@ const Sidebar = () => {
                       onMouseLeave={() =>
                         handleMouseLeave("events_registrations")
                       }
-                      className={`flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md `}
+                      className={`flex items-center mt-1 gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md `}
                     >
                       <SiGoogleforms size={15} />
                       Events Application
@@ -600,7 +600,7 @@ const Sidebar = () => {
                       }}
                       onMouseEnter={() => handleMouseEnter("requests")}
                       onMouseLeave={() => handleMouseLeave("requests")}
-                      className={`flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md `}
+                      className={`flex items-center mt-1 gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md `}
                     >
                       <GoGitPullRequest size={15} />
                       Service Requests
@@ -841,7 +841,7 @@ const Sidebar = () => {
                         }}
                         onMouseEnter={() => handleMouseEnter("officials")}
                         onMouseLeave={() => handleMouseLeave("officials")}
-                        className={`flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md `}
+                        className={`flex items-center mt-1 gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md `}
                       >
                         <FaPeopleGroup size={15} />
                         Barangay Officials
@@ -876,7 +876,7 @@ const Sidebar = () => {
                         onMouseLeave={() =>
                           handleMouseLeave("staff_management")
                         }
-                        className={`flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md `}
+                        className={`flex items-center mt-1 gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md `}
                       >
                         <MdManageAccounts size={15} />
                         Staff Management
@@ -905,7 +905,7 @@ const Sidebar = () => {
                         }}
                         onMouseEnter={() => handleMouseEnter("info")}
                         onMouseLeave={() => handleMouseLeave("info")}
-                        className={`flex items-center gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md `}
+                        className={`flex items-center mt-1 gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md `}
                       >
                         <FaChalkboardTeacher size={15} />
                         Barangay Information

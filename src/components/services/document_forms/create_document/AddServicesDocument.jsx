@@ -4,6 +4,7 @@ import axios from "axios";
 import AddSectionDocument from "./AddSectionDocument";
 import AddFormLoader from "../../loaders/AddFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
+import API_LINK from "../../../../config/API";
 
 const AddServicesDocument = ({ service_id, brgy, officials }) => {
   const information = GetBrgy(brgy);
@@ -48,7 +49,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
       setSubmitClicked(true);
 
       const response = await axios.post(
-        `http://localhost:8800/api/document/?brgy=${brgy}&form_id=${document.form_id}&checked=${checked}`,
+        `${API_LINK}/document/?brgy=${brgy}&form_id=${document.form_id}&checked=${checked}`,
         {
           service_id: service_id,
           doc_title: document.doc_title,

@@ -80,7 +80,7 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
       setSubmitClicked(true);
 
       const response = await axios.patch(
-        `http://localhost:8800/api/document/`,
+        `${API_LINK}/document/`,
         {
           document: docDetail,
         },

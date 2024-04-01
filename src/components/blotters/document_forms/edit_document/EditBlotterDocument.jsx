@@ -196,7 +196,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
                         type="text"
                         value={docDetail.usapin_blg}
                         onChange={handleChange}
-                        placeholder="E-mail"
+                        placeholder="XXXX-XXXX"
                       />
                     </div>
 
@@ -214,7 +214,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
                         type="text"
                         value={docDetail.reason}
                         onChange={handleChange}
-                        placeholder="Address"
+                        placeholder="Reason"
                       />
                     </div>
 
@@ -304,7 +304,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
                         type="text"
                         value={docDetail.accused_address}
                         onChange={handleChange}
-                        placeholder="Complainant Address"
+                        placeholder="Accused Address"
                       />
                     </div>
 
@@ -340,7 +340,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
                         type="text"
                         value={docDetail.bcpc_vawc}
                         onChange={handleChange}
-                        placeholder="Address"
+                        placeholder="Pangalan ng Bcpc / Vawc"
                       />
                     </div>
 
@@ -358,7 +358,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
                         type="text"
                         value={docDetail.email}
                         onChange={handleChange}
-                        placeholder="Address"
+                        placeholder="E-mail Address"
                       />
                     </div>
 
@@ -376,7 +376,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
                         type="text"
                         value={docDetail.contact}
                         onChange={handleChange}
-                        placeholder="Address"
+                        placeholder="Telephone / Mobile Number"
                       />
                     </div>
                   </div>
