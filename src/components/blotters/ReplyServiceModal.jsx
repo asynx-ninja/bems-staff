@@ -131,7 +131,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      let page = 1;
+      let page = null;
       let hasMoreResults = true;
 
       while (hasMoreResults) {
