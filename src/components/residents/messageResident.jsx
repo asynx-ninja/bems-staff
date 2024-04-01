@@ -102,7 +102,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
                 <form>
                   <div className="flex justify-center flex-col lg:flex-row px-7">
                     <div className="w-5/6 flex flex-col">
-                      <h1> SEND TO: {user.firstName} </h1>
+                      <h1> RECIPIENT: {user.firstName} {user.middleName} {user.lastName}</h1>
                       <h1 className="font-bold mb-2 text-xl">SEND MESSAGE:</h1>
                       {/* Add input field for subject */}
                       <input
