@@ -1331,7 +1331,7 @@ const Settings = () => {
                           ? "border-red-500"
                           : "border-gray-200"
                       }`}
-                      placeholder="username"
+                      placeholder="Username"
                       aria-describedby="hs-input-helper-text"
                       value={userCred.username || ""}
                       onChange={(e) =>
@@ -1361,7 +1361,7 @@ const Settings = () => {
                           ? "border-red-500"
                           : "border-gray-200"
                       }`}
-                      placeholder="password"
+                      placeholder="Password"
                       aria-describedby="hs-input-helper-text"
                       onChange={(e) =>
                         handleUserChangeCred("oldPass", e.target.value)
@@ -1458,7 +1458,7 @@ const Settings = () => {
                             ? "border-red-500"
                             : "border-gray-200"
                         }`}
-                        placeholder="password"
+                        placeholder="Password"
                         aria-describedby="hs-input-helper-text"
                         onChange={(e) =>
                           handleUserChangeCred("oldPass", e.target.value)
@@ -1502,7 +1502,7 @@ const Settings = () => {
                             ? "border-red-500"
                             : "border-gray-200"
                         }`}
-                        placeholder="password"
+                        placeholder="Password"
                         aria-describedby="hs-input-helper-text"
                         onChange={(e) =>
                           handleUserChangeCred("newPass", e.target.value)
