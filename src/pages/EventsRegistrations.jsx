@@ -727,7 +727,7 @@ const EventsRegistrations = () => {
                       )}
 
                       {item.status === "Processing" && (
-                        <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
+                        <div className="flex items-center justify-center bg-[#3b66b6] m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
                             PROCESSING
                           </span>
@@ -735,7 +735,7 @@ const EventsRegistrations = () => {
                       )}
 
                       {item.status === "Cancelled" && (
-                        <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
+                        <div className="flex items-center justify-center bg-[#555555] m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
                             CANCELLED
                           </span>

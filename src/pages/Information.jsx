@@ -416,7 +416,7 @@ const Information = () => {
                     STORY
                   </h1>
                 </div>
-                <div className="w-full md:w-2/3 px-6 py-4 border md:rounded-tr-[20px] rounded-b-[20px] md:rounded-br-[20px] flex flex-col">
+                <div className="w-full md:w-2/3 px-6 py-4 border  rounded-b-[20px] md:rounded-br-[20px] md:rounded-tr-[20px] md:rounded-l-none flex flex-col">
                   <textarea
                     name="story"
                     readOnly={!isEditingMode} // This makes the textarea read-only when isEditingMode is false
@@ -444,7 +444,7 @@ const Information = () => {
                     MISSION
                   </h1>
                 </div>
-                <div className="w-full md:w-2/3 px-6 py-4 border md:rounded-tr-[20px] rounded-b-[20px] md:rounded-br-[20px] flex flex-col">
+                <div className="w-full md:w-2/3 px-6 py-4 border  rounded-b-[20px] md:rounded-br-[20px] md:rounded-tr-[20px] md:rounded-l-none flex flex-col">
                   <textarea
                     readOnly={!isEditingMode} // This makes the textarea read-only when isEditingMode is false
                     className="font-base text-black text-sm h-36 lg:h-40 overflow-y-auto mb-5"
@@ -471,7 +471,7 @@ const Information = () => {
                     VISION
                   </h1>
                 </div>
-                <div className="w-full md:w-2/3 px-6 py-4 border md:rounded-tr-[20px] rounded-b-[20px] md:rounded-br-[20px] flex flex-col">
+                <div className="w-full md:w-2/3 px-6 py-4 border  rounded-b-[20px] md:rounded-br-[20px] md:rounded-tr-[20px] md:rounded-l-none flex flex-col">
                   <textarea
                     readOnly={!isEditingMode} // This makes the textarea read-only when isEditingMode is false
                     className="font-base text-black text-sm h-36 lg:h-40 overflow-y-auto mb-5"
