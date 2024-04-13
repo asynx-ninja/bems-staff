@@ -118,7 +118,7 @@ const ArchivedEvents = () => {
   const tableHeader = [
     "Event id",
     "title",
-    "details",
+    // "details",
     "creation date",
     "event date",
     "# of applicants",
@@ -457,13 +457,13 @@ const ArchivedEvents = () => {
                         </span>
                       </div>
                     </td>
-                    <td className="px-2 xl:px-6 py-3 ">
+                    {/* <td className="px-2 xl:px-6 py-3 ">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-1 tas w-[100px] text-left ">
                           {item.details}
                         </span>
                       </div>
-                    </td>
+                    </td> */}
                     <td className="px-2 py-3 w-2/12">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">

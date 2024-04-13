@@ -209,7 +209,7 @@ const EditSectionDocument = ({brgy, service_id, document, setDocument, docDetail
                       value={section}
                       className="shadow uppercase placeholder-gray-400 font-medium appearance-none border w-full p-1 text-sm bg-white border-green-500 text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                     >
-                      <option value="" disabled>
+                      <option value="">
                         -- Select Type --
                       </option>
                       {formOptions &&
