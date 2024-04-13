@@ -132,7 +132,7 @@ const Services = () => {
   const tableHeader = [
     "SERVICE ID",
     "SERVICE NAME",
-    "DETAILS",
+    // "DETAILS",
     "FEES",
     "STATUS",
     "ACTIONS",
@@ -428,13 +428,13 @@ const Services = () => {
                         {item.name}
                       </span>
                     </td>
-                    <td className="px-2 xl:px-6 py-3 w-4/12">
+                    {/* <td className="px-2 xl:px-6 py-3 w-4/12">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black  line-clamp-1 tas w-[100px] ">
                           {item.details}
                         </span>
                       </div>
-                    </td>
+                    </td> */}
                     <td className="px-2 xl:px-6 py-3 w-4/12">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">

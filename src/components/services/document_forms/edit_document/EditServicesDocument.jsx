@@ -1,15 +1,13 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import API_LINK from "../../../../config/API";
 import EditSectionDocument from "./EditSectionDocument";
 import EditFormLoader from "../../loaders/EditFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 
-const EditServicesDocument = ({ service_id, brgy, officials}) => {
+const EditServicesDocument = ({ service_id, brgy, officials }) => {
   const information = GetBrgy(brgy);
   const [details, setDetails] = useState([]);
-  const [detail, setDetail] = useState({});
   const [docDetails, setDocDetails] = useState([]);
   const [docDetail, setDocDetail] = useState({});
   const [submitClicked, setSubmitClicked] = useState(false);
@@ -27,59 +25,53 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
     address: "",
     tel: "",
   });
+  const [selectedDocIndex, setSelectedDocIndex] = useState("");
 
   useEffect(() => {
-    // function to filter
-    const fetch = async () => {
+    const fetchForms = async () => {
       try {
         const response = await axios.get(
           `${API_LINK}/forms/?brgy=${brgy}&service_id=${service_id}`
         );
-
-        // filter
         setDetails(response.data);
       } catch (err) {
         console.log(err.message);
       }
     };
 
-    fetch();
+    fetchForms();
   }, [brgy, service_id]);
 
   useEffect(() => {
-    // function to filter
-    const fetch = async () => {
+    const fetchDocuments = async () => {
       try {
         const response = await axios.get(
           `${API_LINK}/document/?brgy=${brgy}&service_id=${service_id}`
         );
-
-        // filter
         setDocDetails(response.data);
       } catch (err) {
         console.log(err.message);
       }
     };
 
-    fetch();
+    fetchDocuments();
   }, [brgy, service_id]);
 
-
   const handleFormChange = (e, key) => {
-    const newState = detail.form[0];
+    const newState = docDetail.form[0];
     newState[key].checked = e.target.checked;
 
-    setDetail((prev) => ({
+    setDocDetail((prev) => ({
       ...prev,
-      form: [newState, detail.form[1]],
+      form: [newState, docDetail.form[1]],
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async () => {
     try {
       setSubmitClicked(true);
 
-      const response = await axios.patch(
+      await axios.patch(
         `${API_LINK}/document/`,
         {
           document: docDetail,
@@ -90,7 +82,6 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
           },
         }
       );
-
 
       setTimeout(() => {
         setSubmitClicked(false);
@@ -107,6 +98,7 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
   };
 
   const handleSelectChange = (e) => {
+    setSelectedDocIndex(e.target.value);
     setDocDetail(docDetails[e.target.value]);
   };
 
@@ -117,18 +109,19 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
     }));
   };
 
-
+  const handleResetDocDetail = () => {
+    setDocDetail({});
+    setSelectedDocIndex("");
+  };
 
   return (
     <div>
       <div
         id="hs-edit-serviceDocument-modal"
-        className="hs-overlay hidden fixed top-0 left-0 z-[80] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center "
+        className="hs-overlay hidden fixed top-0 left-0 z-[80] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
       >
-        {/* Modal */}
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
-            {/* Header */}
             <div className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl" style={{
                 background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
               }}>
@@ -148,7 +141,7 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
                   name="form"
                   className="border border-1 border-gray-300 shadow bg-white w-full md:w-6/12 mt-2 md:mt-0 border p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                   onChange={handleSelectChange}
-                  defaultValue={""}
+                  value={selectedDocIndex}
                 >
                   <option value="" disabled>
                     Select Document
@@ -201,7 +194,7 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="doc_title"
                         type="text"
-                        value={docDetail.doc_title}
+                        value={docDetail.doc_title || ""}
                         onChange={handleChange}
                         placeholder="Service Name"
                       />
@@ -218,7 +211,7 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
                         id="details"
                         rows={7}
                         name="details"
-                        value={docDetail.details}
+                        value={docDetail.details || ""}
                         onChange={handleChange}
                         className="shadow appearance-none border w-full p-2.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         placeholder="Enter service details..."
@@ -235,7 +228,7 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
                       <select
                         name="type"
                         onChange={handleChange}
-                        value={docDetail.type}
+                        value={docDetail.type || ""}
                         className="shadow  border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
                         <option>-- Select a Document Type --</option>
@@ -269,7 +262,7 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
                       <select
                         name="punong_brgy"
                         onChange={handleChange}
-                        value={docDetail.punong_brgy}
+                        value={docDetail.punong_brgy || ""}
                         className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
                         <option>-- Select an Official --</option>
@@ -301,7 +294,7 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
                       <select
                         name="witnessed_by"
                         onChange={handleChange}
-                        value={docDetail.witnessed_by}
+                        value={docDetail.witnessed_by || ""}
                         className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
                         <option>-- Select an Official --</option>
@@ -335,7 +328,7 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="email"
                         type="text"
-                        value={docDetail.email}
+                        value={docDetail.email || ""}
                         onChange={handleChange}
                         placeholder="E-mail"
                       />
@@ -353,7 +346,7 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="address"
                         type="text"
-                        value={docDetail.address}
+                        value={docDetail.address || ""}
                         onChange={handleChange}
                         placeholder="Address"
                       />
@@ -371,7 +364,7 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="tel"
                         type="number"
-                        value={docDetail.tel}
+                        value={docDetail.tel || ""}
                         onChange={handleChange}
                         placeholder="Telephone Number"
                       />
@@ -412,6 +405,7 @@ const EditServicesDocument = ({ service_id, brgy, officials}) => {
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                   data-hs-overlay="#hs-edit-serviceDocument-modal"
+                  onClick={handleResetDocDetail}
                 >
                   CLOSE
                 </button>
