@@ -9,6 +9,7 @@ import ErrorPopup from "./popup/ErrorPopup";
 import GetBrgy from "../GETBrgy/getbrgy";
 
 function AddStaffModal({ brgy }) {
+  console.log(brgy);
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);

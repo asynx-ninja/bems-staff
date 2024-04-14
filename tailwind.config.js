@@ -48,7 +48,11 @@ export default {
         'medium': "Gilmer-Medium",
         'heavy': "Gilmer-Heavy",
       },
-
+      '@layer components': {
+        '.mylogo': {
+          'font-family': ['CustomFont', 'theme(fontFamily.sans)'],
+        },
+      },
     },
   },
   plugins: [require("preline/plugin")],
