@@ -15,8 +15,6 @@ const EditEventsForm = ({ announcement_id, brgy }) => {
   const [error, setError] = useState(null);
   const [selectedFormIndex, setSelectedFormIndex] = useState("");
 
-  console.log("Detail:", detail)
-
   useEffect(() => {
     const fetch = async () => {
       try {
