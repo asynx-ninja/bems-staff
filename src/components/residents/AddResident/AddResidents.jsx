@@ -734,17 +734,17 @@ const AddResidents = () => {
                           disabled
                           className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         >
-                          <option value="Balite">Balite</option>
-                          <option value="Burgos">Burgos</option>
-                          <option value="Geronimo">Geronimo</option>
-                          <option value="Macabud">Macabud</option>
-                          <option value="Manggahan">Manggahan</option>
-                          <option value="Mascap">Mascap</option>
-                          <option value="Puray">Puray</option>
-                          <option value="Rosario">Rosario</option>
-                          <option value="San Isidro">San Isidro</option>
-                          <option value="San Jose">San Jose</option>
-                          <option value="San Rafael">San Rafael</option>
+                          <option value="BALITE">Balite</option>
+                          <option value="BURGOS">Burgos</option>
+                          <option value="GERONIMO">Geronimo</option>
+                          <option value="MACABUD">Macabud</option>
+                          <option value="MANGGAHAN">Manggahan</option>
+                          <option value="MASCAP">Mascap</option>
+                          <option value="PURAY">Puray</option>
+                          <option value="ROSARIO">Rosario</option>
+                          <option value="SAN ISIDRO">San Isidro</option>
+                          <option value="SAN JOSE">San Jose</option>
+                          <option value="SAN RAFAEL">San Rafael</option>
                         </select>
                       </div>
 

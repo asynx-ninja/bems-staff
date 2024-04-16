@@ -492,26 +492,26 @@ const Inquiries = () => {
                         />
                       </div>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="xl:px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                           {item.inq_id}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="xl:px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                           {item.name}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="px-2 xl:px-6 py-3 xl:w-1/4">
                       <span className="text-xs sm:text-sm text-black line-clamp-2 ">
                         {item.compose.message}
                       </span>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="xl:px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
                           {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
@@ -519,25 +519,25 @@ const Inquiries = () => {
                         </span>
                       </div>
                     </td>
-                    <td className="px-2 xl:px-6 py-3 xxl:w-2/12">
+                    <td className="xl:px-6 py-3 xxl:w-2/12">
                       <div className="flex justify-center items-center">
                         {item.isApproved === "Completed" && (
                           <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                            <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                            <span className="text-xs sm:text-sm font-bold text-white p-3 xl:mx-5">
                               COMPLETED
                             </span>
                           </div>
                         )}
                         {item.isApproved === "Pending" && (
                           <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                            <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                            <span className="text-xs sm:text-sm font-bold text-white p-3 xl:mx-5">
                               PENDING
                             </span>
                           </div>
                         )}
                         {item.isApproved === "In Progress" && (
                           <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
-                            <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                            <span className="text-xs sm:text-sm font-bold text-white p-3 xl:mx-5">
                               IN PROGRESS
                             </span>
                           </div>

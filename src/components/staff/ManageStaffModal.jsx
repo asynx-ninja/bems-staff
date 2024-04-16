@@ -74,7 +74,6 @@ function ManageStaffModal({ user, setUser, brgy }) {
       );
 
       if (response.status === 200) {
-      
         setTimeout(() => {
           setSubmitClicked(false);
           setUpdatingStatus("success");

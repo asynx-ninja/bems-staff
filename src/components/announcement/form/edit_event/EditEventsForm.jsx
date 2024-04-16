@@ -43,7 +43,17 @@ const EditEventsForm = ({ announcement_id, brgy }) => {
     try {
       setSubmitClicked(true);
 
-      // Your submission logic here
+      await axios.patch(
+        `${API_LINK}/event_form/`,
+        {
+          detail: detail,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       setTimeout(() => {
         setSubmitClicked(false);
