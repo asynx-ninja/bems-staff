@@ -552,7 +552,7 @@ const Inquiries = () => {
                         </span>
                       </div>
                     </td>
-                    <td className="px-2 xl:px-6 py-3">
+                    <td className="px-2 xl:px-6 py-3 xl:w-1/4">
                       <span className="text-xs sm:text-sm text-black line-clamp-2 ">
                         {item.compose.message}
                       </span>
