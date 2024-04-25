@@ -89,6 +89,11 @@ const Requests = () => {
     };
 
     fetch();
+    const intervalId = setInterval(() => {
+      fetch();
+    }, 10000);
+
+    return () => clearInterval(intervalId);
   }, [brgy, statusFilter, selectedReqFilter, currentPage]);
 
   useEffect(() => {

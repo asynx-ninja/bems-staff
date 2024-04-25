@@ -67,7 +67,6 @@ const Inquiries = () => {
       const response = await axios.get(
         `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=false&status=${statusFilter}&page=${currentPage}&label=Staff`
       );
-    
 
       if (response.status === 200) {
         setInquiries(response.data.result);
@@ -79,13 +78,17 @@ const Inquiries = () => {
     };
 
     fetchInquiries();
+
+    const intervalId = setInterval(() => {
+      fetchInquiries();
+    }, 10000);
+
+    return () => clearInterval(intervalId);
   }, [id, brgy, statusFilter, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
-
-
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -155,12 +158,11 @@ const Inquiries = () => {
     switch (choice) {
       case "date":
         return inquiries.filter((item) => {
-
           return (
             new Date(item.compose.date).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.compose.date).getMonth() ===
-            selectedDate.getMonth() &&
+              selectedDate.getMonth() &&
             new Date(item.compose.date).getDate() === selectedDate.getDate()
           );
         });
@@ -173,7 +175,7 @@ const Inquiries = () => {
         return inquiries.filter(
           (item) =>
             new Date(item.compose.date).getFullYear() ===
-            startDate.getFullYear() &&
+              startDate.getFullYear() &&
             new Date(item.compose.date).getMonth() === startDate.getMonth() &&
             new Date(item.compose.date).getDate() >= startDate.getDate() &&
             new Date(item.compose.date).getDate() <= endDate.getDate()
@@ -182,7 +184,7 @@ const Inquiries = () => {
         return inquiries.filter(
           (item) =>
             new Date(item.compose.date).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.compose.date).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -250,7 +252,8 @@ const Inquiries = () => {
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"
-                      className="hs-tooltip-toggle justify-center bg-teal-700 sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg  w-full text-white font-medium text-sm text-center inline-flex items-center" style={{
+                      className="hs-tooltip-toggle justify-center bg-teal-700 sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg  w-full text-white font-medium text-sm text-center inline-flex items-center"
+                      style={{
                         background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
                       }}
                     >
@@ -280,7 +283,8 @@ const Inquiries = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  bg-teal-700" style={{ backgroundColor: information?.theme?.primary }}
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  bg-teal-700"
+                  style={{ backgroundColor: information?.theme?.primary }}
                 >
                   STATUS
                   <svg
@@ -340,7 +344,8 @@ const Inquiries = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  bg-teal-700" style={{ backgroundColor: information?.theme?.primary }}
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  bg-teal-700"
+                  style={{ backgroundColor: information?.theme?.primary }}
                 >
                   DATE
                   <svg
@@ -433,7 +438,10 @@ const Inquiries = () => {
 
             <div className="sm:flex-col md:flex-row flex sm:w-full md:w-7/12">
               <div className="flex flex-row w-full md:mr-2">
-                <button className="bg-teal-700  p-3 rounded-l-md" style={{ backgroundColor: information?.theme?.primary }}>
+                <button
+                  className="bg-teal-700  p-3 rounded-l-md"
+                  style={{ backgroundColor: information?.theme?.primary }}
+                >
                   <div className="w-full overflow-hidden">
                     <svg
                       className="h-3.5 w-3.5 text-white"
@@ -499,8 +507,10 @@ const Inquiries = () => {
 
         <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_280px)] xxxl:h-[calc(100vh_-_300px)]">
           <table className="relative table-auto w-full">
-            <thead className="bg-teal-700 sticky top-0"
-              style={{ backgroundColor: information?.theme?.primary }}>
+            <thead
+              className="bg-teal-700 sticky top-0"
+              style={{ backgroundColor: information?.theme?.primary }}
+            >
               <tr className="">
                 <th scope="col" className="px-6 py-4">
                   <div className="flex justify-center items-center">
@@ -647,7 +657,10 @@ const Inquiries = () => {
             </tbody>
           </table>
         </div>
-        <div className="md:py-4 md:px-4 bg-teal-700 flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3" style={{ backgroundColor: information?.theme?.primary }}>
+        <div
+          className="md:py-4 md:px-4 bg-teal-700 flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3"
+          style={{ backgroundColor: information?.theme?.primary }}
+        >
           <span className="font-medium text-white sm:text-xs text-sm">
             Showing {currentPage + 1} out of {pageCount} pages
           </span>

@@ -575,6 +575,11 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     }
   };
 
+  const handleResetServiceId = () => {
+    setDetail({});
+    setSelectedFormIndex("");
+  };
+
   return (
     <div>
       <div
@@ -1365,6 +1370,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                 type="button"
                 className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-900 text-white shadow-sm"
                 data-hs-overlay="#hs-reply-modal"
+                onClick={handleResetServiceId}
               >
                 CLOSE
               </button>

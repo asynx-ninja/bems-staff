@@ -90,6 +90,7 @@ const Notifications = () => {
     };
 
     fetchNotifications();
+    
     const intervalId = setInterval(() => {
       fetchNotifications();
     }, 3000);

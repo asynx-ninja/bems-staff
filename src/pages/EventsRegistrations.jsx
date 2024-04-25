@@ -89,6 +89,12 @@ const EventsRegistrations = () => {
     };
 
     fetch();
+
+    const intervalId = setInterval(() => {
+      fetch();
+    }, 10000);
+
+    return () => clearInterval(intervalId);
   }, [brgy, statusFilter, selecteEventFilter, currentPage]);
 
   useEffect(() => {

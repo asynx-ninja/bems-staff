@@ -26,7 +26,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
   const [viewFiles, setViewFiles] = useState([]);
   const [newMessage, setNewMessage] = useState({
     message: "",
-    isRepliable: false,
+    isRepliable: true,
   });
   const [userData, setUserData] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();

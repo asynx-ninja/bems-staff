@@ -156,7 +156,7 @@ const Blotters = () => {
   );
 
   useEffect(() => {
-    document.title = "Service Requests | Barangay E-Services Management";
+    document.title = "Patawag (Blotters) | Barangay E-Services Management";
   }, []);
 
   const checkboxHandler = (e) => {

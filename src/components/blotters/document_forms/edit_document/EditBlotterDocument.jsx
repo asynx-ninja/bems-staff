@@ -15,6 +15,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
+  const [selectedFormIndex, setSelectedFormIndex] = useState("");
   const [document, setDocument] = useState({
     req_id: request.req_id,
     doc_title: "",
@@ -96,6 +97,11 @@ const EditBlotterDocument = ({ request, brgy }) => {
     }
   };
 
+  const handleResetServiceId = () => {
+    setDocDetail({});
+    setSelectedFormIndex("");
+  };
+
   return (
     <div>
       <div
@@ -125,7 +131,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
                   name="form"
                   className="border border-1 border-gray-300 shadow bg-white w-full md:w-6/12 mt-2 md:mt-0 border p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                   onChange={handleSelectChange}
-                  defaultValue={""}
+                  value={selectedFormIndex}
                 >
                   <option value="" disabled>
                     Select Document
@@ -158,7 +164,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="doc_title"
                         type="text"
-                        value={docDetail.doc_title}
+                        value={docDetail.doc_title || ""}
                         onChange={handleChange}
                         placeholder="Document Name"
                       />
@@ -176,7 +182,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
                         id="date"
                         name="date"
                         type="date"
-                        value={docDetail.date}
+                        value={docDetail.date || ""}
                         onChange={handleChange}
                         required
                       />
@@ -194,7 +200,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="usapin_blg"
                         type="text"
-                        value={docDetail.usapin_blg}
+                        value={docDetail.usapin_blg || ""}
                         onChange={handleChange}
                         placeholder="XXXX-XXXX"
                       />
@@ -212,7 +218,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="reason"
                         type="text"
-                        value={docDetail.reason}
+                        value={docDetail.reason || ""}
                         onChange={handleChange}
                         placeholder="Reason"
                       />
@@ -230,7 +236,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="patawag"
                         type="text"
-                        value={docDetail.patawag}
+                        value={docDetail.patawag || ""}
                         onChange={handleChange}
                         placeholder="Pang ilang patawag..."
                       />
@@ -248,7 +254,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="complainant"
                         type="text"
-                        value={docDetail.complainant}
+                        value={docDetail.complainant || ""}
                         onChange={handleChange}
                         placeholder="Name of Complainant"
                       />
@@ -266,7 +272,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="complainant_address"
                         type="text"
-                        value={docDetail.complainant_address}
+                        value={docDetail.complainant_address || ""}
                         onChange={handleChange}
                         placeholder="Complainant Address"
                       />
@@ -284,7 +290,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="accused"
                         type="text"
-                        value={docDetail.accused}
+                        value={docDetail.accused || ""}
                         onChange={handleChange}
                         placeholder="Name of Accused"
                       />
@@ -302,7 +308,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="accused_address"
                         type="text"
-                        value={docDetail.accused_address}
+                        value={docDetail.accused_address || ""}
                         onChange={handleChange}
                         placeholder="Accused Address"
                       />
@@ -319,7 +325,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
                         id="message"
                         rows={7}
                         name="message"
-                        value={docDetail.message}
+                        value={docDetail.message || ""}
                         onChange={handleChange}
                         className="shadow appearance-none border w-full p-2.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         placeholder="Enter service details..."
@@ -338,7 +344,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="bcpc_vawc"
                         type="text"
-                        value={docDetail.bcpc_vawc}
+                        value={docDetail.bcpc_vawc || ""}
                         onChange={handleChange}
                         placeholder="Pangalan ng Bcpc / Vawc"
                       />
@@ -356,7 +362,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="email"
                         type="text"
-                        value={docDetail.email}
+                        value={docDetail.email || ""}
                         onChange={handleChange}
                         placeholder="E-mail Address"
                       />
@@ -374,7 +380,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="contact"
                         type="text"
-                        value={docDetail.contact}
+                        value={docDetail.contact || ""}
                         onChange={handleChange}
                         placeholder="Telephone / Mobile Number"
                       />
@@ -398,6 +404,7 @@ const EditBlotterDocument = ({ request, brgy }) => {
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                   data-hs-overlay="#hs-edit-serviceDocument-modal"
+                  onClick={handleResetServiceId}
                 >
                   CLOSE
                 </button>
