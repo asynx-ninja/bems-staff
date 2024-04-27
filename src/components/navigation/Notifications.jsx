@@ -93,7 +93,7 @@ const Notifications = () => {
     
     const intervalId = setInterval(() => {
       fetchNotifications();
-    }, 3000);
+    }, 10000);
 
     return () => clearInterval(intervalId);
   }, [brgy]);
