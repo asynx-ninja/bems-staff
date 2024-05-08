@@ -89,36 +89,68 @@ const AddServicesForm = ({ service_id, brgy }) => {
 
   const handleSubmit = async (e) => {
     try {
-      setSubmitClicked(true);
+      // Prepare the request payload
+      const requestData = {
+        form_name: titleName,
+        form: form,
+        section: section,
+      };
 
-      const response = await axios.post(
-        `${API_LINK}/forms/?brgy=${brgy}&service_id=${service_id}&checked=${checked}`,
-        {
-          form_name: titleName,
-          form: form,
-          section: section,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
+      if (checked) {
+        // Check if there's an active form
+        const activeFormResponse = await axios.get(
+          `${API_LINK}/forms/check/?brgy=${brgy}&service_id=${service_id}`
+        );
+
+        if (activeFormResponse.data.length > 0) {
+          throw new Error(
+            "There's an active form. Please turn it off before updating the new form."
+          );
+        } else {
+          setSubmitClicked(true);
+          const response = await axios.post(
+            `${API_LINK}/forms/?brgy=${brgy}&service_id=${service_id}&checked=${checked}`,
+            requestData,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          setSubmitClicked(false);
+          setCreationStatus("success");
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
         }
-      );
-
-      setSubmitClicked(false);
-      setCreationStatus("success");
-      setTimeout(() => {
-        window.location.reload();
-      }, 3000);
+      } else {
+        setSubmitClicked(true);
+        // Make the POST request
+        const response = await axios.post(
+          `${API_LINK}/forms/?brgy=${brgy}&service_id=${service_id}&checked=${checked}`,
+          requestData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        setSubmitClicked(false);
+        setCreationStatus("success");
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      }
     } catch (err) {
-      console.log(err.message);
+      console.error(err.message);
       setSubmitClicked(false);
       setCreationStatus("error");
-      setError(err.message);
+      setError(
+        err.message ||
+          "An error occurred while creating/updating the service."
+      );
     }
   };
-
-
 
   return (
     <div>
@@ -130,9 +162,12 @@ const AddServicesForm = ({ service_id, brgy }) => {
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
             {/* Header */}
-            <div className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl" style={{
+            <div
+              className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl"
+              style={{
                 background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-              }}>
+              }}
+            >
               <h3
                 className="font-bold text-white mx-auto md:text-xl text-center"
                 style={{ letterSpacing: "0.3em" }}
