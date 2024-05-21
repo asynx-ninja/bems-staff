@@ -35,6 +35,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket }) {
     try {
       e.preventDefault();
       setSubmitClicked(true);
+      setError(null); // Reset error state
 
       const response = await axios.patch(
         `${API_LINK}/users/status/${status.id}`,

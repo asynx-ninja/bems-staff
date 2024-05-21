@@ -243,6 +243,7 @@ const AddResidents = () => {
     try {
       e.preventDefault();
       setSubmitClicked(true);
+      setError(null); // Reset error state
 
       const emptyFieldsArr = checkEmptyFields();
 

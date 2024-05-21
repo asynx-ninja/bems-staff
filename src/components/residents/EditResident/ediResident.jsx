@@ -301,6 +301,7 @@ const EditResidents = ({ props }) => {
     try {
       e.preventDefault();
       setSubmitClicked(true);
+      setError(null); // Reset error state
 
       // Common logic from handleSubmit
       const arr = checkEmptyVerification();

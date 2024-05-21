@@ -89,6 +89,7 @@ function ManageServiceModal({ service, setService, brgy }) {
     try {
       e.preventDefault();
       setSubmitClicked(true);
+      setError(null); // Reset error state
 
       var formData = new FormData();
 

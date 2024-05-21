@@ -24,6 +24,8 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
   const [subject, setSubject] = useState(""); // State variable for subject
 
   const handleSave = async (e) => {
+    setError(null); // Reset error state
+    
     try {
       const messageContent = document.getElementById("message").value;
   

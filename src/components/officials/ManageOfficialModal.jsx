@@ -50,6 +50,7 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
   const handleSaveChanges = async (e) => {
     e.preventDefault();
     setSubmitClicked(true);
+    setError(null); // Reset error state
 
     try {
       const formData = new FormData();

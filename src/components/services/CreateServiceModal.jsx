@@ -91,6 +91,7 @@ function CreateServiceModal({ brgy }) {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+      setError(null); // Reset error state
       // setSubmitClicked(true);
       const emptyFieldsArr = checkEmptyFieldsForService();
 

@@ -42,6 +42,7 @@ const EditServicesForm = ({ service_id, brgy,  setEditUpdate, editupdate, }) => 
   const handleSubmit = async () => {
     try {
       setSubmitClicked(true);
+      setError(null); // Reset error state
 
       await axios.patch(
         `${API_LINK}/forms/`,

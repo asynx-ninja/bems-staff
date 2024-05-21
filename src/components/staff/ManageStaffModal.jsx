@@ -73,6 +73,7 @@ function ManageStaffModal({
     try {
       e.preventDefault();
       setSubmitClicked(true);
+      setError(null); // Reset error state
 
       var formData = new FormData();
       formData.append("users", JSON.stringify(user));

@@ -64,6 +64,7 @@ function AddStaffModal({ brgy, socket }) {
     try {
       e.preventDefault();
       setSubmitClicked(true);
+      setError(null); // Reset error state
 
       const emptyFieldsArr = checkEmptyFields();
 

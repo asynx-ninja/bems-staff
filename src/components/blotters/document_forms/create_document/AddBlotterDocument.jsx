@@ -43,6 +43,7 @@ const AddBlotterDocument = ({ request, brgy, socket, setUpdate }) => {
   const handleSubmit = async (e) => {
     try {
       setSubmitClicked(true);
+      setError(null); // Reset error state
 
       const response = await axios.post(
         `${API_LINK}/blotter_documents/?brgy=${brgy}`,

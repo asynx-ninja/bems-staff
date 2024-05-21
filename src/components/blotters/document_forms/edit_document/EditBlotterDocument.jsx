@@ -74,6 +74,7 @@ const EditBlotterDocument = ({
   const handleSubmit = async (e) => {
     try {
       setSubmitClicked(true);
+      setError(null); // Reset error state
 
       const response = await axios.patch(
         `${API_LINK}/blotter_documents/`,

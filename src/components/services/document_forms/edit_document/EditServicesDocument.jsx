@@ -70,6 +70,7 @@ const EditServicesDocument = ({ service_id, brgy, officials }) => {
   const handleSubmit = async () => {
     try {
       setSubmitClicked(true);
+      setError(null); // Reset error state
 
       await axios.patch(
         `${API_LINK}/document/`,

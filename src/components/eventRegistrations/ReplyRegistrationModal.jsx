@@ -250,6 +250,7 @@ function ReplyRegistrationModal({
       e.preventDefault();
       setOnSend(true);
       setErrMsg(false);
+      setError(null); // Reset error state
 
       if (newMessage.message.trim() === "" && createFiles.length === 0) {
         setErrMsg(true);

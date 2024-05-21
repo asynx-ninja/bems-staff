@@ -423,6 +423,7 @@ function ReplyServiceModal({
       setSubmitClicked(true);
       setOnSend(true);
       setErrMsg(false);
+      setError(null); // Reset error state
 
       if (ResponseData.message.trim() === "" && createFiles.length === 0) {
         setSubmitClicked(false);

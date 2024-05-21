@@ -15,6 +15,8 @@ function ArchiveStaffModal({ selectedItems }) {
   const handleSave = async (e) => {
     try {
       e.preventDefault();
+      setError(null); // Reset error state
+      
       if (selectedItems.length === 0) {
         setUpdatingStatus("error");
         setError("Unable to archive, Please select first to archive.");

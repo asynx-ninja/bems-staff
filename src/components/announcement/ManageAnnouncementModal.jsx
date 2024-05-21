@@ -102,6 +102,7 @@ function ManageAnnouncementModal({
     try {
       e.preventDefault();
       setSubmitClicked(true);
+      setError(null); // Reset error state
 
       var formData = new FormData();
 

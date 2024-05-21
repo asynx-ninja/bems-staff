@@ -129,6 +129,8 @@ const AddServicesForm = ({ service_id, socket, brgy, setUpdate }) => {
   };
 
   const handleSubmit = async (e) => {
+    setError(null); // Reset error state
+    
     try {
       // Prepare the request payload
       const requestData = {

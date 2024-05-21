@@ -64,6 +64,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
   const handleSubmit = async (e) => {
     try {
       setSubmitClicked(true);
+      setError(null); // Reset error state
 
       const response = await axios.post(
         `${API_LINK}/document/?brgy=${brgy}&form_id=${document.form_id}&checked=${checked}`,

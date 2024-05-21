@@ -192,6 +192,7 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy, chatContainerRef }) {
   const handleOnSend = async (e) => {
     e.preventDefault();
     setSubmitClicked(true);
+    setError(null); // Reset error state
 
     try {
       if (statusChanger && !inquiry.status) {
