@@ -9,7 +9,12 @@ import API_LINK from "../../../../config/API";
 const initialState = {
   user_id: { display: "user id", checked: true, type: "text", value: "" },
   firstName: { display: "first name", checked: true, type: "text", value: "" },
-  middleName: { display: "middle name", checked: true, type: "text", value: "" },
+  middleName: {
+    display: "middle name",
+    checked: true,
+    type: "text",
+    value: "",
+  },
   lastName: { display: "last name", checked: true, type: "text", value: "" },
   suffix: { display: "suffix", checked: true, type: "text", value: "" },
   birthday: { display: "birthday", checked: false, type: "date", value: "" },
@@ -40,7 +45,7 @@ const initialState = {
   },
 };
 
-const AddEventsForm = ({ announcement_id, brgy }) => {
+const AddEventsForm = ({ announcement_id, brgy, socket, setUpdate, editupdate, setEditUpdate }) => {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
@@ -173,10 +178,14 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
               },
             }
           );
+
+          socket.emit("send-create-event-form", response.data);
           setSubmitClicked(false);
           setCreationStatus("success");
           setTimeout(() => {
-            window.location.reload();
+            HSOverlay.close(
+              document.getElementById("hs-create-eventsForm-modal")
+            );
           }, 3000);
         }
       } else {
@@ -191,12 +200,18 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
             },
           }
         );
+
+        socket.emit("send-create-event-form", response.data);
         setSubmitClicked(false);
         setCreationStatus("success");
         setTimeout(() => {
-          window.location.reload();
+          HSOverlay.close(
+            document.getElementById("hs-create-eventsForm-modal")
+          );
         }, 3000);
       }
+      setUpdate(true);
+
     } catch (err) {
       console.error(err.message);
       setSubmitClicked(false);
@@ -208,7 +223,6 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
     }
   };
 
-  
   return (
     <div>
       <div

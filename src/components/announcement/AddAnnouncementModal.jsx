@@ -104,9 +104,9 @@ function CreateAnnouncementModal({ brgy }) {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      // setSubmitClicked(true);
+      setSubmitClicked(true);
       setError(null); // Reset error state
-      // setCreationStatus(null);
+      setCreationStatus(null);
       setEmpty(false);
 
       const emptyFieldsArr = checkEmptyFieldsForAnnouncement();
@@ -204,11 +204,13 @@ function CreateAnnouncementModal({ brgy }) {
 
           if (result.status === 200) {
             clearForm();
-            // setSubmitClicked(false);
-            // setCreationStatus("success");
-            // setTimeout(() => {
-            //   window.location.reload();
-            // }, 3000);
+            setSubmitClicked(false);
+            setCreationStatus("success");
+            setTimeout(() => {
+              setSubmitClicked(null);
+              setCreationStatus(null);
+              HSOverlay.close(document.getElementById("hs-modal-add"));
+            }, 3000);
           }
         }
       }

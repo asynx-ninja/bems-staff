@@ -17,6 +17,10 @@ import ManageResidentModal from "../components/residents/ManageResidentsModal";
 import MessageResidentModal from "../components/residents/messageResident";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+
+const socket = io(Socket_link);
 
 const Residents = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -60,6 +64,29 @@ const Residents = () => {
 
     setUsers(sortedData);
   };
+
+  useEffect(() => {
+    const handleResident = (get_users) => {
+      setUsers(get_users);
+      setFilteredResidents((prev) => [get_users, ...prev]);
+    };
+
+    // const handleEventForm = (get_events_forms) => {
+    //   setEventsForm((curItem) =>
+    //     curItem.map((item) =>
+    //       item._id === get_events_forms._id ? get_events_forms : item
+    //     )
+    //   );
+    // };
+
+    socket.on("receive-create-resident", handleResident);
+    // socket.on("receive-create-event-form", handleEventForm);
+
+    return () => {
+      socket.off("receive-create-resident", handleResident);
+      // socket.off("receive-create-event-form", handleEventForm);
+    };
+  }, [socket, setUsers]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -615,7 +642,7 @@ const Residents = () => {
             renderOnZeroPageCount={null}
           />
         </div>
-        <AddResidentsModal brgy={brgy} />
+        <AddResidentsModal brgy={brgy} socket={socket}/>
         <ArchiveResidentModal selectedItems={selectedItems} />
         <GenerateReportsModal />
         <StatusResident

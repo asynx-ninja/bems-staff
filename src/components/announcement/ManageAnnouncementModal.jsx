@@ -7,7 +7,7 @@ import API_LINK from "../../config/API";
 import EditLoader from "./loaders/EditLoader";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
+function ManageAnnouncementModal({ announcement, setAnnouncement, brgy, socket}) {
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
   const [files, setFiles] = useState([]);

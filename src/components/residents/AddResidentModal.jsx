@@ -12,7 +12,7 @@ import GetBrgy from "../GETBrgy/getbrgy";
 import Webcam from "react-webcam";
 import moment from "moment";
 
-function AddResidentModal({ brgy }) {
+function AddResidentModal({ brgy, socket }) {
   const WebcamComponent = () => <Webcam />;
   const [viewerVisible, setViewerVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -363,10 +363,14 @@ function AddResidentModal({ brgy }) {
               },
             });
 
+            socket.emit("send-create-resident", response.data);
+
             setSubmitClicked(false);
             setCreationStatus("success");
             setTimeout(() => {
-              window.location.reload();
+              setSubmitClicked(null);
+              setCreationStatus(null);
+              HSOverlay.close(document.getElementById("hs-modal-addResident"));
             }, 3000);
           }
         }

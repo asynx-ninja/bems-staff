@@ -5,7 +5,15 @@ import EditSectionForm from "./EditSectionForm";
 import EditFormLoader from "../../loaders/EditFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 
-const EditEventsForm = ({ announcement_id, brgy }) => {
+const EditEventsForm = ({
+  announcement_id,
+  brgy,
+  setEditUpdate,
+  editupdate,
+  socket,
+  eventsForm,
+  setEventsForm,
+}) => {
   const information = GetBrgy(brgy);
 
   const [details, setDetails] = useState([]);
@@ -22,12 +30,13 @@ const EditEventsForm = ({ announcement_id, brgy }) => {
           `${API_LINK}/event_form/?brgy=${brgy}&event_id=${announcement_id}`
         );
         setDetails(response.data);
+        setEditUpdate((prevState) => !prevState);
       } catch (err) {
         console.log(err.message);
       }
     };
     fetch();
-  }, [brgy, announcement_id]);
+  }, [brgy, announcement_id, editupdate]);
 
   const handleFormChange = (e, key) => {
     const newState = detail.form[0];
@@ -59,7 +68,9 @@ const EditEventsForm = ({ announcement_id, brgy }) => {
         setSubmitClicked(false);
         setUpdatingStatus("success");
         setTimeout(() => {
-          window.location.reload();
+          setSubmitClicked(null);
+          setUpdatingStatus(null);
+          HSOverlay.close(document.getElementById("hs-edit-eventsForm-modal"));
         }, 3000);
       }, 1000);
     } catch (err) {
