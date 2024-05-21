@@ -28,6 +28,7 @@ const ArchivedStaffsManagement = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [positionFilter, setPositionFilter] = useState("all");
+  const [filterUsers, setfilterUsers] = useState([]);
   const information = GetBrgy(brgy);
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
@@ -67,19 +68,24 @@ const ArchivedStaffsManagement = () => {
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/staffs/showArchived/${brgy}/?page=${currentPage}&type=${positionFilter}`
+        `${API_LINK}/staffs/showArchived/${brgy}/?&type=${positionFilter}`
       );
 
       if (response.status === 200) {
         setUsers(response.data.result);
         setPageCount(response.data.pageCount);
+        setfilterUsers(response.data.result.slice(0, 10))
       } else setUsers([]);
     };
 
     fetch();
-  }, [currentPage, positionFilter]);
+  }, [ positionFilter]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+    const start = selected * 10;
+    const end = start + 10;
+    setfilterUsers(users.slice(start, end));
   };
 
   const checkboxHandler = (e) => {
@@ -242,7 +248,17 @@ const ArchivedStaffsManagement = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    const filteredData = users.filter((item) => {
+                      const fullName = `${item.lastName || ''} ${item.firstName || ''} ${item.middleName || ''}`.toLowerCase();
+                      const userIdMatches = item.user_id ? item.user_id.toLowerCase().includes(e.target.value.toLowerCase()) : false;
+                      const nameMatches = fullName.includes(e.target.value.toLowerCase());
+                      return userIdMatches || nameMatches;
+                    });
+                    setfilterUsers(filteredData.slice(0, 10)); // Show first page of filtered results
+                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
+                  }}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center space-x-2">
@@ -296,8 +312,8 @@ const ArchivedStaffsManagement = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {Users.length > 0 ? (
-                Users.map((item, index) => (
+              {filterUsers.length > 0 ? (
+                filterUsers.map((item, index) => (
                   <tr key={index} className="odd:bg-slate-100 text-center">
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">

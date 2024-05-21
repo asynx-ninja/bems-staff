@@ -68,21 +68,22 @@ const ArchivedRequests = () => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/requests/?brgy=${brgy}&archived=true&status=${statusFilter}&type=${selectedReqFilter}&page=${currentPage}`
+          `${API_LINK}/requests/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${selectedReqFilter}`
         );
 
         if (response.status === 200) {
+          console.log("Filtered Requests:", response.data.result);
           setRequests(response.data.result);
           setPageCount(response.data.pageCount);
-          setFilteredRequests(response.data.result);
+          setFilteredRequests(response.data.result.slice(0, 10));
         } else setRequests([]);
       } catch (err) {
-        console.log(err);
       }
     };
 
-    fetch();
-  }, [brgy, statusFilter, selectedReqFilter, currentPage]);
+
+  }, [brgy, statusFilter, selectedReqFilter]);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -113,7 +114,11 @@ const ArchivedRequests = () => {
   }, [currentPage, brgy]); // Add positionFilter dependency
 
   const handlePageChange = ({ selected }) => {
+    console.log(selected)
     setCurrentPage(selected);
+    const start = selected * 10;
+    const end = start + 10;
+    setFilteredRequests(requests.slice(start, end));
   };
 
   const Requests = requests.filter((item) =>
@@ -546,14 +551,16 @@ const ArchivedRequests = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    const Requests = requests.filter((item) => {
-                        const fullName = `${item.form[0].firstName.value} ${item.form[0].lastName.value}`;
-                        const serviceId = item.req_id.toString(); // Assuming service_id is a number, convert it to string for case-insensitive comparison
-                        return fullName.toLowerCase().includes(e.target.value.toLowerCase()) || serviceId.includes(e.target.value.toLowerCase());
+                    const filteredData = requests.filter((item) => {
+                      const fullName = `${item.form[0].lastName.value || ''}, ${item.form[0].firstName.value || ''} ${item.form[0].middleName.value || ''}`.toLowerCase();
+                      const serviceNameMatches = item.service_name.toLowerCase().includes(e.target.value.toLowerCase());
+                      const reqIdMatches = item.req_id.toLowerCase().includes(e.target.value.toLowerCase());
+                      const nameMatches = fullName.includes(e.target.value.toLowerCase());
+                      return serviceNameMatches || reqIdMatches || nameMatches;
                     });
-                
-                    setFilteredRequests(Requests);
-                }}
+                    setFilteredRequests(filteredData.slice(0, 10)); // Show first page of filtered results
+                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
+                  }}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
