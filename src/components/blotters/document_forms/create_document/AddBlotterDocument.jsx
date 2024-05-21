@@ -6,15 +6,13 @@ import AddFormLoader from "../../loaders/AddFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 import API_LINK from "../../../../config/API";
 
-const AddBlotterDocument = ({ request, brgy }) => {
+const AddBlotterDocument = ({ request, brgy, socket, setUpdate }) => {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
 
-
   const [checked, setChecked] = useState(false);
-
 
   const [document, setDocument] = useState({
     req_id: request.req_id,
@@ -32,6 +30,8 @@ const AddBlotterDocument = ({ request, brgy }) => {
     email: "",
     contact: "",
   });
+
+  console.log("Document: ", document);
 
   const handleChange = (e) => {
     setDocument((prev) => ({
@@ -69,11 +69,18 @@ const AddBlotterDocument = ({ request, brgy }) => {
         }
       );
 
+      socket.emit("send-create-patawag-doc", response.data);
+
       setSubmitClicked(false);
       setCreationStatus("success");
       setTimeout(() => {
-        window.location.reload();
+        setCreationStatus(null);
+        handleResetModal();
+        HSOverlay.close(
+          document.getElementById("hs-create-serviceDocument-modal")
+        );
       }, 3000);
+      setUpdate(true);
     } catch (err) {
       console.log(err.message);
       setSubmitClicked(false);
@@ -82,7 +89,9 @@ const AddBlotterDocument = ({ request, brgy }) => {
     }
   };
 
-
+  const handleResetModal = () => {
+    setDocument({});
+  };
 
   return (
     <div>
@@ -127,7 +136,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="doc_title"
                         type="text"
-                        // value={service.name}
+                        value={document.doc_title || ""}
                         onChange={handleChange}
                         placeholder="Document Name"
                       />
@@ -145,7 +154,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         id="date"
                         name="date"
                         type="date"
-                        // value={announcement.date}
+                        value={document.date || ""}
                         onChange={handleChange}
                         required
                       />
@@ -163,7 +172,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="usapin_blg"
                         type="text"
-                        // value={service.name}
+                        value={document.usapin_blg || ""}
                         onChange={handleChange}
                         placeholder="XXXX-XXXX"
                       />
@@ -181,7 +190,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="reason"
                         type="text"
-                        // value={service.name}
+                        value={document.reason || ""}
                         onChange={handleChange}
                         placeholder="Reason"
                       />
@@ -199,7 +208,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="patawag"
                         type="text"
-                        // value={service.name}
+                        value={document.patawag || ""}
                         onChange={handleChange}
                         placeholder="Pang ilang patawag..."
                       />
@@ -217,7 +226,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="complainant"
                         type="text"
-                        // value={service.name}
+                        value={document.complainant || ""}
                         onChange={handleChange}
                         placeholder="Name of Complainant"
                       />
@@ -235,7 +244,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="complainant_address"
                         type="text"
-                        // value={service.name}
+                        value={document.complainant_address || ""}
                         onChange={handleChange}
                         placeholder="Complainant Address"
                       />
@@ -253,7 +262,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="accused"
                         type="text"
-                        // value={service.name}
+                        value={document.accused || ""}
                         onChange={handleChange}
                         placeholder="Name of Accused"
                       />
@@ -271,7 +280,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="accused_address"
                         type="text"
-                        // value={service.name}
+                        value={document.accused_address || ""}
                         onChange={handleChange}
                         placeholder="Accused Address"
                       />
@@ -288,7 +297,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         id="message"
                         rows={7}
                         name="message"
-                        // value={service.details}
+                        value={document.message || ""}
                         onChange={handleChange}
                         className="shadow appearance-none border w-full p-2.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         placeholder="Enter service details..."
@@ -307,7 +316,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="bcpc_vawc"
                         type="text"
-                        // value={service.name}
+                        value={document.bcpc_vawc || ""}
                         onChange={handleChange}
                         placeholder="Pangalan ng Bcpc / Vawc"
                       />
@@ -325,7 +334,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="email"
                         type="text"
-                        // value={service.name}
+                        value={document.email || ""}
                         onChange={handleChange}
                         placeholder="E-mail Address"
                       />
@@ -343,7 +352,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="contact"
                         type="text"
-                        // value={service.name}
+                        value={document.contact || ""}
                         onChange={handleChange}
                         placeholder="Telephone / Mobile Number"
                       />
@@ -367,6 +376,7 @@ const AddBlotterDocument = ({ request, brgy }) => {
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                   data-hs-overlay="#hs-create-serviceDocument-modal"
+                  onClick={handleResetModal}
                 >
                   CLOSE
                 </button>

@@ -60,12 +60,23 @@ const EventsManagement = () => {
       );
     };
 
+    const handleEventUpdate = (get_updated_event) => {
+      setAnnouncement(get_updated_event);
+      setFilteredAnnouncements((curItem) =>
+        curItem.map((item) =>
+          item._id === get_updated_event._id ? get_updated_event : item
+        )
+      );
+    };
+
     socket.on("receive-get-event", handleEvent);
     socket.on("receive-create-event-form", handleEventForm);
+    socket.on("receive-update-event", handleEventUpdate);
 
     return () => {
       socket.off("receive-get-event", handleEvent);
       socket.off("receive-create-event-form", handleEventForm);
+      socket.off("receive-update-event", handleEventUpdate);
     };
   }, [socket, setAnnouncement]);
 

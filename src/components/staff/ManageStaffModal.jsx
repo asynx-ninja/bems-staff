@@ -7,7 +7,16 @@ import { LiaRandomSolid } from "react-icons/lia";
 import EditLoader from "./loaders/EditLoader";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function ManageStaffModal({ user, setUser, brgy }) {
+function ManageStaffModal({
+  user,
+  setUser,
+  brgy,
+  setEditUpdate,
+  editupdate,
+  socket,
+  eventsForm,
+  setEventsForm,
+}) {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
@@ -74,11 +83,14 @@ function ManageStaffModal({ user, setUser, brgy }) {
       );
 
       if (response.status === 200) {
+        socket.emit("send-update-staff", response.data);
+
         setTimeout(() => {
           setSubmitClicked(false);
           setUpdatingStatus("success");
           setTimeout(() => {
-            window.location.reload();
+            setUpdatingStatus(null);
+            HSOverlay.close(document.getElementById("hs-modal-editStaff"));
           }, 3000);
         }, 1000);
       } else {
@@ -87,7 +99,7 @@ function ManageStaffModal({ user, setUser, brgy }) {
     } catch (err) {
       console.log(err);
       setSubmitClicked(false);
-      setCreationStatus("error");
+      setUpdatingStatus("error");
       setError("An error occurred while creating the announcement.");
     }
   };

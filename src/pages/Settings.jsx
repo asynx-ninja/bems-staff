@@ -16,6 +16,11 @@ import banner from "../assets/image/1.png";
 import OccupationList from "../components/occupations/OccupationList";
 import EditLoader from "../components/settings/loaders/EditLoader";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+
+const socket = io(Socket_link);
+
 const Settings = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [submitClicked, setSubmitClicked] = useState(false);
@@ -141,6 +146,23 @@ const Settings = () => {
   }, [id]);
 
   useEffect(() => {
+    const handleProfile = (get_profile) => {
+      setUserData(get_profile);
+      setUserData((curItem) =>
+        curItem.map((item) =>
+          item._id === get_profile._id ? get_profile : item
+        )
+      );
+    };
+
+    socket.on("receive-update-staff", handleProfile);
+
+    return () => {
+      socket.off("receive-update-profile", handleProfile);
+    };
+  }, [socket, setUserData]);
+
+  useEffect(() => {
     document.title = "Settings | Barangay E-Services Management";
   }, []);
 
@@ -194,8 +216,6 @@ const Settings = () => {
     });
   };
 
-
-
   const saveChanges = async (e) => {
     if (
       !userData.firstName.trim() ||
@@ -247,7 +267,6 @@ const Settings = () => {
       const res_folder = await axios.get(
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
-
 
       if (res_folder.status === 200) {
         const response = await axios.patch(
@@ -307,11 +326,13 @@ const Settings = () => {
             twitter: response.data.socials.twitter,
           });
           setEditButton(true);
+          socket.emit("send-update-profile", response.data);
           setTimeout(() => {
             setSubmitClicked(false);
             setUpdatingStatus("success");
             setTimeout(() => {
-              window.location.reload();
+              setUpdatingStatus(null);
+              // window.location.reload();
             }, 3000);
           }, 1000);
         } else {
@@ -539,16 +560,16 @@ const Settings = () => {
                   </button>
                 )}
                 {userSocials.twitter && userSocials.twitter.name && (
-                   <button
-                   className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
-                   onMouseEnter={() => handleMouseEnter("twitter")}
-                   onMouseLeave={() => handleMouseLeave("twitter")}
-                   style={{
-                     backgroundColor: hoverStates["twitter"]
-                       ? information?.theme?.secondary
-                       : null,
-                   }}
-                 >
+                  <button
+                    className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
+                    onMouseEnter={() => handleMouseEnter("twitter")}
+                    onMouseLeave={() => handleMouseLeave("twitter")}
+                    style={{
+                      backgroundColor: hoverStates["twitter"]
+                        ? information?.theme?.secondary
+                        : null,
+                    }}
+                  >
                     <FaTwitter />
                     <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
                       {userSocials.twitter.name}
@@ -557,15 +578,15 @@ const Settings = () => {
                 )}
                 {userSocials.instagram && userSocials.instagram.name && (
                   <button
-                  className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
-                  onMouseEnter={() => handleMouseEnter("ig")}
-                  onMouseLeave={() => handleMouseLeave("ig")}
-                  style={{
-                    backgroundColor: hoverStates["ig"]
-                      ? information?.theme?.secondary
-                      : null,
-                  }}
-                >
+                    className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
+                    onMouseEnter={() => handleMouseEnter("ig")}
+                    onMouseLeave={() => handleMouseLeave("ig")}
+                    style={{
+                      backgroundColor: hoverStates["ig"]
+                        ? information?.theme?.secondary
+                        : null,
+                    }}
+                  >
                     <FaInstagram />
                     <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
                       {userSocials.instagram.name}
@@ -574,15 +595,15 @@ const Settings = () => {
                 )}
                 {userData.contact && (
                   <button
-                  className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
-                  onMouseEnter={() => handleMouseEnter("phone")}
-                  onMouseLeave={() => handleMouseLeave("phone")}
-                  style={{
-                    backgroundColor: hoverStates["phone"]
-                      ? information?.theme?.secondary
-                      : null,
-                  }}
-                >
+                    className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
+                    onMouseEnter={() => handleMouseEnter("phone")}
+                    onMouseLeave={() => handleMouseLeave("phone")}
+                    style={{
+                      backgroundColor: hoverStates["phone"]
+                        ? information?.theme?.secondary
+                        : null,
+                    }}
+                  >
                     <FaPhone />
                     <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
                       {userData.contact}
@@ -590,16 +611,16 @@ const Settings = () => {
                   </button>
                 )}
                 {userData.email && (
-                     <button
-                     className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
-                     onMouseEnter={() => handleMouseEnter("email")}
-                     onMouseLeave={() => handleMouseLeave("email")}
-                     style={{
-                       backgroundColor: hoverStates["email"]
-                         ? information?.theme?.secondary
-                         : null,
-                     }}
-                   >
+                  <button
+                    className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
+                    onMouseEnter={() => handleMouseEnter("email")}
+                    onMouseLeave={() => handleMouseLeave("email")}
+                    style={{
+                      backgroundColor: hoverStates["email"]
+                        ? information?.theme?.secondary
+                        : null,
+                    }}
+                  >
                     <FaEnvelope />
                     <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
                       {userData.email}

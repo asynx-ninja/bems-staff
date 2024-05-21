@@ -6,7 +6,15 @@ import EditSectionDocument from "./EditSectionDocument";
 import EditFormLoader from "../../loaders/EditFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 
-const EditBlotterDocument = ({ request, brgy }) => {
+const EditBlotterDocument = ({
+  request,
+  brgy,
+  setEditUpdate,
+  editupdate,
+  socket,
+  eventsForm,
+  setEventsForm,
+}) => {
   const information = GetBrgy(brgy);
   const [details, setDetails] = useState([]);
   const [detail, setDetail] = useState({});
@@ -43,28 +51,25 @@ const EditBlotterDocument = ({ request, brgy }) => {
 
         // filter
         setDocDetails(response.data);
+        setEditUpdate((prevState) => !prevState);
       } catch (err) {
         console.log(err.message);
       }
     };
 
     fetch();
-  }, [brgy, request]);
+  }, [brgy, request, editupdate]);
 
   const handleSelectChange = (e) => {
     setDocDetail(docDetails[e.target.value]);
   };
 
-  
   const handleChange = (e) => {
     setDocDetail((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
   };
-
-  
-
 
   const handleSubmit = async (e) => {
     try {
@@ -82,12 +87,14 @@ const EditBlotterDocument = ({ request, brgy }) => {
         }
       );
 
-
       setTimeout(() => {
         setSubmitClicked(false);
         setUpdatingStatus("success");
         setTimeout(() => {
-          window.location.reload();
+          setSubmitClicked(null);
+          setUpdatingStatus(null);
+          handleResetServiceId();
+          HSOverlay.close(document.getElementById("hs-edit-serviceDocument-modal"));
         }, 3000);
       }, 1000);
     } catch (err) {
@@ -112,9 +119,12 @@ const EditBlotterDocument = ({ request, brgy }) => {
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
             {/* Header */}
-            <div className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl" style={{
+            <div
+              className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl"
+              style={{
                 background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-              }}>
+              }}
+            >
               <h3
                 className="font-bold text-white mx-auto md:text-xl text-center"
                 style={{ letterSpacing: "0.3em" }}
@@ -145,7 +155,6 @@ const EditBlotterDocument = ({ request, brgy }) => {
                 </select>
               </div>
               <div className="px-4 pb-4">
-                
                 {/* DOCUMENT INFORMATION */}
                 <fieldset className="border-2 border-black">
                   <legend className="ml-2 px-2 text-lg font-medium">

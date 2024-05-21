@@ -7,7 +7,12 @@ import API_LINK from "../../config/API";
 import EditLoader from "./loaders/EditLoader";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function ManageAnnouncementModal({ announcement, setAnnouncement, brgy, socket}) {
+function ManageAnnouncementModal({
+  announcement,
+  setAnnouncement,
+  brgy,
+  socket,
+}) {
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
   const [files, setFiles] = useState([]);
@@ -71,7 +76,6 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy, socket})
   };
 
   const handleChange = (e) => {
-
     setAnnouncement((prev) => ({
       ...prev,
       [e.target.name]:
@@ -123,15 +127,11 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy, socket})
           formData.append("files", newFiles[f]);
         }
 
-
-
       formData.append("announcement", JSON.stringify(announcement));
 
       const res_folder = await axios.get(
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
-
-
 
       if (res_folder.status === 200) {
         const response = await axios.patch(
@@ -140,7 +140,6 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy, socket})
         );
 
         if (response.status === 200) {
-
           let notify;
 
           if (announcement.isOpen) {
@@ -191,20 +190,23 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy, socket})
             };
           }
 
-
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {
               "Content-Type": "application/json",
             },
           });
 
+          socket.emit("send-update-event", response.data);
+
           if (result.status === 200) {
             setTimeout(() => {
-              // HSOverlay.close(document.getElementById("hs-modal-editAnnouncement"));
               setSubmitClicked(false);
               setUpdatingStatus("success");
               setTimeout(() => {
-                window.location.reload();
+                setUpdatingStatus(null);
+                HSOverlay.close(
+                  document.getElementById("hs-modal-editAnnouncement")
+                );
               }, 3000);
             }, 1000);
           }

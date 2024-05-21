@@ -39,6 +39,9 @@ const StaffManagement = () => {
   const [positionFilter, setPositionFilter] = useState("all");
   const [filterUsers, setfilterUsers] = useState([]);
   const information = GetBrgy(brgy);
+  const [update, setUpdate] = useState(false);
+  const [editupdate, setEditUpdate] = useState(false);
+  const [eventsForm, setEventsForm] = useState([]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -61,10 +64,21 @@ const StaffManagement = () => {
       setfilterUsers((prev) => [get_staff, ...prev]);
     };
 
+    const handleStaffUpdate = (get_updated_staff) => {
+      setUsers(get_updated_staff);
+      setfilterUsers((curItem) =>
+        curItem.map((item) =>
+          item._id === get_updated_staff._id ? get_updated_staff : item
+        )
+      );
+    };
+
     socket.on("receive-create-staff", handleStaff);
+    socket.on("receive-update-staff", handleStaffUpdate);
 
     return () => {
       socket.off("receive-create-staff", handleStaff);
+      socket.off("receive-update-staff", handleStaffUpdate);
     };
   }, [socket, setUsers]);
 
@@ -74,13 +88,14 @@ const StaffManagement = () => {
     const end = start + 10;
     setfilterUsers(users.slice(start, end));
   };
-  const Users = users.filter((item) => {
-    const fullName =
-      `${item.lastName} ${item.firstName} ${item.middleName}`.toLowerCase();
-    const nameMatches = fullName.includes(searchQuery.toLowerCase());
 
-    return nameMatches;
-  });
+  // const Users = users.filter((item) => {
+  //   const fullName =
+  //     `${item.lastName} ${item.firstName} ${item.middleName}`.toLowerCase();
+  //   const nameMatches = fullName.includes(searchQuery.toLowerCase());
+
+  //   return nameMatches;
+  // });
 
   useEffect(() => {
     document.title = "Staffs | Barangay E-Services Management";
@@ -519,10 +534,19 @@ const StaffManagement = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <AddStaffModal brgy={brgy} socket={socket}/>
+      <AddStaffModal brgy={brgy} socket={socket} />
       <ArchiveStaffModal selectedItems={selectedItems} />
       <GenerateReportsModal />
-      <ManageStaffModal user={user} setUser={setUser} brgy={brgy} />
+      <ManageStaffModal
+        user={user}
+        setUser={setUser}
+        brgy={brgy}
+        socket={socket}
+        editupdate={editupdate}
+        setEditUpdate={setEditUpdate}
+        eventsForm={eventsForm}
+        setEventsForm={setEventsForm}
+      />
     </div>
   );
 };

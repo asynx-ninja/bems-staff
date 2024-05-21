@@ -16,7 +16,14 @@ import ReplyLoader from "./loaders/ReplyLoader";
 import moment from "moment";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef }) {
+function ReplyServiceModal({
+  request,
+  setRequest,
+  brgy,
+  // chatContainerRef,
+  socket,
+  setUpdate,
+}) {
   const information = GetBrgy(brgy);
   const [reply, setReply] = useState(false);
   const [statusChanger, setStatusChanger] = useState(false);
@@ -80,10 +87,10 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef }) {
     req_id: "",
   });
 
-  useEffect(() => {
-    var container = document.getElementById("scrolltobottom");
-    container.scrollTop = container.scrollHeight;
-  });
+  // useEffect(() => {
+  //   var container = document.getElementById("scrolltobottom");
+  //   container.scrollTop = container.scrollHeight;
+  // });
 
   const handleComplainantChange = (e) => {
     const selectedUserId = e.target.value;
@@ -414,6 +421,15 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef }) {
     try {
       e.preventDefault();
       setSubmitClicked(true);
+      setOnSend(true);
+      setErrMsg(false);
+
+      if (ResponseData.message.trim() === "" && createFiles.length === 0) {
+        setSubmitClicked(false);
+        setErrMsg(true);
+        setOnSend(false);
+        return;
+      }
 
       const targetUserIds = [ComplainantData.user_id, DefendantData.user_id];
 
@@ -430,6 +446,7 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef }) {
           },
         ],
         req_id: detail.req_id,
+        status: `${ResponseData.status}`,
       };
 
       var formData = new FormData();
@@ -450,6 +467,12 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef }) {
         );
 
         if (response.status === 200) {
+          setCreateFiles([]);
+          setNewMessage({ message: "" });
+          setReplyingStatus(null);
+          setReply(false);
+          setStatusChanger(false);
+
           const notify = {
             category: "One",
             compose: {
@@ -476,13 +499,16 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef }) {
           });
 
           if (result.status === 200) {
-            setTimeout(() => {
-              setSubmitClicked(false);
-              setReplyingStatus("success");
-              setTimeout(() => {
-                window.location.reload();
-              }, 3000);
-            }, 1000);
+            setCreateFiles([]);
+            setResponseData({ message: "" });
+            setReplyingStatus(null);
+            setReply(false);
+            setStatusChanger(false);
+
+            setSubmitClicked(false);
+            socket.emit("send-reply-patawag", response.data);
+            setOnSend(false);
+            setUpdate(true);
           }
         }
       }
@@ -497,7 +523,14 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef }) {
   const handleSendReply = async (e) => {
     try {
       e.preventDefault();
-      setSubmitClicked(true);
+      setOnSend(true);
+      setErrMsg(false);
+
+      if (ResponseData.message.trim() === "" && createFiles.length === 0) {
+        setErrMsg(true);
+        setOnSend(false);
+        return;
+      }
 
       const targetUserIds = [
         blotterDetails?.to[0]?.user_id,
@@ -531,6 +564,12 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef }) {
         );
 
         if (response.status === 200) {
+          setCreateFiles([]);
+          setResponseData({ message: "" });
+          setReplyingStatus(null);
+          setReply(false);
+          setStatusChanger(false);
+
           const notify = {
             category: "One",
             compose: {
@@ -557,13 +596,8 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef }) {
           });
 
           if (result.status === 200) {
-            setTimeout(() => {
-              setSubmitClicked(false);
-              setReplyingStatus("success");
-              setTimeout(() => {
-                window.location.reload();
-              }, 3000);
-            }, 1000);
+            socket.emit("send-reply-patawag", response.data);
+            setOnSend(false);
           }
         }
       }
@@ -648,8 +682,8 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef }) {
             </div>
 
             <div
-              id="scrolltobottom"
-              ref={chatContainerRef}
+              // id="scrolltobottom"
+              // ref={chatContainerRef}
               className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]"
             >
               <div className="flex flex-col w-full">
@@ -1001,6 +1035,14 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef }) {
                               )}
                             </div>
                           </div>
+
+                          {errMsg ? (
+                            <div className="w-[100%] bg-red-500 rounded-md mb-[10px] flex">
+                              <p className="py-[10px] text-[12px] px-[20px] text-white font-medium">
+                                Please enter a message or insert a file!
+                              </p>
+                            </div>
+                          ) : null}
 
                           <textarea
                             id="message"

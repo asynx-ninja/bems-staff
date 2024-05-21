@@ -21,6 +21,10 @@ import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
 import AddBlotterDocument from "../components/blotters/document_forms/create_document/AddBlotterDocument";
 import EditBlotterDocument from "../components/blotters/document_forms/edit_document/EditBlotterDocument";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+
+const socket = io(Socket_link);
 
 const Blotters = () => {
   const [requests, setRequests] = useState([]);
@@ -34,7 +38,11 @@ const Blotters = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedReqFilter, setSelectedReqFilter] = useState("all");
   const information = GetBrgy(brgy);
-  const chatContainerRef = useRef();
+  const [update, setUpdate] = useState(false);
+  const [editupdate, setEditUpdate] = useState(false);
+  const [eventsForm, setEventsForm] = useState([]);
+  // const chatContainerRef = useRef();
+  // const [correspondingBlotterDetail, setCorrespondingBlotterDetail] = useState(null);
 
   //status filter
   const [statusFilter, setStatusFilter] = useState("all");
@@ -97,9 +105,10 @@ const Blotters = () => {
 
         // filter
         setBlotterDetails(response.data);
+        setUpdate(false);
 
-        const container = chatContainerRef.current;
-        container.scrollTop = container.scrollHeight;
+        // const container = chatContainerRef.current;
+        // container.scrollTop = container.scrollHeight;
       } catch (err) {
         console.log(err.message);
         setBlotterDetails([]);
@@ -107,7 +116,24 @@ const Blotters = () => {
     };
 
     fetch();
-  }, [brgy]);
+  }, [brgy, update]);
+
+  useEffect(() => {
+    const handlePatawag = (patawag_blotter) => {
+      setRequest(patawag_blotter);
+      setBlotterDetails((curItem) =>
+        curItem.map((item) =>
+          item._id === patawag_blotter._id ? patawag_blotter : item
+        )
+      );
+    };
+
+    socket.on("receive-reply-patawag", handlePatawag);
+
+    return () => {
+      socket.off("receive-reply-patawag", handlePatawag);
+    };
+  }, [socket, setRequest]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -222,7 +248,6 @@ const Blotters = () => {
     switch (choice) {
       case "date":
         return requests.filter((item) => {
-
           return (
             new Date(item.createdAt).getFullYear() ===
               selectedDate.getFullYear() &&
@@ -841,12 +866,29 @@ const Blotters = () => {
         request={request}
         setRequest={setRequest}
         brgy={brgy}
-        chatContainerRef={chatContainerRef}
+        setUpdate={setUpdate}
+        // chatContainerRef={chatContainerRef}
+        socket={socket}
       />
       <ArchiveRequestsModal selectedItems={selectedItems} />
       <RequestsReportsModal />
-      <AddBlotterDocument request={request} brgy={brgy} />
-      <EditBlotterDocument request={request} brgy={brgy} />
+      <AddBlotterDocument
+        request={request}
+        brgy={brgy}
+        socket={socket}
+        setUpdate={setUpdate}
+        editupdate={editupdate}
+        setEditUpdate={setEditUpdate}
+      />
+      <EditBlotterDocument
+        request={request}
+        brgy={brgy}
+        editupdate={editupdate}
+        setEditUpdate={setEditUpdate}
+        socket={socket}
+        eventsForm={eventsForm}
+        setEventsForm={setEventsForm}
+      />
     </div>
   );
 };

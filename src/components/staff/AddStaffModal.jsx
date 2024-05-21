@@ -129,10 +129,10 @@ function AddStaffModal({ brgy, socket }) {
               setSubmitClicked(false);
               setCreationStatus("success");
 
-              socket.emit("send-create-staff", response.data);
+              socket.emit("send-create-staff", result.data);
               setTimeout(() => {
-                setSubmitClicked(null);
-                setCreationStatus(null);
+                // setSubmitClicked(null);
+                // setCreationStatus(null);
                 HSOverlay.close(document.getElementById("hs-modal-addStaff"));
               }, 3000);
             }

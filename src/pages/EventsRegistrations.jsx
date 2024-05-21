@@ -15,7 +15,6 @@ import axios from "axios";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
 import { io } from "socket.io-client";
-// const socket = io("http://localhost:8800");
 import Socket_link from "../config/Socket";
 
 const socket = io(Socket_link);

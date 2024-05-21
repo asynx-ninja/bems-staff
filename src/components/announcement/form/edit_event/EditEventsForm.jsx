@@ -70,6 +70,7 @@ const EditEventsForm = ({
         setTimeout(() => {
           setSubmitClicked(null);
           setUpdatingStatus(null);
+          handleResetModal();
           HSOverlay.close(document.getElementById("hs-edit-eventsForm-modal"));
         }, 3000);
       }, 1000);

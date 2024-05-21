@@ -329,8 +329,6 @@ function ReplyRegistrationModal({
           logo: event.collections.logo,
         };
 
-        console.log("Notify: ", notify);
-
         const result = await axios.post(`${API_LINK}/notification/`, notify, {
           headers: {
             "Content-Type": "application/json",
@@ -352,8 +350,6 @@ function ReplyRegistrationModal({
     }
   };
 
-  console.log("newMessage:", newMessage);
-  console.log("status:", application.status);
   return (
     <div>
       <div
