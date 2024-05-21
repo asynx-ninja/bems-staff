@@ -60,7 +60,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     type: "Defendant",
   });
   const [ResponseData, setResponseData] = useState({
-    sender: "Nyle Chua",
+    sender: "",
     type: "Staff",
     message: "",
     date: new Date().toISOString(),
@@ -73,8 +73,6 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     brgy: "",
     req_id: "",
   });
-
-
 
   const handleComplainantChange = (e) => {
     const selectedUserId = e.target.value;
@@ -156,8 +154,6 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     fetchUsers();
   }, [brgy]);
 
-
-
   useEffect(() => {
     // function to filter
     const fetch = async () => {
@@ -176,8 +172,6 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
 
     fetch();
   }, [brgy, request, detail]);
-
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -434,7 +428,6 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
-
       if (res_folder.status === 200) {
         for (let i = 0; i < createFiles.length; i++) {
           formData.append("files", createFiles[i]);
@@ -464,7 +457,6 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
             banner: service.collections.banner,
             logo: service.collections.logo,
           };
-
 
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {
@@ -510,7 +502,6 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
         status: `${ResponseData.status}`,
       };
 
-
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
 
@@ -548,8 +539,6 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
             logo: service.collections.logo,
           };
 
-
-
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {
               "Content-Type": "application/json",
@@ -578,6 +567,40 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
   const handleResetServiceId = () => {
     setDetail({});
     setSelectedFormIndex("");
+  };
+
+  const handleResetModal = () => {
+    setCreateFiles([]);
+    setResponseData({
+      sender: "",
+      type: "Staff",
+      message: "",
+      date: new Date().toISOString(),
+      status: "",
+    });
+    setComplainantData({
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      user_id: "",
+      type: "Complainant",
+    });
+    setDefendantData({
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      user_id: "",
+      type: "Defendant",
+    });
+    setPatawagData({
+      name: "",
+      to: [ComplainantData, DefendantData],
+      response: [ResponseData],
+      brgy: "",
+      req_id: "",
+    });
+    setSelectedComplainant("");
+    setSelectedDefendant("");
   };
 
   return (
@@ -964,7 +987,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                               ResponseData.message
                                 ? ResponseData.message
                                 : statusChanger
-                                ? `The status of your service request is ${request.status}`
+                                ? `The status of this barangay patawag is ${request.status}`
                                 : ""
                             }
                             className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
@@ -1045,27 +1068,42 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                         id="status"
                                         name="status"
                                         onChange={(e) => {
+                                          const newStatus = e.target.value;
+                                          const statusRegex =
+                                            /The status of this barangay patawag is [\w\s]+/;
+                                          let updatedMessage =
+                                            ResponseData.message;
+
                                           if (
-                                            statusChanger &&
-                                            (!ResponseData.message ||
-                                              ResponseData.message.trim() ===
-                                                "")
+                                            statusRegex.test(updatedMessage)
                                           ) {
+                                            updatedMessage =
+                                              updatedMessage.replace(
+                                                statusRegex,
+                                                `The status of this barangay patawag is ${newStatus}`
+                                              );
+                                          } else if (!updatedMessage.trim()) {
+                                            updatedMessage = `The status of this barangay patawag is ${newStatus}`;
+                                          }
+
+                                          if (statusChanger) {
                                             setResponseData((prev) => ({
                                               ...prev,
-                                              message: `The status of your service request is ${e.target.value}`,
+                                              message: updatedMessage,
                                             }));
                                           }
                                           setResponseData((prev) => ({
                                             ...prev,
-                                            status: e.target.value,
+                                            status: newStatus,
                                           }));
                                         }}
                                         className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
                                         value={ResponseData.status}
                                         hidden={!statusChanger}
                                       >
-                                        <option>-- Select Status --</option>
+                                        <option disabled>
+                                          -- Select Status --
+                                        </option>
                                         <option value="In Progress">
                                           IN PROGRESS
                                         </option>
@@ -1192,7 +1230,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                           ResponseData.message
                                             ? ResponseData.message
                                             : statusChanger
-                                            ? `The status of your service request is ${request.status}`
+                                            ? `The status of this barangay patawag is ${request.status}`
                                             : ""
                                         }
                                         className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
@@ -1281,24 +1319,42 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                                     id="status"
                                                     name="status"
                                                     onChange={(e) => {
+                                                      const newStatus =
+                                                        e.target.value;
+                                                      const statusRegex =
+                                                        /The status of this barangay patawag is [\w\s]+/;
+                                                      let updatedMessage =
+                                                        ResponseData.message;
+
                                                       if (
-                                                        statusChanger &&
-                                                        (!ResponseData.message ||
-                                                          ResponseData.message.trim() ===
-                                                            "")
+                                                        statusRegex.test(
+                                                          updatedMessage
+                                                        )
                                                       ) {
+                                                        updatedMessage =
+                                                          updatedMessage.replace(
+                                                            statusRegex,
+                                                            `The status of this barangay patawag is ${newStatus}`
+                                                          );
+                                                      } else if (
+                                                        !updatedMessage.trim()
+                                                      ) {
+                                                        updatedMessage = `The status of this barangay patawag is ${newStatus}`;
+                                                      }
+
+                                                      if (statusChanger) {
                                                         setResponseData(
                                                           (prev) => ({
                                                             ...prev,
-                                                            message: `The status of your service request is ${e.target.value}`,
+                                                            message:
+                                                              updatedMessage,
                                                           })
                                                         );
                                                       }
                                                       setResponseData(
                                                         (prev) => ({
                                                           ...prev,
-                                                          status:
-                                                            e.target.value,
+                                                          status: newStatus,
                                                         })
                                                       );
                                                     }}
@@ -1306,8 +1362,9 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                                     value={ResponseData.status}
                                                     hidden={!statusChanger}
                                                   >
-                                                    <option>
-                                                      -- Select Status --
+                                                    <option disabled>
+                                                      {" "}
+                                                      -- Select Status --{" "}
                                                     </option>
                                                     <option value="In Progress">
                                                       IN PROGRESS
@@ -1370,7 +1427,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                 type="button"
                 className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-900 text-white shadow-sm"
                 data-hs-overlay="#hs-reply-modal"
-                onClick={handleResetServiceId}
+                onClick={handleResetServiceId && handleResetModal}
               >
                 CLOSE
               </button>

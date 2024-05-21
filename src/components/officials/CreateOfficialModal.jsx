@@ -25,6 +25,20 @@ function CreateOfficialModal({ brgy }) {
     brgy: brgy,
   });
 
+  const handleResetModal = () => {
+    setOfficial({
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      suffix: "",
+      position: "",
+      fromYear: "",
+      toYear: "",
+      brgy: brgy,
+    });
+    setPfp(null);
+  };
+
   const checkEmptyFields = () => {
     let arr = [];
     const keysToCheck = ["firstName", "middleName", "lastName", "position"];
@@ -70,8 +84,6 @@ function CreateOfficialModal({ brgy }) {
       const res_folder = await axios.get(
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
-
-
 
       if (res_folder.status === 200) {
         const result = await axios.post(
@@ -289,7 +301,9 @@ function CreateOfficialModal({ brgy }) {
                       </option>
                       <option value="Barangay Kagawad">Barangay Kagawad</option>
                       <option value="Secretary">Secretary</option>
-                      <option value="Assistant Secretary">Assistant Secretary</option>
+                      <option value="Assistant Secretary">
+                        Assistant Secretary
+                      </option>
                       <option value="Treasurer">Treasurer</option>
                       <option value="SK Chairman">SK Chairman</option>
                       <option value="SK Kagawad">SK Kagawad</option>
@@ -373,6 +387,7 @@ function CreateOfficialModal({ brgy }) {
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                   data-hs-overlay="#hs-create-official-modal"
+                  onClick={handleResetModal}
                 >
                   CLOSE
                 </button>

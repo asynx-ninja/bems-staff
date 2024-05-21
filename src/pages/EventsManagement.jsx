@@ -32,6 +32,7 @@ const EventsManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
+  const [update, setUpdate] = useState(false);
 
   //date filtering
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
@@ -43,7 +44,7 @@ const EventsManagement = () => {
     const fetchData = async () => {
       try {
         const announcementsResponse = await axios.get(
-          `${API_LINK}/announcement/?brgy=${brgy}&archived=false&page=${currentPage}`
+          `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
         );
 
         if (announcementsResponse.status === 200) {
@@ -68,6 +69,7 @@ const EventsManagement = () => {
           });
 
           setPageCount(announcementsResponse.data.pageCount);
+          setUpdate(false);
         } else {
           setAnnouncementWithCounts([]);
         }
@@ -80,10 +82,13 @@ const EventsManagement = () => {
     };
 
     fetchData();
-  }, [currentPage, brgy]);
+  }, [brgy, update]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+    const start = selected * 10;
+    const end = start + 10;
+    setFilteredAnnouncements(announcements.slice(start, end));
   };
 
   const Announcements = announcements.filter(
@@ -439,16 +444,16 @@ const EventsManagement = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    const Announcements = announcementWithCounts.filter(
-                      (item) =>
-                        item.title
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()) ||
+                    const filteredData = announcements.filter((item) =>
+                      item.title
+                        .toLowerCase()
+                        .includes(e.target.value.toLowerCase())||
                         item.event_id
                           .toLowerCase()
                           .includes(e.target.value.toLowerCase())
                     );
-                    setFilteredAnnouncements(Announcements);
+                    setFilteredAnnouncements(filteredData.slice(0, 10)); // Show first page of filtered results
+                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
                   }}
                 />
               </div>

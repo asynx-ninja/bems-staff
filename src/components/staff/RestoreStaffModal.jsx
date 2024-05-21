@@ -3,11 +3,29 @@ import Error from "../../assets/modals/Error.png";
 import axios from "axios";
 import API_LINK from "../../config/API";
 import { IoArchiveOutline } from "react-icons/io5";
+import { useState } from "react";
+import RestoreLoader from "./loaders/RestoreLoader";
 
 function RestoreStaffModal({ selectedItems }) {
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
+  const [error, setError] = useState(null);
+
   const handleSave = async (e) => {
     try {
       e.preventDefault();
+      if (selectedItems.length === 0) {
+        setUpdatingStatus("error");
+        setError("Unable to restore, Please select first to restore.");
+        setTimeout(() => {
+          setUpdatingStatus(null);
+          HSOverlay.close(document.getElementById("hs-modal-restoreStaff"));
+        }, 3000);
+
+        console.log("error", selectedItems);
+        return;
+      }
+      setSubmitClicked(true);
 
       for (let i = 0; i < selectedItems.length; i++) {
         const response = await axios.patch(
@@ -54,6 +72,10 @@ function RestoreStaffModal({ selectedItems }) {
             </div>
           </div>
         </div>
+        {submitClicked && <RestoreLoader updatingStatus="updating" />}
+      {updatingStatus && (
+        <RestoreLoader updatingStatus={updatingStatus} error={error} />
+      )}
     </div>
   );
 }

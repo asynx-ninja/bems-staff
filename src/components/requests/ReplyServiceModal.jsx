@@ -14,7 +14,6 @@ import ReplyLoader from "./loaders/ReplyLoader";
 import moment from "moment";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-
 function ReplyServiceModal({ request, setRequest, brgy }) {
   const information = GetBrgy(brgy);
   const [reply, setReply] = useState(false);
@@ -44,6 +43,14 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
   useEffect(() => {
     setFiles(request.length === 0 ? [] : request.file);
   }, [request]);
+
+  const handleResetModal = () => {
+    setCreateFiles([]);
+    setNewMessage({
+      message: "",
+      isRepliable: true,
+    });
+  };
 
   useEffect(() => {
     const fetch = async () => {
@@ -220,17 +227,12 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
         date: new Date(), // Add the current date and time
       };
 
-
       var formData = new FormData();
       formData.append("response", JSON.stringify(obj));
-
-
 
       const res_folder = await axios.get(
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
-
-
 
       if (res_folder.status === 200) {
         for (let i = 0; i < createFiles.length; i++) {
@@ -286,8 +288,6 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
             banner: service.collections.banner,
             logo: service.collections.logo,
           };
-
-  
 
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {
@@ -438,19 +438,34 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                         id="status"
                                         name="status"
                                         onChange={(e) => {
+                                          const newStatus = e.target.value;
+                                          const statusRegex =
+                                            /The status of your service request is [\w\s]+/;
+                                          let updatedMessage =
+                                            newMessage.message;
+
                                           if (
-                                            statusChanger &&
-                                            (!newMessage.message ||
-                                              newMessage.message.trim() === "")
+                                            statusRegex.test(updatedMessage)
                                           ) {
+                                            updatedMessage =
+                                              updatedMessage.replace(
+                                                statusRegex,
+                                                `The status of your service request is ${newStatus}`
+                                              );
+                                          } else if (!updatedMessage.trim()) {
+                                            updatedMessage = `The status of your service request is ${newStatus}`;
+                                          }
+
+                                          if (statusChanger) {
                                             setNewMessage((prev) => ({
                                               ...prev,
-                                              message: `The status of your service request is ${e.target.value}`,
+                                              message: updatedMessage,
                                             }));
                                           }
+
                                           setRequest((prev) => ({
                                             ...prev,
-                                            status: e.target.value,
+                                            status: newStatus,
                                           }));
                                         }}
                                         className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
@@ -694,22 +709,42 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                                     id="status"
                                                     name="status"
                                                     onChange={(e) => {
+                                                      const newStatus =
+                                                        e.target.value;
+                                                      const statusRegex =
+                                                        /The status of your service request is [\w\s]+/;
+                                                      let updatedMessage =
+                                                        newMessage.message;
+
                                                       if (
-                                                        statusChanger &&
-                                                        (!newMessage.message ||
-                                                          newMessage.message.trim() ===
-                                                            "")
+                                                        statusRegex.test(
+                                                          updatedMessage
+                                                        )
                                                       ) {
+                                                        updatedMessage =
+                                                          updatedMessage.replace(
+                                                            statusRegex,
+                                                            `The status of your service request is ${newStatus}`
+                                                          );
+                                                      } else if (
+                                                        !updatedMessage.trim()
+                                                      ) {
+                                                        updatedMessage = `The status of your service request is ${newStatus}`;
+                                                      }
+
+                                                      if (statusChanger) {
                                                         setNewMessage(
                                                           (prev) => ({
                                                             ...prev,
-                                                            message: `The status of your service request is ${e.target.value}`,
+                                                            message:
+                                                              updatedMessage,
                                                           })
                                                         );
                                                       }
+
                                                       setRequest((prev) => ({
                                                         ...prev,
-                                                        status: e.target.value,
+                                                        status: newStatus,
                                                       }));
                                                     }}
                                                     className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
@@ -806,6 +841,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                 type="button"
                 className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-900 text-white shadow-sm"
                 data-hs-overlay="#hs-reply-modal"
+                onClick={handleResetModal}
               >
                 CLOSE
               </button>

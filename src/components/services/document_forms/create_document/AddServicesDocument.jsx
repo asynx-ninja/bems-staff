@@ -44,6 +44,23 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
     tel: "",
   });
 
+  const handleResetModal = () => {
+    setDocument({
+      form_id: "",
+      service_id: "",
+      doc_title: "",
+      details: "",
+      type: "",
+      punong_brgy: "",
+      witnessed_by: "",
+      inputs: [""],
+      email: "",
+      address: "",
+      tel: "",
+    });
+    setSection([]);
+  };
+
   const handleSubmit = async (e) => {
     try {
       setSubmitClicked(true);
@@ -82,8 +99,6 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
     }
   };
 
-
-
   return (
     <div>
       <div
@@ -94,9 +109,12 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
             {/* Header */}
-            <div className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl" style={{
+            <div
+              className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl"
+              style={{
                 background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-              }}>
+              }}
+            >
               <h3
                 className="font-bold text-white mx-auto md:text-xl text-center"
                 style={{ letterSpacing: "0.3em" }}
@@ -139,7 +157,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="doc_title"
                         type="text"
-                        // value={service.name}
+                        value={document.doc_title}
                         onChange={handleChange}
                         placeholder="Document Name"
                       />
@@ -156,7 +174,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         id="details"
                         rows={7}
                         name="details"
-                        // value={service.details}
+                        value={document.details}
                         onChange={handleChange}
                         className="shadow appearance-none border w-full p-2.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         placeholder="Enter service details..."
@@ -173,6 +191,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                       <select
                         name="type"
                         onChange={handleChange}
+                        value={document.type}
                         className="shadow  border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
                         <option>-- Select a Document Type --</option>
@@ -189,7 +208,9 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         </option>
                         <option value="Type F">Barangay Clearance</option>
                         <option value="Type G">Certificate of Indigency</option>
-                        <option value="Type H">Solo Parent Certification</option>
+                        <option value="Type H">
+                          Solo Parent Certification
+                        </option>
                         {/* <option value="Type I">Barangay Blotter</option> */}
                         <option value="Type J">Late Registration</option>
                         <option value="Type K">Residency Certification</option>
@@ -206,6 +227,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                       <select
                         name="punong_brgy"
                         onChange={handleChange}
+                        value={document.punong_brgy}
                         className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
                         <option>-- Select an Official --</option>
@@ -237,14 +259,14 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                       <select
                         name="witnessed_by"
                         onChange={handleChange}
+                        value={document.witnessed_by}
                         className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
                         <option>-- Select an Official --</option>
                         {/* Map filtered officials with position "Barangay Chairman" to options */}
                         {officials
                           .filter(
-                            (official) =>
-                              official.position === "Secretary"
+                            (official) => official.position === "Secretary"
                           )
                           .map((official) => (
                             <option
@@ -270,7 +292,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="email"
                         type="text"
-                        // value={service.name}
+                        value={document.email}
                         onChange={handleChange}
                         placeholder="E-mail"
                       />
@@ -288,7 +310,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="address"
                         type="text"
-                        // value={service.name}
+                        value={document.address}
                         onChange={handleChange}
                         placeholder="Address"
                       />
@@ -306,7 +328,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="tel"
                         type="number"
-                        // value={service.name}
+                        value={document.tel}
                         onChange={handleChange}
                         placeholder="Telephone Number"
                       />
@@ -347,6 +369,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                   data-hs-overlay="#hs-create-serviceDocument-modal"
+                  onClick={handleResetModal}
                 >
                   CLOSE
                 </button>

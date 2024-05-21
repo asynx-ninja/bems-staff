@@ -8,13 +8,14 @@ import officialimage from "../assets/sample/official.jpg";
 import GenerateReportsModal from "../components/officials/GenerateReportsModal";
 import ArchiveOfficialModal from "../components/officials/ArchiveOfficialModal";
 import Breadcrumbs from "../components/archivedOfficials/Breadcrumbs";
-import RestoreOfficialModal from "../components/archivedOfficials/RestoreOfficialModal";
+import RestoreOfficialModal from "../components/officials/RestoreOfficialModal";
 import ViewOfficialModal from "../components/archivedOfficials/ViewOfficialModal";
 import axios from "axios";
 import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+
 const ArchivedOfficials = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [officials, setOfficials] = useState([]);

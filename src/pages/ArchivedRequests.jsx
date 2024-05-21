@@ -12,7 +12,7 @@ import ArchiveRequestsModal from "../components/requests/ArchiveRequestsModal";
 import RequestsReportsModal from "../components/requests/RequestsReportsModal";
 import ViewRequestModal from "../components/requests/ViewRequestModal";
 import Breadcrumbs from "../components/archivedRequests/Breadcrumbs";
-import RestoreRequestsModal from "../components/archivedRequests/RestoreRequestsModal";
+import RestoreRequestsModal from "../components/requests/RestoreRequestsModal";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
 

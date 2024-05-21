@@ -6,7 +6,7 @@ import { MdRestartAlt } from "react-icons/md";
 import ReactPaginate from "react-paginate";
 import ViewArchivedServiceModal from "../components/archivedServices/ViewArchivedServiceModal";
 import ArchivedServicesReportsModal from "../components/archivedServices/ArchivedServicesReportsModal";
-import RestoreServicesModal from "../components/archivedServices/RestoreServicesModal";
+import RestoreServicesModal from "../components/services/RestoreServicesModal";
 import Breadcrumbs from "../components/archivedServices/Breadcrumbs";
 import axios from "axios";
 import API_LINK from "../config/API";

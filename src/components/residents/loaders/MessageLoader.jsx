@@ -1,33 +1,47 @@
 import React, { useState, useEffect } from "react";
 import { MdError } from "react-icons/md";
 
-function AddLoader({ creationStatus, error }) {
+function MessageLoader({ updatingStatus, error }) {
   const textPrompts = {
-    creating: "Creating the announcement...",
+    updating: "Updating the status of resident...",
     waiting: "Please wait...",
-    success: "Announcement Creation Successful!",
-    error: "Error creating event. Please try again.",
+    success: "Message sent to the resident!",
+    error: "Error updating resident. Please try again.",
   };
 
   const [loadingText, setLoadingText] = useState(
-    textPrompts[creationStatus] || "Creating the announcement.."
+    textPrompts[updatingStatus] || "Updating the status of resident..."
   );
-  const [loading, setLoading] = useState(creationStatus === "creating");
+  const [loading, setLoading] = useState(updatingStatus === "updating");
 
   useEffect(() => {
-    if (["success", "error"].includes(creationStatus)) {
+    if (["success", "error"].includes(updatingStatus)) {
       const timeout = setTimeout(() => {
         setLoading(false);
       }, 3000);
 
       return () => clearTimeout(timeout);
     }
-  }, [creationStatus]);
+  }, [updatingStatus]);
 
   return (
-    <div className="absolute bottom-0 lg:bottom-0 lg:end-0 mb-20 lg:mr-10">
-      {creationStatus === "error" ? (
-        <div className="w-screen md:w-80 rounded-xl shadow-lg" role="alert" style={{ animation: "slideIn 0.3s ease-out" }}>
+    <div className="absolute bottom-0 lg:bottom-0 lg:end-0 mb-20 lg:mr-10 z-[80]">
+      {updatingStatus === "errorFields" ? (
+        <div className="w-screen md:w-80 rounded-xl shadow-lg" role="alert" style={{ animation: "slideIn 0.3s ease-out"}}>
+          <div className="flex flex-row bg-[#e05353]  items-center p-3 rounded-xl space-x-3">
+            <MdError size={25} className="text-white" />
+            <div className="flex flex-row w-full">
+              <div className="flex space-x-1.5 items-center">
+                <p className="text-[#f5f5f5] text-sm font-medium ">ERROR:</p>
+                <p className="text-[#f5f5f5] text-xs font-medium ">
+                  Both or one of the fields are empty.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : updatingStatus === "error" ? (
+        <div className="w-screen md:w-80 rounded-xl shadow-lg" role="alert" style={{ animation: "slideIn 0.3s ease-out"}}>
           <div className="flex flex-row bg-[#e05353]  items-center p-3 rounded-xl space-x-3">
             <MdError size={25} className="text-white" />
             <div className="flex flex-row w-full">
@@ -44,7 +58,6 @@ function AddLoader({ creationStatus, error }) {
         <div
           className="w-screen md:w-80 bg-[#0d4b75] border border-gray-200 rounded-xl shadow-lg"
           role="alert"
-          style={{ animation: "slideIn 0.3s ease-out" }}
         >
           <div className="flex items-center p-4 space-x-3">
             <div role="status" className="inline">
@@ -74,4 +87,4 @@ function AddLoader({ creationStatus, error }) {
   );
 }
 
-export default AddLoader;
+export default MessageLoader;

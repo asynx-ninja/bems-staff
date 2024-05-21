@@ -53,7 +53,7 @@ const Sidebar = () => {
           const patawag = response.data.result;
           setPatawag(patawag);
 
-          const residentPatawags = patawags.filter((patawag) => {
+          const residentPatawags = patawag.filter((patawag) => {
             const latestResponse =
               patawag.response[patawag.response.length - 1];
 

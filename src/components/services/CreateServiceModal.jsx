@@ -23,7 +23,18 @@ function CreateServiceModal({ brgy }) {
     brgy: brgy,
   });
 
-
+  const handleResetModal = () => {
+    setService({
+      name: "",
+      type: "",
+      details: "",
+      fee: "",
+      brgy: "",
+    });
+    setLogo(null);
+    setBanner(null);
+    setFiles([]);
+  };
 
   const [isLogoSelected, setIsLogoSelected] = useState(false);
   const [isBannerSelected, setIsBannerSelected] = useState(false);
@@ -422,6 +433,7 @@ function CreateServiceModal({ brgy }) {
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                   data-hs-overlay="#hs-create-service-modal"
+                  onClick={handleResetModal}
                 >
                   CLOSE
                 </button>

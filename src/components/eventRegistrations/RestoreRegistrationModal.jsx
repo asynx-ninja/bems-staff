@@ -4,23 +4,22 @@ import axios from "axios";
 import API_LINK from "../../config/API";
 import { IoArchiveOutline } from "react-icons/io5";
 import { useState } from "react";
-import ArchiveLoader from "./loaders/ArchiveLoader";
+import RestoreLoader from "./loaders/RestoreLoader";
 
-function ArchiveStaffModal({ selectedItems }) {
+function RestoreRegistrationModal({ selectedItems }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
-  console.log("error", selectedItems);
 
   const handleSave = async (e) => {
     try {
       e.preventDefault();
       if (selectedItems.length === 0) {
         setUpdatingStatus("error");
-        setError("Unable to archive, Please select first to archive.");
+        setError("Unable to restore, Please select first to restore.");
         setTimeout(() => {
           setUpdatingStatus(null);
-          HSOverlay.close(document.getElementById("hs-modal-archiveStaff"));
+          HSOverlay.close(document.getElementById("hs-restore-requests-modal"));
         }, 3000);
 
         console.log("error", selectedItems);
@@ -30,18 +29,18 @@ function ArchiveStaffModal({ selectedItems }) {
 
       for (let i = 0; i < selectedItems.length; i++) {
         const response = await axios.patch(
-          `${API_LINK}/users/archived/${selectedItems[i]}/true`
+          `${API_LINK}/application/archived/${selectedItems[i]}/false`
         );
       }
+
       window.location.reload();
     } catch (err) {
       console.log(err);
     }
   };
-
   return (
     <div
-      id="hs-modal-archiveStaff"
+      id="hs-restore-requests-modal"
       className="z-[100] hs-overlay hidden w-full h-full fixed top-0 left-0 z-60 overflow-x-hidden overflow-y-auto"
     >
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-400 bg-opacity-0 ">
@@ -57,13 +56,13 @@ function ArchiveStaffModal({ selectedItems }) {
               <button
                 type="button"
                 onClick={handleSave}
-                className="inline-flex items-center px-8 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500 focus:ring-4 focus:ring-red-500 focus:outline-none transition ease-in-out duration-150"
+                className="inline-flex items-center px-8 py-2 bg-[#369987] text-white font-semibold rounded-lg hover:bg-[#48b6a2] focus:ring-4 focus:ring-[#48b6a2] focus:outline-none transition ease-in-out duration-150"
               >
-                Archive
+                Restore
               </button>
               <button
                 type="button"
-                data-hs-overlay="#hs-modal-archiveStaff"
+                data-hs-overlay="#hs-restore-requests-modal"
                 className="inline-flex items-center px-8 py-2 border border-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 focus:outline-none transition ease-in-out duration-150"
               >
                 Cancel
@@ -72,12 +71,12 @@ function ArchiveStaffModal({ selectedItems }) {
           </div>
         </div>
       </div>
-      {submitClicked && <ArchiveLoader updatingStatus="updating" />}
+      {submitClicked && <RestoreLoader updatingStatus="updating" />}
       {updatingStatus && (
-        <ArchiveLoader updatingStatus={updatingStatus} error={error} />
+        <RestoreLoader updatingStatus={updatingStatus} error={error} />
       )}
     </div>
   );
 }
 
-export default ArchiveStaffModal;
+export default RestoreRegistrationModal;

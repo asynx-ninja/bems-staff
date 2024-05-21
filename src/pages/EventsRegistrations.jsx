@@ -24,9 +24,8 @@ const EventsRegistrations = () => {
   const brgy = searchParams.get("brgy");
   const [sortOrder, setSortOrder] = useState("desc");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selecteEventFilter, setSelectedEventFilter] = useState("all");
-  const [eventFilter, setEventFilter] = useState([]);
   const information = GetBrgy(brgy);
+
   //Status filter and pagination
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(0);
@@ -36,7 +35,8 @@ const EventsRegistrations = () => {
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [selected, setSelected] = useState("date");
-
+  const [eventFilter, setEventFilter] = useState([]);
+  const [selecteEventFilter, setSelectedEventFilter] = useState("all");
   const [officials, setOfficials] = useState([]);
 
   const [selectedEventType, setSelectedEventType] = useState("EVENT TYPE");
@@ -44,22 +44,16 @@ const EventsRegistrations = () => {
   useEffect(() => {
     const fetch = async () => {
       try {
-        let page = 0;
-        let arr = [];
-        while (true) {
-          const response = await axios.get(
-            `${API_LINK}/announcement/?brgy=${brgy}&archived=false&page=${page}`
-          );
-          if (response.status === 200 && response.data.result.length > 0) {
-            response.data.result.map((item) => {
-              arr.push(item.title);
-            });
-            page++;
-          } else {
-            break;
-          }
+        const response = await axios.get(
+          `${API_LINK}/announcement/?brgy=${brgy}&page=${currentPage}`
+        );
+        if (response.status === 200) {
+          let arr = [];
+          response.data.result.map((item) => {
+            arr.push(item.title);
+          });
+          setEventFilter(arr);
         }
-        setEventFilter(arr);
       } catch (err) {
         console.log(err);
       }
@@ -76,12 +70,12 @@ const EventsRegistrations = () => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/application/?brgy=${brgy}&archived=false&status=${statusFilter}&title=${selecteEventFilter}&page=${currentPage}`
+          `${API_LINK}/application/?brgy=${brgy}&archived=false&status=${statusFilter}&title=${selecteEventFilter}`
         );
         if (response.status === 200) {
           setApplications(response.data.result);
+          setFilteredApplications(response.data.result.slice(0, 10));
           setPageCount(response.data.pageCount);
-          setFilteredApplications(response.data.result);
         } else setApplications([]);
       } catch (err) {
         console.log(err);
@@ -90,12 +84,7 @@ const EventsRegistrations = () => {
 
     fetch();
 
-    const intervalId = setInterval(() => {
-      fetch();
-    }, 10000);
-
-    return () => clearInterval(intervalId);
-  }, [brgy, statusFilter, selecteEventFilter, currentPage]);
+  }, [brgy, statusFilter, selecteEventFilter]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -127,6 +116,9 @@ const EventsRegistrations = () => {
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+    const start = selected * 10;
+    const end = start + 10;
+    setFilteredApplications(applications.slice(start, end));
   };
 
   const handleStatusFilter = (selectedStatus) => {
@@ -588,9 +580,8 @@ const EventsRegistrations = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    const Application = applications.filter(
-                      (item) =>
-                        item.event_name
+                    const filteredData = applications.filter((item) =>
+                      item.event_name
                           .toLowerCase()
                           .includes(e.target.value.toLowerCase()) ||
                         item.application_id
@@ -606,8 +597,8 @@ const EventsRegistrations = () => {
                           .toLowerCase()
                           .includes(e.target.value.toLowerCase())
                     );
-
-                    setFilteredApplications(Application);
+                    setFilteredApplications(filteredData.slice(0, 10)); // Show first page of filtered results
+                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
                   }}
                 />
               </div>

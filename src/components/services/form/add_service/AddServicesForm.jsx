@@ -6,6 +6,40 @@ import AddFormLoader from "../../loaders/AddFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 import API_LINK from "../../../../config/API";
 
+const initialState = {
+  user_id: { display: "user id", checked: true, type: "text", value: "" },
+  firstName: { display: "first name", checked: true, type: "text", value: "" },
+  middleName: { display: "middle name", checked: true, type: "text", value: "" },
+  lastName: { display: "last name", checked: true, type: "text", value: "" },
+  suffix: { display: "suffix", checked: true, type: "text", value: "" },
+  birthday: { display: "birthday", checked: false, type: "date", value: "" },
+  age: { display: "age", checked: false, type: "number", value: 1 },
+  sex: { display: "sex", checked: false, type: "radio", value: "" },
+  contact: { display: "contact", checked: false, type: "text", value: "" },
+  civil_status: {
+    display: "civil status",
+    checked: false,
+    type: "select",
+    value: "",
+  },
+  height: { display: "height (ft)", checked: false, type: "text", value: "" },
+  weight: { display: "weight (kg)", checked: false, type: "number", value: 0 },
+  address: { display: "address", checked: false, type: "text", value: "" },
+  religion: {
+    display: "religion",
+    checked: false,
+    type: "select",
+    value: "",
+  },
+  email: { display: "email", checked: false, type: "email", value: "" },
+  occupation: {
+    display: "occupation",
+    checked: false,
+    type: "select",
+    value: "",
+  },
+};
+
 const AddServicesForm = ({ service_id, brgy }) => {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
@@ -74,6 +108,13 @@ const AddServicesForm = ({ service_id, brgy }) => {
 
   const handleChange = (e) => {
     setTitleName(e.target.value);
+  };
+
+  const handleResetModal = () => {
+    setForm(initialState);
+    setTitleName("");
+    setSection([]);
+    setChecked(false);
   };
 
   const [section, setSection] = useState([]);
@@ -226,7 +267,7 @@ const AddServicesForm = ({ service_id, brgy }) => {
                             <input
                               className="mr-2"
                               type="checkbox"
-                              defaultChecked={value.checked}
+                              checked={value.checked}
                               onChange={(e) => handleFormChange(e, key)}
                             />
                             {value.display.toUpperCase()}
@@ -262,6 +303,7 @@ const AddServicesForm = ({ service_id, brgy }) => {
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                   data-hs-overlay="#hs-create-serviceForm-modal"
+                  onClick={handleResetModal}
                 >
                   CLOSE
                 </button>

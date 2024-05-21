@@ -14,7 +14,7 @@ import ArchiveRequestsModal from "../components/blotters/ArchiveRequestsModal";
 import RequestsReportsModal from "../components/blotters/RequestsReportsModal";
 import ViewBlotterModal from "../components/blotters/ViewBlotterModal";
 import Breadcrumbs from "../components/archivedBlotters/Breadcrumbs";
-import RestoreRequestsModal from "../components/archivedBlotters/RestoreRequestsModal";
+import RestoreRequestsModal from "../components/blotters/RestoreRequestsModal";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
 

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import API_LINK from "../../config/API";
-import StatusLoader from "./loaders/StatusLoader";
+import MessageLoader from "./loaders/MessageLoader";
 import GetBrgy from "../GETBrgy/getbrgy";
 
 function StatusResident({ user, setUser, brgy, status, setStatus }) {
@@ -26,11 +26,18 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
   const handleSave = async (e) => {
     try {
       const messageContent = document.getElementById("message").value;
-
+  
+      // Check if subject or message is empty
+      if (subject.trim() === "" || messageContent.trim() === "") {
+        setError("Subject and message cannot be empty.");
+        setUpdatingStatus("errorFields");
+        return; // Exit the function if either subject or message is empty
+      }
+  
       const notificationData = {
         category: "One",
         compose: {
-          subject: subject, // Use dynamic subject here
+          subject: subject,
           message: messageContent,
           go_to: null,
         },
@@ -42,12 +49,9 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
         banner: banner,
         logo: logo,
       };
-
-      const response = await axios.post(
-        `${API_LINK}/notification/`,
-        notificationData
-      );
-   
+  
+      const response = await axios.post(`${API_LINK}/notification/`, notificationData);
+  
       setUpdatingStatus("success");
       setTimeout(() => {
         window.location.reload();
@@ -69,8 +73,9 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
     }));
   };
 
-  const handleClose = () => {
-    window.location.reload();
+  const handleResetModal = () => {
+    setSubject("");
+    document.getElementById("message").value = "";
   };
 
   return (
@@ -138,7 +143,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
                     type="button"
                     className="h-[2.5rem] w-full md:w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
                     data-hs-overlay="#hs-modal-messageResident"
-                    onClick={handleClose}
+                    onClick={handleResetModal}
                   >
                     CLOSE
                   </button>
@@ -146,9 +151,9 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
               </div>
             </div>
           </div>
-          {submitClicked && <StatusLoader updatingStatus="updating" />}
+          {submitClicked && <MessageLoader updatingStatus="updating" />}
           {updatingStatus && (
-            <StatusLoader updatingStatus={updatingStatus} error={error} />
+            <MessageLoader updatingStatus={updatingStatus} error={error} />
           )}
         </div>
       </div>

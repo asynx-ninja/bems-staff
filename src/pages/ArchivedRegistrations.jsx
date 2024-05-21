@@ -13,7 +13,7 @@ import ArchiveRegistrationModal from "../components/eventRegistrations/ArchiveRe
 import RequestsReportsModal from "../components/eventRegistrations/RequestsReportsModal";
 import ViewRegistrationModal from "../components/eventRegistrations/ViewRegistrationModal";
 import Breadcrumbs from "../components/archivedRegistrations/Breadcrumbs";
-import RestoreRegistrationModal from "../components/archivedRegistrations/RestoreRegistrationModal";
+import RestoreRegistrationModal from "../components/eventRegistrations/RestoreRegistrationModal";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
 
@@ -48,22 +48,16 @@ const ArchivedRegistrations = () => {
   useEffect(() => {
     const fetch = async () => {
       try {
-        let page = 0;
-        let arr = [];
-        while (true) {
-          const response = await axios.get(
-            `${API_LINK}/announcement/?brgy=${brgy}&archived=false&page=${page}`
-          );
-          if (response.status === 200 && response.data.result.length > 0) {
-            response.data.result.map((item) => {
-              arr.push(item.title);
-            });
-            page++;
-          } else {
-            break;
-          }
+        const response = await axios.get(
+          `${API_LINK}/announcement/?brgy=${brgy}&page=${currentPage}`
+        );
+        if (response.status === 200) {
+          let arr = [];
+          response.data.result.map((item) => {
+            arr.push(item.title);
+          });
+          setEventFilter(arr);
         }
-        setEventFilter(arr);
       } catch (err) {
         console.log(err);
       }
@@ -81,13 +75,12 @@ const ArchivedRegistrations = () => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/application/?brgy=${brgy}&archived=true&status=${statusFilter}&title=${selecteEventFilter}&page=${currentPage}`
+          `${API_LINK}/application/?brgy=${brgy}&archived=true&status=${statusFilter}&title=${selecteEventFilter}`
         );
-
         if (response.status === 200) {
           setApplications(response.data.result);
+          setFilteredApplications(response.data.result.slice(0, 10));
           setPageCount(response.data.pageCount);
-          setFilteredApplications(response.data.result);
         } else setApplications([]);
       } catch (err) {
         console.log(err);
@@ -95,10 +88,15 @@ const ArchivedRegistrations = () => {
     };
 
     fetch();
-  }, [brgy, statusFilter, selecteEventFilter, currentPage]);
+
+  }, [brgy, statusFilter, selecteEventFilter]);
+
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+    const start = selected * 10;
+    const end = start + 10;
+    setFilteredApplications(applications.slice(start, end));
   };
 
   useEffect(() => {

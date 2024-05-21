@@ -205,6 +205,29 @@ function AddStaffModal({ brgy }) {
     return arr;
   };
 
+  const handleResetModal = () => {
+    // Reset specific fields by setting them to initial state
+    setUser({
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      suffix: "",
+      religion: "",
+      email: "",
+      contact: "",
+      sex: "",
+      occupation: "",
+      civil_status: "",
+      type: "",
+      isVoter: "",
+      isHead: "",
+      isArchived: null,
+      username: "",
+      password: "",
+      street: "",
+    });
+  };
+
   return (
     <div>
       <div className="">
@@ -253,6 +276,7 @@ function AddStaffModal({ brgy }) {
                               type="text"
                               id="firstName"
                               name="firstName"
+                              value={user.firstName}
                               onChange={handleChange}
                               className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
                                 emptyFields.includes("firstName") &&
@@ -274,6 +298,7 @@ function AddStaffModal({ brgy }) {
                               type="text"
                               id="middleName"
                               name="middleName"
+                              value={user.middleName}
                               onChange={handleChange}
                               className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
@@ -291,6 +316,7 @@ function AddStaffModal({ brgy }) {
                               type="text"
                               id="lastName"
                               name="lastName"
+                              value={user.lastName}
                               onChange={handleChange}
                               className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
                                 emptyFields.includes("lastName") &&
@@ -313,6 +339,7 @@ function AddStaffModal({ brgy }) {
                               type="text"
                               id="suffix"
                               name="suffix"
+                              value={user.suffix}
                               onChange={handleChange}
                               className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
@@ -371,6 +398,7 @@ function AddStaffModal({ brgy }) {
                               id="email"
                               name="email"
                               onChange={handleChange}
+                              value={user.email}
                               className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
                                 emptyFields.includes("email") &&
                                 "border-red-500"
@@ -390,6 +418,7 @@ function AddStaffModal({ brgy }) {
                               type="text"
                               id="contact"
                               name="contact"
+                              value={user.contact}
                               onChange={handleChange}
                               className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
                                 emptyFields.includes("contact") &&
@@ -412,17 +441,20 @@ function AddStaffModal({ brgy }) {
                                 id="Male"
                                 name="sex"
                                 value="Male"
+                                checked={user.sex === "Male"}
                                 className="text-green-500 focus:border-green-500 focus:ring-green-500"
                                 onChange={handleChange}
                               />
                               <label htmlFor="Male" className="ml-2">
                                 Male
                               </label>
+
                               <input
                                 type="radio"
                                 id="Female"
                                 name="sex"
                                 value="Female"
+                                checked={user.sex === "Female"}
                                 onChange={handleChange}
                                 className="ml-4 md:ml-2 lg:ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
                               />
@@ -450,7 +482,7 @@ function AddStaffModal({ brgy }) {
                               value={user.type}
                             >
                               {user.type === "" && (
-                                <option value="">Select option</option>
+                                <option value="">-- Select Option --</option>
                               )}
                               <option value="Brgy Admin">Barangay Admin</option>
                               <option value="Staff">Barangay Staff</option>
@@ -475,6 +507,7 @@ function AddStaffModal({ brgy }) {
                             <select
                               id="civil_status"
                               name="civil_status"
+                              value={user.civil_status}
                               onChange={handleChange}
                               className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                             >
@@ -498,6 +531,7 @@ function AddStaffModal({ brgy }) {
                             <select
                               name="religion"
                               onChange={handleChange}
+                              value={user.religion}
                               className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                             >
                               <option value="">-- Select Religion --</option>
@@ -533,6 +567,7 @@ function AddStaffModal({ brgy }) {
                               id="street"
                               name="street"
                               onChange={handleChange}
+                              value={user.street}
                               className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
                                 emptyFields.includes("street") &&
                                 "border-red-500"
@@ -606,17 +641,20 @@ function AddStaffModal({ brgy }) {
                                 name="isVoter"
                                 onChange={handleChange}
                                 value="true"
+                                checked={user.isVoter === "true"}
                                 className="text-green-500 focus:border-green-500 focus:ring-green-500"
                               />
                               <label htmlFor="Male" className="ml-2">
                                 Yes
                               </label>
+
                               <input
                                 type="radio"
                                 id="false"
                                 name="isVoter"
                                 onChange={handleChange}
                                 value="false"
+                                checked={user.isVoter === "false"}
                                 className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
                               />
                               <label htmlFor="No" className="ml-2">
@@ -639,17 +677,20 @@ function AddStaffModal({ brgy }) {
                                 name="isHead"
                                 onChange={handleChange}
                                 value="true"
+                                checked={user.isHead === "true"}
                                 className="text-green-500 focus:border-green-500 focus:ring-green-500"
                               />
                               <label htmlFor="Yes" className="ml-2">
                                 Yes
                               </label>
+
                               <input
                                 type="radio"
                                 id="false"
                                 name="isHead"
                                 onChange={handleChange}
                                 value="false"
+                                checked={user.isHead === "false"}
                                 className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
                               />
                               <label htmlFor="No" className="ml-2">
@@ -674,11 +715,13 @@ function AddStaffModal({ brgy }) {
                                   handleChange2("isArchived", false)
                                 }
                                 value="false"
+                                checked={user.isArchived === false}
                                 className="text-green-500 focus:border-green-500 focus:ring-green-500"
                               />
                               <label htmlFor="Yes" className="ml-2">
                                 Yes
                               </label>
+
                               <input
                                 type="radio"
                                 id="true"
@@ -687,6 +730,7 @@ function AddStaffModal({ brgy }) {
                                   handleChange2("isArchived", true)
                                 }
                                 value="true"
+                                checked={user.isArchived === true}
                                 className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
                               />
                               <label htmlFor="No" className="ml-2">
@@ -714,6 +758,7 @@ function AddStaffModal({ brgy }) {
                             id="username"
                             name="username"
                             onChange={handleChange}
+                            value={user.username}
                             className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
                               emptyFields.includes("username") &&
                               "border-red-500"
@@ -776,6 +821,7 @@ function AddStaffModal({ brgy }) {
                     type="button"
                     className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                     data-hs-overlay="#hs-modal-addStaff"
+                    onClick={handleResetModal}
                   >
                     CLOSE
                   </button>

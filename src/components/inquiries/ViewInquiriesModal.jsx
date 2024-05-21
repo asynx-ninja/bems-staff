@@ -45,6 +45,14 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
     id: "1SM_QPFb_NmyMTLdsjtEd-2M6ersJhBUc",
   });
 
+  const handleResetModal = () => {
+    setCreateFiles([]);
+    setNewMessage({
+      message: "",
+      isRepliable: true,
+    });
+  };
+
   useEffect(() => {
     setFiles(inquiry.length === 0 ? [] : inquiry.compose.file);
   }, [inquiry]);
@@ -232,7 +240,6 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
           logo: logo,
         };
 
-
         const result = await axios.post(`${API_LINK}/notification/`, notify, {
           headers: {
             "Content-Type": "application/json",
@@ -260,7 +267,6 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
   const handleOnStatusChanger = () => {
     setStatusChanger(!statusChanger);
   };
-
 
   return (
     <div>
@@ -482,27 +488,46 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
                                             id="status"
                                             name="status"
                                             onChange={(e) => {
+                                              const newStatus = e.target.value;
+                                              const statusRegex =
+                                                /The status of your inquiry is [\w\s]+/;
+                                              let updatedMessage =
+                                                newMessage.message;
+
                                               if (
-                                                statusChanger &&
-                                                (!newMessage.message ||
-                                                  newMessage.message.trim() ===
-                                                    "")
+                                                statusRegex.test(updatedMessage)
                                               ) {
+                                                updatedMessage =
+                                                  updatedMessage.replace(
+                                                    statusRegex,
+                                                    `The status of your inquiry is ${newStatus}`
+                                                  );
+                                              } else if (
+                                                !updatedMessage.trim()
+                                              ) {
+                                                updatedMessage = `The status of your inquiry is ${newStatus}`;
+                                              }
+
+                                              if (statusChanger) {
                                                 setNewMessage((prev) => ({
                                                   ...prev,
-                                                  message: `The status of your inquiry is ${e.target.value}`,
+                                                  message: updatedMessage,
                                                 }));
                                               }
+
                                               setInquiry((prev) => ({
                                                 ...prev,
-                                                status: e.target.value,
+                                                status: newStatus,
                                               }));
                                             }}
                                             className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
                                             value={inquiry.status}
                                             hidden={!statusChanger}
                                           >
-                                            <option>- Select a Status -</option>
+                                            <option disabled>
+                                              {" "}
+                                              -- Select Status --{" "}
+                                            </option>
                                             <option value="Pending">
                                               PENDING
                                             </option>
@@ -719,24 +744,43 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
                                                         id="status"
                                                         name="status"
                                                         onChange={(e) => {
+                                                          const newStatus =
+                                                            e.target.value;
+                                                          const statusRegex =
+                                                            /The status of your inquiry is [\w\s]+/;
+                                                          let updatedMessage =
+                                                            newMessage.message;
+
                                                           if (
-                                                            statusChanger &&
-                                                            (!newMessage.message ||
-                                                              newMessage.message.trim() ===
-                                                                "")
+                                                            statusRegex.test(
+                                                              updatedMessage
+                                                            )
                                                           ) {
+                                                            updatedMessage =
+                                                              updatedMessage.replace(
+                                                                statusRegex,
+                                                                `The status of your inquiry is ${newStatus}`
+                                                              );
+                                                          } else if (
+                                                            !updatedMessage.trim()
+                                                          ) {
+                                                            updatedMessage = `The status of your inquiry is ${newStatus}`;
+                                                          }
+
+                                                          if (statusChanger) {
                                                             setNewMessage(
                                                               (prev) => ({
                                                                 ...prev,
-                                                                message: `The status of your inquiry is ${e.target.value}`,
+                                                                message:
+                                                                  updatedMessage,
                                                               })
                                                             );
                                                           }
+
                                                           setInquiry(
                                                             (prev) => ({
                                                               ...prev,
-                                                              status:
-                                                                e.target.value,
+                                                              status: newStatus,
                                                             })
                                                           );
                                                         }}
@@ -744,8 +788,9 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
                                                         value={inquiry.status}
                                                         hidden={!statusChanger}
                                                       >
-                                                        <option>
-                                                          - Select a Status -
+                                                        <option disabled>
+                                                          {" "}
+                                                          -- Select Status --{" "}
                                                         </option>
                                                         <option value="Pending">
                                                           PENDING
@@ -811,6 +856,7 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
                     type="button"
                     className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-900 text-white shadow-sm"
                     data-hs-overlay="#hs-modal-viewInquiries"
+                    onClick={handleResetModal}
                   >
                     CLOSE
                   </button>

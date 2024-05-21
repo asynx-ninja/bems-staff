@@ -1,19 +1,35 @@
 import React from "react";
 import Error from "../../assets/modals/Error.png";
-import { useEffect } from "react";
 import axios from "axios";
 import API_LINK from "../../config/API";
 import { IoArchiveOutline } from "react-icons/io5";
+import { useState } from "react";
+import RestoreLoader from "./loaders/RestoreLoader";
 
-function RestoreOfficialModal({selectedItems}) {
- 
+function RestoreRequestsModal({ selectedItems }) {
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
+  const [error, setError] = useState(null);
+
   const handleSave = async (e) => {
     try {
       e.preventDefault();
+      if (selectedItems.length === 0) {
+        setUpdatingStatus("error");
+        setError("Unable to restore, Please select first to restore.");
+        setTimeout(() => {
+          setUpdatingStatus(null);
+          HSOverlay.close(document.getElementById("hs-restore-requests-modal"));
+        }, 3000);
+
+        console.log("error", selectedItems);
+        return;
+      }
+      setSubmitClicked(true);
 
       for (let i = 0; i < selectedItems.length; i++) {
         const response = await axios.patch(
-          `${API_LINK}/brgyofficial/archived/${selectedItems[i]}/false`
+          `${API_LINK}/requests/archived/${selectedItems[i]}/false`
         );
       }
 
@@ -22,10 +38,9 @@ function RestoreOfficialModal({selectedItems}) {
       console.log(err);
     }
   };
-  
   return (
     <div
-      id="hs-restore-official-modal"
+      id="hs-restore-requests-modal"
       className="z-[100] hs-overlay hidden w-full h-full fixed top-0 left-0 z-60 overflow-x-hidden overflow-y-auto"
       >
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-400 bg-opacity-0 ">
@@ -47,7 +62,7 @@ function RestoreOfficialModal({selectedItems}) {
                 </button>
                 <button
                   type="button"
-                  data-hs-overlay="#hs-restore-official-modal"
+                  data-hs-overlay="#hs-restore-requests-modal"
                   className="inline-flex items-center px-8 py-2 border border-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 focus:outline-none transition ease-in-out duration-150"
                 >
                   Cancel
@@ -57,8 +72,12 @@ function RestoreOfficialModal({selectedItems}) {
             </div>
           </div>
         </div>
+        {submitClicked && <RestoreLoader updatingStatus="updating" />}
+      {updatingStatus && (
+        <RestoreLoader updatingStatus={updatingStatus} error={error} />
+      )}
     </div>
   );
 }
 
-export default RestoreOfficialModal;
+export default RestoreRequestsModal;

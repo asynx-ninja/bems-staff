@@ -3,11 +3,30 @@ import Error from "../../assets/modals/Error.png";
 import axios from "axios";
 import API_LINK from "../../config/API";
 import { IoArchiveOutline } from "react-icons/io5";
+import { useState } from "react";
+import ArchiveLoader from "./loaders/ArchiveLoader";
 
 function ArchiveInquiryModal({ selectedItems }) {
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
+  const [error, setError] = useState(null);
+
   const handleSave = async (e) => {
     try {
       e.preventDefault();
+      if (selectedItems.length === 0) {
+        setUpdatingStatus("error");
+        setError("Unable to archive, Please select first to archive.");
+        setTimeout(() => {
+          setUpdatingStatus(null);
+          HSOverlay.close(document.getElementById("hs-modal-archiveInquiry"));
+        }, 3000);
+
+        console.log("error", selectedItems);
+        return;
+      }
+      setSubmitClicked(true);
+
 
       for (let i = 0; i < selectedItems.length; i++) {
         const response = await axios.patch(
@@ -53,6 +72,10 @@ function ArchiveInquiryModal({ selectedItems }) {
             </div>
           </div>
         </div>
+        {submitClicked && <ArchiveLoader updatingStatus="updating" />}
+      {updatingStatus && (
+        <ArchiveLoader updatingStatus={updatingStatus} error={error} />
+      )}
     </div>
   );
 }

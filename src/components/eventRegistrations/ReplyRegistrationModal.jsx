@@ -45,6 +45,14 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
   const [pageCount, setPageCount] = useState(0);
   const [specificEvent, setSpecificEvent] = useState(null);
 
+  const handleResetModal = () => {
+    setCreateFiles([]);
+    setNewMessage({
+      message: "",
+      isRepliable: true,
+    });
+  };
+
   useEffect(() => {
     setFiles(application.length === 0 ? [] : application.file);
   }, [application]);
@@ -434,19 +442,34 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
                                         id="status"
                                         name="status"
                                         onChange={(e) => {
+                                          const newStatus = e.target.value;
+                                          const statusRegex =
+                                            /The status of your event application is [\w\s]+/;
+                                          let updatedMessage =
+                                            newMessage.message;
+
                                           if (
-                                            statusChanger &&
-                                            (!newMessage.message ||
-                                              newMessage.message.trim() === "")
+                                            statusRegex.test(updatedMessage)
                                           ) {
+                                            updatedMessage =
+                                              updatedMessage.replace(
+                                                statusRegex,
+                                                `The status of your event application is ${newStatus}`
+                                              );
+                                          } else if (!updatedMessage.trim()) {
+                                            updatedMessage = `The status of your event application is ${newStatus}`;
+                                          }
+
+                                          if (statusChanger) {
                                             setNewMessage((prev) => ({
                                               ...prev,
-                                              message: `The status of your inquiry is ${e.target.value}`,
+                                              message: updatedMessage,
                                             }));
                                           }
+
                                           setApplication((prev) => ({
                                             ...prev,
-                                            status: e.target.value,
+                                            status: newStatus,
                                           }));
                                         }}
                                         className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
@@ -473,24 +496,6 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
                               </div>
 
                               <div className="flex justify-center items-center gap-x-2">
-                                {/* <div className="hs-tooltip inline-block">
-                                  <label className="relative flex  justify-center items-center cursor-pointer">
-                                    <input
-                                      type="checkbox"
-                                      name="isRepliable"
-                                      checked={newMessage.isRepliable}
-                                      onChange={handleChange}
-                                      className="hs-tooltip-toggle sr-only peer"
-                                    />
-                                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
-                                  </label>
-                                  <span
-                                    className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                    role="tooltip"
-                                  >
-                                    Client can Reply
-                                  </span>
-                                </div> */}
                                 <button
                                   type="submit"
                                   onClick={handleOnSend}
@@ -690,24 +695,43 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
                                                     id="status"
                                                     name="status"
                                                     onChange={(e) => {
+                                                      const newStatus =
+                                                        e.target.value;
+                                                      const statusRegex =
+                                                        /The status of your event application is [\w\s]+/;
+                                                      let updatedMessage =
+                                                        newMessage.message;
+
                                                       if (
-                                                        statusChanger &&
-                                                        (!newMessage.message ||
-                                                          newMessage.message.trim() ===
-                                                            "")
+                                                        statusRegex.test(
+                                                          updatedMessage
+                                                        )
                                                       ) {
+                                                        updatedMessage =
+                                                          updatedMessage.replace(
+                                                            statusRegex,
+                                                            `The status of your event application is ${newStatus}`
+                                                          );
+                                                      } else if (
+                                                        !updatedMessage.trim()
+                                                      ) {
+                                                        updatedMessage = `The status of your event application is ${newStatus}`;
+                                                      }
+
+                                                      if (statusChanger) {
                                                         setNewMessage(
                                                           (prev) => ({
                                                             ...prev,
-                                                            message: `The status of your event application is ${e.target.value}`,
+                                                            message:
+                                                              updatedMessage,
                                                           })
                                                         );
                                                       }
+
                                                       setApplication(
                                                         (prev) => ({
                                                           ...prev,
-                                                          status:
-                                                            e.target.value,
+                                                          status: newStatus,
                                                         })
                                                       );
                                                     }}
@@ -737,26 +761,6 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
                                           </div>
 
                                           <div className="flex justify-center items-center gap-x-2">
-                                            {/* <div className="hs-tooltip inline-block">
-                                              <label className="relative flex  justify-center items-center cursor-pointer">
-                                                <input
-                                                  type="checkbox"
-                                                  name="isRepliable"
-                                                  checked={
-                                                    newMessage.isRepliable
-                                                  }
-                                                  onChange={handleChange}
-                                                  className="hs-tooltip-toggle sr-only peer"
-                                                />
-                                                <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 rounded-full peer  peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-800" />
-                                              </label>
-                                              <span
-                                                className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                                role="tooltip"
-                                              >
-                                                Client can Reply
-                                              </span>
-                                            </div> */}
                                             <button
                                               type="submit"
                                               onClick={handleOnSend}
@@ -802,6 +806,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
                 type="button"
                 className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-900 text-white shadow-sm"
                 data-hs-overlay="#hs-reply-modal"
+                onClick={handleResetModal}
               >
                 CLOSE
               </button>

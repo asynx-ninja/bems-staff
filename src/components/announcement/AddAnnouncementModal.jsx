@@ -32,6 +32,17 @@ function CreateAnnouncementModal({ brgy }) {
   const [isBannerSelected, setIsBannerSelected] = useState(false);
   const navigate = useNavigate();
 
+  const handleResetModal = () => {
+    clearForm();
+    // Reset image previews
+    document.getElementById("add_logo").src = "";
+    document.getElementById("add_banner").src = "";
+    setEmpty(false);
+    setEmptyFields([]);
+    setError(null); // Reset error state
+    setCreationStatus(null);
+  };
+
   const handleLogoChange = (e) => {
     const selectedFile = e.target.files[0];
     setLogo(selectedFile);
@@ -92,6 +103,10 @@ function CreateAnnouncementModal({ brgy }) {
     try {
       e.preventDefault();
       setSubmitClicked(true);
+      setError(null); // Reset error state
+      setCreationStatus(null);
+      setEmpty(false);
+
       const emptyFieldsArr = checkEmptyFieldsForAnnouncement();
 
       if (emptyFieldsArr.length > 0) {
@@ -177,8 +192,6 @@ function CreateAnnouncementModal({ brgy }) {
               logo: response.data.collections.logo,
             };
           }
-
-
 
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {
@@ -431,6 +444,7 @@ function CreateAnnouncementModal({ brgy }) {
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                   data-hs-overlay="#hs-modal-add"
+                  onClick={handleResetModal}
                 >
                   CLOSE
                 </button>
@@ -439,7 +453,7 @@ function CreateAnnouncementModal({ brgy }) {
           </div>
         </div>
         {empty && <ErrorPopup />}
-        {/* <AddLoader /> */}
+
         {submitClicked && <AddLoader creationStatus="creating" />}
         {creationStatus && (
           <AddLoader creationStatus={creationStatus} error={error} />
