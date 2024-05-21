@@ -36,6 +36,12 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
   const [replyingStatus, setReplyingStatus] = useState(null);
   const [error, setError] = useState(null);
   const [service, setService] = useState([]);
+  const [errMsg, setErrMsg] = useState(false);
+  const [onSend, setOnSend] = useState(false);
+  const [viewTime, setViewTime] = useState({
+    state: false,
+    timeKey: 0,
+  });
 
   const [blotterDetails, setBlotterDetails] = useState([]);
   const [detail, setDetail] = useState(request);
@@ -570,6 +576,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
   };
 
   const handleResetModal = () => {
+    setStatusChanger(false);
     setCreateFiles([]);
     setResponseData({
       sender: "",
@@ -601,6 +608,14 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
     });
     setSelectedComplainant("");
     setSelectedDefendant("");
+  };
+
+  const handleOnViewTime = (item) => {
+    console.log(item);
+    setViewTime({
+      state: !viewTime.state,
+      timeKey: item,
+    });
   };
 
   return (
@@ -990,11 +1005,11 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                 ? `The status of this barangay patawag is ${request.status}`
                                 : ""
                             }
-                            className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
+                            className="p-4 pb-12 block w-full  border-[#b7e4c7] rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border focus:outline-none focus:ring-0 focus:border-[#b7e4c7]"
                             placeholder="Input response..."
-                          ></textarea>
+                          />
 
-                          <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-white">
+                          <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-[#b7e4c7]">
                             <div className="flex justify-between items-center">
                               <div className="flex items-center space-x-2">
                                 <input
@@ -1009,14 +1024,17 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                 <button
                                   id="button"
                                   onClick={handleAdd || handleOnUpload}
-                                  className="rounded-xl px-3 py-2 bg-[#329ba8] text-white hover:bg-pink-900 focus:shadow-outline focus:outline-none"
+                                  className="p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
                                 >
-                                  <IoIosAttach size={24} className="mx-auto" />
+                                  <IoIosAttach
+                                    size={24}
+                                    className="text-[#2d6a4f]"
+                                  />
                                 </button>
 
                                 <div className="flex flex-col lg:flex-row">
                                   <div className="w-full">
-                                    <div className="flex flex-row space-x-4">
+                                    <div className="flex flex-row space-x-3">
                                       {!statusChanger ? (
                                         <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
                                           <div className="hs-tooltip inline-block">
@@ -1025,7 +1043,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                                 e.preventDefault();
                                                 handleOnStatusChanger();
                                               }}
-                                              className="hs-tooltip-toggle rounded-xl px-3 py-2 bg-teal-800 text-white hover:bg-teal-900 focus:shadow-outline focus:outline-none"
+                                              className="hs-tooltip-toggle rounded-full p-2.5 text-[#2d6a4f] hover:bg-white focus:shadow-outline focus:outline-none"
                                             >
                                               <FaTasks
                                                 size={24}
@@ -1048,7 +1066,7 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                                 e.preventDefault();
                                                 handleOnStatusChanger();
                                               }}
-                                              className="hs-tooltip-toggle rounded-xl px-3 py-[8px] bg-pink-800 text-white hover:bg-pink-900 focus:shadow-outline focus:outline-none"
+                                              className="hs-tooltip-toggle rounded-full p-2 bg-white text-[#2d6a4f] hover:bg-white focus:shadow-outline focus:outline-none"
                                             >
                                               <MdOutlineCancel
                                                 size={24}
@@ -1123,10 +1141,22 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                                 <button
                                   type="submit"
                                   onClick={handleOnSend}
-                                  className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700"
+                                  className="inline-flex flex-shrink-0 justify-center items-center rounded-lg p-2 gap-2 text-[#2d6a4f] hover:bg-white hover:rounded-full  "
                                 >
-                                  <span>SEND</span>
-                                  <IoSend size={18} className="flex-shrink-0" />
+                                  {onSend ? (
+                                    <div
+                                      class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
+                                      role="status"
+                                      aria-label="loading"
+                                    >
+                                      <span class="sr-only">Loading...</span>
+                                    </div>
+                                  ) : (
+                                    <IoSend
+                                      size={24}
+                                      className="flex-shrink-0 "
+                                    />
+                                  )}
                                 </button>
                               </div>
                             </div>
@@ -1151,270 +1181,293 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
                   {blotterDetails &&
                     blotterDetails.responses &&
                     blotterDetails.responses.map((responseItem, index) => (
-                      <div
-                        key={index}
-                        className={`flex flex-col lg:flex-row h-16 mb-2 border-b ${
-                          expandedIndexes.includes(index)
-                            ? "h-auto border-b"
-                            : ""
-                        }`}
-                        onClick={() => handleToggleClick(index)}
-                      >
-                        {!expandedIndexes.includes(index) ? (
-                          <div className="flex flex-col w-full px-2 md:px-4 py-2">
-                            <div className="flex flex-row w-full justify-between">
-                              <p className="text-[14px] md:text-sm font-medium uppercase">
-                                {responseItem.sender}
-                              </p>
-                              <p className="text-[10px] md:text-xs text-right text-xs">
-                                {DateFormat(responseItem.date) || ""}
-                              </p>
-                            </div>
-                            <p className="text-[10px] md:text-xs overflow-hidden line-clamp-3">
-                              {responseItem.message}
-                            </p>
-                          </div>
-                        ) : (
+                      <div>
+                        <div
+                          key={index}
+                          className={
+                            responseItem.sender ===
+                            `${userData?.firstName?.toUpperCase() ?? ""} ${
+                              userData?.lastName?.toUpperCase() ?? ""
+                            } (${userData.type})`
+                              ? "flex flex-col justify-end items-end mb-2 w-full h-auto"
+                              : "flex flex-col justify-start items-start mb-2 w-full h-auto"
+                          }
+                        >
                           <div
-                            className="flex flex-col w-full px-2 md:px-4 py-2"
-                            onClick={(e) => e.stopPropagation()}
+                            className={
+                              responseItem.sender ===
+                              `${userData?.firstName?.toUpperCase() ?? ""} ${
+                                userData?.lastName?.toUpperCase() ?? ""
+                              } (${userData.type})`
+                                ? "flex flex-col items-end h-auto max-w-[80%]"
+                                : "flex flex-col items-start h-auto max-w-[80%]"
+                            }
                           >
                             <div
-                              className="flex flex-row w-full justify-between"
-                              onClick={() => handleToggleClick(index)}
+                              className={
+                                responseItem.sender ===
+                                `${userData?.firstName?.toUpperCase() ?? ""} ${
+                                  userData?.lastName?.toUpperCase() ?? ""
+                                } (${userData.type})`
+                                  ? "hidden"
+                                  : "flex flex-row w-full justify-between"
+                              }
                             >
                               <div className="flex flex-col md:flex-row md:items-center">
-                                <p className="text-[14px] md:text-sm font-medium uppercase ">
-                                  {responseItem.sender}
-                                </p>
-                              </div>
-                              <p className="text-[10px] md:text-xs text-right text-xs">
-                                {DateFormat(responseItem.date) || ""}
-                              </p>
-                            </div>
-                            <div className="w-full py-4 h-full md:px-2">
-                              <div className="w-full border h-full rounded-xl p-5">
-                                <p className="text-[10px] md:text-xs">
-                                  {responseItem.message}
+                                <p className="text-[14px] text-black md:text-sm font-medium uppercase ">
+                                  {responseItem.sender?.toLowerCase()}
                                 </p>
                               </div>
                             </div>
-                            {viewFiles.length > 0 && (
-                              <ViewDropbox
-                                viewFiles={responseItem.file || []}
-                                setViewFiles={setViewFiles}
-                              />
-                            )}
-                            {index === blotterDetails.responses.length - 1 && (
-                              <div className="flex flex-row items-center">
-                                <button
-                                  type="button"
-                                  className="h-8 w-full lg:w-32 py-1 px-2 gap-2 rounded-full borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                                  onClick={handleOnReply}
-                                  hidden={reply}
-                                >
-                                  REPLY
-                                </button>
 
-                                {!reply ? (
-                                  <div></div>
-                                ) : (
-                                  <div className="relative w-full mt-4 mx-2">
-                                    <div className="relative w-full">
-                                      <textarea
-                                        id="message"
-                                        name="message"
-                                        onChange={handleChange}
-                                        rows={7}
-                                        value={
-                                          ResponseData.message
-                                            ? ResponseData.message
-                                            : statusChanger
-                                            ? `The status of this barangay patawag is ${request.status}`
-                                            : ""
-                                        }
-                                        className="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border"
-                                        placeholder="Input response..."
-                                      ></textarea>
+                            {responseItem.message !== "" ? (
+                              <div
+                                className={
+                                  responseItem.sender ===
+                                  `${
+                                    userData?.firstName?.toUpperCase() ?? ""
+                                  } ${
+                                    userData?.lastName?.toUpperCase() ?? ""
+                                  } (${userData.type})`
+                                    ? "flex flex-col rounded-xl bg-[#52b788] border border-[#2d6a4f] mb-1 text-white px-2 md:px-4 py-2 cursor-pointer"
+                                    : "flex flex-col rounded-xl bg-gray-100 border text-black border-gray-300 px-2 md:px-4 py-2 cursor-pointer"
+                                }
+                                onClick={() => handleOnViewTime(index)}
+                              >
+                                <div className="w-full h-full">
+                                  <div className="w-full h-full rounded-xl p-1">
+                                    <p className="text-[10px] md:text-xs">
+                                      {responseItem.message}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            ) : null}
 
-                                      <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-white">
-                                        <div className="flex justify-between items-center">
-                                          <div className="flex items-center space-x-2">
-                                            <input
-                                              type="file"
-                                              name="file"
-                                              onChange={(e) =>
-                                                handleFileChange(e)
-                                              }
-                                              ref={fileInputRef}
-                                              accept=".xlsx,.xls,.doc,.docx,.ppt,.pptx,.txt,.pdf"
-                                              multiple="multiple"
-                                              className="hidden"
-                                            />
-                                            <button
-                                              id="button"
-                                              onClick={
-                                                handleAdd || handleOnUpload
-                                              }
-                                              className="rounded-xl px-3 py-2 bg-[#329ba8] text-white hover:bg-pink-900 focus:shadow-outline focus:outline-none"
-                                            >
-                                              <IoIosAttach
-                                                size={24}
-                                                className="mx-auto"
-                                              />
-                                            </button>
+                            {responseItem.file &&
+                              responseItem.file.length > 0 && (
+                                <div className="flex flex-col rounded-xl">
+                                  <ViewDropbox
+                                    viewFiles={responseItem.file || []}
+                                    setViewFiles={setViewFiles}
+                                  />
+                                </div>
+                              )}
 
-                                            <div className="flex flex-col lg:flex-row">
-                                              <div className="w-full">
-                                                <div className="flex flex-row space-x-4">
-                                                  {!statusChanger ? (
-                                                    <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
-                                                      <div className="hs-tooltip inline-block">
-                                                        <button
-                                                          onClick={(e) => {
-                                                            e.preventDefault();
-                                                            handleOnStatusChanger();
-                                                          }}
-                                                          className="hs-tooltip-toggle rounded-xl px-3 py-2 bg-teal-800 text-white hover:bg-teal-900 focus:shadow-outline focus:outline-none"
-                                                        >
-                                                          <FaTasks
-                                                            size={24}
-                                                            className="mx-auto"
-                                                          />
-                                                          <span
-                                                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                                            role="tooltip"
-                                                          >
-                                                            Change Request
-                                                            Status
-                                                          </span>
-                                                        </button>
-                                                      </div>
-                                                    </div>
-                                                  ) : (
-                                                    <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
-                                                      <div className="hs-tooltip inline-block">
-                                                        <button
-                                                          onClick={(e) => {
-                                                            e.preventDefault();
-                                                            handleOnStatusChanger();
-                                                          }}
-                                                          className="hs-tooltip-toggle rounded-xl px-3 py-[8px] bg-pink-800 text-white hover:bg-pink-900 focus:shadow-outline focus:outline-none"
-                                                        >
-                                                          <MdOutlineCancel
-                                                            size={24}
-                                                            className="mx-auto"
-                                                          />
-                                                        </button>
-                                                        <span
-                                                          className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                                                          role="tooltip"
-                                                        >
-                                                          Change Request Status
-                                                        </span>
-                                                      </div>
-                                                    </div>
-                                                  )}
-                                                  <select
-                                                    id="status"
-                                                    name="status"
-                                                    onChange={(e) => {
-                                                      const newStatus =
-                                                        e.target.value;
-                                                      const statusRegex =
-                                                        /The status of this barangay patawag is [\w\s]+/;
-                                                      let updatedMessage =
-                                                        ResponseData.message;
+                            <p
+                              className={
+                                !viewTime.state && viewTime.timeKey === index
+                                  ? "text-[10px] md:text-xs mt-[5px] text-black text-right text-xs"
+                                  : "hidden"
+                              }
+                            >
+                              {DateFormat(responseItem.date) || ""}
+                            </p>
+                          </div>
 
-                                                      if (
-                                                        statusRegex.test(
-                                                          updatedMessage
-                                                        )
-                                                      ) {
-                                                        updatedMessage =
-                                                          updatedMessage.replace(
-                                                            statusRegex,
-                                                            `The status of this barangay patawag is ${newStatus}`
-                                                          );
-                                                      } else if (
-                                                        !updatedMessage.trim()
-                                                      ) {
-                                                        updatedMessage = `The status of this barangay patawag is ${newStatus}`;
-                                                      }
+                          {index === blotterDetails.responses.length - 1 ? (
+                            <div className="flex flex-row items-center w-full">
+                              <div className="relative w-full mt-4 mx-2">
+                                {errMsg ? (
+                                  <div className="w-[100%] bg-red-500 rounded-md mb-[10px] flex">
+                                    <p className="py-[10px] text-[12px] px-[20px] text-white font-medium">
+                                      Please enter a message or insert a file!
+                                    </p>
+                                  </div>
+                                ) : null}
+                                <div className="relative w-full ">
+                                  <textarea
+                                    id="message"
+                                    name="message"
+                                    onChange={handleChange}
+                                    rows={7}
+                                    value={
+                                      ResponseData.message
+                                        ? ResponseData.message
+                                        : statusChanger
+                                        ? `The status of this barangay patawag is ${request.status}`
+                                        : ""
+                                    }
+                                    className="p-4 pb-12 block w-full  border-[#b7e4c7] rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border focus:outline-none focus:ring-0 focus:border-[#b7e4c7]"
+                                    placeholder="Input response..."
+                                  />
 
-                                                      if (statusChanger) {
-                                                        setResponseData(
-                                                          (prev) => ({
-                                                            ...prev,
-                                                            message:
-                                                              updatedMessage,
-                                                          })
-                                                        );
-                                                      }
-                                                      setResponseData(
-                                                        (prev) => ({
-                                                          ...prev,
-                                                          status: newStatus,
-                                                        })
-                                                      );
-                                                    }}
-                                                    className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
-                                                    value={ResponseData.status}
-                                                    hidden={!statusChanger}
-                                                  >
-                                                    <option disabled>
-                                                      {" "}
-                                                      -- Select Status --{" "}
-                                                    </option>
-                                                    <option value="In Progress">
-                                                      IN PROGRESS
-                                                    </option>
-                                                    <option value="Completed">
-                                                      COMPLETED
-                                                    </option>
-                                                    <option value="Rejected">
-                                                      REJECTED
-                                                    </option>
-                                                  </select>
+                                  <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-[#b7e4c7]">
+                                    <div className="flex justify-between items-center">
+                                      <div className="flex items-center space-x-2">
+                                        <input
+                                          type="file"
+                                          name="file"
+                                          onChange={(e) => handleFileChange(e)}
+                                          ref={fileInputRef}
+                                          accept=".xlsx,.xls,.doc,.docx,.ppt,.pptx,.txt,.pdf"
+                                          multiple="multiple"
+                                          className="hidden"
+                                        />
+                                        <button
+                                          id="button"
+                                          onClick={handleAdd || handleOnUpload}
+                                          className="p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
+                                        >
+                                          <IoIosAttach
+                                            size={24}
+                                            className="text-[#2d6a4f]"
+                                          />
+                                        </button>
+
+                                        <div className="flex flex-col lg:flex-row">
+                                          <div className="w-full">
+                                            <div className="flex flex-row space-x-3">
+                                              {!statusChanger ? (
+                                                <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                                  <div className="hs-tooltip inline-block">
+                                                    <button
+                                                      onClick={(e) => {
+                                                        e.preventDefault();
+                                                        handleOnStatusChanger();
+                                                      }}
+                                                      className="hs-tooltip-toggle rounded-full p-2.5 text-[#2d6a4f] hover:bg-white focus:shadow-outline focus:outline-none"
+                                                    >
+                                                      <FaTasks
+                                                        size={24}
+                                                        className="mx-auto"
+                                                      />
+                                                      <span
+                                                        className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                                        role="tooltip"
+                                                      >
+                                                        Change Request Status
+                                                      </span>
+                                                    </button>
+                                                  </div>
                                                 </div>
-                                              </div>
-                                            </div>
-                                          </div>
+                                              ) : (
+                                                <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-1/6 flex">
+                                                  <div className="hs-tooltip inline-block">
+                                                    <button
+                                                      onClick={(e) => {
+                                                        e.preventDefault();
+                                                        handleOnStatusChanger();
+                                                      }}
+                                                      className="hs-tooltip-toggle rounded-full p-2 bg-white text-[#2d6a4f] hover:bg-white focus:shadow-outline focus:outline-none"
+                                                    >
+                                                      <MdOutlineCancel
+                                                        size={24}
+                                                        className="mx-auto"
+                                                      />
+                                                    </button>
+                                                    <span
+                                                      className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-50 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                                                      role="tooltip"
+                                                    >
+                                                      Change Request Status
+                                                    </span>
+                                                  </div>
+                                                </div>
+                                              )}
+                                              <select
+                                                id="status"
+                                                name="status"
+                                                onChange={(e) => {
+                                                  const newStatus =
+                                                    e.target.value;
+                                                  const statusRegex =
+                                                    /The status of this barangay patawag is [\w\s]+/;
+                                                  let updatedMessage =
+                                                    ResponseData.message;
 
-                                          <div className="flex justify-center items-center gap-x-2">
-                                            <button
-                                              type="submit"
-                                              onClick={handleSendReply}
-                                              className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-white py-1 px-6 gap-2 bg-cyan-700"
-                                            >
-                                              <span>SEND</span>
-                                              <IoSend
-                                                size={18}
-                                                className="flex-shrink-0"
-                                              />
-                                            </button>
+                                                  if (
+                                                    statusRegex.test(
+                                                      updatedMessage
+                                                    )
+                                                  ) {
+                                                    updatedMessage =
+                                                      updatedMessage.replace(
+                                                        statusRegex,
+                                                        `The status of this barangay patawag is ${newStatus}`
+                                                      );
+                                                  } else if (
+                                                    !updatedMessage.trim()
+                                                  ) {
+                                                    updatedMessage = `The status of this barangay patawag is ${newStatus}`;
+                                                  }
+
+                                                  if (statusChanger) {
+                                                    setResponseData((prev) => ({
+                                                      ...prev,
+                                                      message: updatedMessage,
+                                                    }));
+                                                  }
+                                                  setResponseData((prev) => ({
+                                                    ...prev,
+                                                    status: newStatus,
+                                                  }));
+                                                }}
+                                                className="shadow ml-4 border w-5/6 py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline"
+                                                value={ResponseData.status}
+                                                hidden={!statusChanger}
+                                              >
+                                                <option disabled>
+                                                  -- Select Status --
+                                                </option>
+                                                <option value="In Progress">
+                                                  IN PROGRESS
+                                                </option>
+                                                <option value="Completed">
+                                                  COMPLETED
+                                                </option>
+                                                <option value="Rejected">
+                                                  REJECTED
+                                                </option>
+                                              </select>
+                                            </div>
                                           </div>
                                         </div>
                                       </div>
+
+                                      <div className="flex justify-center items-center gap-x-2">
+                                        <button
+                                          type="submit"
+                                          onClick={handleSendReply}
+                                          className="inline-flex flex-shrink-0 justify-center items-center rounded-lg p-2 gap-2 text-[#2d6a4f] hover:bg-white hover:rounded-full  "
+                                        >
+                                          {onSend ? (
+                                            <div
+                                              class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
+                                              role="status"
+                                              aria-label="loading"
+                                            >
+                                              <span class="sr-only">
+                                                Loading...
+                                              </span>
+                                            </div>
+                                          ) : (
+                                            <IoSend
+                                              size={24}
+                                              className="flex-shrink-0 "
+                                            />
+                                          )}
+                                        </button>
+                                      </div>
                                     </div>
-                                    {!upload ? (
-                                      // Render Dropbox only when there are uploaded files
-                                      createFiles.length > 0 && (
-                                        <Dropbox
-                                          createFiles={createFiles}
-                                          setCreateFiles={setCreateFiles}
-                                          handleFileChange={handleFileChange}
-                                        />
-                                      )
-                                    ) : (
-                                      <div></div>
-                                    )}
                                   </div>
+                                </div>
+                                {!upload ? (
+                                  // Render Dropbox only when there are uploaded files
+                                  createFiles.length > 0 && (
+                                    <Dropbox
+                                      createFiles={createFiles}
+                                      setCreateFiles={setCreateFiles}
+                                      handleFileChange={handleFileChange}
+                                    />
+                                  )
+                                ) : (
+                                  <div></div>
                                 )}
                               </div>
-                            )}
-                          </div>
-                        )}
+                            </div>
+                          ) : null}
+                        </div>
                       </div>
                     ))}
                 </form>

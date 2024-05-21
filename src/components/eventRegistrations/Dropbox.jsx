@@ -39,7 +39,7 @@ const Dropbox = ({ createFiles, setCreateFiles, handleFileChange }) => {
 
   return (
     <>
-      <div className="">
+        <div className="">
         <main className="container mx-auto max-w-screen-lg h-full mt-2">
           {/* scroll area */}
           <section className="h-full overflow-auto p-1 w-full flex flex-col">
