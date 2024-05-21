@@ -13,10 +13,10 @@ import EditDropbox from "./EditDropbox";
 import { useSearchParams } from "react-router-dom";
 import ReplyLoader from "./loaders/ReplyLoader";
 import GetBrgy from "../GETBrgy/getbrgy";
-import { io } from "socket.io-client";
-const socket = io("http://localhost:8800");
+// import { io } from "socket.io-client";
+// const socket = io("http://localhost:8800");
 
-function ReplyRegistrationModal({ application, setApplication, brgy, chatContainerRef, }) {
+function ReplyRegistrationModal({ application, setApplication, brgy, socket, chatContainerRef, }) {
   const information = GetBrgy(brgy);
   const [reply, setReply] = useState(false);
   const [statusChanger, setStatusChanger] = useState(false);
@@ -55,6 +55,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy, chatContain
 
   const handleResetModal = () => {
     setCreateFiles([]);
+    setErrMsg(false);
     setNewMessage({
       message: "",
       isRepliable: true,
@@ -241,6 +242,14 @@ function ReplyRegistrationModal({ application, setApplication, brgy, chatContain
   const handleOnSend = async (e) => {
     try {
       e.preventDefault();
+      setOnSend(true);
+      setErrMsg(false);
+
+      if (newMessage.message.trim() === "" && createFiles.length === 0) {
+        setErrMsg(true);
+        setOnSend(false);
+        return;
+      }
 
       const obj = {
         sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
@@ -264,9 +273,12 @@ function ReplyRegistrationModal({ application, setApplication, brgy, chatContain
       );
 
       if (response.status === 200) {
-        console.log("success", response.data);
-        socket.emit("send-reply-event-appli", response.data);
-
+        setCreateFiles([]);
+        setNewMessage({ message: "" });
+        setReplyingStatus(null);
+        setReply(false);
+        
+       
         const notify = {
           category: "One",
           compose: {
@@ -320,13 +332,8 @@ function ReplyRegistrationModal({ application, setApplication, brgy, chatContain
         });
 
         if (result.status === 200) {
-          // setTimeout(() => {
-          //   setSubmitClicked(false);
-          //   setReplyingStatus("success");
-          //   setTimeout(() => {
-          //     window.location.reload();
-          //   }, 3000);
-          // }, 1000);
+          socket.emit("send-reply-event-appli", response.data);
+          setOnSend(false)
         }
       }
 
@@ -535,7 +542,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy, chatContain
                                 >
                                   {onSend ? (
                                     <div
-                                      class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
+                                      className="animate-spin inline-block size-10 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
                                       role="status"
                                       aria-label="loading"
                                     >
@@ -818,28 +825,21 @@ function ReplyRegistrationModal({ application, setApplication, brgy, chatContain
                                         onClick={handleOnSend}
                                         disabled={onSend}
                                         className="inline-flex flex-shrink-0 justify-center items-center rounded-lg p-2 gap-2 text-[#2d6a4f] hover:bg-white hover:rounded-full  "
-                                      >
-                                        {
-                                          onSend ? (
-                                            <div
-                                              class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
-                                              role="status"
-                                              aria-label="loading"
-                                            >
-                                              <span class="sr-only">
-                                                Loading...
-                                              </span>
-                                            </div>
-                                          ) : (
-                                            <IoSend
-                                              size={24}
-                                              className="flex-shrink-0 "
-                                            />
-                                          )
-                                          // <div className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-gray-500 py-1 px-6 gap-2 ">
-                                          //   </div>
-                                        }
-                                      </button>
+                                        >
+                                          {
+                                            onSend ?
+                                              <div class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500" role="status" aria-label="loading">
+                                                <span class="sr-only">Loading...</span>
+                                              </div> : <IoSend
+                                                size={24}
+                                                className="flex-shrink-0 "
+                                              />
+                                            // <div className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-gray-500 py-1 px-6 gap-2 ">
+                                            //   </div>
+                                          }
+
+
+                                        </button>
                                       {/* <div class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500" role="status" aria-label="loading">
                                       <span class="sr-only">Loading...</span>
                                     </div> */}
