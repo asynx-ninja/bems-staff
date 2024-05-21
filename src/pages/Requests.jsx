@@ -17,7 +17,11 @@ import API_LINK from "../config/API";
 import axios from "axios";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
 
+import Socket_link from "../config/Socket";
+
+const socket = io(Socket_link);
 const Requests = () => {
   const [requests, setRequests] = useState([]);
   const [request, setRequest] = useState({ response: [{ file: [] }] });
@@ -46,6 +50,21 @@ const Requests = () => {
   const [officials, setOfficials] = useState([]);
 
   const chatContainerRef = useRef();
+
+  useEffect(() => {
+    const handleServiceReq = (service_req) => {
+      setRequest(service_req)
+      setFilteredRequests(curItem => curItem.map((item) =>
+        item._id === service_req._id ? service_req : item
+      ))
+    };
+
+    socket.on("receive-reply-service-req", handleServiceReq);
+
+    return () => {
+      socket.off("receive-reply-service-req", handleServiceReq);
+    };
+  }, [socket, setRequest]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -840,6 +859,7 @@ const Requests = () => {
         setRequest={setRequest}
         brgy={brgy}
         chatContainerRef={chatContainerRef}
+        socket={socket}
       />
       <ArchiveRequestsModal selectedItems={selectedItems} />
       <RequestsReportsModal />

@@ -5,7 +5,7 @@ import EditSectionForm from "./EditSectionForm";
 import EditFormLoader from "../../loaders/EditFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 
-const EditServicesForm = ({ service_id, brgy }) => {
+const EditServicesForm = ({ service_id, brgy,  setEditUpdate, editupdate, }) => {
   const information = GetBrgy(brgy);
   const [details, setDetails] = useState([]);
   const [detail, setDetail] = useState({});
@@ -21,12 +21,13 @@ const EditServicesForm = ({ service_id, brgy }) => {
           `${API_LINK}/forms/?brgy=${brgy}&service_id=${service_id}`
         );
         setDetails(response.data);
+        setEditUpdate((prevState) => !prevState);
       } catch (err) {
         console.log(err.message);
       }
     };
     fetch();
-  }, [brgy, service_id]);
+  }, [brgy, service_id, editupdate]);
 
   const handleFormChange = (e, key) => {
     const newState = detail.form[0];

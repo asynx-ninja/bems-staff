@@ -40,7 +40,7 @@ const initialState = {
   },
 };
 
-const AddServicesForm = ({ service_id, brgy }) => {
+const AddServicesForm = ({ service_id, socket, brgy, setUpdate }) => {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
@@ -158,10 +158,15 @@ const AddServicesForm = ({ service_id, brgy }) => {
               },
             }
           );
+          socket.emit("send-create-service-form", response.data);
           setSubmitClicked(false);
           setCreationStatus("success");
           setTimeout(() => {
-            window.location.reload();
+            setCreationStatus(null);
+            handleResetModal();
+            HSOverlay.close(
+              document.getElementById("hs-create-serviceForm-modal")
+            );
           }, 3000);
         }
       } else {
@@ -176,16 +181,21 @@ const AddServicesForm = ({ service_id, brgy }) => {
             },
           }
         );
+        socket.emit("send-create-service-form", response.data);
         setSubmitClicked(false);
         setCreationStatus("success");
         setTimeout(() => {
-          window.location.reload();
+          setCreationStatus(null);
+          handleResetModal();
+          HSOverlay.close(
+            document.getElementById("hs-create-serviceForm-modal")
+          );
         }, 3000);
       }
+      setUpdate(true);
     } catch (err) {
       console.error(err.message);
       setSubmitClicked(false);
-      setCreationStatus("error");
       setError(
         err.message ||
           "An error occurred while creating/updating the service."

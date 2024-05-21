@@ -21,6 +21,9 @@ import noData from "../assets/image/no-data.png";
 import AddServicesDocument from "../components/services/document_forms/create_document/AddServicesDocument";
 import EditServicesDocument from "../components/services/document_forms/edit_document/EditServicesDocument";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+const socket = io(Socket_link);
 
 const Services = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -39,6 +42,9 @@ const Services = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [officials, setOfficials] = useState([]);
+  const [serviceForm, setServiceForm] = useState([]);
+  const [update, setUpdate] = useState(false);
+  const [editupdate, setEditUpdate] = useState(false);
   const information = GetBrgy(brgy);
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
@@ -68,6 +74,30 @@ const Services = () => {
   };
 
   useEffect(() => {
+    const handleService = (get_service) => {
+      setServices(get_service);
+      setFilteredServices((prev) => [get_service, ...prev]);
+    };
+
+    const handleServiceForm = (get_events_forms) => {
+      setServiceForm((curItem) =>
+        curItem.map((item) =>
+          item._id === get_service_forms._id ? get_service_forms : item
+        )
+      );
+    };
+
+    socket.on("receive-get-service", handleService);
+    socket.on("receive-create-service-form", handleServiceForm);
+
+    return () => {
+      socket.off("receive-get-service", handleService);
+      socket.off("receive-create-service-form", handleService);
+    };
+  }, [socket, setServices]);
+
+
+  useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
         `${API_LINK}/services/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${serviceFilter}`
@@ -93,10 +123,6 @@ const Services = () => {
     console.log(services)
   };
 
-  const Services = services.filter(
-    (item) =>
-      item.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   const handleStatusFilter = (selectedStatus) => {
     setStatusFilter(selectedStatus);
@@ -638,16 +664,17 @@ const Services = () => {
         />
       </div>
       <ArchiveServicesModal selectedItems={selectedItems} />
-      <CreateServiceModal brgy={brgy} />
+      <CreateServiceModal brgy={brgy} socket={socket} />
       {/*<StatusServices status={status} setStatus={setStatus}/>*/}
       <ManageServiceModal
         service={service}
         setService={setService}
         brgy={brgy}
+        socket={socket}
       />
       <GenerateReportsModal />
-      <AddServicesForm service_id={service.service_id} brgy={brgy} />
-      <EditServicesForm service_id={service.service_id} brgy={brgy} />
+      <AddServicesForm service_id={service.service_id} brgy={brgy} socket={socket}  setUpdate={setUpdate} editupdate={editupdate} setEditUpdate={setEditUpdate}/>
+      <EditServicesForm service_id={service.service_id} brgy={brgy} socket={socket}  editupdate={editupdate} setEditUpdate={setEditUpdate} serviceForm={serviceForm} setServiceForm={setServiceForm}/>
       <AddServicesDocument
         service_id={service.service_id}
         brgy={brgy}
