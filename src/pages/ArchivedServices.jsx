@@ -24,6 +24,7 @@ const ArchivedServices = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [serviceFilter, setServiceFilter] = useState("all");
+  const [filteredServices, setFilteredServices] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const information = GetBrgy(brgy);
@@ -57,19 +58,27 @@ const ArchivedServices = () => {
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/services/?brgy=${brgy}&archived=true&status=${statusFilter}&type=${serviceFilter}&page=${currentPage}`
+        `${API_LINK}/services/?brgy=${brgy}&archived=true&status=${statusFilter}&type=${serviceFilter}`
       );
       if (response.status === 200) {
+        console.log(response.data)
         setServices(response.data.result);
+        setFilteredServices(response.data.result.slice(0, 10));
         setPageCount(response.data.pageCount);
       } else setServices([]);
     };
 
     fetch();
-  }, [brgy, statusFilter, serviceFilter, currentPage]);
+  }, [brgy, statusFilter, serviceFilter]);
 
   const handlePageChange = ({ selected }) => {
+    console.log(selected)
     setCurrentPage(selected);
+    const start = selected * 10;
+    const end = start + 10;
+    console.log(services.slice(start, end))
+    setFilteredServices(services.slice(start, end));
+    console.log(services)
   };
 
   const handleStatusFilter = (selectedStatus) => {
@@ -145,8 +154,8 @@ const ArchivedServices = () => {
         {/* Header */}
         <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-teal-700 py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]" style={{
-              background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-            }}>
+            background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+          }}>
             <h1
               className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
@@ -168,9 +177,8 @@ const ArchivedServices = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -251,7 +259,17 @@ const ArchivedServices = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    const filteredData = services.filter((item) =>
+                      item.name.toLowerCase()
+                        .includes(e.target.value.toLowerCase()) ||
+                      item.service_id.toLowerCase()
+                        .includes(e.target.value.toLowerCase())
+                    );
+                    setFilteredServices(filteredData.slice(0, 10)); // Show first page of filtered results
+                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
+                  }}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
@@ -302,8 +320,8 @@ const ArchivedServices = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {Services.length > 0 ? (
-                Services.map((item, index) => (
+              {filteredServices.length > 0 ? (
+                filteredServices.map((item, index) => (
                   <tr key={index} className="odd:bg-slate-100 text-center">
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">

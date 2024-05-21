@@ -38,7 +38,7 @@ const Inquiries = () => {
   //pagination
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
-
+  
   //date filtering
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [selected, setSelected] = useState("date");
@@ -68,7 +68,7 @@ const Inquiries = () => {
 
     const fetchInquiries = async () => {
       const response = await axios.get(
-        `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=false&status=${statusFilter}&page=${currentPage}&label=Staff`
+        `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=false&status=${statusFilter}&label=Staff`
       );
 
       if (response.status === 200) {
@@ -82,13 +82,14 @@ const Inquiries = () => {
       const container = chatContainerRef.current;
       container.scrollTop = container.scrollHeight;
     };
-
     fetchInquiries();
-
-  }, [id, brgy, statusFilter, currentPage]);
+  }, [id, brgy, statusFilter]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+    const start = selected * 10;
+    const end = start + 10;
+    setFilteredInquiries(inquiries.slice(start, end));
   };
 
   const checkboxHandler = (e) => {

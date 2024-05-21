@@ -39,6 +39,7 @@ const Officials = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [positionFilter, setPositionFilter] = useState("all");
+  const [filterOfficials, setfilterOfficials] = useState([]);
   const [pageCount, setPageCount] = useState(0);
   const information = GetBrgy(brgy);
   const returnLogo = () => {
@@ -138,7 +139,7 @@ const Officials = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false&page=${currentPage}&position=${positionFilter}`
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false&position=${positionFilter}`
         );
 
         if (response.status === 200) {
@@ -147,6 +148,7 @@ const Officials = () => {
           if (officialsData.length > 0) {
             setPageCount(response.data.pageCount);
             setOfficials(officialsData);
+            setfilterOfficials(response.data.result.slice(0, 10))
           } else {
             setOfficials([]);
           }
@@ -161,7 +163,7 @@ const Officials = () => {
     };
 
     fetchData();
-  }, [currentPage, brgy, positionFilter]); // Add positionFilter dependency
+  }, [brgy, positionFilter]); // Add positionFilter dependency
 
   const handlePositionFilter = (selectedPosition) => {
     setPositionFilter(selectedPosition);
@@ -169,6 +171,9 @@ const Officials = () => {
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+    const start = selected * 10;
+    const end = start + 10;
+    setfilterOfficials(officials.slice(start, end));
   };
 
   const Officials = officials.filter((item) => {
@@ -418,7 +423,18 @@ const Officials = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    const filteredData = officials.filter((item) => {
+                      const fullName = `${item.lastName || ''} ${item.firstName || ''} ${item.middleName || ''}`.toLowerCase();
+                      const userIdMatches = item.official_id ? item.official_id.toLowerCase().includes(e.target.value.toLowerCase()) : false;
+                      const nameMatches = fullName.includes(e.target.value.toLowerCase());
+                      return userIdMatches || nameMatches;
+                    });
+                    setfilterOfficials(filteredData.slice(0, 10)); // Show first page of filtered results
+                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
+                  }}
+                  
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center space-x-2">
@@ -469,8 +485,8 @@ const Officials = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {Officials.length > 0 ? (
-                Officials.map((item, index) => (
+              {filterOfficials.length > 0 ? (
+                filterOfficials.map((item, index) => (
                   <tr key={index} className="odd:bg-slate-100 text-center">
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">

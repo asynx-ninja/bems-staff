@@ -77,32 +77,22 @@ const Requests = () => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/requests/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${selectedReqFilter}&page=${currentPage}`
+          `${API_LINK}/requests/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${selectedReqFilter}`
         );
 
         if (response.status === 200) {
           console.log("Filtered Requests:", response.data.result);
           setRequests(response.data.result);
           setPageCount(response.data.pageCount);
-          setFilteredRequests(response.data.result);
-        } else{ 
-          setRequests([]); 
-        }
-
-        const container = chatContainerRef.current;
-        container.scrollTop = container.scrollHeight;
-
+          setFilteredRequests(response.data.result.slice(0, 10));
+        } else setRequests([]);
       } catch (err) {
       }
     };
 
     fetch();
-    const intervalId = setInterval(() => {
-      fetch();
-    }, 10000);
-
-    return () => clearInterval(intervalId);
-  }, [brgy, statusFilter, selectedReqFilter, currentPage]);
+    
+  }, [brgy, statusFilter, selectedReqFilter]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -133,7 +123,11 @@ const Requests = () => {
   }, [currentPage, brgy]); // Add positionFilter dependency
 
   const handlePageChange = ({ selected }) => {
+    console.log(selected)
     setCurrentPage(selected);
+    const start = selected * 10;
+    const end = start + 10;
+    setFilteredRequests(requests.slice(start, end));
   };
 
   const handleStatusFilter = (selectedStatus) => {
@@ -219,7 +213,7 @@ const Requests = () => {
         return requests.filter((item) => {
           return (
             new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
             new Date(item.createdAt).getDate() === selectedDate.getDate()
           );
@@ -232,7 +226,7 @@ const Requests = () => {
         return requests.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-              startDate.getFullYear() &&
+            startDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === startDate.getMonth() &&
             new Date(item.createdAt).getDate() >= startDate.getDate() &&
             new Date(item.createdAt).getDate() <= endDate.getDate()
@@ -241,7 +235,7 @@ const Requests = () => {
         return requests.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -348,9 +342,8 @@ const Requests = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -527,9 +520,8 @@ const Requests = () => {
                 >
                   SERVICE TYPE
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -606,20 +598,18 @@ const Requests = () => {
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    const Requests = requests.filter((item) => {
-                      const fullName = `${item.form[0].firstName.value} ${item.form[0].lastName.value}`;
-                      const reqId = item.req_id.toString(); // Assuming service_id is a number, convert it to string for case-insensitive comparison
-                      return (
-                        fullName
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()) ||
-                        reqId.includes(e.target.value.toLowerCase())
-                      );
+                    const filteredData = requests.filter((item) => {
+                      const fullName = `${item.form[0].lastName.value || ''}, ${item.form[0].firstName.value || ''} ${item.form[0].middleName.value || ''}`.toLowerCase();
+                      const serviceNameMatches = item.service_name.toLowerCase().includes(e.target.value.toLowerCase());
+                      const reqIdMatches = item.req_id.toLowerCase().includes(e.target.value.toLowerCase());
+                      const nameMatches = fullName.includes(e.target.value.toLowerCase());
+                      return serviceNameMatches || reqIdMatches || nameMatches;
                     });
-
-                    setFilteredRequests(Requests);
+                    setFilteredRequests(filteredData.slice(0, 10)); // Show first page of filtered results
+                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
                   }}
                 />
+
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
                 <div className="hs-tooltip inline-block w-full">

@@ -28,6 +28,7 @@ const ArchivedOfficials = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [positionFilter, setPositionFilter] = useState("all");
+  const [filterOfficials, setfilterOfficials] = useState([]);
   const [pageCount, setPageCount] = useState(0);
   const information = GetBrgy(brgy);
   const handleSort = (sortBy) => {
@@ -87,13 +88,12 @@ const ArchivedOfficials = () => {
   };
 
   useEffect(() => {
-    document.title =
-      "Archived Barangay Officials | Barangay E-Services Management";
+    document.title = "Barangay Officials | Barangay E-Services Management";
 
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=true&page=${currentPage}&position=${positionFilter}`
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=true&position=${positionFilter}`
         );
 
         if (response.status === 200) {
@@ -102,6 +102,7 @@ const ArchivedOfficials = () => {
           if (officialsData.length > 0) {
             setPageCount(response.data.pageCount);
             setOfficials(officialsData);
+            setfilterOfficials(response.data.result.slice(0, 10))
           } else {
             setOfficials([]);
           }
@@ -116,10 +117,13 @@ const ArchivedOfficials = () => {
     };
 
     fetchData();
-  }, [currentPage, brgy, positionFilter]);
+  }, [brgy, positionFilter]); // Add positionFilter dependency
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+    const start = selected * 10;
+    const end = start + 10;
+    setfilterOfficials(officials.slice(start, end));
   };
 
   const Officials = officials.filter((item) => {
@@ -319,7 +323,17 @@ const ArchivedOfficials = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    const filteredData = officials.filter((item) => {
+                      const fullName = `${item.lastName || ''} ${item.firstName || ''} ${item.middleName || ''}`.toLowerCase();
+                      const userIdMatches = item.official_id ? item.official_id.toLowerCase().includes(e.target.value.toLowerCase()) : false;
+                      const nameMatches = fullName.includes(e.target.value.toLowerCase());
+                      return userIdMatches || nameMatches;
+                    });
+                    setfilterOfficials(filteredData.slice(0, 10)); // Show first page of filtered results
+                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
+                  }}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center space-x-2">
@@ -370,8 +384,8 @@ const ArchivedOfficials = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {Officials.length > 0 ? (
-                Officials.map((item, index) => (
+              {filterOfficials.length > 0 ? (
+                filterOfficials.map((item, index) => (
                   <tr key={index} className="odd:bg-slate-100 text-center">
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">

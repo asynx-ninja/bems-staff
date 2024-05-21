@@ -474,8 +474,8 @@ const EventsManagement = () => {
                           .toLowerCase()
                           .includes(e.target.value.toLowerCase())
                     );
-                    setFilteredAnnouncements(filteredData.slice(0, 10)); // Show first page of filtered results
-                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
+                    setFilteredAnnouncements(filteredData.slice(0, 10));
+                    setPageCount(Math.ceil(filteredData.length / 10)); 
                   }}
                 />
               </div>
