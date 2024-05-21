@@ -16,7 +16,13 @@ import GetBrgy from "../GETBrgy/getbrgy";
 // import { io } from "socket.io-client";
 // const socket = io("http://localhost:8800");
 
-function ReplyRegistrationModal({ application, setApplication, brgy, socket, chatContainerRef, }) {
+function ReplyRegistrationModal({
+  application,
+  setApplication,
+  brgy,
+  socket,
+  chatContainerRef,
+}) {
   const information = GetBrgy(brgy);
   const [reply, setReply] = useState(false);
   const [statusChanger, setStatusChanger] = useState(false);
@@ -277,8 +283,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy, socket, cha
         setNewMessage({ message: "" });
         setReplyingStatus(null);
         setReply(false);
-        
-       
+
         const notify = {
           category: "One",
           compose: {
@@ -333,7 +338,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy, socket, cha
 
         if (result.status === 200) {
           socket.emit("send-reply-event-appli", response.data);
-          setOnSend(false)
+          setOnSend(false);
         }
       }
 
@@ -824,25 +829,25 @@ function ReplyRegistrationModal({ application, setApplication, brgy, socket, cha
                                         type="submit"
                                         onClick={handleOnSend}
                                         disabled={onSend}
-                                        className="inline-flex flex-shrink-0 justify-center items-center rounded-lg p-2 gap-2 text-[#2d6a4f] hover:bg-white hover:rounded-full  "
-                                        >
-                                          {
-                                            onSend ?
-                                              <div class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500" role="status" aria-label="loading">
-                                                <span class="sr-only">Loading...</span>
-                                              </div> : <IoSend
-                                                size={24}
-                                                className="flex-shrink-0 "
-                                              />
-                                            // <div className="inline-flex flex-shrink-0 justify-center items-center w-28 rounded-lg text-gray-500 py-1 px-6 gap-2 ">
-                                            //   </div>
-                                          }
-
-
-                                        </button>
-                                      {/* <div class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500" role="status" aria-label="loading">
-                                      <span class="sr-only">Loading...</span>
-                                    </div> */}
+                                        className="inline-flex flex-shrink-0 justify-center items-center rounded-lg p-2 gap-2 text-[#2d6a4f] hover:bg-white hover:rounded-full"
+                                      >
+                                        {onSend ? (
+                                          <div
+                                            className="animate-spin inline-block w-6 h-6 border-4 border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
+                                            role="status"
+                                            aria-label="loading"
+                                          >
+                                            <span className="sr-only">
+                                              Loading...
+                                            </span>
+                                          </div>
+                                        ) : (
+                                          <IoSend
+                                            size={24}
+                                            className="flex-shrink-0"
+                                          />
+                                        )}
+                                      </button>
                                     </div>
                                   </div>
                                 </div>
