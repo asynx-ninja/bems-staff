@@ -2,7 +2,7 @@ import React from "react";
 import moment from "moment";
 import ReactPaginate from "react-paginate";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { BsPrinter } from "react-icons/bs";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { HiDocumentAdd } from "react-icons/hi";
@@ -34,6 +34,8 @@ const Blotters = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedReqFilter, setSelectedReqFilter] = useState("all");
   const information = GetBrgy(brgy);
+  const chatContainerRef = useRef();
+
   //status filter
   const [statusFilter, setStatusFilter] = useState("all");
   //request filter
@@ -95,6 +97,9 @@ const Blotters = () => {
 
         // filter
         setBlotterDetails(response.data);
+
+        const container = chatContainerRef.current;
+        container.scrollTop = container.scrollHeight;
       } catch (err) {
         console.log(err.message);
         setBlotterDetails([]);
@@ -836,6 +841,7 @@ const Blotters = () => {
         request={request}
         setRequest={setRequest}
         brgy={brgy}
+        chatContainerRef={chatContainerRef}
       />
       <ArchiveRequestsModal selectedItems={selectedItems} />
       <RequestsReportsModal />

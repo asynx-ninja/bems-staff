@@ -14,7 +14,7 @@ import ReplyLoader from "./loaders/ReplyLoader";
 import moment from "moment";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
+function ViewInquiriesModal({ inquiry, setInquiry, brgy, chatContainerRef }) {
   const information = GetBrgy(brgy);
   const [reply, setReply] = useState(false);
   const [upload, setUpload] = useState(false);
@@ -59,6 +59,11 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
     });
     setStatusChanger(false);
   };
+
+  useEffect(() => {
+    var container = document.getElementById("scrolltobottom");
+    container.scrollTop = container.scrollHeight;
+  });
 
   useEffect(() => {
     setFiles(inquiry.length === 0 ? [] : inquiry.compose.file);
@@ -308,7 +313,11 @@ function ViewInquiriesModal({ inquiry, setInquiry, brgy }) {
                 </h3>
               </div>
 
-              <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full pt-5 px-5 overflow-y-auto relative max-h-[470px]">
+              <div
+                id="scrolltobottom"
+                ref={chatContainerRef}
+                className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full pt-5 px-5 overflow-y-auto relative max-h-[470px]"
+              >
                 <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg mb-4">
                   Inquiry Details
                 </b>

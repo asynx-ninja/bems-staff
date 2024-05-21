@@ -2,7 +2,7 @@ import React from "react";
 import moment from "moment";
 import ReactPaginate from "react-paginate";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { BsPrinter } from "react-icons/bs";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { AiOutlineSend } from "react-icons/ai";
@@ -45,6 +45,8 @@ const Requests = () => {
 
   const [officials, setOfficials] = useState([]);
 
+  const chatContainerRef = useRef();
+
   useEffect(() => {
     const fetch = async () => {
       try {
@@ -83,7 +85,13 @@ const Requests = () => {
           setRequests(response.data.result);
           setPageCount(response.data.pageCount);
           setFilteredRequests(response.data.result);
-        } else setRequests([]);
+        } else{ 
+          setRequests([]); 
+        }
+
+        const container = chatContainerRef.current;
+        container.scrollTop = container.scrollHeight;
+
       } catch (err) {
       }
     };
@@ -841,6 +849,7 @@ const Requests = () => {
         request={request}
         setRequest={setRequest}
         brgy={brgy}
+        chatContainerRef={chatContainerRef}
       />
       <ArchiveRequestsModal selectedItems={selectedItems} />
       <RequestsReportsModal />

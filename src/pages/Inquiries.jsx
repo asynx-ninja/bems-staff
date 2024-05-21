@@ -6,7 +6,7 @@ import { FiEdit } from "react-icons/fi";
 import moment from "moment";
 import ArchiveModal from "../components/inquiries/ArchiveInquiryModal";
 import Status from "../components/inquiries/Status";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
 import API_LINK from "../config/API";
@@ -14,6 +14,7 @@ import { useSearchParams } from "react-router-dom";
 import ViewInquiriesModal from "../components/inquiries/ViewInquiriesModal";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+
 const Inquiries = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -25,6 +26,8 @@ const Inquiries = () => {
     response: [{ file: [] }],
   });
   const information = GetBrgy(brgy);
+  const chatContainerRef = useRef();
+
   //status filtering
   const [status, setStatus] = useState({});
   const [statusFilter, setStatusFilter] = useState("all");
@@ -75,15 +78,13 @@ const Inquiries = () => {
       } else {
         setInquiries([]);
       }
+
+      const container = chatContainerRef.current;
+      container.scrollTop = container.scrollHeight;
     };
 
     fetchInquiries();
 
-    const intervalId = setInterval(() => {
-      fetchInquiries();
-    }, 10000);
-
-    return () => clearInterval(intervalId);
   }, [id, brgy, statusFilter, currentPage]);
 
   const handlePageChange = ({ selected }) => {
@@ -682,6 +683,7 @@ const Inquiries = () => {
           inquiry={inquiry}
           setInquiry={setInquiry}
           brgy={brgy}
+          chatContainerRef={chatContainerRef}
         />
         <Status status={status} setStatus={setStatus} />
       </div>

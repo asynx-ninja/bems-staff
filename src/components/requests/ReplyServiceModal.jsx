@@ -14,7 +14,7 @@ import ReplyLoader from "./loaders/ReplyLoader";
 import moment from "moment";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function ReplyServiceModal({ request, setRequest, brgy }) {
+function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef }) {
   const information = GetBrgy(brgy);
   const [reply, setReply] = useState(false);
   const [statusChanger, setStatusChanger] = useState(false);
@@ -45,6 +45,11 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [specificEvent, setSpecificEvent] = useState(null);
+
+  useEffect(() => {
+    var container = document.getElementById("scrolltobottom");
+    container.scrollTop = container.scrollHeight;
+  });
 
   useEffect(() => {
     setFiles(request.length === 0 ? [] : request.file);
@@ -353,7 +358,11 @@ function ReplyServiceModal({ request, setRequest, brgy }) {
               </h3>
             </div>
 
-            <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
+            <div
+              id="scrolltobottom"
+              ref={chatContainerRef}
+              className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]"
+            >
               <div className="flex flex-col w-full">
                 <b className="border-solid border-0 w-full border-black/50 border-b-2 my-4 uppercase font-medium text-lg md:text-lg mb-4">
                   Conversation History

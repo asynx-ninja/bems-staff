@@ -2,7 +2,7 @@ import React from "react";
 import ReactPaginate from "react-paginate";
 import moment from "moment";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { AiOutlineSend } from "react-icons/ai";
 import { FaArchive } from "react-icons/fa";
@@ -27,6 +27,7 @@ const EventsRegistrations = () => {
   const [sortOrder, setSortOrder] = useState("desc");
   const [searchQuery, setSearchQuery] = useState("");
   const information = GetBrgy(brgy);
+  const chatContainerRef = useRef();
 
   //Status filter and pagination
   const [statusFilter, setStatusFilter] = useState("all");
@@ -93,7 +94,13 @@ const EventsRegistrations = () => {
           setApplications(response.data.result);
           setFilteredApplications(response.data.result.slice(0, 10));
           setPageCount(response.data.pageCount);
-        } else setApplications([]);
+        } else { 
+          setApplications([]); 
+        }
+
+        const container = chatContainerRef.current;
+        container.scrollTop = container.scrollHeight;
+
       } catch (err) {
         console.log(err);
       }
@@ -851,6 +858,7 @@ const EventsRegistrations = () => {
         application={application}
         setApplication={setApplication}
         brgy={brgy}
+        chatContainerRef={chatContainerRef}
       />
       <ArchiveRegistrationModal selectedItems={selectedItems} />
     </div>

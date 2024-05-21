@@ -16,7 +16,7 @@ import GetBrgy from "../GETBrgy/getbrgy";
 import { io } from "socket.io-client";
 const socket = io("http://localhost:8800");
 
-function ReplyRegistrationModal({ application, setApplication, brgy }) {
+function ReplyRegistrationModal({ application, setApplication, brgy, chatContainerRef, }) {
   const information = GetBrgy(brgy);
   const [reply, setReply] = useState(false);
   const [statusChanger, setStatusChanger] = useState(false);
@@ -61,6 +61,11 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
     });
     setStatusChanger(false);
   };
+
+  useEffect(() => {
+    var container = document.getElementById("scrolltobottom");
+    container.scrollTop = container.scrollHeight;
+  });
 
   useEffect(() => {
     setFiles(application.length === 0 ? [] : application.file);
@@ -259,7 +264,7 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
       );
 
       if (response.status === 200) {
-        console.log("success", response.data)
+        console.log("success", response.data);
         socket.emit("send-reply-event-appli", response.data);
 
         const notify = {
@@ -315,7 +320,6 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
         });
 
         if (result.status === 200) {
-         
           // setTimeout(() => {
           //   setSubmitClicked(false);
           //   setReplyingStatus("success");
@@ -361,7 +365,11 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
               </h3>
             </div>
 
-            <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
+            <div
+              id="scrolltobottom"
+              ref={chatContainerRef}
+              className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]"
+            >
               <div className="flex flex-col w-full">
                 <b className="border-solid border-0 w-full border-black/50 border-b-2 my-4 uppercase font-medium text-lg md:text-lg mb-4">
                   Conversation History
