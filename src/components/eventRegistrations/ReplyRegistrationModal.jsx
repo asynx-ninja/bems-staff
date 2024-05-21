@@ -283,6 +283,7 @@ function ReplyRegistrationModal({
         setNewMessage({ message: "" });
         setReplyingStatus(null);
         setReply(false);
+        setStatusChanger(false);
 
         const notify = {
           category: "One",
