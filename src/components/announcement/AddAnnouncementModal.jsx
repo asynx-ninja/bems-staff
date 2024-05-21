@@ -9,6 +9,8 @@ import AddLoader from "./loaders/AddLoader";
 import { MdError } from "react-icons/md";
 import ErrorPopup from "./popup/ErrorPopup";
 import GetBrgy from "../GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+const socket = io("http://localhost:8800");
 
 function CreateAnnouncementModal({ brgy }) {
   const [announcement, setAnnouncement] = useState({
@@ -102,9 +104,9 @@ function CreateAnnouncementModal({ brgy }) {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      setSubmitClicked(true);
+      // setSubmitClicked(true);
       setError(null); // Reset error state
-      setCreationStatus(null);
+      // setCreationStatus(null);
       setEmpty(false);
 
       const emptyFieldsArr = checkEmptyFieldsForAnnouncement();
@@ -143,6 +145,7 @@ function CreateAnnouncementModal({ brgy }) {
         );
 
         if (response.status === 200) {
+          socket.emit("send-get-event", response.data);
           let notify;
 
           if (announcement.isOpen) {
@@ -201,11 +204,11 @@ function CreateAnnouncementModal({ brgy }) {
 
           if (result.status === 200) {
             clearForm();
-            setSubmitClicked(false);
-            setCreationStatus("success");
-            setTimeout(() => {
-              window.location.reload();
-            }, 3000);
+            // setSubmitClicked(false);
+            // setCreationStatus("success");
+            // setTimeout(() => {
+            //   window.location.reload();
+            // }, 3000);
           }
         }
       }

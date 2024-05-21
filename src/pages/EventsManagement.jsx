@@ -19,6 +19,8 @@ import ManageAnnouncementModal from "../components/announcement/ManageAnnounceme
 import AddEventsForm from "../components/announcement/form/add_event/AddEventsForm";
 import EditEventsForm from "../components/announcement/form/edit_event/EditEventsForm";
 import noData from "../assets/image/no-data.png";
+import { io } from "socket.io-client";
+const socket = io("http://localhost:8800");
 
 const EventsManagement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -39,6 +41,26 @@ const EventsManagement = () => {
   const [filteredAnnouncements, setFilteredAnnouncements] = useState([]);
   const [selected, setSelected] = useState("date");
   const information = GetBrgy(brgy);
+
+  useEffect(() => {
+    const handleEvent = (get_events) => {
+      setAnnouncement(get_events)
+      setFilteredAnnouncements((prev) => [get_events, ...prev]);
+    };
+    // const handleEventForm = (get_events_forms) => {
+    //   setEventsForm(curItem => curItem.map((item) =>
+    //     item._id === get_events_forms._id ? get_events_forms : item
+    //   ))
+    // };
+
+    socket.on("receive-get-event", handleEvent);
+    // socket.on("receive-get_events_forms", handleEventForm);
+
+    return () => {
+      socket.off("receive-get-event", handleEvent);
+      // socket.off("receive-get_events_forms", handleEventForm);
+    };
+  }, [socket, setAnnouncement]);
 
   useEffect(() => {
     const fetchData = async () => {

@@ -14,6 +14,8 @@ import API_LINK from "../config/API";
 import axios from "axios";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+const socket = io("http://localhost:8800");
 
 const EventsRegistrations = () => {
   const [applications, setApplications] = useState([]);
@@ -66,6 +68,21 @@ const EventsRegistrations = () => {
     setSelectedEventType(selectedType);
   };
 
+  useEffect(() => {
+    const handleEventAppli = (event_appli) => {
+      setApplication(event_appli)
+      setFilteredApplications(curItem => curItem.map((item) =>
+        item._id === event_appli._id ? event_appli : item
+      ))
+    };
+
+    socket.on("receive-reply-event-appli", handleEventAppli);
+
+    return () => {
+      socket.off("receive-reply-event-appli", handleEventAppli);
+    };
+  }, [socket, setApplication]);
+  
   useEffect(() => {
     const fetch = async () => {
       try {

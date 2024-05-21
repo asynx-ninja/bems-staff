@@ -26,6 +26,7 @@ import SAN_ISIDRO from "../assets/officials/SAN_ISIDRO.png";
 import SAN_JOSE from "../assets/officials/SAN_JOSE.png";
 import SAN_RAFAEL from "../assets/officials/SAN_RAFAEL.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+
 const Officials = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [officials, setOfficials] = useState([]);

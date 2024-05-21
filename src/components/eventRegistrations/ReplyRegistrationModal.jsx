@@ -13,6 +13,8 @@ import EditDropbox from "./EditDropbox";
 import { useSearchParams } from "react-router-dom";
 import ReplyLoader from "./loaders/ReplyLoader";
 import GetBrgy from "../GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+const socket = io("http://localhost:8800");
 
 function ReplyRegistrationModal({ application, setApplication, brgy }) {
   const information = GetBrgy(brgy);
@@ -234,7 +236,6 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
   const handleOnSend = async (e) => {
     try {
       e.preventDefault();
-      setSubmitClicked(true);
 
       const obj = {
         sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
@@ -258,6 +259,9 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
       );
 
       if (response.status === 200) {
+        console.log("success", response.data)
+        socket.emit("send-reply-event-appli", response.data);
+
         const notify = {
           category: "One",
           compose: {
@@ -311,13 +315,14 @@ function ReplyRegistrationModal({ application, setApplication, brgy }) {
         });
 
         if (result.status === 200) {
-          setTimeout(() => {
-            setSubmitClicked(false);
-            setReplyingStatus("success");
-            setTimeout(() => {
-              window.location.reload();
-            }, 3000);
-          }, 1000);
+         
+          // setTimeout(() => {
+          //   setSubmitClicked(false);
+          //   setReplyingStatus("success");
+          //   setTimeout(() => {
+          //     window.location.reload();
+          //   }, 3000);
+          // }, 1000);
         }
       }
 
