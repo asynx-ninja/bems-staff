@@ -7,6 +7,8 @@ import { CiImageOn } from "react-icons/ci";
 import AddLoader from "./loaders/AddLoader";
 import ErrorPopup from "./popup/ErrorPopup";
 import GetBrgy from "../GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+const socket = io("http://localhost:8800");
 
 function CreateServiceModal({ brgy }) {
   const information = GetBrgy(brgy);
@@ -89,7 +91,7 @@ function CreateServiceModal({ brgy }) {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      setSubmitClicked(true);
+      // setSubmitClicked(true);
       const emptyFieldsArr = checkEmptyFieldsForService();
 
       if (emptyFieldsArr.length > 0) {
@@ -131,6 +133,7 @@ function CreateServiceModal({ brgy }) {
      
 
         if (response.status === 200) {
+          socket.emit("send-get-service", response.data);
           // var logoSrc = document.getElementById("logo");
           // logoSrc.src =
           //   "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
@@ -182,9 +185,9 @@ function CreateServiceModal({ brgy }) {
             setFiles([]);
             setSubmitClicked(false);
             setCreationStatus("success");
-            setTimeout(() => {
-              window.location.reload();
-            }, 3000);
+            // setTimeout(() => {
+            //   window.location.reload();
+            // }, 3000);
           }
         }
       }
