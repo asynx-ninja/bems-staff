@@ -5,7 +5,7 @@ import StatusLoader from "./loaders/StatusLoader";
 import { useState } from "react";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function StatusResident({ user, setUser, brgy, status, setStatus }) {
+function StatusResident({ user, setUser, brgy, status, setStatus, socket }) {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
@@ -21,8 +21,6 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
     name: "resident_logo.png",
     id: "1SM_QPFb_NmyMTLdsjtEd-2M6ersJhBUc",
   });
-
-
 
   const getType = (type) => {
     switch (type) {
@@ -65,7 +63,6 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
             logo: logo,
           };
 
-
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {
               "Content-Type": "application/json",
@@ -73,11 +70,17 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
           });
 
           if (result.status === 200) {
+            socket.emit("send-update-status-resident", response.data);
+
             setTimeout(() => {
               setSubmitClicked(false);
               setUpdatingStatus("success");
               setTimeout(() => {
-                window.location.reload();
+                setSubmitClicked(null);
+                setUpdatingStatus(null);
+                HSOverlay.close(
+                  document.getElementById("hs-modal-statusResident")
+                );
               }, 3000);
             }, 1000);
           }
@@ -100,7 +103,6 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
             logo: logo,
           };
 
-
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {
               "Content-Type": "application/json",
@@ -108,21 +110,27 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
           });
 
           if (result.status === 200) {
+            socket.emit("send-update-status-resident", response.data);
             setTimeout(() => {
-              setSubmitClicked(false);
-              setUpdatingStatus("success");
+              setSubmitClicked(null);
+              setUpdatingStatus(null);
               setTimeout(() => {
-                window.location.reload();
+                HSOverlay.close(
+                  document.getElementById("hs-modal-statusResident")
+                );
               }, 3000);
             }, 1000);
           }
         } else {
           // Status is not "Registered", proceed without sending notification
+          socket.emit("send-update-status-resident", response.data);
           setTimeout(() => {
-            setSubmitClicked(false);
-            setUpdatingStatus("success");
+            setSubmitClicked(null);
+            setUpdatingStatus(null);
             setTimeout(() => {
-              window.location.reload();
+              HSOverlay.close(
+                document.getElementById("hs-modal-statusResident")
+              );
             }, 3000);
           }, 1000);
         }
@@ -192,7 +200,6 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
                           <option value="Registered">REGISTERED</option>
                           <option value="Pending">PENDING</option>
                           <option value="Denied">DENIED</option>
-                          
                         </select>
                       </div>
                     </div>

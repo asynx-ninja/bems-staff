@@ -8,7 +8,7 @@ import AddLoader from "./loaders/AddLoader";
 import ErrorPopup from "./popup/ErrorPopup";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function AddStaffModal({ brgy }) {
+function AddStaffModal({ brgy, socket }) {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
@@ -128,8 +128,12 @@ function AddStaffModal({ brgy }) {
               });
               setSubmitClicked(false);
               setCreationStatus("success");
+
+              socket.emit("send-create-staff", response.data);
               setTimeout(() => {
-                window.location.reload();
+                setSubmitClicked(null);
+                setCreationStatus(null);
+                HSOverlay.close(document.getElementById("hs-modal-addStaff"));
               }, 3000);
             }
           } catch (err) {

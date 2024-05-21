@@ -9,10 +9,10 @@ import AddLoader from "./loaders/AddLoader";
 import { MdError } from "react-icons/md";
 import ErrorPopup from "./popup/ErrorPopup";
 import GetBrgy from "../GETBrgy/getbrgy";
-import { io } from "socket.io-client";
-const socket = io("http://localhost:8800");
+// import { io } from "socket.io-client";
+// const socket = io("http://localhost:8800");
 
-function CreateAnnouncementModal({ brgy }) {
+function CreateAnnouncementModal({ brgy, socket }) {
   const [announcement, setAnnouncement] = useState({
     title: "",
     details: "",

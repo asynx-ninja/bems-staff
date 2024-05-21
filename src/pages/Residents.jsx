@@ -38,6 +38,11 @@ const Residents = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const information = GetBrgy(brgy);
+  const [update, setUpdate] = useState(false);
+  const [editupdate, setEditUpdate] = useState(false);
+  const [eventsForm, setEventsForm] = useState([]);
+
+
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
     setSortOrder(newSortOrder);
@@ -66,25 +71,17 @@ const Residents = () => {
   };
 
   useEffect(() => {
-    const handleResident = (get_users) => {
-      setUsers(get_users);
-      setFilteredResidents((prev) => [get_users, ...prev]);
+    const handleResident = (get_resident) => {
+      setUsers(get_resident)
+      setFilteredResidents(curItem => curItem.map((item) =>
+        item._id === get_resident._id ? get_resident : item
+      ))
     };
 
-    // const handleEventForm = (get_events_forms) => {
-    //   setEventsForm((curItem) =>
-    //     curItem.map((item) =>
-    //       item._id === get_events_forms._id ? get_events_forms : item
-    //     )
-    //   );
-    // };
-
-    socket.on("receive-create-resident", handleResident);
-    // socket.on("receive-create-event-form", handleEventForm);
+    socket.on("receive-update-status-resident", handleResident);
 
     return () => {
-      socket.off("receive-create-resident", handleResident);
-      // socket.off("receive-create-event-form", handleEventForm);
+      socket.off("receive-update-status-resident", handleResident);
     };
   }, [socket, setUsers]);
 
@@ -116,16 +113,16 @@ const Residents = () => {
     setStatusFilter(selectedStatus);
   };
 
-  const Users = users.filter((item) => {
-    const fullName =
-      `${item.lastName} ${item.firstName} ${item.middleName}`.toLowerCase();
-    const userIdMatches = item.user_id
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const nameMatches = fullName.includes(searchQuery.toLowerCase());
+  // const Users = users.filter((item) => {
+  //   const fullName =
+  //     `${item.lastName} ${item.firstName} ${item.middleName}`.toLowerCase();
+  //   const userIdMatches = item.user_id
+  //     .toLowerCase()
+  //     .includes(searchQuery.toLowerCase());
+  //   const nameMatches = fullName.includes(searchQuery.toLowerCase());
 
-    return userIdMatches || nameMatches;
-  });
+  //   return userIdMatches || nameMatches;
+  // });
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -651,6 +648,7 @@ const Residents = () => {
           brgy={brgy}
           status={status}
           setStatus={setStatus}
+          socket={socket}
         />
         <MessageResidentModal user={user} setUser={setUser} brgy={brgy} />
         <ManageResidentModal user={user} setUser={setUser} brgy={brgy} />

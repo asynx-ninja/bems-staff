@@ -54,7 +54,11 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
   
       setUpdatingStatus("success");
       setTimeout(() => {
-        window.location.reload();
+        setUpdatingStatus(null);
+        handleResetModal();
+        HSOverlay.close(
+          document.getElementById("hs-modal-messageResident")
+        );
       }, 3000);
       document.getElementById("message").value = "";
     } catch (err) {

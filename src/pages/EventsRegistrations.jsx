@@ -19,6 +19,7 @@ import { io } from "socket.io-client";
 import Socket_link from "../config/Socket";
 
 const socket = io(Socket_link);
+
 const EventsRegistrations = () => {
   const [applications, setApplications] = useState([]);
   const [application, setApplication] = useState({ response: [{ file: [] }] });

@@ -45,7 +45,14 @@ const initialState = {
   },
 };
 
-const AddEventsForm = ({ announcement_id, brgy, socket, setUpdate, editupdate, setEditUpdate }) => {
+const AddEventsForm = ({
+  announcement_id,
+  brgy,
+  socket,
+  setUpdate,
+  editupdate,
+  setEditUpdate,
+}) => {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
@@ -183,6 +190,8 @@ const AddEventsForm = ({ announcement_id, brgy, socket, setUpdate, editupdate, s
           setSubmitClicked(false);
           setCreationStatus("success");
           setTimeout(() => {
+            setCreationStatus(null);
+            handleResetModal();
             HSOverlay.close(
               document.getElementById("hs-create-eventsForm-modal")
             );
@@ -205,13 +214,14 @@ const AddEventsForm = ({ announcement_id, brgy, socket, setUpdate, editupdate, s
         setSubmitClicked(false);
         setCreationStatus("success");
         setTimeout(() => {
+          setCreationStatus(null);
+          handleResetModal();
           HSOverlay.close(
             document.getElementById("hs-create-eventsForm-modal")
           );
         }, 3000);
       }
       setUpdate(true);
-
     } catch (err) {
       console.error(err.message);
       setSubmitClicked(false);

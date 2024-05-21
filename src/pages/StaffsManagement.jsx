@@ -18,6 +18,11 @@ import ManageStaffModal from "../components/staff/ManageStaffModal";
 import ArchiveStaffModal from "../components/staff/ArchiveStaffModal";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+
+const socket = io(Socket_link);
+
 const StaffManagement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [users, setUsers] = useState([]);
@@ -43,12 +48,25 @@ const StaffManagement = () => {
       if (response.status === 200) {
         setUsers(response.data.result);
         setPageCount(response.data.pageCount);
-        setfilterUsers(response.data.result.slice(0, 10))
+        setfilterUsers(response.data.result.slice(0, 10));
       } else setUsers([]);
     };
 
     fetch();
   }, [currentPage, positionFilter]);
+
+  useEffect(() => {
+    const handleStaff = (get_staff) => {
+      setUsers(get_staff);
+      setfilterUsers((prev) => [get_staff, ...prev]);
+    };
+
+    socket.on("receive-create-staff", handleStaff);
+
+    return () => {
+      socket.off("receive-create-staff", handleStaff);
+    };
+  }, [socket, setUsers]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -300,9 +318,17 @@ const StaffManagement = () => {
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
                     const filteredData = users.filter((item) => {
-                      const fullName = `${item.lastName || ''} ${item.firstName || ''} ${item.middleName || ''}`.toLowerCase();
-                      const userIdMatches = item.user_id ? item.user_id.toLowerCase().includes(e.target.value.toLowerCase()) : false;
-                      const nameMatches = fullName.includes(e.target.value.toLowerCase());
+                      const fullName = `${item.lastName || ""} ${
+                        item.firstName || ""
+                      } ${item.middleName || ""}`.toLowerCase();
+                      const userIdMatches = item.user_id
+                        ? item.user_id
+                            .toLowerCase()
+                            .includes(e.target.value.toLowerCase())
+                        : false;
+                      const nameMatches = fullName.includes(
+                        e.target.value.toLowerCase()
+                      );
                       return userIdMatches || nameMatches;
                     });
                     setfilterUsers(filteredData.slice(0, 10)); // Show first page of filtered results
@@ -493,7 +519,7 @@ const StaffManagement = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <AddStaffModal brgy={brgy} />
+      <AddStaffModal brgy={brgy} socket={socket}/>
       <ArchiveStaffModal selectedItems={selectedItems} />
       <GenerateReportsModal />
       <ManageStaffModal user={user} setUser={setUser} brgy={brgy} />
