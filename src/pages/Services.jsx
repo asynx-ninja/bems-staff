@@ -79,7 +79,7 @@ const Services = () => {
       setFilteredServices((prev) => [get_service, ...prev]);
     };
 
-    const handleServiceForm = (get_events_forms) => {
+    const handleServiceForm = (get_service_forms) => {
       setServiceForm((curItem) =>
         curItem.map((item) =>
           item._id === get_service_forms._id ? get_service_forms : item
