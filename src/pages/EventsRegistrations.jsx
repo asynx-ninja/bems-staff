@@ -73,19 +73,24 @@ const EventsRegistrations = () => {
 
   useEffect(() => {
     const handleEventAppli = (event_appli) => {
+      setFilteredApplications(prev => [event_appli, ...prev])
+    };
+    const handleEventReplyAppli = (event_appli) => {
       setApplication(event_appli)
       setFilteredApplications(curItem => curItem.map((item) =>
         item._id === event_appli._id ? event_appli : item
       ))
     };
 
-    socket.on("receive-reply-event-appli", handleEventAppli);
-
+    socket.on("receive-reply-event-appli", handleEventReplyAppli);
+    socket.on("receive-event-appli", handleEventAppli);
+    
     return () => {
       socket.off("receive-reply-event-appli", handleEventAppli);
+      socket.off("receive-event-appli", handleEventAppli);
     };
   }, [socket, setApplication]);
-  
+
   useEffect(() => {
     const fetch = async () => {
       try {
@@ -96,8 +101,8 @@ const EventsRegistrations = () => {
           setApplications(response.data.result);
           setFilteredApplications(response.data.result.slice(0, 10));
           setPageCount(response.data.pageCount);
-        } else { 
-          setApplications([]); 
+        } else {
+          setApplications([]);
         }
 
         const container = chatContainerRef.current;
@@ -608,20 +613,20 @@ const EventsRegistrations = () => {
                     setSearchQuery(e.target.value);
                     const filteredData = applications.filter((item) =>
                       item.event_name
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()) ||
-                        item.application_id
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()) ||
-                        item.form[0].firstName.value
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()) ||
-                        item.form[0].lastName.value
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()) ||
-                        item.form[0].middleName.value
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase())
+                        .toLowerCase()
+                        .includes(e.target.value.toLowerCase()) ||
+                      item.application_id
+                        .toLowerCase()
+                        .includes(e.target.value.toLowerCase()) ||
+                      item.form[0].firstName.value
+                        .toLowerCase()
+                        .includes(e.target.value.toLowerCase()) ||
+                      item.form[0].lastName.value
+                        .toLowerCase()
+                        .includes(e.target.value.toLowerCase()) ||
+                      item.form[0].middleName.value
+                        .toLowerCase()
+                        .includes(e.target.value.toLowerCase())
                     );
                     setFilteredApplications(filteredData.slice(0, 10)); // Show first page of filtered results
                     setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results

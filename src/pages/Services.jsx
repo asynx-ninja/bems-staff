@@ -43,6 +43,7 @@ const Services = () => {
   const [pageCount, setPageCount] = useState(0);
   const [officials, setOfficials] = useState([]);
   const [serviceForm, setServiceForm] = useState([]);
+  const [documentForm, setDocumentForm] = useState([]);
   const [update, setUpdate] = useState(false);
   const [editupdate, setEditUpdate] = useState(false);
   const information = GetBrgy(brgy);
@@ -74,27 +75,44 @@ const Services = () => {
   };
 
   useEffect(() => {
-    const handleService = (get_service) => {
-      setServices(get_service);
-      setFilteredServices((prev) => [get_service, ...prev]);
+    const handleService = (obj) => {
+      // setAnnouncement((prevApplication) => ({
+      //   ...prevApplication
+      // }));
+      console.log("wew", filteredServices);
+      console.log("wew", obj);
+      setServices(obj);
+      setFilteredServices((prev) => [obj, ...prev]);
     };
 
-    const handleServiceForm = (get_service_forms) => {
+    const handleServiceForm = (obj) => {
       setServiceForm((curItem) =>
-        curItem.map((item) =>
-          item._id === get_service_forms._id ? get_service_forms : item
-        )
+        curItem.map((item) => (item._id === obj._id ? obj : item))
+      );
+    };
+    const handleServiceDocumentForm = (obj) => {
+      setDocumentForm((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item))
+      );
+    };
+    const handleServiceUpdate = (obj) => {
+      setFilteredServices((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item))
       );
     };
 
     socket.on("receive-get-service", handleService);
     socket.on("receive-create-service-form", handleServiceForm);
-
+    socket.on("receive-updated-service", handleServiceUpdate);
+    socket.on("receive-document-form", handleServiceDocumentForm);
     return () => {
       socket.off("receive-get-service", handleService);
-      socket.off("receive-create-service-form", handleService);
+      socket.off("receive-create-service-form", handleServiceForm);
+      socket.off("receive-updated-service", handleServiceUpdate);
+      socket.off("receive-document-form", handleServiceDocumentForm);
     };
   }, [socket, setServices]);
+
 
 
   useEffect(() => {
@@ -673,17 +691,20 @@ const Services = () => {
         socket={socket}
       />
       <GenerateReportsModal />
-      <AddServicesForm service_id={service.service_id} brgy={brgy} socket={socket}  setUpdate={setUpdate} editupdate={editupdate} setEditUpdate={setEditUpdate}/>
-      <EditServicesForm service_id={service.service_id} brgy={brgy} socket={socket}  editupdate={editupdate} setEditUpdate={setEditUpdate} serviceForm={serviceForm} setServiceForm={setServiceForm}/>
+      <AddServicesForm service_id={service.service_id} brgy={brgy} socket={socket} setUpdate={setUpdate} editupdate={editupdate} setEditUpdate={setEditUpdate} />
+      <EditServicesForm service_id={service.service_id} brgy={brgy} socket={socket} editupdate={editupdate} setEditUpdate={setEditUpdate} serviceForm={serviceForm} setServiceForm={setServiceForm} />
       <AddServicesDocument
         service_id={service.service_id}
         brgy={brgy}
         officials={officials}
+        socket={socket}
       />
       <EditServicesDocument
         service_id={service.service_id}
         brgy={brgy}
         officials={officials}
+        documentForm={documentForm}
+        setDocumentForm={setDocumentForm}
       />
     </div>
   );

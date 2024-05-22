@@ -7,7 +7,7 @@ import API_LINK from "../../config/API";
 import EditLoader from "./loaders/EditLoader";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function ManageServiceModal({ service, setService, brgy }) {
+function ManageServiceModal({ service, setService, brgy, socket }) {
   const information = GetBrgy(brgy);
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
@@ -17,6 +17,7 @@ function ManageServiceModal({ service, setService, brgy }) {
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [onSend, setOnSend] = useState(false);
 
   const handleOnEdit = () => {
     setEdit(!edit);
@@ -88,8 +89,7 @@ function ManageServiceModal({ service, setService, brgy }) {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      setSubmitClicked(true);
-      setError(null); // Reset error state
+     setSubmitClicked(true);
 
       var formData = new FormData();
 
@@ -116,7 +116,7 @@ function ManageServiceModal({ service, setService, brgy }) {
         }
 
       formData.append("service", JSON.stringify(service));
-
+      setOnSend(true);
       const res_folder = await axios.get(
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
@@ -164,14 +164,20 @@ function ManageServiceModal({ service, setService, brgy }) {
             },
           });
 
-  
-
           if (result.status === 200) {
+            setEdit(!edit);
+            socket.emit("send-updated-service", response.data);       
+            console.log("ito", response.data)
+            setSubmitClicked(false);
+            setUpdatingStatus("success");
             setTimeout(() => {
               setSubmitClicked(false);
               setUpdatingStatus("success");
               setTimeout(() => {
-                window.location.reload();
+                setUpdatingStatus(null);
+                HSOverlay.close(
+                  document.getElementById("hs-modal-editServices")
+                );
               }, 3000);
             }, 1000);
           }

@@ -53,16 +53,19 @@ const Requests = () => {
 
   useEffect(() => {
     const handleServiceReq = (service_req) => {
+      setFilteredRequests(prev => [service_req, ...prev])
+    };
+    const handleServiceReqReply = (service_req) => {
       setRequest(service_req)
       setFilteredRequests(curItem => curItem.map((item) =>
         item._id === service_req._id ? service_req : item
       ))
     };
-
-    socket.on("receive-reply-service-req", handleServiceReq);
-
+    socket.on("receive-reply-service-req", handleServiceReqReply);
+    socket.on("receive-service-req", handleServiceReq);
     return () => {
-      socket.off("receive-reply-service-req", handleServiceReq);
+      socket.off("receive-reply-service-req", handleServiceReqReply);
+      socket.off("receive-service-req", handleServiceReq);
     };
   }, [socket, setRequest]);
 
