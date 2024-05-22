@@ -128,10 +128,10 @@ const Blotters = () => {
       );
     };
 
-    socket.on("receive-reply-patawag", handlePatawag);
+    socket.on("receive-patawag", handlePatawag);
 
     return () => {
-      socket.off("receive-reply-patawag", handlePatawag);
+      socket.off("receive-patawag", handlePatawag);
     };
   }, [socket, setRequest]);
 
@@ -877,8 +877,6 @@ const Blotters = () => {
         brgy={brgy}
         socket={socket}
         setUpdate={setUpdate}
-        editupdate={editupdate}
-        setEditUpdate={setEditUpdate}
       />
       <EditBlotterDocument
         request={request}
