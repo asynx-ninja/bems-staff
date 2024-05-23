@@ -92,21 +92,22 @@ const EditServicesDocument = ({ service_id, brgy, officials, documentForm, setDo
       );
       if (response.status === 200) {
         socket.emit("send-edit-service-form", response.data);
+        setSubmitClicked(false);
+        setUpdatingStatus("success");
+        setTimeout(() => {
+          setUpdatingStatus(null);
+          
           HSOverlay.close(
             modal.current
           );
+        }, 3000);
       }
-      // setTimeout(() => {
-      //   setSubmitClicked(false);
-      //   setUpdatingStatus("success");
-      //   // setTimeout(() => {
-      //   //   window.location.reload();
-      //   // }, 3000);
-      // }, 1000);
+
     } catch (err) {
       // setSubmitClicked(false);
       setUpdatingStatus("error");
       setError(err.message);
+      setSubmitClicked(false);
     }
   };
 
@@ -130,7 +131,7 @@ const EditServicesDocument = ({ service_id, brgy, officials, documentForm, setDo
   return (
     <div>
       <div
-      ref={modal}
+        ref={modal}
         id="hs-edit-serviceDocument-modal"
         className="hs-overlay hidden fixed top-0 left-0 z-[80] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
       >

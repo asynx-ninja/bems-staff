@@ -5,13 +5,14 @@ import AddSectionDocument from "./AddSectionDocument";
 import AddFormLoader from "../../loaders/AddFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 import API_LINK from "../../../../config/API";
+import { useRef } from "react";
 
 const AddServicesDocument = ({ service_id, brgy, officials, socket, setUpdate }) => {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
-
+  const modal = useRef()
   const handleChange = (e) => {
     setDocument((prev) => ({
       ...prev,
@@ -63,8 +64,8 @@ const AddServicesDocument = ({ service_id, brgy, officials, socket, setUpdate })
 
   const handleSubmit = async (e) => {
     try {
-      setSubmitClicked(true);
-      setError(null); // Reset error state
+      // setSubmitClicked(true);
+      // setError(null); // Reset error state
 
       const response = await axios.post(
         `${API_LINK}/document/?brgy=${brgy}&form_id=${document.form_id}&checked=${checked}`,
@@ -93,7 +94,7 @@ const AddServicesDocument = ({ service_id, brgy, officials, socket, setUpdate })
         setCreationStatus(null);
         handleResetModal();
         HSOverlay.close(
-          document.getElementById("hs-create-serviceDocument-modal")
+          modal.current
         );
       }, 3000);
       setUpdate(true);
@@ -108,6 +109,7 @@ const AddServicesDocument = ({ service_id, brgy, officials, socket, setUpdate })
   return (
     <div>
       <div
+       ref={modal}
         id="hs-create-serviceDocument-modal"
         className="hs-overlay hidden fixed top-0 left-0 z-[80] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center "
       >

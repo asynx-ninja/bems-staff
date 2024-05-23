@@ -47,12 +47,12 @@ const Information = () => {
     };
   }, []);
 
-   useEffect(() => {
+  useEffect(() => {
     const handleInfo = (obj) => {
       setInformation((prev) => ({ ...prev, ...obj }));
     };
 
-    socket.on("receive-update-brgy-info",handleInfo);
+    socket.on("receive-update-brgy-info", handleInfo);
     return () => {
       socket.off("receive-update-brgy-info", handleInfo);
     };
@@ -87,40 +87,45 @@ const Information = () => {
 
   const handleSaveChanges = async (e) => {
     e.preventDefault();
-    // setSubmitClicked(true);
+    setUpdatingStatus("success");
 
     try {
-      const formData = new FormData();
-      if (logo) formData.append("files", logo);
-      if (banner) formData.append("files", banner);
+        const formData = new FormData();
+        if (logo) formData.append("files", logo);
+        if (banner) formData.append("files", banner);
 
-      formData.append("brgyinfo", JSON.stringify(information));
+        formData.append("brgyinfo", JSON.stringify(information));
 
-      const res_folder = await axios.get(
-        `${API_LINK}/folder/specific/?brgy=${brgy}`
-      );
-
-
-      if (res_folder.status === 200) {
-        const result = await axios.patch(
-          `${API_LINK}/brgyinfo/${brgy}`,
-          formData
+        const res_folder = await axios.get(
+            `${API_LINK}/folder/specific/?brgy=${brgy}`
         );
-        socket.emit("send-update-brgy-info", result.data);
-        // setTimeout(() => {
-        //   setSubmitClicked(false);
-        //   setUpdatingStatus("success");
-         
-        // },);
-        // setBrgyInformation({});
-      }
+
+        if (res_folder.status === 200) {
+            const result = await axios.patch(
+                `${API_LINK}/brgyinfo/${brgy}`,
+                formData
+            );
+            socket.emit("send-update-brgy-info", result.data);
+            
+            // Hide the loader first
+            setSubmitClicked(false);
+
+            // After a short delay, update the status and editing mode
+            setTimeout(() => {
+              setUpdatingStatus(null);
+                setisEditingMode(false);
+            }, 1000); // 500ms delay before showing the edit button again
+            
+            setBrgyInformation({});
+        }
     } catch (error) {
-      console.error(error);
-      // setSubmitClicked(false);
-      setUpdatingStatus(null);
-      setError("An error occurred while creating the announcement.");
+        console.error(error);
+        setSubmitClicked(false);
+        setUpdatingStatus(null);
+        setError("An error occurred while creating the announcement.");
     }
-  };
+};
+
 
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
