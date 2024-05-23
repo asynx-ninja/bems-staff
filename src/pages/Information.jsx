@@ -91,41 +91,39 @@ const Information = () => {
     setUpdatingStatus("success");
 
     try {
+      const response = await axios.get(
+        `${API_LINK}/folder/specific/?brgy=${brgy}`
+      );
+
+      if (response.status === 200) {
         const formData = new FormData();
         if (logo) formData.append("files", logo);
         if (banner) formData.append("files", banner);
 
         formData.append("brgyinfo", JSON.stringify(information));
 
-        const res_folder = await axios.get(
-            `${API_LINK}/folder/specific/?brgy=${brgy}`
+        const result = await axios.patch(
+          `${API_LINK}/brgyinfo/${brgy}/?folder_id=${response.data[0].info}`,
+          formData
         );
-
-        if (res_folder.status === 200) {
-            const result = await axios.patch(
-                `${API_LINK}/brgyinfo/${brgy}`,
-                formData
-            );
-            socket.emit("send-update-brgy-info", result.data);
-            
-            // Hide the loader first
-            setSubmitClicked(false);
-
-            // After a short delay, update the status and editing mode
-            setTimeout(() => {
-              setUpdatingStatus(null);
-                setisEditingMode(false);
-            }, 1000); // 500ms delay before showing the edit button again
-            
-            setBrgyInformation({});
-        }
-    } catch (error) {
-        console.error(error);
+        socket.emit("send-update-brgy-info", result.data);
+        setBrgyInformation({});
         setSubmitClicked(false);
-        setUpdatingStatus(null);
-        setError("An error occurred while creating the announcement.");
+        setTimeout(() => {
+          setUpdatingStatus(null);
+          setisEditingMode(false);
+        }, 1000);
+      } else {
+        console.error("No Data Found");
+      }
     }
-};
+    catch (error) {
+      console.error(error);
+      setSubmitClicked(false);
+      setUpdatingStatus(null);
+      setError("An error occurred while creating the announcement.");
+    }
+  };
 
 
   const handleLogoChange = (e) => {

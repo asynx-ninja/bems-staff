@@ -75,14 +75,11 @@ const Services = () => {
   };
 
   useEffect(() => {
+
+
     const handleService = (obj) => {
-      // setAnnouncement((prevApplication) => ({
-      //   ...prevApplication
-      // }));
-      console.log("wew", filteredServices);
-      console.log("wew", obj);
-      setServices(obj);
-      setFilteredServices((prev) => [obj, ...prev]);
+     setServices(obj => Array.isArray(obj) ? obj : obj);
+      setFilteredServices(prev => [obj, ...prev]);
     };
 
     const handleServiceForm = (obj) => {
@@ -132,6 +129,10 @@ const Services = () => {
   }, [brgy, statusFilter, serviceFilter]);
 
   useEffect(() => {
+    if (!Array.isArray(services)) {
+      console.error('Officials is not an array', officials);
+      return;
+    }
     const filteredData = services.filter((item) =>
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.service_id.toLowerCase().includes(searchQuery.toLowerCase())

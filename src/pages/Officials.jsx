@@ -139,14 +139,16 @@ const Officials = () => {
 
   useEffect(() => {
     const handleOfficial = (get_official) => {
-      setOfficials(get_official);
-      setfilterOfficials((prev) => [get_official, ...prev]);
+      setOfficials(prevOfficials => Array.isArray(get_official) ? get_official : prevOfficials);
+      setfilterOfficials(prev => [get_official, ...prev]);
     };
 
     const handleOfficialUpdate = (get_updated_official) => {
-      setOfficials(get_updated_official);
-      setfilterOfficials((curItem) =>
-        curItem.map((item) =>
+      setOfficials(prevOfficials => prevOfficials.map(item =>
+        item._id === get_updated_official._id ? get_updated_official : item
+      ));
+      setfilterOfficials(curItem =>
+        curItem.map(item =>
           item._id === get_updated_official._id ? get_updated_official : item
         )
       );
@@ -160,6 +162,7 @@ const Officials = () => {
       socket.off("receive-update-official", handleOfficialUpdate);
     };
   }, [socket, setOfficials]);
+
 
   useEffect(() => {
     document.title = "Barangay Officials | Barangay E-Services Management";
@@ -198,6 +201,11 @@ const Officials = () => {
   };
 
   useEffect(() => {
+    if (!Array.isArray(officials)) {
+      console.error('Officials is not an array', officials);
+      return;
+    }
+
     const filteredData = officials.filter((item) => {
       const fullName = item.lastName.toLowerCase() +
         ", " +

@@ -92,6 +92,7 @@ function CreateServiceModal({ brgy }) {
     try {
       e.preventDefault();
       setError(null); // Reset error state
+      setCreationStatus("success");
       // setSubmitClicked(true);
       const emptyFieldsArr = checkEmptyFieldsForService();
 
@@ -181,21 +182,22 @@ function CreateServiceModal({ brgy }) {
 
 
           if (result.status === 200) {
+            handleResetModal();
             setLogo();
             setBanner();
             setFiles([]);
             setSubmitClicked(false);
-            setCreationStatus("success");
-            // setTimeout(() => {
-            //   window.location.reload();
-            // }, 3000);
+            setCreationStatus(null);
+            setTimeout(() => {
+              setSubmitClicked(null);
+              HSOverlay.close(document.getElementById("hs-create-service-modal"));
+            }, 3000);
           }
         }
       }
     } catch (err) {
       console.log(err);
       setSubmitClicked(false);
-      setCreationStatus("error");
       setError("An error occurred while creating the service.");
     }
   };

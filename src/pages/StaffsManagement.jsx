@@ -60,8 +60,8 @@ const StaffManagement = () => {
 
   useEffect(() => {
     const handleStaff = (get_staff) => {
-      setUsers(get_staff);
-      setfilterUsers((prev) => [get_staff, ...prev]);
+      setUsers(prevStaff => Array.isArray(get_staff) ? get_staff : prevStaff);
+      setfilterUsers(prev => [get_staff, ...prev]);
     };
 
     const handleStaffUpdate = (get_updated_staff) => {
@@ -83,6 +83,10 @@ const StaffManagement = () => {
   }, [socket, setUsers]);
 
   useEffect(() => {
+    if (!Array.isArray(users)) {
+      console.error('Officials is not an array', users);
+      return;
+    }
     const filteredData = users.filter((item) => {
       const fullName = item.lastName.toLowerCase() +
         ", " +
