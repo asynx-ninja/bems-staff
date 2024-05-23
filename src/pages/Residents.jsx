@@ -72,9 +72,13 @@ const Residents = () => {
   };
 
   useEffect(() => {
-    const handleResident = (get_resident) => {
-      setUsers(get_resident);
-      setFilteredResidents((prev) => [get_resident, ...prev]);
+    const handleResident = (obj) => {
+      setUsers(obj);
+      setFilteredResidents((curItem) =>
+        curItem.map((item) =>
+          item._id === obj._id ? obj : item
+        )
+      );
     };
 
 

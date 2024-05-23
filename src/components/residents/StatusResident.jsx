@@ -46,6 +46,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket }) {
       );
 
       if (response.status === 200) {
+        socket.emit("send-update-status-resident", response.data);
         // Check if the status is "Registered" before sending notification
         if (status.status === "Verified") {
           const notify = {
@@ -71,7 +72,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket }) {
           });
 
           if (result.status === 200) {
-            socket.emit("send-update-status-resident", response.data);
+           
             socket.emit("send-resident-notif", result.data);
 
             setTimeout(() => {
@@ -112,7 +113,6 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket }) {
           });
 
           if (result.status === 200) {
-            socket.emit("send-update-status-resident", response.data);
             setTimeout(() => {
               setSubmitClicked(null);
               setUpdatingStatus(null);
@@ -125,7 +125,6 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket }) {
           }
         } else {
           // Status is not "Registered", proceed without sending notification
-          socket.emit("send-update-status-resident", response.data);
           setTimeout(() => {
             setSubmitClicked(null);
             setUpdatingStatus(null);
