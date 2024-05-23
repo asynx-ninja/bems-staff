@@ -74,7 +74,7 @@ function AddStaffModal({ brgy, socket }) {
       } else {
         const calculatedAge = calculateAge(user.birthday);
 
-        if (calculatedAge < 17) {
+        if (calculatedAge <= 16) {
           // Set an error message if the age is less than 17
           setCreationStatus("ageError");
           setSubmitClicked(false);

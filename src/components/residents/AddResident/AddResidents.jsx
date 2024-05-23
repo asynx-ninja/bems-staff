@@ -244,6 +244,7 @@ const AddResidents = () => {
       e.preventDefault();
       setSubmitClicked(true);
       setError(null); // Reset error state
+      setCreationStatus(null);
 
       const emptyFieldsArr = checkEmptyFields();
 
@@ -254,6 +255,12 @@ const AddResidents = () => {
       } else {
         const calculatedAge = calculateAge(user.birthday);
 
+        if (calculatedAge < 16) {
+          // Set an error message if the age is less than 17
+          setCreationStatus("ageError");
+          setSubmitClicked(false);
+          return;
+        } else {
         const obj = {
           firstName: user.firstName,
           middleName: user.middleName,
@@ -391,6 +398,7 @@ const AddResidents = () => {
             }, 3000);
           }
         }
+      }
       }
     } catch (err) {
       console.log(err);
@@ -593,7 +601,7 @@ const AddResidents = () => {
                           CONTACT
                         </h1>
                         <input
-                          type="text"
+                          type="number"
                           id="contact"
                           name="contact"
                           onChange={handleChange}
