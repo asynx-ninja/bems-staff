@@ -80,7 +80,7 @@ const Blotters = () => {
           });
 
           setRequests(result);
-          setFilteredRequests(result);
+          setFilteredRequests(response.data.result.slice(0, 10));
         } else {
           setRequests([]);
           setFilteredRequests([]);

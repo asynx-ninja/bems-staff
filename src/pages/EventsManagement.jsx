@@ -48,10 +48,55 @@ const EventsManagement = () => {
   const information = GetBrgy(brgy);
 
   useEffect(() => {
-    const handleEvent = (get_events) => {
-      setAnnouncement(get_events);
-      setNewEvents((prev) => [get_events, ...prev]);
-      setFilteredAnnouncements((prev) => [get_events, ...prev]);
+    const fetchData = async () => {
+      try {
+        const announcementsResponse = await axios.get(
+          `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
+        );
+
+        if (announcementsResponse.status === 200) {
+          const announcementsData = announcementsResponse.data.result.map(
+            async (announcement) => {
+              const completedResponse = await axios.get(
+                `${API_LINK}/application/completed?brgy=${brgy}&event_id=${announcement.event_id}`
+              );
+
+              if (completedResponse.status === 200) {
+                const completedCount = completedResponse.data.completedCount;
+                return { ...announcement, completedCount };
+              }
+            }
+          );
+
+          setAnnouncements(announcementsResponse.data.result);
+
+          Promise.all(announcementsData).then((announcementsWithCounts) => {
+            setAnnouncementWithCounts(announcementsWithCounts);
+            setFilteredAnnouncements(announcementsWithCounts);
+            setNewEvents(announcementsWithCounts)
+          });
+
+          setPageCount(announcementsResponse.data.pageCount);
+          setUpdate(false);
+        } else {
+          setAnnouncementWithCounts([]);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+
+        console.error("Error response data:", error.response?.data);
+        console.error("Error response status:", error.response?.status);
+      }
+    };
+
+    fetchData();
+  }, [brgy, update]);
+
+  useEffect(() => {
+    const handleEvent = (obj) => {
+      setAnnouncement(obj);
+      setNewEvents((prev) => [obj, ...prev]);
+      setFilteredAnnouncements((prev) => [obj, ...prev]);
     };
 
     const handleEventForm = (get_events_forms) => {
@@ -81,51 +126,6 @@ const EventsManagement = () => {
       socket.off("receive-update-event", handleEventUpdate);
     };
   }, [socket, setAnnouncement]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const announcementsResponse = await axios.get(
-          `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
-        );
-
-        if (announcementsResponse.status === 200) {
-          const announcementsData = announcementsResponse.data.result.map(
-            async (announcement) => {
-              const completedResponse = await axios.get(
-                `${API_LINK}/application/completed?brgy=${brgy}&event_id=${announcement.event_id}`
-              );
-
-              if (completedResponse.status === 200) {
-                const completedCount = completedResponse.data.completedCount;
-                return { ...announcement, completedCount };
-              }
-            }
-          );
-
-          setAnnouncements(announcementsResponse.data.result);
-
-          Promise.all(announcementsData).then((announcementsWithCounts) => {
-            setAnnouncementWithCounts(announcementsWithCounts);
-            setFilteredAnnouncements(announcementsWithCounts);
-            setNewEvents(announcementWithCounts)
-          });
-
-          setPageCount(announcementsResponse.data.pageCount);
-          setUpdate(false);
-        } else {
-          setAnnouncementWithCounts([]);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-
-        console.error("Error response data:", error.response?.data);
-        console.error("Error response status:", error.response?.status);
-      }
-    };
-
-    fetchData();
-  }, [brgy, update]);
 
   useEffect(() => {
     const filteredData = newEvents.filter((item) =>
