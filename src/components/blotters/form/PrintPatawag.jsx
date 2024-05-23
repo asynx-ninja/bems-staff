@@ -549,6 +549,7 @@ const PrintPatawag = ({
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-around",
+            width: "40%", // Limit width to 50%
           }}
         >
           <Text
@@ -631,6 +632,7 @@ const PrintPatawag = ({
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-around",
+            width: "40%", // Limit width to 50%
           }}
         >
           <Text
@@ -691,7 +693,18 @@ const PrintPatawag = ({
             fontFamily: "Times-Roman",
           }}
         >
-          Para kay / kina: {blotter?.complainant} / {blotter?.accused}
+          Para kay / kina:
+        </Text>
+
+        <Text
+          style={{
+            textAlign: "justify",
+            fontSize: 12,
+            lineHeight: 1.3,
+            fontFamily: "Times-Roman",
+          }}
+        >
+         {blotter?.complainant} / {blotter?.accused}
         </Text>
 
         <Text
