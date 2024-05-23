@@ -11,6 +11,7 @@ import { io } from "socket.io-client";
 import Socket_link from "../config/Socket";
 
 const socket = io(Socket_link);
+
 const Information = () => {
   const [information, setInformation] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
