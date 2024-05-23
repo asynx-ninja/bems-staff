@@ -31,11 +31,18 @@ function RestoreRequestsModal({ selectedItems, socket }) {
         const response = await axios.patch(
           `${API_LINK}/requests/archived/${selectedItems[i]}/false`
         );
-        socket.emit("send-restore-staff", response.data);
-        setTimeout(() => {
-          setUpdatingStatus(null);
-          HSOverlay.close(document.getElementById("hs-restore-requests-modal"));
-        }, 3000);
+
+        if (response.status === 200) {
+          socket.emit("send-restore-staff", response.data);
+
+          setSubmitClicked(false);
+          setError(null);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            setUpdatingStatus(null);
+            HSOverlay.close(document.getElementById("hs-restore-requests-modal"));
+          }, 3000);
+        }
       }
 
 

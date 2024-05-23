@@ -35,11 +35,17 @@ function ArchiveInquiryModal({ selectedItems, socket }) {
           `${API_LINK}/inquiries/archived/${selectedItems[i]}/true`
         );
 
-        socket.emit("send-archive-staff", response.data);
-        setTimeout(() => {
-          setUpdatingStatus(null);
-          HSOverlay.close(document.getElementById("hs-modal-archiveInquiry"));
-        }, 3000);
+        if (response.status === 200) {
+          socket.emit("send-archive-staff", response.data);
+
+          setSubmitClicked(false);
+          setError(null);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            setUpdatingStatus(null);
+            HSOverlay.close(document.getElementById("hs-modal-archiveInquiry"));
+          }, 3000);
+        }
       }
 
     } catch (err) {

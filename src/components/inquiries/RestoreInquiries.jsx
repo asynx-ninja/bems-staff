@@ -34,11 +34,17 @@ function RestoreInquiryModal({ selectedItems, socket }) {
           `${API_LINK}/inquiries/archived/${selectedItems[i]}/false`
         );
 
-        socket.emit("send-restore-staff", response.data);
-        setTimeout(() => {
-          setUpdatingStatus(null);
-          HSOverlay.close(document.getElementById("hs-modal-restoreInquiry"));
-        }, 3000);
+        if (response.status === 200) {
+          socket.emit("send-restore-staff", response.data);
+
+          setSubmitClicked(false);
+          setError(null);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            setUpdatingStatus(null);
+            HSOverlay.close(document.getElementById("hs-modal-restoreInquiry"));
+          }, 3000);
+        }
       }
 
     

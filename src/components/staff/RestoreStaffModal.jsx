@@ -33,11 +33,18 @@ function RestoreStaffModal({ selectedItems, socket }) {
         const response = await axios.patch(
           `${API_LINK}/users/archived/${selectedItems[i]}/false`
         );
-        socket.emit("send-restore-staff", response.data);
-        setTimeout(() => {
-          setUpdatingStatus(null);
-          HSOverlay.close(document.getElementById("hs-modal-restoreStaff"));
-        }, 3000);
+        
+        if (response.status === 200) {
+          socket.emit("send-restore-staff", response.data);
+
+          setSubmitClicked(false);
+          setError(null);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            setUpdatingStatus(null);
+            HSOverlay.close(document.getElementById("hs-modal-restoreStaff"));
+          }, 3000);
+        }
       }
 
     } catch (err) {

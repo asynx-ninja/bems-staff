@@ -34,15 +34,24 @@ function ArchiveServicesModal({ selectedItems, socket }) {
           `${API_LINK}/services/archived/${selectedItems[i]}/true`
         );
 
-        socket.emit("send-archive-staff", response.data);
-        setTimeout(() => {
-          setUpdatingStatus(null);
-          HSOverlay.close(document.getElementById("hs-archive-services-modal"));
-        }, 3000);
+        if (response.status === 200) {
+          socket.emit("send-archive-staff", response.data);
+
+          setSubmitClicked(false);
+          setError(null);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            setUpdatingStatus(null);
+            HSOverlay.close(document.getElementById("hs-archive-services-modal"));
+          }, 3000);
+        }
       }
 
     } catch (err) {
       console.log(err);
+      setSubmitClicked(false);
+      setUpdatingStatus(null);
+      setError("An error occurred while creating the announcement.");
     }
   };
 

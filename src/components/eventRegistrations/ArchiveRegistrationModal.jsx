@@ -33,16 +33,24 @@ function ArchiveRegistrationModal({ selectedItems, socket }) {
         const response = await axios.patch(
           `${API_LINK}/application/archived/${selectedItems[i]}/true`
         );
-        socket.emit("send-archive-staff", response.data);
-        setTimeout(() => {
-          setUpdatingStatus(null);
-          HSOverlay.close(document.getElementById("hs-archive-requests-modal"));
-        }, 3000);
-      }
 
-      
+        if (response.status === 200) {
+          socket.emit("send-archive-staff", response.data);
+
+          setSubmitClicked(false);
+          setError(null);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            setUpdatingStatus(null);
+            HSOverlay.close(document.getElementById("hs-archive-requests-modal"));
+          }, 3000);
+        }
+      }
     } catch (err) {
       console.log(err);
+      setSubmitClicked(false);
+      setUpdatingStatus(null);
+      setError("An error occurred while creating the announcement.");
     }
   };
 

@@ -14,6 +14,7 @@ function ArchiveAnnouncementModal({ selectedItems, socket }) {
   const handleSave = async (e) => {
     try {
       e.preventDefault();
+      
       if (selectedItems.length === 0) {
         setUpdatingStatus("error");
         setError("Unable to archive, Please select first to archive.");

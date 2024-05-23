@@ -34,11 +34,18 @@ function ArchiveOfficialModal({selectedItems, socket}) {
         const response = await axios.patch(
           `${API_LINK}/brgyofficial/archived/${selectedItems[i]}/true`
         );
-        socket.emit("send-archive-staff", response.data);
-        setTimeout(() => {
-          setUpdatingStatus(null);
-          HSOverlay.close(document.getElementById("hs-archive-official-modal"));
-        }, 3000);
+        
+        if (response.status === 200) {
+          socket.emit("send-archive-staff", response.data);
+
+          setSubmitClicked(false);
+          setError(null);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            setUpdatingStatus(null);
+            HSOverlay.close(document.getElementById("hs-archive-official-modal"));
+          }, 3000);
+        }
       }
 
     } catch (err) {
