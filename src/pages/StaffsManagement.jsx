@@ -63,6 +63,7 @@ const StaffManagement = () => {
   useEffect(() => {
     const handleStaff = (get_staff) => {
       setUsers(get_staff);
+      setNewStaff((prev) => [get_staff, ...prev])
       setfilterUsers((prev) => [get_staff, ...prev]);
     };
 

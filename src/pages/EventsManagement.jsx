@@ -50,6 +50,7 @@ const EventsManagement = () => {
   useEffect(() => {
     const handleEvent = (get_events) => {
       setAnnouncement(get_events);
+      setNewEvents((prev) => [get_events, ...prev]);
       setFilteredAnnouncements((prev) => [get_events, ...prev]);
     };
 

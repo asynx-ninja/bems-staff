@@ -4,7 +4,7 @@ import API_LINK from "../../config/API";
 import MessageLoader from "./loaders/MessageLoader";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function StatusResident({ user, setUser, brgy, status, setStatus }) {
+function StatusResident({ user, setUser, brgy, status, setStatus, socket }) {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
@@ -53,7 +53,8 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
       };
   
       const response = await axios.post(`${API_LINK}/notification/`, notificationData);
-  
+
+      socket.emit("send-resident-notif", response.data);
       setUpdatingStatus("success");
       setTimeout(() => {
         setUpdatingStatus(null);

@@ -126,6 +126,11 @@ const Residents = () => {
     setCurrentPage(selected);
   };
 
+  const handleStatusFilter = (selectedStatus) => {
+    setStatusFilter(selectedStatus);
+  };
+
+  
   // Handle search input change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -654,7 +659,7 @@ const Residents = () => {
           setStatus={setStatus}
           socket={socket}
         />
-        <MessageResidentModal user={user} setUser={setUser} brgy={brgy} />
+        <MessageResidentModal user={user} setUser={setUser} brgy={brgy} socket={socket} />
         <ManageResidentModal user={user} setUser={setUser} brgy={brgy} />
       </div>
     </div>

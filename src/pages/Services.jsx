@@ -83,6 +83,7 @@ const Services = () => {
       console.log("wew", filteredServices);
       console.log("wew", obj);
       setServices(obj);
+      setNewServices((prev) => [obj, ...prev])
       setFilteredServices((prev) => [obj, ...prev]);
     };
 
@@ -126,7 +127,7 @@ const Services = () => {
         setServices(response.data.result);
         setFilteredServices(response.data.result.slice(0, 10));
         setPageCount(response.data.pageCount);
-        setNewServices(response.data.result);
+        setNewServices(response.data.result)
       } else setServices([]);
     };
 
