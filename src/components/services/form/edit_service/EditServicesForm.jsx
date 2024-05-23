@@ -5,7 +5,7 @@ import EditSectionForm from "./EditSectionForm";
 import EditFormLoader from "../../loaders/EditFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 
-const EditServicesForm = ({ service_id, brgy,  setEditUpdate, editupdate, }) => {
+const EditServicesForm = ({ service_id, brgy, serviceForm, socket }) => {
   const information = GetBrgy(brgy);
   const [details, setDetails] = useState([]);
   const [detail, setDetail] = useState({});
@@ -15,19 +15,22 @@ const EditServicesForm = ({ service_id, brgy,  setEditUpdate, editupdate, }) => 
   const [selectedFormIndex, setSelectedFormIndex] = useState("");
 
   useEffect(() => {
+    setDetails(serviceForm)
+  }, [serviceForm]);
+
+  useEffect(() => {
     const fetch = async () => {
       try {
         const response = await axios.get(
           `${API_LINK}/forms/?brgy=${brgy}&service_id=${service_id}`
         );
         setDetails(response.data);
-        setEditUpdate((prevState) => !prevState);
       } catch (err) {
         console.log(err.message);
       }
     };
     fetch();
-  }, [brgy, service_id, editupdate]);
+  }, [brgy, service_id]);
 
   const handleFormChange = (e, key) => {
     const newState = detail.form[0];
@@ -44,7 +47,7 @@ const EditServicesForm = ({ service_id, brgy,  setEditUpdate, editupdate, }) => 
       setSubmitClicked(true);
       setError(null); // Reset error state
 
-      await axios.patch(
+     const response = await axios.patch(
         `${API_LINK}/forms/`,
         {
           detail: detail,
@@ -57,10 +60,17 @@ const EditServicesForm = ({ service_id, brgy,  setEditUpdate, editupdate, }) => 
       );
 
       setTimeout(() => {
+        socket.emit("send-edit-service-form", response.data);
+       
         setSubmitClicked(false);
         setUpdatingStatus("success");
         setTimeout(() => {
-          window.location.reload();
+          setUpdatingStatus(null);
+          setDetail({});
+          setSelectedFormIndex("");
+          setDetail({ title: "" });
+          document.querySelector('select[name="form"]').value = "";
+          HSOverlay.close(document.getElementById("hs-edit-serviceForm-modal"));
         }, 3000);
       }, 1000);
     } catch (err) {

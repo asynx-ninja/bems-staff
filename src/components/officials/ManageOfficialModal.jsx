@@ -6,7 +6,7 @@ import { useState } from "react";
 import EditLoader from "./loaders/EditLoader";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
+function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy, socket }) {
 
   const information = GetBrgy(brgy);
 
@@ -70,11 +70,13 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
         );
 
         if (result.status === 200) {
+          socket.emit("send-update-official", result.data);
           setTimeout(() => {
             setSubmitClicked(false);
             setUpdatingStatus("success");
             setTimeout(() => {
-              window.location.reload();
+              setUpdatingStatus(null);
+              HSOverlay.close(document.getElementById("hs-edit-official-modal"));
             }, 3000);
           }, 1000);
         }

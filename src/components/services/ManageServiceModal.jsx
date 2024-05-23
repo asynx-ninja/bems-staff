@@ -89,7 +89,7 @@ function ManageServiceModal({ service, setService, brgy, socket }) {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-     setSubmitClicked(true);
+      setSubmitClicked(true);
 
       var formData = new FormData();
 
@@ -166,7 +166,7 @@ function ManageServiceModal({ service, setService, brgy, socket }) {
 
           if (result.status === 200) {
             setEdit(!edit);
-            socket.emit("send-updated-service", response.data);       
+            socket.emit("send-updated-service", response.data);
             console.log("ito", response.data)
             setSubmitClicked(false);
             setUpdatingStatus("success");
@@ -414,10 +414,21 @@ function ManageServiceModal({ service, setService, brgy, socket }) {
                 <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
                   <button
                     type="submit"
+                    disabled={onSend}
                     onClick={handleSubmit}
                     className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
                   >
-                    SAVE CHANGES
+                    {onSend ? (
+                      <div
+                        class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
+                        role="status"
+                        aria-label="loading"
+                      >
+                        <span class="sr-only">Loading...</span>
+                      </div>
+                    ) : (
+                      "SAVE CHANGES"
+                    )}
                   </button>
                   <button
                     type="button"

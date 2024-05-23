@@ -6,7 +6,7 @@ import AddFormLoader from "../../loaders/AddFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 import API_LINK from "../../../../config/API";
 
-const AddServicesDocument = ({ service_id, brgy, officials }) => {
+const AddServicesDocument = ({ service_id, brgy, officials, socket, setUpdate }) => {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
@@ -86,12 +86,17 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
           },
         }
       );
-
+      socket.emit("send-create-service-form", response.data);
       setSubmitClicked(false);
       setCreationStatus("success");
       setTimeout(() => {
-        window.location.reload();
+        setCreationStatus(null);
+        handleResetModal();
+        HSOverlay.close(
+          document.getElementById("hs-create-serviceDocument-modal")
+        );
       }, 3000);
+      setUpdate(true);
     } catch (err) {
       console.log(err.message);
       setSubmitClicked(false);

@@ -26,6 +26,10 @@ import SAN_ISIDRO from "../assets/officials/SAN_ISIDRO.png";
 import SAN_JOSE from "../assets/officials/SAN_JOSE.png";
 import SAN_RAFAEL from "../assets/officials/SAN_RAFAEL.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+
+const socket = io(Socket_link);
 
 const Officials = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -134,6 +138,30 @@ const Officials = () => {
   };
 
   useEffect(() => {
+    const handleOfficial = (get_official) => {
+      setOfficials(get_official);
+      setfilterOfficials((prev) => [get_official, ...prev]);
+    };
+
+    const handleOfficialUpdate = (get_updated_official) => {
+      setOfficials(get_updated_official);
+      setfilterOfficials((curItem) =>
+        curItem.map((item) =>
+          item._id === get_updated_official._id ? get_updated_official : item
+        )
+      );
+    };
+
+    socket.on("receive-create-official", handleOfficial);
+    socket.on("receive-update-official", handleOfficialUpdate);
+
+    return () => {
+      socket.off("receive-create-official", handleOfficial);
+      socket.off("receive-update-official", handleOfficialUpdate);
+    };
+  }, [socket, setOfficials]);
+
+  useEffect(() => {
     document.title = "Barangay Officials | Barangay E-Services Management";
 
     const fetchData = async () => {
@@ -176,13 +204,6 @@ const Officials = () => {
     setfilterOfficials(officials.slice(start, end));
   };
 
-  const Officials = officials.filter((item) => {
-    const fullName =
-      `${item.lastName} ${item.firstName} ${item.middleName}`.toLowerCase();
-    const nameMatches = fullName.includes(searchQuery.toLowerCase());
-
-    return nameMatches;
-  });
 
   const handleEditClick = async (official) => {
     setSelectedOfficial(official);
@@ -593,13 +614,14 @@ const Officials = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <CreateOfficialModal brgy={brgy} />
+      <CreateOfficialModal brgy={brgy} socket={socket} />
       <GenerateReportsModal />
       <ArchiveOfficialModal selectedItems={selectedItems} />
       <EditOfficialModal
         selectedOfficial={selectedOfficial}
         setSelectedOfficial={setSelectedOfficial}
         brgy={brgy}
+        socket={socket}
       />
     </div>
   );

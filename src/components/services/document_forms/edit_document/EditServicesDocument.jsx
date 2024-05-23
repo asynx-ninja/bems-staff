@@ -4,9 +4,11 @@ import API_LINK from "../../../../config/API";
 import EditSectionDocument from "./EditSectionDocument";
 import EditFormLoader from "../../loaders/EditFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
+import { useRef } from "react";
 
-const EditServicesDocument = ({ service_id, brgy, officials }) => {
+const EditServicesDocument = ({ service_id, brgy, officials, documentForm, setDocumentForm, serviceForm, setServiceForm, socket }) => {
   const information = GetBrgy(brgy);
+  const modal = useRef()
   const [details, setDetails] = useState([]);
   const [docDetails, setDocDetails] = useState([]);
   const [docDetail, setDocDetail] = useState({});
@@ -27,35 +29,40 @@ const EditServicesDocument = ({ service_id, brgy, officials }) => {
   });
   const [selectedDocIndex, setSelectedDocIndex] = useState("");
 
+  // useEffect(() => {
+  //   const fetchForms = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${API_LINK}/forms/?brgy=${brgy}&service_id=${service_id}`
+  //       );
+  //       setDetails(response.data);
+  //     } catch (err) {
+  //       console.log(err.message);
+  //     }
+  //   };
+
+  //   fetchForms();
+  // }, [brgy, service_id]);
+
   useEffect(() => {
-    const fetchForms = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/forms/?brgy=${brgy}&service_id=${service_id}`
-        );
-        setDetails(response.data);
-      } catch (err) {
-        console.log(err.message);
-      }
-    };
+    setDocDetails(documentForm)
+    setDetails(serviceForm)
+  }, [documentForm, serviceForm]);
 
-    fetchForms();
-  }, [brgy, service_id]);
+  // useEffect(() => {
+  //   const fetchDocuments = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${API_LINK}/document/?brgy=${brgy}&service_id=${service_id}`
+  //       );
+  //       setDocDetails(response.data);
+  //     } catch (err) {
+  //       console.log(err.message);
+  //     }
+  //   };
 
-  useEffect(() => {
-    const fetchDocuments = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/document/?brgy=${brgy}&service_id=${service_id}`
-        );
-        setDocDetails(response.data);
-      } catch (err) {
-        console.log(err.message);
-      }
-    };
-
-    fetchDocuments();
-  }, [brgy, service_id]);
+  //   fetchDocuments();
+  // }, [brgy, service_id]);
 
   const handleFormChange = (e, key) => {
     const newState = docDetail.form[0];
@@ -69,10 +76,10 @@ const EditServicesDocument = ({ service_id, brgy, officials }) => {
 
   const handleSubmit = async () => {
     try {
-      setSubmitClicked(true);
+      // setSubmitClicked(true);
       setError(null); // Reset error state
 
-      await axios.patch(
+      const response = await axios.patch(
         `${API_LINK}/document/`,
         {
           document: docDetail,
@@ -83,16 +90,21 @@ const EditServicesDocument = ({ service_id, brgy, officials }) => {
           },
         }
       );
-
-      setTimeout(() => {
-        setSubmitClicked(false);
-        setUpdatingStatus("success");
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
-      }, 1000);
+      if (response.status === 200) {
+        socket.emit("send-edit-service-form", response.data);
+          HSOverlay.close(
+            modal.current
+          );
+      }
+      // setTimeout(() => {
+      //   setSubmitClicked(false);
+      //   setUpdatingStatus("success");
+      //   // setTimeout(() => {
+      //   //   window.location.reload();
+      //   // }, 3000);
+      // }, 1000);
     } catch (err) {
-      setSubmitClicked(false);
+      // setSubmitClicked(false);
       setUpdatingStatus("error");
       setError(err.message);
     }
@@ -118,14 +130,15 @@ const EditServicesDocument = ({ service_id, brgy, officials }) => {
   return (
     <div>
       <div
+      ref={modal}
         id="hs-edit-serviceDocument-modal"
         className="hs-overlay hidden fixed top-0 left-0 z-[80] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
       >
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
             <div className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl" style={{
-                background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-              }}>
+              background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+            }}>
               <h3
                 className="font-bold text-white mx-auto md:text-xl text-center"
                 style={{ letterSpacing: "0.3em" }}

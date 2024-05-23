@@ -102,14 +102,14 @@ const Services = () => {
     };
 
     socket.on("receive-get-service", handleService);
-    socket.on("receive-create-service-form", handleServiceForm);
+    socket.on("receive-service-form", handleServiceForm);
     socket.on("receive-updated-service", handleServiceUpdate);
-    socket.on("receive-document-form", handleServiceDocumentForm);
+    socket.on("receive-edit-service-doc", handleServiceDocumentForm);
     return () => {
       socket.off("receive-get-service", handleService);
-      socket.off("receive-create-service-form", handleServiceForm);
+      socket.off("receive-service-form", handleServiceForm);
       socket.off("receive-updated-service", handleServiceUpdate);
-      socket.off("receive-document-form", handleServiceDocumentForm);
+      socket.off("receive-edit-service-doc", handleServiceDocumentForm);
     };
   }, [socket, setServices]);
 
@@ -194,8 +194,20 @@ const Services = () => {
     document.title = "Services | Barangay E-Services Management";
   }, []);
 
-  const handleView = (item) => {
-    setService(item);
+  const handleView = async (item) => {
+    try {
+      setService(item);
+      const response = await axios.get(
+        `${API_LINK}/forms/?brgy=${brgy}&service_id=${item.service_id}`
+      );
+      const response1 = await axios.get(
+        `${API_LINK}/document/?brgy=${brgy}&service_id=${item.service_id}`
+      );
+      setServiceForm(response.data);
+      setDocumentForm(response1.data)
+    } catch (err) {
+      console.log(err.message);
+    }
   };
 
   useEffect(() => {
@@ -692,12 +704,13 @@ const Services = () => {
       />
       <GenerateReportsModal />
       <AddServicesForm service_id={service.service_id} brgy={brgy} socket={socket} setUpdate={setUpdate} editupdate={editupdate} setEditUpdate={setEditUpdate} />
-      <EditServicesForm service_id={service.service_id} brgy={brgy} socket={socket} editupdate={editupdate} setEditUpdate={setEditUpdate} serviceForm={serviceForm} setServiceForm={setServiceForm} />
+      <EditServicesForm service_id={service.service_id} brgy={brgy} socket={socket} serviceForm={serviceForm} setServiceForm={setServiceForm} />
       <AddServicesDocument
         service_id={service.service_id}
         brgy={brgy}
         officials={officials}
         socket={socket}
+        setUpdate={setUpdate}
       />
       <EditServicesDocument
         service_id={service.service_id}
@@ -705,6 +718,9 @@ const Services = () => {
         officials={officials}
         documentForm={documentForm}
         setDocumentForm={setDocumentForm}
+        serviceForm = {serviceForm}
+        setServiceForm = {setServiceForm}
+        socket = {socket}
       />
     </div>
   );

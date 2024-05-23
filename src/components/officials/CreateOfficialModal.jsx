@@ -7,7 +7,7 @@ import AddLoader from "./loaders/AddLoader";
 import ErrorPopup from "./popup/ErrorPopup";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function CreateOfficialModal({ brgy }) {
+function CreateOfficialModal({ brgy, socket }) {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
@@ -15,25 +15,26 @@ function CreateOfficialModal({ brgy }) {
   const [emptyFields, setEmptyFields] = useState([]);
   const [empty, setEmpty] = useState(false);
   const [official, setOfficial] = useState({
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    suffix: "",
-    position: "",
-    fromYear: "",
-    toYear: "",
+    firstName: '',
+    middleName: '',
+    lastName: '',
+    suffix: '',
+    position: '',
+    fromYear: '',
+    toYear: '',
     brgy: brgy,
   });
+  const [pfp, setPfp] = useState();
 
   const handleResetModal = () => {
     setOfficial({
-      firstName: "",
-      middleName: "",
-      lastName: "",
-      suffix: "",
-      position: "",
-      fromYear: "",
-      toYear: "",
+      firstName: '',
+      middleName: '',
+      lastName: '',
+      suffix: '',
+      position: '',
+      fromYear: '',
+      toYear: '',
       brgy: brgy,
     });
     setPfp(null);
@@ -41,9 +42,9 @@ function CreateOfficialModal({ brgy }) {
 
   const checkEmptyFields = () => {
     let arr = [];
-    const keysToCheck = ["firstName", "middleName", "lastName", "position"];
+    const keysToCheck = ['firstName', 'middleName', 'lastName', 'position'];
     for (const key of keysToCheck) {
-      if (official[key] === "") {
+      if (official[key] === '') {
         arr.push(key);
       }
     }
@@ -51,40 +52,36 @@ function CreateOfficialModal({ brgy }) {
     return arr;
   };
 
-  const [pfp, setPfp] = useState();
-
   const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitClicked(true);
+    setError(null); // Reset error state
+
+    const emptyFieldsArr = checkEmptyFields();
+
+    if (emptyFieldsArr.length > 0) {
+      setEmpty(true);
+      setSubmitClicked(false);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', pfp);
+
+    const obj = {
+      firstName: official.firstName,
+      middleName: official.middleName,
+      lastName: official.lastName,
+      suffix: official.suffix,
+      position: official.position,
+      fromYear: official.fromYear,
+      toYear: official.toYear,
+    };
+
+    formData.append('official', JSON.stringify(obj));
+
     try {
-      e.preventDefault();
-      setSubmitClicked(true);
-      setError(null); // Reset error state
-
-      const emptyFieldsArr = checkEmptyFields();
-
-      if (emptyFieldsArr.length > 0) {
-        setEmpty(true);
-        setSubmitClicked(false);
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("file", pfp);
-
-      const obj = {
-        firstName: official.firstName,
-        middleName: official.middleName,
-        lastName: official.lastName,
-        suffix: official.suffix,
-        position: official.position,
-        fromYear: official.fromYear,
-        toYear: official.toYear,
-      };
-
-      formData.append("official", JSON.stringify(obj));
-
-      const res_folder = await axios.get(
-        `${API_LINK}/folder/specific/?brgy=${brgy}`
-      );
+      const res_folder = await axios.get(`${API_LINK}/folder/specific/?brgy=${brgy}`);
 
       if (res_folder.status === 200) {
         const result = await axios.post(
@@ -93,36 +90,40 @@ function CreateOfficialModal({ brgy }) {
         );
 
         if (result.status === 200) {
+       
           setOfficial({
-            firstName: "",
-            middleName: "",
-            lastName: "",
-            suffix: "",
-            position: "",
-            fromYear: "",
-            toYear: "",
-            brgy: "",
+            firstName: '',
+            middleName: '',
+            lastName: '',
+            suffix: '',
+            position: '',
+            fromYear: '',
+            toYear: '',
+            brgy: brgy,
           });
+
+          socket.emit('send-create-official', result.data);
           setPfp(null);
           setSubmitClicked(false);
-          setCreationStatus("success");
+          setCreationStatus('success');
           setTimeout(() => {
-            window.location.reload();
+            setCreationStatus(null);
+            HSOverlay.close(document.getElementById('hs-create-official-modal'));
           }, 3000);
         }
       }
     } catch (err) {
-      console.error("Error adding official:", err);
+      console.error('Error adding official:', err);
       setSubmitClicked(false);
-      setCreationStatus("error");
-      setError("An error occurred while creating the announcement.");
+      setCreationStatus('error');
+      setError('An error occurred while creating the announcement.');
     }
   };
 
   const handlePfpChange = (e) => {
     setPfp(e.target.files[0]);
 
-    var output = document.getElementById("add_pfp");
+    var output = document.getElementById('add_pfp');
     output.src = URL.createObjectURL(e.target.files[0]);
     output.onload = function () {
       URL.revokeObjectURL(output.src); // free memory

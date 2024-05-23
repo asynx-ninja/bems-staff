@@ -14,6 +14,9 @@ import { useSearchParams } from "react-router-dom";
 import ViewInquiriesModal from "../components/inquiries/ViewInquiriesModal";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+const socket = io(Socket_link);
 
 const Inquiries = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -64,6 +67,30 @@ const Inquiries = () => {
   }, []);
 
   useEffect(() => {
+    const handleStaffInq = (obj) => {
+      setInquiry(obj);
+      setFilteredInquiries(
+        prev => [obj, ...prev]
+      );
+    };
+
+     const handleReStaffInq = (obj) => {
+      setInquiry(obj);
+      setFilteredInquiries((curItem) =>
+        curItem.map((item) =>
+          item._id === obj._id ? obj : item
+        )
+      );
+    };
+    socket.on("receive-reply-staff-inquiry", handleReStaffInq);
+    socket.on("receive-staff-inquiry", handleStaffInq);
+    return () => {
+      socket.off("receive-reply-staff-inquiry", handleReStaffInq);
+      socket.off("receive-staff-inquiry", handleStaffInq);
+    };
+  }, [socket, setInquiry]);
+
+  useEffect(() => {
     document.title = "Inquiries | Barangay E-Services Management";
 
     const fetchInquiries = async () => {
@@ -72,18 +99,22 @@ const Inquiries = () => {
       );
 
       if (response.status === 200) {
-        setInquiries(response.data.result);
-        setFilteredInquiries(response.data.result);
-        setPageCount(response.data.pageCount);
+        setInquiries(response.data.result); // Set initial page data
+        setFilteredInquiries(response.data.result.slice(0, 10));
+        setPageCount(response.data.pageCount); // Calculate page count based on all data
       } else {
         setInquiries([]);
+        setFilteredInquiries([]);
       }
-
-      const container = chatContainerRef.current;
-      container.scrollTop = container.scrollHeight;
+      // const container = inqContainerRef.current;
+      // container.scrollTop = container.scrollHeight;
+      // setInqsUpdate((prevState) => !prevState);
     };
+
     fetchInquiries();
   }, [id, brgy, statusFilter]);
+
+ 
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -685,6 +716,7 @@ const Inquiries = () => {
           setInquiry={setInquiry}
           brgy={brgy}
           chatContainerRef={chatContainerRef}
+          socket={socket}
         />
         <Status status={status} setStatus={setStatus} />
       </div>

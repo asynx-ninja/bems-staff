@@ -7,7 +7,10 @@ import axios from "axios";
 import API_LINK from "../config/API";
 import { useState } from "react";
 import EditLoader from "../components/information/loaders/EditLoader";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
 
+const socket = io(Socket_link);
 const Information = () => {
   const [information, setInformation] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
@@ -44,6 +47,17 @@ const Information = () => {
     };
   }, []);
 
+   useEffect(() => {
+    const handleInfo = (obj) => {
+      setInformation((prev) => ({ ...prev, ...obj }));
+    };
+
+    socket.on("receive-update-brgy-info",handleInfo);
+    return () => {
+      socket.off("receive-update-brgy-info", handleInfo);
+    };
+  }, [socket, setInformation]);
+
   useEffect(() => {
     document.title = "Barangay Information | Barangay E-Services Management";
 
@@ -73,7 +87,7 @@ const Information = () => {
 
   const handleSaveChanges = async (e) => {
     e.preventDefault();
-    setSubmitClicked(true);
+    // setSubmitClicked(true);
 
     try {
       const formData = new FormData();
@@ -92,19 +106,17 @@ const Information = () => {
           `${API_LINK}/brgyinfo/${brgy}`,
           formData
         );
-
-        setTimeout(() => {
-          setSubmitClicked(false);
-          setUpdatingStatus("success");
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
-        }, 1000);
+        socket.emit("send-update-brgy-info", result.data);
+        // setTimeout(() => {
+        //   setSubmitClicked(false);
+        //   setUpdatingStatus("success");
+         
+        // },);
         // setBrgyInformation({});
       }
     } catch (error) {
       console.error(error);
-      setSubmitClicked(false);
+      // setSubmitClicked(false);
       setUpdatingStatus(null);
       setError("An error occurred while creating the announcement.");
     }
