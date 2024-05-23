@@ -150,10 +150,10 @@ const Blotters = () => {
       );
     };
 
-    socket.on("receive-patawag", handlePatawag);
+    socket.on("receive-reply-patawag", handlePatawag);
 
     return () => {
-      socket.off("receive-patawag", handlePatawag);
+      socket.off("receive-reply-patawag", handlePatawag);
     };
   }, [socket, setRequest]);
 

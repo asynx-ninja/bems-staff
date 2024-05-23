@@ -538,6 +538,7 @@ function ReplyServiceModal({
         );
 
         if (response.status === 200) {
+          socket.emit("send-reply-patawag", response.data);
           // setCreateFiles([]);
           // setResponseData({
           //   sender: "",
@@ -584,7 +585,7 @@ function ReplyServiceModal({
           // console.log("notif result: ", result.data)
 
           if (result.status === 200) {
-            socket.emit("send-patawag", response.data);
+            
             setCreateFiles([]);
             setResponseData({
               sender: "",
@@ -598,7 +599,7 @@ function ReplyServiceModal({
             setStatusChanger(false);
 
             setSubmitClicked(false);
-            socket.emit("send-patawag", response.data);
+            // socket.emit("send-reply-patawag", response.data);
             setOnSend(false);
             setUpdate(true);
           }
@@ -662,6 +663,9 @@ function ReplyServiceModal({
         );
 
         if (response.status === 200) {
+          socket.emit("send-reply-patawag", response.data);
+          setOnSend(false);
+
           const notify = {
             category: "One",
             compose: {
@@ -688,8 +692,7 @@ function ReplyServiceModal({
           });
 
           if (result.status === 200) {
-            socket.emit("send-patawag", response.data);
-            setOnSend(false);
+           
 
             setCreateFiles([]);
             setResponseData({
