@@ -9,6 +9,10 @@ import { MdEvent } from "react-icons/md";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import GetBrgy from "../GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../../config/Socket";
+
+const socket = io(Socket_link);
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -97,6 +101,23 @@ const Notifications = () => {
 
     return () => clearInterval(intervalId);
   }, [brgy]);
+
+  // useEffect(() => {
+  //   const handleNotifications = (get_notification) => {
+  //     setNotifications(get_notification);
+  //     setBlotterDetails((curItem) =>
+  //       curItem.map((item) =>
+  //         item._id === get_notification._id ? get_notification : item
+  //       )
+  //     );
+  //   };
+
+  //   socket.on("receive-staff-notif", handleNotifications);
+
+  //   return () => {
+  //     socket.off("receive-staff-notif", handleNotifications);
+  //   };
+  // }, [socket, setNotification]);
 
   const handleView = (item) => {
     setNotification(item);
