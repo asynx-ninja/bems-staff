@@ -124,9 +124,9 @@ const Services = () => {
       if (response.status === 200) {
         console.log(response.data)
         setServices(response.data.result);
-        setNewServices(response.data.result)
         setFilteredServices(response.data.result.slice(0, 10));
         setPageCount(response.data.pageCount);
+        setNewServices(response.data.result);
       } else setServices([]);
     };
 
