@@ -114,7 +114,7 @@ const Requests = () => {
 
     fetch();
     
-  }, [brgy, statusFilter, selectedReqFilter]);
+  }, [ statusFilter, selectedReqFilter]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -142,38 +142,75 @@ const Requests = () => {
     };
 
     fetchData();
-  }, [currentPage, brgy]); // Add positionFilter dependency
+  }, [brgy]); // Add positionFilter dependency
 
-  useEffect(() => {
-    const filteredData = requests.filter((item) => {
-      const fullName = item.form[0].lastName.value.toLowerCase() +
-        ", " +
-        item.form[0].firstName.value.toLowerCase() +
-        " " +
-        item.form[0].middleName.value.toLowerCase();
+
+  // useEffect(() => {
+  //   const filteredData = requests.filter((item) => {
+  //     const fullName = item.form[0].lastName.value.toLowerCase() +
+  //       ", " +
+  //       item.form[0].firstName.value.toLowerCase() +
+  //       " " +
+  //       item.form[0].middleName.value.toLowerCase();
   
-      return (
-        item.service_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.req_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        fullName.includes(searchQuery.toLowerCase())
-      );
-    });
-  
-    const startIndex = currentPage * 10;
-    const endIndex = startIndex + 10;
-    setFilteredRequests(filteredData.slice(startIndex, endIndex));
-    setPageCount(Math.ceil(filteredData.length / 10));
-  }, [requests, searchQuery, currentPage]);
+  //     return (
+  //       item.service_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //       item.req_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //       fullName.includes(searchQuery.toLowerCase())
+  //     );
+  //   });
+  //  console.log("wew")
+  //   const startIndex = currentPage * 10;
+  //   const endIndex = startIndex + 10;
+  //   setFilteredRequests(filteredData.slice(startIndex, endIndex));
+  //   setPageCount(Math.ceil(filteredData.length / 10));
+  // }, [requests, searchQuery, currentPage]);
   
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+    console.log(selected)
+    const value = searchQuery
+    const filteredData = requests.filter((item) => {
+          const fullName = item.form[0].lastName.value.toLowerCase() +
+            ", " +
+            item.form[0].firstName.value.toLowerCase() +
+            " " +
+            item.form[0].middleName.value.toLowerCase();
+      
+          return (
+            item.service_name.toLowerCase().includes(value.toLowerCase()) ||
+            item.req_id.toLowerCase().includes(value.toLowerCase()) ||
+            fullName.includes(value.toLowerCase())
+          );
+        });
+          const startIndex = selected * 10;
+          const endIndex = startIndex + 10;
+          setFilteredRequests(filteredData.slice(startIndex, endIndex));
+          setPageCount(Math.ceil(filteredData.length / 10));
   };
   
 
   // Handle search input change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
-    setCurrentPage(0); // Reset current page when search query changes
+    const value = e.target.value
+    const filteredData = requests.filter((item) => {
+          const fullName = item.form[0].lastName.value.toLowerCase() +
+            ", " +
+            item.form[0].firstName.value.toLowerCase() +
+            " " +
+            item.form[0].middleName.value.toLowerCase();
+      
+          return (
+            item.service_name.toLowerCase().includes(value.toLowerCase()) ||
+            item.req_id.toLowerCase().includes(value.toLowerCase()) ||
+            fullName.includes(value.toLowerCase())
+          );
+        });
+        const startIndex = currentPage * 10;
+          const endIndex = startIndex + 10;
+          setFilteredRequests(filteredData.slice(startIndex, endIndex));
+          setPageCount(Math.ceil(filteredData.length / 10));
   };
 
   const handleStatusFilter = (selectedStatus) => {
