@@ -26,6 +26,7 @@ const socket = io(Socket_link);
 const StaffManagement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [users, setUsers] = useState([]);
+  const [newStaff, setNewStaff] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
@@ -50,6 +51,7 @@ const StaffManagement = () => {
       );
       if (response.status === 200) {
         setUsers(response.data.result);
+        setNewStaff(response.data.result)
         setPageCount(response.data.pageCount);
         setfilterUsers(response.data.result.slice(0, 10));
       } else setUsers([]);
@@ -60,8 +62,8 @@ const StaffManagement = () => {
 
   useEffect(() => {
     const handleStaff = (get_staff) => {
-      setUsers(prevStaff => Array.isArray(get_staff) ? get_staff : prevStaff);
-      setfilterUsers(prev => [get_staff, ...prev]);
+      setUsers(get_staff);
+      setfilterUsers((prev) => [get_staff, ...prev]);
     };
 
     const handleStaffUpdate = (get_updated_staff) => {
@@ -83,11 +85,7 @@ const StaffManagement = () => {
   }, [socket, setUsers]);
 
   useEffect(() => {
-    if (!Array.isArray(users)) {
-      console.error('Officials is not an array', users);
-      return;
-    }
-    const filteredData = users.filter((item) => {
+    const filteredData = newStaff.filter((item) => {
       const fullName = item.lastName.toLowerCase() +
         ", " +
         item.firstName.toLowerCase() +
@@ -102,7 +100,7 @@ const StaffManagement = () => {
     const endIndex = startIndex + 10;
     setfilterUsers(filteredData.slice(startIndex, endIndex));
     setPageCount(Math.ceil(filteredData.length / 10));
-  }, [users, searchQuery, currentPage]);
+  }, [newStaff, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -151,7 +149,7 @@ const StaffManagement = () => {
   };
 
   const checkAllHandler = () => {
-    const usersToCheck = Users.length > 0 ? Users : users;
+    const usersToCheck = users.length > 0 ? users : users;
 
     if (usersToCheck.length === selectedItems.length) {
       setSelectedItems([]);

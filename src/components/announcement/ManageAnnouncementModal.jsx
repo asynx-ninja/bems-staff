@@ -200,6 +200,7 @@ function ManageAnnouncementModal({
           socket.emit("send-update-event", response.data);
 
           if (result.status === 200) {
+            socket.emit("send-resident-notif", result.data);
             setTimeout(() => {
               setSubmitClicked(false);
               setUpdatingStatus("success");

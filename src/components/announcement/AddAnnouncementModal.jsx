@@ -203,6 +203,7 @@ function CreateAnnouncementModal({ brgy, socket }) {
           });
 
           if (result.status === 200) {
+            socket.emit("send-resident-notif", result.data);
             clearForm();
             setSubmitClicked(false);
             setCreationStatus("success");

@@ -274,7 +274,7 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef, socket
           const notify = {
             category: "One",
             compose: {
-              subject: `REQUEST - ${request.service_name}`,
+              subject: `REQUEST - NEW MESSAGE`,
               message: `A barangay staff has updated/replied your request for the barangay service of ${request.service_name
                 }.\n\n
         
@@ -318,6 +318,7 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef, socket
 
           if (result.status === 200) {
             socket.emit("send-reply-service-req", response.data);
+            socket.emit("send-resident-notif", result.data);
             setOnSend(false);
           }
         }

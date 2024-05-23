@@ -570,7 +570,7 @@ function ReplyServiceModal({
           // console.log("notif result: ", result.data)
 
           if (result.status === 200) {
-            socket.emit("receive-resident-notif", response.data);
+            socket.emit("send-resident-notif", result.data);
             
             setCreateFiles([]);
             setResponseData({
@@ -678,7 +678,7 @@ function ReplyServiceModal({
           });
 
           if (result.status === 200) {
-           
+            socket.emit("send-resident-notif", result.data);
 
             setCreateFiles([]);
             setResponseData({

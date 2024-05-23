@@ -165,6 +165,7 @@ function ManageServiceModal({ service, setService, brgy, socket }) {
           });
 
           if (result.status === 200) {
+            socket.emit("send-resident-notif", result.data);
             setEdit(!edit);
             socket.emit("send-updated-service", response.data);
             console.log("ito", response.data)

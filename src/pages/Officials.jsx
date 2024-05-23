@@ -34,6 +34,7 @@ const socket = io(Socket_link);
 const Officials = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [officials, setOfficials] = useState([]);
+  const[newOfficial, setNewOfficials] = useState([])
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
   const id = searchParams.get("id");
@@ -124,7 +125,7 @@ const Officials = () => {
   };
 
   const checkAllHandler = () => {
-    const officialsToCheck = Officials.length > 0 ? Officials : officials;
+    const officialsToCheck = officials.length > 0 ? officials : officials;
 
     if (officialsToCheck.length === selectedItems.length) {
       setSelectedItems([]);
@@ -139,16 +140,14 @@ const Officials = () => {
 
   useEffect(() => {
     const handleOfficial = (get_official) => {
-      setOfficials(prevOfficials => Array.isArray(get_official) ? get_official : prevOfficials);
-      setfilterOfficials(prev => [get_official, ...prev]);
+      setOfficials(get_official);
+      setfilterOfficials((prev) => [get_official, ...prev]);
     };
 
     const handleOfficialUpdate = (get_updated_official) => {
-      setOfficials(prevOfficials => prevOfficials.map(item =>
-        item._id === get_updated_official._id ? get_updated_official : item
-      ));
-      setfilterOfficials(curItem =>
-        curItem.map(item =>
+      setOfficials(get_updated_official);
+      setfilterOfficials((curItem) =>
+        curItem.map((item) =>
           item._id === get_updated_official._id ? get_updated_official : item
         )
       );
@@ -162,7 +161,6 @@ const Officials = () => {
       socket.off("receive-update-official", handleOfficialUpdate);
     };
   }, [socket, setOfficials]);
-
 
   useEffect(() => {
     document.title = "Barangay Officials | Barangay E-Services Management";
@@ -179,6 +177,7 @@ const Officials = () => {
           if (officialsData.length > 0) {
             setPageCount(response.data.pageCount);
             setOfficials(officialsData);
+            setNewOfficials(officialsData)
             setfilterOfficials(response.data.result.slice(0, 10))
           } else {
             setOfficials([]);
@@ -201,12 +200,7 @@ const Officials = () => {
   };
 
   useEffect(() => {
-    if (!Array.isArray(officials)) {
-      console.error('Officials is not an array', officials);
-      return;
-    }
-
-    const filteredData = officials.filter((item) => {
+    const filteredData = newOfficial.filter((item) => {
       const fullName = item.lastName.toLowerCase() +
         ", " +
         item.firstName.toLowerCase() +
@@ -221,7 +215,7 @@ const Officials = () => {
     const endIndex = startIndex + 10;
     setfilterOfficials(filteredData.slice(startIndex, endIndex));
     setPageCount(Math.ceil(filteredData.length / 10));
-  }, [officials, searchQuery, currentPage]);
+  }, [newOfficial, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);

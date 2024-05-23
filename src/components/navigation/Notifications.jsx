@@ -95,16 +95,17 @@ const Notifications = () => {
 
     fetchNotifications();
     
-    const intervalId = setInterval(() => {
-      fetchNotifications();
-    }, 10000);
+    // const intervalId = setInterval(() => {
+    //   fetchNotifications();
+    // }, 10000);
 
-    return () => clearInterval(intervalId);
+    // return () => clearInterval(intervalId);
   }, [brgy]);
 
   useEffect(() => {
-    const handleNotifications = (obj) => {
-      setNotifications((prev) => ({ ...prev, ...obj }));
+    const handleNotifications = (get_notifications) => {
+      setNotification(get_notifications);
+      setNotifications((prev) => [get_notifications, ...prev]);
     };
 
     socket.on("receive-staff-notif", handleNotifications);

@@ -7,10 +7,8 @@ import { CiImageOn } from "react-icons/ci";
 import AddLoader from "./loaders/AddLoader";
 import ErrorPopup from "./popup/ErrorPopup";
 import GetBrgy from "../GETBrgy/getbrgy";
-import { io } from "socket.io-client";
-const socket = io("http://localhost:8800");
 
-function CreateServiceModal({ brgy }) {
+function CreateServiceModal({ brgy, socket }) {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
@@ -182,6 +180,7 @@ function CreateServiceModal({ brgy }) {
 
 
           if (result.status === 200) {
+            socket.emit("send-resident-notif", result.data);
             handleResetModal();
             setLogo();
             setBanner();

@@ -27,6 +27,7 @@ const socket = io(Socket_link);
 const EventsManagement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
+  const [newEvents, setNewEvents] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
@@ -106,6 +107,7 @@ const EventsManagement = () => {
           Promise.all(announcementsData).then((announcementsWithCounts) => {
             setAnnouncementWithCounts(announcementsWithCounts);
             setFilteredAnnouncements(announcementsWithCounts);
+            setNewEvents(announcementWithCounts)
           });
 
           setPageCount(announcementsResponse.data.pageCount);
@@ -125,7 +127,7 @@ const EventsManagement = () => {
   }, [brgy, update]);
 
   useEffect(() => {
-    const filteredData = announcements.filter((item) =>
+    const filteredData = newEvents.filter((item) =>
       item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.event_id.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -133,7 +135,7 @@ const EventsManagement = () => {
     const endIndex = startIndex + 10;
     setFilteredAnnouncements(filteredData.slice(startIndex, endIndex));
     setPageCount(Math.ceil(filteredData.length / 10));
-  }, [announcements, searchQuery, currentPage]);
+  }, [newEvents, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
