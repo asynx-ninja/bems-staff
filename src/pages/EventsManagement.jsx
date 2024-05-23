@@ -72,7 +72,7 @@ const EventsManagement = () => {
 
           Promise.all(announcementsData).then((announcementsWithCounts) => {
             setAnnouncementWithCounts(announcementsWithCounts);
-            setFilteredAnnouncements(announcementsWithCounts);
+            setFilteredAnnouncements(announcementsWithCounts.slice(0, 10));
             setNewEvents(announcementsWithCounts)
           });
 
