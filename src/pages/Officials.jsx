@@ -139,9 +139,10 @@ const Officials = () => {
   };
 
   useEffect(() => {
-    const handleOfficial = (get_official) => {
-      setOfficials(get_official);
-      setfilterOfficials((prev) => [get_official, ...prev]);
+    const handleOfficial = (obj) => {
+      setOfficials(obj);
+      setNewOfficials((prev) => [obj, ...prev]);
+      setfilterOfficials((prev) => [obj, ...prev]);
     };
 
     const handleOfficialUpdate = (get_updated_official) => {

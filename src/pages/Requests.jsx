@@ -70,30 +70,23 @@ const Requests = () => {
   }, [socket, setRequest]);
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchServices = async () => {
       try {
-        let page = 0;
-        let arr = [];
-        while (true) {
-          const response = await axios.get(
-            `${API_LINK}/services/?brgy=${brgy}&archived=false&page=${page}`
-          );
-          if (response.status === 200 && response.data.result.length > 0) {
-            response.data.result.map((item) => {
-              arr.push(item.name);
-            });
-            page++;
-          } else {
-            break;
-          }
+        const response = await axios.get(`${API_LINK}/services/get_distinct_services/?brgy=${brgy}&archived=false`);
+        if (response.status === 200) {
+          const services = response.data.map(item => item._id);
+          setRequestFilter(services);
         }
-        setRequestFilter(arr);
       } catch (err) {
         console.log(err);
       }
     };
-    fetch();
+    fetchServices();
   }, [brgy]);
+
+  const handleRequestFilter = (selectedType) => {
+    setSelectedReqFilter(selectedType);
+  };
 
   useEffect(() => {
     const fetch = async () => {
@@ -105,16 +98,19 @@ const Requests = () => {
         if (response.status === 200) {
           console.log("Filtered Requests:", response.data.result);
           setRequests(response.data.result);
-          setPageCount(response.data.pageCount);
+          setPageCount(Math.ceil(response.data.result.length / 10));
           setFilteredRequests(response.data.result.slice(0, 10));
-        } else setRequests([]);
+        } else {
+          setRequests([]);
+        }
       } catch (err) {
+        console.log(err);
       }
     };
 
     fetch();
-    
-  }, [ statusFilter, selectedReqFilter]);
+  }, [brgy, statusFilter, selectedReqFilter]);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -142,88 +138,47 @@ const Requests = () => {
     };
 
     fetchData();
-  }, [brgy]); // Add positionFilter dependency
+  }, [currentPage, brgy]); // Add positionFilter dependency
 
+  useEffect(() => {
+    const filteredData = requests.filter((item) => {
+      const fullName = item.form[0].lastName.value.toLowerCase() +
+        ", " +
+        item.form[0].firstName.value.toLowerCase() +
+        " " +
+        item.form[0].middleName.value.toLowerCase();
 
-  // useEffect(() => {
-  //   const filteredData = requests.filter((item) => {
-  //     const fullName = item.form[0].lastName.value.toLowerCase() +
-  //       ", " +
-  //       item.form[0].firstName.value.toLowerCase() +
-  //       " " +
-  //       item.form[0].middleName.value.toLowerCase();
-  
-  //     return (
-  //       item.service_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //       item.req_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //       fullName.includes(searchQuery.toLowerCase())
-  //     );
-  //   });
-  //  console.log("wew")
-  //   const startIndex = currentPage * 10;
-  //   const endIndex = startIndex + 10;
-  //   setFilteredRequests(filteredData.slice(startIndex, endIndex));
-  //   setPageCount(Math.ceil(filteredData.length / 10));
-  // }, [requests, searchQuery, currentPage]);
-  
+      return (
+        item.service_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.req_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        fullName.includes(searchQuery.toLowerCase())
+      );
+    });
+
+    console.log("wew");
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredRequests(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [requests, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
-    console.log(selected)
-    const value = searchQuery
-    const filteredData = requests.filter((item) => {
-          const fullName = item.form[0].lastName.value.toLowerCase() +
-            ", " +
-            item.form[0].firstName.value.toLowerCase() +
-            " " +
-            item.form[0].middleName.value.toLowerCase();
-      
-          return (
-            item.service_name.toLowerCase().includes(value.toLowerCase()) ||
-            item.req_id.toLowerCase().includes(value.toLowerCase()) ||
-            fullName.includes(value.toLowerCase())
-          );
-        });
-          const startIndex = selected * 10;
-          const endIndex = startIndex + 10;
-          setFilteredRequests(filteredData.slice(startIndex, endIndex));
-          setPageCount(Math.ceil(filteredData.length / 10));
   };
-  
 
   // Handle search input change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
-    const value = e.target.value
-    const filteredData = requests.filter((item) => {
-          const fullName = item.form[0].lastName.value.toLowerCase() +
-            ", " +
-            item.form[0].firstName.value.toLowerCase() +
-            " " +
-            item.form[0].middleName.value.toLowerCase();
-      
-          return (
-            item.service_name.toLowerCase().includes(value.toLowerCase()) ||
-            item.req_id.toLowerCase().includes(value.toLowerCase()) ||
-            fullName.includes(value.toLowerCase())
-          );
-        });
-        const startIndex = currentPage * 10;
-          const endIndex = startIndex + 10;
-          setFilteredRequests(filteredData.slice(startIndex, endIndex));
-          setPageCount(Math.ceil(filteredData.length / 10));
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
   const handleStatusFilter = (selectedStatus) => {
     setStatusFilter(selectedStatus);
   };
 
-  const handleRequestFilter = (selectedType) => {
-    setSelectedReqFilter(selectedType);
-  };
+
 
   const handleResetFilter = () => {
-    setStatusFilter("all");
-    setRequestFilter("all");
     setRequest();
     setSearchQuery("");
   };

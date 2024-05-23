@@ -127,6 +127,11 @@ const Residents = () => {
     setCurrentPage(selected);
   };
 
+  const handleStatusFilter = (selectedStatus) => {
+    setStatusFilter(selectedStatus);
+  };
+
+  
   // Handle search input change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
