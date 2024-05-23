@@ -73,6 +73,16 @@ const ViewDropbox = ({ viewFiles, setViewFiles }) => {
     }
   };
 
+  function truncateFileName(fileName) {
+    const maxLength = 20; // Maximum length of the displayed file name
+    if (fileName.length <= maxLength) {
+      return fileName;
+    } else {
+      const truncatedFileName = fileName.substring(0, maxLength / 2) + "..." + fileName.substring(fileName.length - maxLength / 2);
+      return truncatedFileName;
+    }
+  }
+
 
   return (
     <div className="">
