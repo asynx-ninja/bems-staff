@@ -6,15 +6,7 @@ import EditSectionDocument from "./EditSectionDocument";
 import EditFormLoader from "../../loaders/EditFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 
-const EditBlotterDocument = ({
-  request,
-  brgy,
-  setEditUpdate,
-  editupdate,
-  socket,
-  eventsForm,
-  setEventsForm,
-}) => {
+const EditBlotterDocument = ({ request, brgy, setEditUpdate, editupdate }) => {
   const information = GetBrgy(brgy);
   const [details, setDetails] = useState([]);
   const [detail, setDetail] = useState({});
@@ -95,7 +87,9 @@ const EditBlotterDocument = ({
           setSubmitClicked(null);
           setUpdatingStatus(null);
           handleResetServiceId();
-          HSOverlay.close(document.getElementById("hs-edit-serviceDocument-modal"));
+          HSOverlay.close(
+            document.getElementById("hs-edit-serviceDocument-modal")
+          );
         }, 3000);
       }, 1000);
     } catch (err) {

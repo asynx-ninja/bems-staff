@@ -15,6 +15,9 @@ import { useSearchParams } from "react-router-dom";
 import ReplyLoader from "./loaders/ReplyLoader";
 import moment from "moment";
 import GetBrgy from "../GETBrgy/getbrgy";
+import { CiCircleRemove } from "react-icons/ci";
+import { MdRemoveCircle } from "react-icons/md";
+import { TiDelete } from "react-icons/ti";
 
 function ReplyServiceModal({
   request,
@@ -56,22 +59,20 @@ function ReplyServiceModal({
   const [users, setUsers] = useState([]);
   const [selectedComplainant, setSelectedComplainant] = useState(null);
   const [selectedDefendant, setSelectedDefendant] = useState(null);
+  const [complainantInfo, setComplainantInfo] = useState({
+    firstName: "",
+    middleName: "",
+    lastName: "",
+  });
+  const [defendantInfo, setDefendantInfo] = useState({
+    firstName: "",
+    middleName: "",
+    lastName: "",
+  });
   const [customComplainant, setCustomComplainant] = useState(false);
   const [customDefendant, setCustomDefendant] = useState(false);
-  const [ComplainantData, setComplainantData] = useState({
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    user_id: "",
-    type: "Complainant",
-  });
-  const [DefendantData, setDefendantData] = useState({
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    user_id: "",
-    type: "Defendant",
-  });
+  const [ComplainantData, setComplainantData] = useState([]);
+  const [DefendantData, setDefendantData] = useState([]);
   const [ResponseData, setResponseData] = useState({
     sender: "",
     type: "Staff",
@@ -87,39 +88,103 @@ function ReplyServiceModal({
     req_id: "",
   });
 
-  // useEffect(() => {
-  //   var container = document.getElementById("scrolltobottom");
-  //   container.scrollTop = container.scrollHeight;
-  // });
+  // console.log("blotterDetails: ", blotterDetails);
+
+  const handleAddComplainant = () => {
+    if (
+      complainantInfo.firstName &&
+      complainantInfo.middleName &&
+      complainantInfo.lastName
+    ) {
+      setComplainantData([...ComplainantData, complainantInfo]);
+      setComplainantInfo({
+        firstName: "",
+        middleName: "",
+        lastName: "",
+      });
+    }
+  };
 
   const handleComplainantChange = (e) => {
     const selectedUserId = e.target.value;
+
+    // Check if the selected user is already in the ComplainantData array
+    const isUserAlreadyAdded = ComplainantData.some(
+      (complainant) => complainant.user_id === selectedUserId
+    );
+
+    // If the user is already added, do not add it again
+    if (isUserAlreadyAdded) {
+      return;
+    }
+
     setSelectedComplainant(selectedUserId);
 
-    // Fetch and set complainant user data
     const selectedUser = users.find((user) => user._id === selectedUserId);
-    setComplainantData({
+    const newComplainant = {
       firstName: selectedUser.firstName,
       middleName: selectedUser.middleName || "",
       lastName: selectedUser.lastName,
       user_id: selectedUser.user_id,
       type: "Complainant",
-    });
+    };
+
+    setComplainantData((prevComplainants) => [
+      ...prevComplainants,
+      newComplainant,
+    ]);
+  };
+
+  const removeComplainant = (e, index) => {
+    e.preventDefault();
+    setComplainantData(ComplainantData.filter((_, i) => i !== index));
+  };
+
+  const handleAddDefendant = () => {
+    if (
+      defendantInfo.firstName &&
+      defendantInfo.middleName &&
+      defendantInfo.lastName
+    ) {
+      setDefendantData([...DefendantData, defendantInfo]);
+      setDefendantInfo({
+        firstName: "",
+        middleName: "",
+        lastName: "",
+      });
+    }
   };
 
   const handleDefendantChange = (e) => {
     const selectedUserId = e.target.value;
+
+    // Check if the selected user is already in the DefendantData array
+    const isUserAlreadyAdded = DefendantData.some(
+      (defendant) => defendant.user_id === selectedUserId
+    );
+
+    // If the user is already added, do not add it again
+    if (isUserAlreadyAdded) {
+      return;
+    }
+
     setSelectedDefendant(selectedUserId);
 
-    // Fetch and set defendant user data
     const selectedUser = users.find((user) => user._id === selectedUserId);
-    setDefendantData({
+    const newDefendant = {
       firstName: selectedUser.firstName,
       middleName: selectedUser.middleName || "",
       lastName: selectedUser.lastName,
       user_id: selectedUser.user_id,
       type: "Defendant",
-    });
+    };
+
+    setDefendantData((prevDefendants) => [...prevDefendants, newDefendant]);
+  };
+
+  const removeDefendant = (e, index) => {
+    e.preventDefault();
+    setDefendantData(DefendantData.filter((_, i) => i !== index));
   };
 
   useEffect(() => {
@@ -432,11 +497,16 @@ function ReplyServiceModal({
         return;
       }
 
-      const targetUserIds = [ComplainantData.user_id, DefendantData.user_id];
+      const targetUserIds = [
+        ...ComplainantData.map((complainant) => complainant.user_id),
+        ...DefendantData.map((defendant) => defendant.user_id),
+      ];
+
+      // console.log("targetUserIds: ", targetUserIds);
 
       const obj = {
         name: patawagData.name,
-        to: [ComplainantData, DefendantData],
+        to: { complainant: ComplainantData, defendant: DefendantData },
         brgy: detail.brgy,
         responses: [
           {
@@ -468,18 +538,28 @@ function ReplyServiceModal({
         );
 
         if (response.status === 200) {
-          setCreateFiles([]);
-          setNewMessage({ message: "" });
-          setReplyingStatus(null);
-          setReply(false);
-          setStatusChanger(false);
+          // setCreateFiles([]);
+          // setResponseData({
+          //   sender: "",
+          //   type: "Staff",
+          //   message: "",
+          //   date: new Date().toISOString(),
+          //   status: "",
+          // });
+          // setReply(false);
+          // setStatusChanger(false);
+
+          // setSubmitClicked(false);
+          // // socket.emit("send-patawag", response.data);
+          // setOnSend(false);
+          // setUpdate(true);
 
           const notify = {
             category: "One",
             compose: {
               subject: `PATAWAG - ${request.service_name}`,
               message: `A barangay staff has started your blotter request.\n\n
-        
+
               Please update this service request as you've seen this notification!\n\n
               Thank you!!,`,
               go_to: "Patawag",
@@ -499,15 +579,26 @@ function ReplyServiceModal({
             },
           });
 
+          // console.log("notify: ", notify);
+
+          // console.log("notif result: ", result.data)
+
           if (result.status === 200) {
+            socket.emit("send-patawag", response.data);
             setCreateFiles([]);
-            setResponseData({ message: "" });
+            setResponseData({
+              sender: "",
+              type: "Staff",
+              message: "",
+              date: new Date().toISOString(),
+              status: "",
+            });
             setReplyingStatus(null);
             setReply(false);
             setStatusChanger(false);
 
             setSubmitClicked(false);
-            socket.emit("send-reply-patawag", response.data);
+            socket.emit("send-patawag", response.data);
             setOnSend(false);
             setUpdate(true);
           }
@@ -520,6 +611,8 @@ function ReplyServiceModal({
       setError("An error occurred while replying to the service request.");
     }
   };
+
+  // console.log("blotterDetails: ", blotterDetails);
 
   const handleSendReply = async (e) => {
     try {
@@ -534,9 +627,13 @@ function ReplyServiceModal({
       }
 
       const targetUserIds = [
-        blotterDetails?.to[0]?.user_id,
-        blotterDetails?.to[1]?.user_id,
+        ...blotterDetails?.to?.complainant?.map(
+          (complainant) => complainant.user_id
+        ),
+        ...blotterDetails?.to?.defendant?.map((defendant) => defendant.user_id),
       ];
+
+      console.log("targetUserIds: ", targetUserIds);
 
       const obj = {
         sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
@@ -565,18 +662,12 @@ function ReplyServiceModal({
         );
 
         if (response.status === 200) {
-          setCreateFiles([]);
-          setResponseData({ message: "" });
-          setReplyingStatus(null);
-          setReply(false);
-          setStatusChanger(false);
-
           const notify = {
             category: "One",
             compose: {
-              subject: `PATAWAG REPLIED - ${request.service_name}`,
+              subject: `PATAWAG - NEW MESSAGE`,
               message: `A barangay staff has replied to your patawag conversation.\n\n
-        
+
               Please view and respond as you've seen this notification!\n\n
               Thank you!`,
               go_to: "Patawag",
@@ -597,8 +688,19 @@ function ReplyServiceModal({
           });
 
           if (result.status === 200) {
-            socket.emit("send-reply-patawag", response.data);
+            socket.emit("send-patawag", response.data);
             setOnSend(false);
+
+            setCreateFiles([]);
+            setResponseData({
+              sender: "",
+              type: "Staff",
+              message: "",
+              date: new Date().toISOString(),
+              status: "",
+            });
+            setReply(false);
+            setStatusChanger(false);
           }
         }
       }
@@ -618,27 +720,17 @@ function ReplyServiceModal({
   const handleResetModal = () => {
     setStatusChanger(false);
     setCreateFiles([]);
-    setResponseData({
-      sender: "",
-      type: "Staff",
-      message: "",
-      date: new Date().toISOString(),
-      status: "",
-    });
-    setComplainantData({
-      firstName: "",
-      middleName: "",
-      lastName: "",
-      user_id: "",
-      type: "Complainant",
-    });
-    setDefendantData({
-      firstName: "",
-      middleName: "",
-      lastName: "",
-      user_id: "",
-      type: "Defendant",
-    });
+    setResponseData([
+      {
+        sender: "",
+        type: "Staff",
+        message: "",
+        date: new Date().toISOString(),
+        status: "",
+      },
+    ]);
+    setComplainantData([]);
+    setDefendantData([]);
     setPatawagData({
       name: "",
       to: [ComplainantData, DefendantData],
@@ -732,7 +824,7 @@ function ReplyServiceModal({
                                       onClick={(e) => {
                                         e.preventDefault();
                                         handleOnCustomComplainant();
-                                        resetComplainantData();
+                                        // resetComplainantData();
                                       }}
                                       className="hs-tooltip rounded-md px-2 py-1 text-xs bg-teal-800 text-white hover:bg-teal-900 focus:shadow-outline focus:outline-none"
                                     >
@@ -751,7 +843,7 @@ function ReplyServiceModal({
                                       onClick={(e) => {
                                         e.preventDefault();
                                         handleOnCustomComplainant();
-                                        resetComplainantData();
+                                        // resetComplainantData();
                                       }}
                                       className="hs-tooltip rounded-md px-2 py-1 text-xs bg-pink-800 text-white hover:bg-pink-900 focus:shadow-outline focus:outline-none"
                                     >
@@ -767,113 +859,159 @@ function ReplyServiceModal({
                                 )}
                               </div>
 
-                              {!customComplainant ? (
-                                <div>
-                                  {/* Complainant Search Bar */}
-                                  <input
-                                    type="text"
-                                    placeholder="Search complainant..."
-                                    value={searchTermComplainant}
-                                    onChange={(e) =>
-                                      setSearchTermComplainant(e.target.value)
-                                    }
-                                    className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
-                                  />
+                              <div>
+                                {!customComplainant ? (
+                                  <div></div>
+                                ) : (
+                                  <div className="flex flex-col">
+                                    <div className="flex flex-row mb-1 w-full space-x-2 mt-2">
+                                      <div className="flex flex-col w-full">
+                                        <label
+                                          className="block text-gray-700 text-sm font-bold flex items-center"
+                                          htmlFor="firstName"
+                                        >
+                                          First Name
+                                        </label>
+                                        <input
+                                          type="text"
+                                          name="firstName"
+                                          placeholder="Enter First Name..."
+                                          className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                                          value={complainantInfo.firstName}
+                                          onChange={(e) =>
+                                            setComplainantInfo({
+                                              ...complainantInfo,
+                                              firstName: e.target.value,
+                                            })
+                                          }
+                                        />
+                                      </div>
+                                      <div className="flex flex-col w-full">
+                                        <label
+                                          className="block text-gray-700 text-sm font-bold flex items-center"
+                                          htmlFor="middleName"
+                                        >
+                                          Middle Name
+                                        </label>
+                                        <input
+                                          type="text"
+                                          name="middleName"
+                                          placeholder="Enter Middle Name..."
+                                          className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                                          value={complainantInfo.middleName}
+                                          onChange={(e) =>
+                                            setComplainantInfo({
+                                              ...complainantInfo,
+                                              middleName: e.target.value,
+                                            })
+                                          }
+                                        />
+                                      </div>
+                                      <div className="flex flex-col w-full">
+                                        <label
+                                          className="block text-gray-700 text-sm font-bold flex items-center"
+                                          htmlFor="lastName"
+                                        >
+                                          Last Name
+                                        </label>
+                                        <input
+                                          type="text"
+                                          name="lastName"
+                                          placeholder="Enter Last Name..."
+                                          className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                                          value={complainantInfo.lastName}
+                                          onChange={(e) =>
+                                            setComplainantInfo({
+                                              ...complainantInfo,
+                                              lastName: e.target.value,
+                                            })
+                                          }
+                                        />
+                                      </div>
+                                    </div>
 
-                                  {/* Complainant Select Dropdown */}
-                                  <select
-                                    id="complainant"
-                                    name="complainant"
-                                    value={selectedComplainant}
-                                    onChange={handleComplainantChange}
-                                    className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                                    <div className="my-1">
+                                      <button
+                                        type="button"
+                                        className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
+                                        onClick={handleAddComplainant}
+                                      >
+                                        ADD
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Complainant Search Bar */}
+                                <input
+                                  type="text"
+                                  placeholder="Search complainant..."
+                                  value={searchTermComplainant}
+                                  onChange={(e) =>
+                                    setSearchTermComplainant(e.target.value)
+                                  }
+                                  className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                                />
+
+                                {/* Complainant Select Dropdown */}
+                                <select
+                                  id="complainant"
+                                  name="complainant"
+                                  value={selectedComplainant}
+                                  onChange={handleComplainantChange}
+                                  className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                                >
+                                  <option>
+                                    -- Select An Existing Resident --
+                                  </option>
+                                  {filteredUsersComplainant
+                                    .filter(
+                                      (user, index, self) =>
+                                        index ===
+                                        self.findIndex(
+                                          (u) => u._id === user._id
+                                        )
+                                    )
+                                    .map((user) => (
+                                      <option key={user.id} value={user._id}>
+                                        {`${user.firstName} ${
+                                          user.middleName
+                                            ? user.middleName + " "
+                                            : ""
+                                        } ${user.lastName}`}
+                                      </option>
+                                    ))}
+                                </select>
+
+                                {ComplainantData.map((complainant, index) => (
+                                  <div
+                                    key={index}
+                                    className="inline-flex justify-center items-center space-x-2 text-[#414141] font-medium text-sm border border-gray-200 shadow-sm rounded-xl py-2 px-3 mt-2 mr-2"
+                                    style={{
+                                      background:
+                                        "linear-gradient(to right, #99e2b4, #67b99a)",
+                                    }}
                                   >
-                                    <option>
-                                      -- Select An Existing Resident --
-                                    </option>
-                                    {filteredUsersComplainant
-                                      .filter(
-                                        (user, index, self) =>
-                                          index ===
-                                          self.findIndex(
-                                            (u) => u._id === user._id
-                                          )
-                                      )
-                                      .map((user) => (
-                                        <option key={user.id} value={user._id}>
-                                          {`${user.firstName} ${
-                                            user.middleName
-                                              ? user.middleName + " "
-                                              : ""
-                                          } ${user.lastName}`}
-                                        </option>
-                                      ))}
-                                  </select>
-                                </div>
-                              ) : (
-                                <div className="flex flex-row mb-4 w-full space-x-2 mt-2">
-                                  <div className="flex flex-col w-full">
-                                    <label
-                                      className="block text-gray-700 text-sm font-bold flex items-center"
-                                      htmlFor="firstName"
-                                    >
-                                      First Name
-                                    </label>
-                                    <input
-                                      type="text"
-                                      name="firstName"
-                                      placeholder="Enter First Name..."
-                                      onChange={(e) =>
-                                        setComplainantData((prev) => ({
-                                          ...prev,
-                                          firstName: e.target.value,
-                                        }))
+                                    <p className="text-center">
+                                      {complainant.firstName}{" "}
+                                      {complainant.middleName}{" "}
+                                      {complainant.lastName}
+                                    </p>
+
+                                    <button
+                                      className=" border-black bg-pink-800 md:bg-transparent mt-2 md:mt-0 rounded-lg"
+                                      onClick={(e) =>
+                                        removeComplainant(e, index)
                                       }
-                                      className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
-                                    />
-                                  </div>
-                                  <div className="flex flex-col w-full">
-                                    <label
-                                      className="block text-gray-700 text-sm font-bold flex items-center"
-                                      htmlFor="middleName"
                                     >
-                                      Middle Name
-                                    </label>
-                                    <input
-                                      type="text"
-                                      name="middleName"
-                                      placeholder="Enter Middle Name..."
-                                      onChange={(e) =>
-                                        setComplainantData((prev) => ({
-                                          ...prev,
-                                          middleName: e.target.value || "",
-                                        }))
-                                      }
-                                      className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
-                                    />
+                                      <TiDelete
+                                        size={24}
+                                        className="text-[#a35050] my-1 md:my-0 mx-auto md:mx-none hover:text-red-800 rounded-full"
+                                      />
+                                    </button>
                                   </div>
-                                  <div className="flex flex-col w-full">
-                                    <label
-                                      className="block text-gray-700 text-sm font-bold flex items-center"
-                                      htmlFor="lastName"
-                                    >
-                                      Last Name
-                                    </label>
-                                    <input
-                                      type="text"
-                                      name="lastName"
-                                      placeholder="Enter Last Name..."
-                                      onChange={(e) =>
-                                        setComplainantData((prev) => ({
-                                          ...prev,
-                                          lastName: e.target.value,
-                                        }))
-                                      }
-                                      className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
-                                    />
-                                  </div>
-                                </div>
-                              )}
+                                ))}
+                              </div>
                             </div>
 
                             {/* Defendant Section */}
@@ -892,7 +1030,7 @@ function ReplyServiceModal({
                                       onClick={(e) => {
                                         e.preventDefault();
                                         handleOnCustomDefendant();
-                                        resetDefendantData();
+                                        // resetDefendantData();
                                       }}
                                       className="hs-tooltip rounded-md px-2 py-1 text-xs bg-teal-800 text-white hover:bg-teal-900 focus:shadow-outline focus:outline-none"
                                     >
@@ -911,7 +1049,7 @@ function ReplyServiceModal({
                                       onClick={(e) => {
                                         e.preventDefault();
                                         handleOnCustomDefendant();
-                                        resetDefendantData();
+                                        // resetDefendantData();
                                       }}
                                       className="hs-tooltip rounded-md px-2 py-1 text-xs bg-pink-800 text-white hover:bg-pink-900 focus:shadow-outline focus:outline-none"
                                     >
@@ -928,112 +1066,156 @@ function ReplyServiceModal({
                               </div>
 
                               {!customDefendant ? (
-                                <div>
-                                  {/* Defendant Search Bar */}
-                                  <input
-                                    type="text"
-                                    placeholder="Search defendant..."
-                                    value={searchTermDefendant}
-                                    onChange={(e) =>
-                                      setSearchTermDefendant(e.target.value)
-                                    }
-                                    className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
-                                  />
-
-                                  {/* Defendant Select Dropdown */}
-                                  <select
-                                    id="defendant"
-                                    name="defendant"
-                                    value={selectedDefendant}
-                                    onChange={handleDefendantChange}
-                                    className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
-                                  >
-                                    <option>
-                                      -- Select An Existing Resident --
-                                    </option>
-                                    {filteredUsersDefendant
-                                      .filter(
-                                        (user, index, self) =>
-                                          index ===
-                                          self.findIndex(
-                                            (u) => u._id === user._id
-                                          )
-                                      )
-                                      .map((user) => (
-                                        <option key={user.id} value={user._id}>
-                                          {`${user.firstName} ${
-                                            user.middleName
-                                              ? user.middleName + " "
-                                              : ""
-                                          } ${user.lastName}`}
-                                        </option>
-                                      ))}
-                                  </select>
-                                </div>
+                                <div></div>
                               ) : (
-                                <div className="flex flex-row mb-4 w-full space-x-2 mt-2">
-                                  <div className="flex flex-col w-full">
-                                    <label
-                                      className="block text-gray-700 text-sm font-bold flex items-center"
-                                      htmlFor="firstName"
-                                    >
-                                      First Name
-                                    </label>
-                                    <input
-                                      type="text"
-                                      name="firstName"
-                                      placeholder="Enter First Name..."
-                                      onChange={(e) =>
-                                        setDefendantData((prev) => ({
-                                          ...prev,
-                                          firstName: e.target.value,
-                                        }))
-                                      }
-                                      className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
-                                    />
+                                <div className="flex flex-col">
+                                  <div className="flex flex-row mb-1 w-full space-x-2 mt-2">
+                                    <div className="flex flex-col w-full">
+                                      <label
+                                        className="block text-gray-700 text-sm font-bold flex items-center"
+                                        htmlFor="firstName"
+                                      >
+                                        First Name
+                                      </label>
+                                      <input
+                                        type="text"
+                                        name="firstName"
+                                        placeholder="Enter First Name..."
+                                        className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                                        value={defendantInfo.firstName}
+                                        onChange={(e) =>
+                                          setDefendantInfo({
+                                            ...defendantInfo,
+                                            firstName: e.target.value,
+                                          })
+                                        }
+                                      />
+                                    </div>
+                                    <div className="flex flex-col w-full">
+                                      <label
+                                        className="block text-gray-700 text-sm font-bold flex items-center"
+                                        htmlFor="middleName"
+                                      >
+                                        Middle Name
+                                      </label>
+                                      <input
+                                        type="text"
+                                        name="middleName"
+                                        placeholder="Enter Middle Name..."
+                                        className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                                        value={defendantInfo.middleName}
+                                        onChange={(e) =>
+                                          setDefendantInfo({
+                                            ...defendantInfo,
+                                            middleName: e.target.value,
+                                          })
+                                        }
+                                      />
+                                    </div>
+                                    <div className="flex flex-col w-full">
+                                      <label
+                                        className="block text-gray-700 text-sm font-bold flex items-center"
+                                        htmlFor="lastName"
+                                      >
+                                        Last Name
+                                      </label>
+                                      <input
+                                        type="text"
+                                        name="lastName"
+                                        placeholder="Enter Last Name..."
+                                        className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                                        value={defendantInfo.lastName}
+                                        onChange={(e) =>
+                                          setDefendantInfo({
+                                            ...defendantInfo,
+                                            lastName: e.target.value,
+                                          })
+                                        }
+                                      />
+                                    </div>
                                   </div>
-                                  <div className="flex flex-col w-full">
-                                    <label
-                                      className="block text-gray-700 text-sm font-bold flex items-center"
-                                      htmlFor="middleName"
+
+                                  <div className="my-1">
+                                    <button
+                                      type="button"
+                                      className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
+                                      onClick={handleAddDefendant}
                                     >
-                                      Middle Name
-                                    </label>
-                                    <input
-                                      type="text"
-                                      name="middleName"
-                                      placeholder="Enter Middle Name..."
-                                      onChange={(e) =>
-                                        setDefendantData((prev) => ({
-                                          ...prev,
-                                          middleName: e.target.value || "",
-                                        }))
-                                      }
-                                      className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
-                                    />
-                                  </div>
-                                  <div className="flex flex-col w-full">
-                                    <label
-                                      className="block text-gray-700 text-sm font-bold flex items-center"
-                                      htmlFor="lastName"
-                                    >
-                                      Last Name
-                                    </label>
-                                    <input
-                                      type="text"
-                                      name="lastName"
-                                      placeholder="Enter Last Name..."
-                                      onChange={(e) =>
-                                        setDefendantData((prev) => ({
-                                          ...prev,
-                                          lastName: e.target.value,
-                                        }))
-                                      }
-                                      className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
-                                    />
+                                      ADD
+                                    </button>
                                   </div>
                                 </div>
                               )}
+
+                              <div>
+                                {/* Defendant Search Bar */}
+                                <input
+                                  type="text"
+                                  placeholder="Search defendant..."
+                                  value={searchTermDefendant}
+                                  onChange={(e) =>
+                                    setSearchTermDefendant(e.target.value)
+                                  }
+                                  className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                                />
+
+                                {/* Defendant Select Dropdown */}
+                                <select
+                                  id="defendant"
+                                  name="defendant"
+                                  value={selectedDefendant}
+                                  onChange={handleDefendantChange}
+                                  className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
+                                >
+                                  <option>
+                                    -- Select An Existing Resident --
+                                  </option>
+                                  {filteredUsersDefendant
+                                    .filter(
+                                      (user, index, self) =>
+                                        index ===
+                                        self.findIndex(
+                                          (u) => u._id === user._id
+                                        )
+                                    )
+                                    .map((user) => (
+                                      <option key={user.id} value={user._id}>
+                                        {`${user.firstName} ${
+                                          user.middleName
+                                            ? user.middleName + " "
+                                            : ""
+                                        } ${user.lastName}`}
+                                      </option>
+                                    ))}
+                                </select>
+
+                                {DefendantData.map((defendant, index) => (
+                                  <div
+                                    key={index}
+                                    className="inline-flex justify-center items-center space-x-2 text-[#414141] font-medium text-sm border border-gray-200 shadow-sm rounded-xl py-2 px-3 mt-2 mr-2"
+                                    style={{
+                                      background:
+                                        "linear-gradient(to right, #99e2b4, #67b99a)",
+                                    }}
+                                  >
+                                    <p>
+                                      {defendant.firstName}{" "}
+                                      {defendant.middleName}{" "}
+                                      {defendant.lastName}
+                                    </p>
+
+                                    <button
+                                      className=" border-black bg-pink-800 md:bg-transparent mt-2 md:mt-0 rounded-lg"
+                                      onClick={(e) => removeDefendant(e, index)}
+                                    >
+                                      <TiDelete
+                                        size={24}
+                                        className="text-[#a35050] my-1 md:my-0 mx-auto md:mx-none hover:text-red-800 rounded-full"
+                                      />
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                           </div>
 

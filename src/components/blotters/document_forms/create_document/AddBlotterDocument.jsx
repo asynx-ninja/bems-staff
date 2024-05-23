@@ -31,7 +31,7 @@ const AddBlotterDocument = ({ request, brgy, socket, setUpdate }) => {
     contact: "",
   });
 
-  console.log("Document: ", document);
+  // console.log("Document: ", document);
 
   const handleChange = (e) => {
     setDocument((prev) => ({
