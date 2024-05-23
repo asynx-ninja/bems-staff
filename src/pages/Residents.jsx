@@ -25,6 +25,7 @@ const socket = io(Socket_link);
 const Residents = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [users, setUsers] = useState([]);
+  const [newUsers, setNewUsers] = useState([])
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
@@ -93,6 +94,7 @@ const Residents = () => {
       if (response.status === 200) {
         setUsers(response.data.result);
         setFilteredResidents(response.data.result.slice(0, 10));
+        setNewUsers(response.data.result)
         setPageCount(response.data.pageCount);
       } else {
         setUsers([]);
@@ -103,7 +105,7 @@ const Residents = () => {
   }, [brgy, statusFilter]);
 
   useEffect(() => {
-    const filteredData = users.filter((item) => {
+    const filteredData = newUsers.filter((item) => {
       const fullName = item.lastName.toLowerCase() +
         ", " +
         item.firstName.toLowerCase() +
@@ -119,7 +121,7 @@ const Residents = () => {
     const endIndex = startIndex + 10;
     setFilteredResidents(filteredData.slice(startIndex, endIndex));
     setPageCount(Math.ceil(filteredData.length / 10));
-  }, [users, searchQuery, currentPage]);
+  }, [newUsers, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);

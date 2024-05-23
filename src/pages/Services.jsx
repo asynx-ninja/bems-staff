@@ -28,6 +28,7 @@ const socket = io(Socket_link);
 const Services = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [services, setServices] = useState([]);
+  const [newServices, setNewServices] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
   const id = searchParams.get("id");
@@ -75,11 +76,14 @@ const Services = () => {
   };
 
   useEffect(() => {
-
-
     const handleService = (obj) => {
-     setServices(obj => Array.isArray(obj) ? obj : obj);
-      setFilteredServices(prev => [obj, ...prev]);
+      // setAnnouncement((prevApplication) => ({
+      //   ...prevApplication
+      // }));
+      console.log("wew", filteredServices);
+      console.log("wew", obj);
+      setServices(obj);
+      setFilteredServices((prev) => [obj, ...prev]);
     };
 
     const handleServiceForm = (obj) => {
@@ -120,6 +124,7 @@ const Services = () => {
       if (response.status === 200) {
         console.log(response.data)
         setServices(response.data.result);
+        setNewServices(response.data.result)
         setFilteredServices(response.data.result.slice(0, 10));
         setPageCount(response.data.pageCount);
       } else setServices([]);
@@ -129,11 +134,7 @@ const Services = () => {
   }, [brgy, statusFilter, serviceFilter]);
 
   useEffect(() => {
-    if (!Array.isArray(services)) {
-      console.error('Officials is not an array', officials);
-      return;
-    }
-    const filteredData = services.filter((item) =>
+    const filteredData = newServices.filter((item) =>
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.service_id.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -141,7 +142,7 @@ const Services = () => {
     const endIndex = startIndex + 10;
     setFilteredServices(filteredData.slice(startIndex, endIndex));
     setPageCount(Math.ceil(filteredData.length / 10));
-  }, [services, searchQuery, currentPage]);
+  }, [newServices, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
