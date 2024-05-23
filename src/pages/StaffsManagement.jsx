@@ -76,14 +76,22 @@ const StaffManagement = () => {
       );
     };
 
+    const handleEventArchive = (obj) => {
+      setUser(obj);
+      setUsers((prev) => prev.filter(item => item._id !== obj._id));
+      setfilterUsers((prev) => prev.filter(item => item._id !== obj._id));
+    };
+
     socket.on("receive-create-staff", handleStaff);
     socket.on("receive-update-staff", handleStaffUpdate);
+    socket.on("receive-archive-staff", handleEventArchive);
 
     return () => {
       socket.off("receive-create-staff", handleStaff);
       socket.off("receive-update-staff", handleStaffUpdate);
+      socket.on("receive-archive-staff", handleEventArchive);
     };
-  }, [socket, setUsers]);
+  }, [socket, setUsers, setUser]);
 
   useEffect(() => {
     const filteredData = newStaff.filter((item) => {
@@ -541,7 +549,7 @@ const StaffManagement = () => {
         />
       </div>
       <AddStaffModal brgy={brgy} socket={socket} />
-      <ArchiveStaffModal selectedItems={selectedItems} />
+      <ArchiveStaffModal selectedItems={selectedItems} socket={socket}/>
       <GenerateReportsModal />
       <ManageStaffModal
         user={user}

@@ -13,6 +13,11 @@ import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+
+const socket = io(Socket_link);
+
 
 const ArchivedEvents = () => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -100,6 +105,22 @@ const ArchivedEvents = () => {
     setSearchQuery(e.target.value);
     setCurrentPage(0); // Reset current page when search query changes
   };
+
+  useEffect(() => {
+    const handleEventRestore = (obj) => {
+      setAnnouncement(obj);
+      setAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
+      setFilteredAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
+    };
+
+
+    socket.on("receive-restore-staff", handleEventRestore);
+
+    return () => {
+
+      socket.on("receive-restore-staff", handleEventRestore);
+    };
+  }, [socket, setAnnouncement, setAnnouncements]);
 
 
   const Announcements = announcements.filter(
@@ -567,7 +588,7 @@ const ArchivedEvents = () => {
           setAnnouncement={setAnnouncement}
           brgy={brgy}
         />
-        <RestoreAnnouncementModal selectedItems={selectedItems} />
+        <RestoreAnnouncementModal selectedItems={selectedItems} socket={socket}/>
       </div>
     </div>
   );

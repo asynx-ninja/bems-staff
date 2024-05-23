@@ -6,7 +6,7 @@ import { useState } from "react";
 import RestoreLoader from "./loaders/RestoreLoader";
 import { LuArchiveRestore } from "react-icons/lu";
 
-function RestoreAnnouncementModal({ selectedItems }) {
+function RestoreAnnouncementModal({ selectedItems, socket }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -32,16 +32,16 @@ function RestoreAnnouncementModal({ selectedItems }) {
           `${API_LINK}/announcement/archived/${selectedItems[i]}/false`
         );
         if (response.status === 200) {
-          setTimeout(() => {
+          socket.emit("send-restore-staff", response.data);
+          
             setSubmitClicked(false);
             setError(null);
             setUpdatingStatus("success");
             setTimeout(() => {
               setUpdatingStatus(null);
               HSOverlay.close(document.getElementById("hs-modal-restore"));
-              window.location.reload();
             }, 3000);
-          }, 3000);
+         
         }
       }
     } catch (err) {

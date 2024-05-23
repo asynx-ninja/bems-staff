@@ -6,7 +6,7 @@ import { useState } from "react";
 import ArchiveLoader from "./loaders/ArchiveLoader";
 import { IoArchiveOutline } from "react-icons/io5";
 
-function ArchiveAnnouncementModal({ selectedItems }) {
+function ArchiveAnnouncementModal({ selectedItems, socket }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -26,22 +26,21 @@ function ArchiveAnnouncementModal({ selectedItems }) {
         return;
       }
       setSubmitClicked(true);
-      
+
       for (let i = 0; i < selectedItems.length; i++) {
         const response = await axios.patch(
           `${API_LINK}/announcement/archived/${selectedItems[i]}/true`
         );
 
         if (response.status === 200) {
+          socket.emit("send-archive-staff", response.data);
+
+          setSubmitClicked(false);
+          setError(null);
+          setUpdatingStatus("success");
           setTimeout(() => {
-            setSubmitClicked(false);
-            setError(null);
-            setUpdatingStatus("success");
-            setTimeout(() => {
-              setUpdatingStatus(null);
-              HSOverlay.close(document.getElementById("hs-modal-archive"));
-              window.location.reload();
-            }, 3000);
+            setUpdatingStatus(null);
+            HSOverlay.close(document.getElementById("hs-modal-archive"));
           }, 3000);
         }
       }
@@ -52,6 +51,7 @@ function ArchiveAnnouncementModal({ selectedItems }) {
       setError("An error occurred while creating the announcement.");
     }
   };
+
   return (
     <div>
       <div

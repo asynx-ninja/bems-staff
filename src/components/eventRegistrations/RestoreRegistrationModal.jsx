@@ -6,7 +6,7 @@ import { IoArchiveOutline } from "react-icons/io5";
 import { useState } from "react";
 import RestoreLoader from "./loaders/RestoreLoader";
 
-function RestoreRegistrationModal({ selectedItems }) {
+function RestoreRegistrationModal({ selectedItems, socket}) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -33,9 +33,14 @@ function RestoreRegistrationModal({ selectedItems }) {
         const response = await axios.patch(
           `${API_LINK}/application/archived/${selectedItems[i]}/false`
         );
+        socket.emit("send-restore-staff", response.data);
+        setTimeout(() => {
+          setUpdatingStatus(null);
+          HSOverlay.close(document.getElementById("hs-restore-requests-modal"));
+        }, 3000);
       }
 
-      window.location.reload();
+ 
     } catch (err) {
       console.log(err);
     }

@@ -34,7 +34,7 @@ const socket = io(Socket_link);
 const Officials = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [officials, setOfficials] = useState([]);
-  const[newOfficial, setNewOfficials] = useState([])
+  const[newOfficial, setNewOfficials] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
   const id = searchParams.get("id");
@@ -154,14 +154,22 @@ const Officials = () => {
       );
     };
 
+    const handleEventArchive = (obj) => {
+      setOfficials(obj);
+      setNewOfficials((prev) => prev.filter(item => item._id !== obj._id));
+      setfilterOfficials((prev) => prev.filter(item => item._id !== obj._id));
+    };
+
     socket.on("receive-create-official", handleOfficial);
     socket.on("receive-update-official", handleOfficialUpdate);
+    socket.on("receive-archive-staff", handleEventArchive);
 
     return () => {
       socket.off("receive-create-official", handleOfficial);
       socket.off("receive-update-official", handleOfficialUpdate);
+      socket.on("receive-archive-staff", handleEventArchive);
     };
-  }, [socket, setOfficials]);
+  }, [socket, setNewOfficials, setOfficials]);
 
   useEffect(() => {
     document.title = "Barangay Officials | Barangay E-Services Management";
@@ -631,7 +639,7 @@ const Officials = () => {
       </div>
       <CreateOfficialModal brgy={brgy} socket={socket} />
       <GenerateReportsModal />
-      <ArchiveOfficialModal selectedItems={selectedItems} />
+      <ArchiveOfficialModal selectedItems={selectedItems} socket={socket}/>
       <EditOfficialModal
         selectedOfficial={selectedOfficial}
         setSelectedOfficial={setSelectedOfficial}

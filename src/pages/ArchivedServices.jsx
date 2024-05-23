@@ -13,6 +13,10 @@ import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+const socket = io(Socket_link);
+
 const ArchivedServices = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [services, setServices] = useState([]);
@@ -156,6 +160,20 @@ const ArchivedServices = () => {
   const handleView = (item) => {
     setService(item);
   };
+
+  useEffect(() => {
+    const handleServiceRestore = (obj) => {
+      setService(obj);
+      setServices((prev) => prev.filter(item => item._id !== obj._id));
+      setFilteredServices((prev) => prev.filter(item => item._id !== obj._id));
+    };
+
+    socket.on("receive-restore-staff", handleServiceRestore);
+
+    return () => {
+      socket.off("receive-restore-staff", handleServiceRestore);
+    };
+  }, [socket, setServices, setService]);
 
   return (
     <div className="mx-4 mt-8">
@@ -446,7 +464,7 @@ const ArchivedServices = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <RestoreServicesModal selectedItems={selectedItems} />
+      <RestoreServicesModal selectedItems={selectedItems} socket={socket}/>
       <ViewArchivedServiceModal service={service} setService={setService} brgy={brgy} />
       <ArchivedServicesReportsModal />
     </div>

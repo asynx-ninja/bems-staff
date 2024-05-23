@@ -56,19 +56,30 @@ const Requests = () => {
     const handleServiceReq = (service_req) => {
       setFilteredRequests(prev => [service_req, ...prev])
     };
+
     const handleServiceReqReply = (service_req) => {
       setRequest(service_req)
       setFilteredRequests(curItem => curItem.map((item) =>
         item._id === service_req._id ? service_req : item
       ))
     };
+
+    const handleRequestArchive = (obj) => {
+      setRequest(obj);
+      setRequests((prev) => prev.filter(item => item._id !== obj._id));
+      setFilteredRequests((prev) => prev.filter(item => item._id !== obj._id));
+    };
+
     socket.on("receive-reply-service-req", handleServiceReqReply);
     socket.on("receive-service-req", handleServiceReq);
+    socket.on("receive-archive-staff", handleRequestArchive);
+
     return () => {
       socket.off("receive-reply-service-req", handleServiceReqReply);
       socket.off("receive-service-req", handleServiceReq);
+      socket.on("receive-archive-staff", handleRequestArchive);
     };
-  }, [socket, setRequest]);
+  }, [socket, setRequest, setRequests]);
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -870,7 +881,7 @@ const Requests = () => {
         chatContainerRef={chatContainerRef}
         socket={socket}
       />
-      <ArchiveRequestsModal selectedItems={selectedItems} />
+      <ArchiveRequestsModal selectedItems={selectedItems} socket={socket}/>
       <RequestsReportsModal />
     </div>
   );

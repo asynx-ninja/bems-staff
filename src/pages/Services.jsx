@@ -103,17 +103,26 @@ const Services = () => {
       );
     };
 
+    const handleServiceArchive = (obj) => {
+      setService(obj);
+      setServices((prev) => prev.filter(item => item._id !== obj._id));
+      setFilteredServices((prev) => prev.filter(item => item._id !== obj._id));
+    };
+
     socket.on("receive-get-service", handleService);
     socket.on("receive-service-form", handleServiceForm);
     socket.on("receive-updated-service", handleServiceUpdate);
     socket.on("receive-edit-service-doc", handleServiceDocumentForm);
+    socket.on("receive-archive-staff", handleServiceArchive);
+
     return () => {
       socket.off("receive-get-service", handleService);
       socket.off("receive-service-form", handleServiceForm);
       socket.off("receive-updated-service", handleServiceUpdate);
       socket.off("receive-edit-service-doc", handleServiceDocumentForm);
+      socket.off("receive-archive-staff", handleServiceArchive);
     };
-  }, [socket, setServices]);
+  }, [socket, setServices, setService]);
 
 
 
@@ -696,7 +705,7 @@ const Services = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <ArchiveServicesModal selectedItems={selectedItems} />
+      <ArchiveServicesModal selectedItems={selectedItems}  socket = {socket}/>
       <CreateServiceModal brgy={brgy} socket={socket} />
       {/*<StatusServices status={status} setStatus={setStatus}/>*/}
       <ManageServiceModal

@@ -15,6 +15,10 @@ import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+const socket = io(Socket_link);
+
 const Inquiries = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -66,6 +70,20 @@ const Inquiries = () => {
     setFilteredInquiries(filteredData.slice(startIndex, endIndex));
     setPageCount(Math.ceil(filteredData.length / 10));
   }, [inquiries, searchQuery, currentPage]);
+
+  useEffect(() => {
+    const handleEventArchive = (obj) => {
+      setInquiry(obj);
+      setInquiries((prev) => prev.filter(item => item._id !== obj._id));
+      setFilteredInquiries((prev) => prev.filter(item => item._id !== obj._id));
+    };
+
+    socket.on("receive-restore-staff", handleEventArchive);
+
+    return () => {
+      socket.off("receive-restore-staff", handleEventArchive);
+    };
+  }, [socket, setInquiry, setInquiries]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -624,7 +642,7 @@ const Inquiries = () => {
             renderOnZeroPageCount={null}
           />
         </div>
-        <RestoreModal selectedItems={selectedItems} />
+        <RestoreModal selectedItems={selectedItems} socket={socket}/>
         <ViewArchivedModal inquiry={inquiry} setInquiry={setInquiry} brgy={brgy} />
       </div>
     </div>

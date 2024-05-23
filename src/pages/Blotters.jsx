@@ -150,12 +150,20 @@ const Blotters = () => {
       );
     };
 
+    const handleEventArchive = (obj) => {
+      setRequest(obj);
+      setRequests((prev) => prev.filter(item => item._id !== obj._id));
+      setFilteredRequests((prev) => prev.filter(item => item._id !== obj._id));
+    };
+
     socket.on("receive-reply-patawag", handlePatawag);
+    socket.on("receive-archive-staff", handleEventArchive);
 
     return () => {
       socket.off("receive-reply-patawag", handlePatawag);
+      socket.off("receive-archive-staff", handleEventArchive);
     };
-  }, [socket, setRequest]);
+  }, [socket, setRequest, setRequests]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -860,7 +868,7 @@ const Blotters = () => {
         // chatContainerRef={chatContainerRef}
         socket={socket}
       />
-      <ArchiveRequestsModal selectedItems={selectedItems} />
+      <ArchiveRequestsModal selectedItems={selectedItems} socket={socket} />
       <RequestsReportsModal />
       <AddBlotterDocument
         request={request}

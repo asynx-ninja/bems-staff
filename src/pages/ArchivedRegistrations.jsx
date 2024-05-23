@@ -16,6 +16,10 @@ import Breadcrumbs from "../components/archivedRegistrations/Breadcrumbs";
 import RestoreRegistrationModal from "../components/eventRegistrations/RestoreRegistrationModal";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+
+const socket = io(Socket_link);
 
 const ArchivedRegistrations = () => {
   const [applications, setApplications] = useState([]);
@@ -70,7 +74,6 @@ const ArchivedRegistrations = () => {
     setSelectedEventType(selectedType);
   };
 
-
   useEffect(() => {
     const fetch = async () => {
       try {
@@ -88,34 +91,50 @@ const ArchivedRegistrations = () => {
     };
 
     fetch();
-
   }, [brgy, statusFilter, selecteEventFilter]);
 
   useEffect(() => {
     const filteredData = applications.filter((item) => {
-      const fullName = item.form[0].lastName.value.toLowerCase() +
+      const fullName =
+        item.form[0].lastName.value.toLowerCase() +
         ", " +
         item.form[0].firstName.value.toLowerCase() +
         " " +
         item.form[0].middleName.value.toLowerCase();
-  
+
       return (
         item.event_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.application_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
         fullName.includes(searchQuery.toLowerCase())
       );
     });
-  
+
     const startIndex = currentPage * 10;
     const endIndex = startIndex + 10;
     setFilteredApplications(filteredData.slice(startIndex, endIndex));
     setPageCount(Math.ceil(filteredData.length / 10));
   }, [applications, searchQuery, currentPage]);
-  
+
+  useEffect(() => {
+    const handleApplicationArchive = (obj) => {
+      setApplication(obj);
+      setApplications((prev) => prev.filter((item) => item._id !== obj._id));
+      setFilteredApplications((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+    };
+
+    socket.on("receive-restore-staff", handleApplicationArchive);
+
+    return () => {
+      socket.off("receive-restore-staff", handleApplicationArchive);
+    };
+  }, [socket, setApplication, setApplications]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
-  
+
   // Handle search input change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -207,7 +226,14 @@ const ArchivedRegistrations = () => {
     }
   };
 
-  const tableHeader = ["APP ID", "EVENT NAME", "SENDER", "DATE", "STATUS", "ACTIONS"];
+  const tableHeader = [
+    "APP ID",
+    "EVENT NAME",
+    "SENDER",
+    "DATE",
+    "STATUS",
+    "ACTIONS",
+  ];
 
   const handleView = (item) => {
     setApplication(item);
@@ -257,7 +283,7 @@ const ArchivedRegistrations = () => {
         return applications.filter((item) => {
           return (
             new Date(item.createdAt).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
             new Date(item.createdAt).getDate() === selectedDate.getDate()
           );
@@ -267,11 +293,10 @@ const ArchivedRegistrations = () => {
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
 
-
         return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-            startDate.getFullYear() &&
+              startDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === startDate.getMonth() &&
             new Date(item.createdAt).getDate() >= startDate.getDate() &&
             new Date(item.createdAt).getDate() <= endDate.getDate()
@@ -280,7 +305,7 @@ const ArchivedRegistrations = () => {
         return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -331,9 +356,12 @@ const ArchivedRegistrations = () => {
       <div>
         {/* Header */}
         <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
-          <div  className="sm:mt-5 bg-teal-700 md:mt-4 lg:mt-0  py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]" style={{
+          <div
+            className="sm:mt-5 bg-teal-700 md:mt-4 lg:mt-0  py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]"
+            style={{
               background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-            }}>
+            }}
+          >
             <h1
               className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
@@ -351,12 +379,14 @@ const ArchivedRegistrations = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  bg-teal-700" style={{ backgroundColor: information?.theme?.primary }}
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  bg-teal-700"
+                  style={{ backgroundColor: information?.theme?.primary }}
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -432,7 +462,8 @@ const ArchivedRegistrations = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  bg-teal-700" style={{ backgroundColor: information?.theme?.primary }}
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  bg-teal-700"
+                  style={{ backgroundColor: information?.theme?.primary }}
                 >
                   DATE
                   <svg
@@ -522,7 +553,7 @@ const ArchivedRegistrations = () => {
                 </ul>
               </div>
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
-              <button
+                <button
                   id="hs-dropdown"
                   type="button"
                   className="sm:w-full md:w-full bg-teal-700 sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md font-medium shadow-sm align-middle transition-all text-sm"
@@ -560,16 +591,16 @@ const ArchivedRegistrations = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <div className="flex flex-col scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll h-44">
-                  {eventFilter.map((title, index) => (
-                    <a
-                      key={index}
-                      onClick={() => handleEventFilter(title)}
-                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                      href="#"
-                    >
-                      {title}
-                    </a>
-                  ))}
+                    {eventFilter.map((title, index) => (
+                      <a
+                        key={index}
+                        onClick={() => handleEventFilter(title)}
+                        className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                        href="#"
+                      >
+                        {title}
+                      </a>
+                    ))}
                   </div>
                 </ul>
               </div>
@@ -577,7 +608,10 @@ const ArchivedRegistrations = () => {
 
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12">
               <div className="flex flex-row w-full md:mr-2">
-                <button className="bg-teal-700  p-3 rounded-l-md" style={{ backgroundColor: information?.theme?.primary }}>
+                <button
+                  className="bg-teal-700  p-3 rounded-l-md"
+                  style={{ backgroundColor: information?.theme?.primary }}
+                >
                   <div className="w-full overflow-hidden">
                     <svg
                       className="h-3.5 w-3.5 text-white"
@@ -631,7 +665,10 @@ const ArchivedRegistrations = () => {
         {/* Table */}
         <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_325px)] lg:h-[calc(100vh_-_350px)] xxl:h-[calc(100vh_-_320px)] xxxl:h-[calc(100vh_-_345px)]">
           <table className="relative table-auto w-full">
-            <thead className="bg-teal-700 sticky top-0" style={{ backgroundColor: information?.theme?.primary }}>
+            <thead
+              className="bg-teal-700 sticky top-0"
+              style={{ backgroundColor: information?.theme?.primary }}
+            >
               <tr className="">
                 <th scope="col" className="px-6 py-4">
                   <div className="flex justify-center items-center">
@@ -670,7 +707,7 @@ const ArchivedRegistrations = () => {
                     </td>
                     <td className="px-6 py-3">
                       <span className="text-xs sm:text-sm text-black line-clamp-2">
-                      {item.application_id}
+                        {item.application_id}
                       </span>
                     </td>
                     <td className="px-6 py-3">
@@ -690,7 +727,7 @@ const ArchivedRegistrations = () => {
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
-                        {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
+                          {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
                           {TimeFormat(item.createdAt) || ""}
                         </span>
                       </div>
@@ -785,7 +822,10 @@ const ArchivedRegistrations = () => {
           </table>
         </div>
       </div>
-      <div className="md:py-4 md:px-4  flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3 bg-teal-700" style={{ backgroundColor: information?.theme?.primary }}>
+      <div
+        className="md:py-4 md:px-4  flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3 bg-teal-700"
+        style={{ backgroundColor: information?.theme?.primary }}
+      >
         <span className="font-medium text-white sm:text-xs text-sm">
           Showing {currentPage + 1} out of {pageCount} pages
         </span>
@@ -803,11 +843,15 @@ const ArchivedRegistrations = () => {
         />
       </div>
       {Object.hasOwn(application, "event_id") ? (
-        <ViewRegistrationModal application={application} brgy={brgy} officials={officials}/>
+        <ViewRegistrationModal
+          application={application}
+          brgy={brgy}
+          officials={officials}
+        />
       ) : null}
       <ArchiveRegistrationModal />
       <RequestsReportsModal />
-      <RestoreRegistrationModal selectedItems={selectedItems} />
+      <RestoreRegistrationModal selectedItems={selectedItems} socket={socket} />
     </div>
   );
 };

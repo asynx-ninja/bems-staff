@@ -116,16 +116,24 @@ const EventsManagement = () => {
       );
     };
 
+    const handleEventArchive = (obj) => {
+      setAnnouncement(obj);
+      setAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
+      setFilteredAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
+    };
+
     socket.on("receive-get-event", handleEvent);
     socket.on("receive-create-event-form", handleEventForm);
     socket.on("receive-update-event", handleEventUpdate);
+    socket.on("receive-archive-staff", handleEventArchive);
 
     return () => {
       socket.off("receive-get-event", handleEvent);
       socket.off("receive-create-event-form", handleEventForm);
       socket.off("receive-update-event", handleEventUpdate);
+      socket.off("receive-archive-staff", handleEventArchive);
     };
-  }, [socket, setAnnouncement]);
+  }, [socket, setAnnouncement, setAnnouncements]);
 
   useEffect(() => {
     const filteredData = newEvents.filter((item) =>
@@ -734,7 +742,7 @@ const EventsManagement = () => {
           />
         </div>
         <AddModal brgy={brgy} socket={socket} />
-        <ArchiveModal selectedItems={selectedItems} />
+        <ArchiveModal selectedItems={selectedItems} socket={socket}/>
         <ManageAnnouncementModal
           announcement={announcement}
           setAnnouncement={setAnnouncement}

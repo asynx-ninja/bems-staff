@@ -82,14 +82,22 @@ const EventsRegistrations = () => {
       ))
     };
 
+    const handleApplicationArchive = (obj) => {
+      setApplication(obj);
+      setApplications((prev) => prev.filter(item => item._id !== obj._id));
+      setFilteredApplications((prev) => prev.filter(item => item._id !== obj._id));
+    };
+
     socket.on("receive-reply-event-appli", handleEventReplyAppli);
     socket.on("receive-event-appli", handleEventAppli);
+    socket.on("receive-archive-staff", handleApplicationArchive);
 
     return () => {
       socket.off("receive-reply-event-appli", handleEventAppli);
       socket.off("receive-event-appli", handleEventAppli);
+      socket.off("receive-archive-staff", handleApplicationArchive);
     };
-  }, [socket, setApplication]);
+  }, [socket, setApplication, setApplications]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -165,6 +173,8 @@ const EventsRegistrations = () => {
     setFilteredApplications(filteredData.slice(startIndex, endIndex));
     setPageCount(Math.ceil(filteredData.length / 10));
   }, [applications, searchQuery, currentPage]);
+
+  
   
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -872,7 +882,7 @@ const EventsRegistrations = () => {
         socket={socket}
         chatContainerRef={chatContainerRef}
       />
-      <ArchiveRegistrationModal selectedItems={selectedItems} />
+      <ArchiveRegistrationModal selectedItems={selectedItems} socket={socket}/>
     </div>
   );
 };

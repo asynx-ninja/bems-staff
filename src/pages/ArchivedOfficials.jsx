@@ -15,10 +15,15 @@ import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+
+const socket = io(Socket_link);
 
 const ArchivedOfficials = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [officials, setOfficials] = useState([]);
+  const[newOfficial, setNewOfficials] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
   const id = searchParams.get("id");
@@ -102,7 +107,8 @@ const ArchivedOfficials = () => {
           if (officialsData.length > 0) {
             setPageCount(response.data.pageCount);
             setOfficials(officialsData);
-            setfilterOfficials(response.data.result.slice(0, 10))
+            setNewOfficials(officialsData)
+            setfilterOfficials(response.data.result.slice(0, 10));
           } else {
             setOfficials([]);
           }
@@ -120,22 +126,23 @@ const ArchivedOfficials = () => {
   }, [brgy, positionFilter]); // Add positionFilter dependency
 
   useEffect(() => {
-    const filteredData = officials.filter((item) => {
-      const fullName = item.lastName.toLowerCase() +
+    const filteredData = newOfficial.filter((item) => {
+      const fullName =
+        item.lastName.toLowerCase() +
         ", " +
         item.firstName.toLowerCase() +
-        (item.middleName !== undefined ? " " + item.middleName.toLowerCase() : "");
+        (item.middleName !== undefined
+          ? " " + item.middleName.toLowerCase()
+          : "");
 
-      return (
-        fullName.includes(searchQuery.toLowerCase())
-      );
+      return fullName.includes(searchQuery.toLowerCase());
     });
 
     const startIndex = currentPage * 10;
     const endIndex = startIndex + 10;
     setfilterOfficials(filteredData.slice(startIndex, endIndex));
     setPageCount(Math.ceil(filteredData.length / 10));
-  }, [officials, searchQuery, currentPage]);
+  }, [newOfficial, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -146,14 +153,6 @@ const ArchivedOfficials = () => {
     setSearchQuery(e.target.value);
     setCurrentPage(0); // Reset current page when search query changes
   };
-
-  const Officials = officials.filter((item) => {
-    const fullName =
-      `${item.lastName} ${item.firstName} ${item.middleName}`.toLowerCase();
-    const nameMatches = fullName.includes(searchQuery.toLowerCase());
-
-    return nameMatches;
-  });
 
   const tableHeader = [
     "IMAGE",
@@ -169,13 +168,13 @@ const ArchivedOfficials = () => {
 
     const startYearMonth = startDate
       ? `${startDate.toLocaleString("default", {
-        month: "short",
-      })} ${startDate.getFullYear()}`
+          month: "short",
+        })} ${startDate.getFullYear()}`
       : "";
     const endYearMonth = endDate
       ? `${endDate.toLocaleString("default", {
-        month: "short",
-      })} ${endDate.getFullYear()}`
+          month: "short",
+        })} ${endDate.getFullYear()}`
       : "";
 
     return `${startYearMonth} ${endYearMonth}`;
@@ -189,6 +188,20 @@ const ArchivedOfficials = () => {
     setPositionFilter("all");
   };
 
+  useEffect(() => {
+    const handleEventArchive = (obj) => {
+      setOfficials(obj);
+      setNewOfficials((prev) => prev.filter((item) => item._id !== obj._id));
+      setfilterOfficials((prev) => prev.filter((item) => item._id !== obj._id));
+    };
+
+    socket.on("receive-restore-staff", handleEventArchive);
+
+    return () => {
+      socket.on("receive-restore-staff", handleEventArchive);
+    };
+  }, [socket, setNewOfficials, setOfficials]);
+
   return (
     <div className="mx-4 mt-8">
       <Breadcrumbs />
@@ -196,9 +209,12 @@ const ArchivedOfficials = () => {
       <div>
         {/* Header */}
         <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
-          <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-teal-700 py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]" style={{
-            background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-          }}>
+          <div
+            className="sm:mt-5 md:mt-4 lg:mt-0 bg-teal-700 py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]"
+            style={{
+              background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+            }}
+          >
             <h1
               className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-[1.5rem] xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
@@ -216,12 +232,14 @@ const ArchivedOfficials = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm bg-teal-700 " style={{ backgroundColor: information?.theme?.primary }}
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm bg-teal-700 "
+                  style={{ backgroundColor: information?.theme?.primary }}
                 >
                   POSITION
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -317,7 +335,10 @@ const ArchivedOfficials = () => {
 
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12">
               <div className="flex flex-row w-full md:mr-2">
-                <button className="bg-teal-700  p-3 rounded-l-md" style={{ backgroundColor: information?.theme?.primary }}>
+                <button
+                  className="bg-teal-700  p-3 rounded-l-md"
+                  style={{ backgroundColor: information?.theme?.primary }}
+                >
                   <div className="w-full overflow-hidden">
                     <svg
                       className="h-3.5 w-3.5 text-white"
@@ -371,7 +392,10 @@ const ArchivedOfficials = () => {
         {/* Table */}
         <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_325px)] xxxl:h-[calc(100vh_-_345px)]">
           <table className="relative table-auto w-full">
-            <thead className="bg-teal-700 sticky top-0" style={{ backgroundColor: information?.theme?.primary }}>
+            <thead
+              className="bg-teal-700 sticky top-0"
+              style={{ backgroundColor: information?.theme?.primary }}
+            >
               <tr className="">
                 <th scope="col" className="px-6 py-4">
                   <div className="flex justify-center items-center">
@@ -489,7 +513,10 @@ const ArchivedOfficials = () => {
           </table>
         </div>
       </div>
-      <div className="md:py-4 md:px-4  flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3 bg-teal-700" style={{ backgroundColor: information?.theme?.primary }}>
+      <div
+        className="md:py-4 md:px-4  flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3 bg-teal-700"
+        style={{ backgroundColor: information?.theme?.primary }}
+      >
         <span className="font-medium text-white sm:text-xs text-sm">
           Showing {currentPage + 1} out of {pageCount} pages
         </span>
@@ -508,7 +535,7 @@ const ArchivedOfficials = () => {
       </div>
       <GenerateReportsModal />
       <ArchiveOfficialModal />
-      <RestoreOfficialModal selectedItems={selectedItems} />
+      <RestoreOfficialModal selectedItems={selectedItems} socket={socket} />
       <ViewOfficialModal
         selectedOfficial={selectedOfficial}
         setSelectedOfficial={setSelectedOfficial}

@@ -42,11 +42,11 @@ export default {
         'custom-green-button4': '#52B98E',
       },
       fontFamily: {
-        primary: "Gilmer-Regular",
-        'bold': "Gilmer-Bold",
-        'light': "Gilmer-Light",
-        'medium': "Gilmer-Medium",
-        'heavy': "Gilmer-Heavy",
+        primary: ["Gilmer-Regular", "sans-serif"],
+        bold: ["Gilmer-Bold", "sans-serif"],
+        light: ["Gilmer-Light", "sans-serif"],
+        medium: ["Gilmer-Medium", "sans-serif"],
+        heavy: ["Gilmer-Heavy", "sans-serif"],
       },
       '@layer components': {
         '.mylogo': {

@@ -81,11 +81,19 @@ const Residents = () => {
       );
     };
 
+    const handleEventArchive = (obj) => {
+      setUser(obj);
+      setUsers((prev) => prev.filter(item => item._id !== obj._id));
+      setFilteredResidents((prev) => prev.filter(item => item._id !== obj._id));
+    };
+
 
     socket.on("receive-update-status-resident", handleResident);
+    socket.on("receive-archive-staff", handleEventArchive);
 
     return () => {
       socket.off("receive-update-status-resident", handleResident);
+      socket.off("receive-archive-staff", handleEventArchive);
     };
   }, [socket, setUsers]);
 
@@ -653,7 +661,7 @@ const Residents = () => {
           />
         </div>
         <AddResidentsModal brgy={brgy} socket={socket} />
-        <ArchiveResidentModal selectedItems={selectedItems} />
+        <ArchiveResidentModal selectedItems={selectedItems} socket={socket}/>
         <GenerateReportsModal />
         <StatusResident
           user={user}

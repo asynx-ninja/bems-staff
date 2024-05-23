@@ -108,13 +108,23 @@ const Inquiries = () => {
         )
       );
     };
+
+    const handleEventArchive = (obj) => {
+      setInquiry(obj);
+      setInquiries((prev) => prev.filter(item => item._id !== obj._id));
+      setFilteredInquiries((prev) => prev.filter(item => item._id !== obj._id));
+    };
+
     socket.on("receive-reply-staff-inquiry", handleReStaffInq);
     socket.on("receive-staff-inquiry", handleStaffInq);
+    socket.on("receive-archive-staff", handleEventArchive);
+
     return () => {
       socket.off("receive-reply-staff-inquiry", handleReStaffInq);
       socket.off("receive-staff-inquiry", handleStaffInq);
+      socket.off("receive-archive-staff", handleEventArchive);
     };
-  }, [socket, setInquiry]);
+  }, [socket, setInquiry, setInquiries]);
 
   useEffect(() => {
     const filteredData = inquiries.filter((item) =>
@@ -711,7 +721,7 @@ const Inquiries = () => {
             renderOnZeroPageCount={null}
           />
         </div>
-        <ArchiveModal selectedItems={selectedItems} />
+        <ArchiveModal selectedItems={selectedItems} socket={socket}/>
         <ViewInquiriesModal
           inquiry={inquiry}
           setInquiry={setInquiry}
