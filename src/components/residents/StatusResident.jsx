@@ -72,6 +72,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket }) {
 
           if (result.status === 200) {
             socket.emit("send-update-status-resident", response.data);
+            socket.emit("send-resident-notif", result.data);
 
             setTimeout(() => {
               setSubmitClicked(false);

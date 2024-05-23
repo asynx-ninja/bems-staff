@@ -243,9 +243,14 @@ function ViewInquiriesModal({
             "Content-Type": "application/json",
           },
         });
+
+        if (result.status === 200) {
+          socket.emit("send-resident-notif", result.data);
+        }
       }
-      console.log("wew", response.data);
+
       socket.emit("send-reply-staff-inquiry", response.data);
+
       setOnSend(false);
       setErrMsg(false);
     } catch (error) {

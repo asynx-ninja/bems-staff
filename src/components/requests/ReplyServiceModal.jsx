@@ -274,7 +274,7 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef, socket
           const notify = {
             category: "One",
             compose: {
-              subject: `REQUEST - NEW MESSAGE`,
+              subject: `REQUEST - ${request.service_name}`,
               message: `A barangay staff has updated/replied your request for the barangay service of ${request.service_name
                 }.\n\n
         
