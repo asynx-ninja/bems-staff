@@ -10,7 +10,6 @@ function ArchiveAnnouncementModal({ selectedItems }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
-  console.log("error", selectedItems);
 
   const handleSave = async (e) => {
     try {

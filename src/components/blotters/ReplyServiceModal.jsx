@@ -539,21 +539,6 @@ function ReplyServiceModal({
 
         if (response.status === 200) {
           socket.emit("send-reply-patawag", response.data);
-          // setCreateFiles([]);
-          // setResponseData({
-          //   sender: "",
-          //   type: "Staff",
-          //   message: "",
-          //   date: new Date().toISOString(),
-          //   status: "",
-          // });
-          // setReply(false);
-          // setStatusChanger(false);
-
-          // setSubmitClicked(false);
-          // // socket.emit("send-patawag", response.data);
-          // setOnSend(false);
-          // setUpdate(true);
 
           const notify = {
             category: "One",
@@ -585,6 +570,7 @@ function ReplyServiceModal({
           // console.log("notif result: ", result.data)
 
           if (result.status === 200) {
+            socket.emit("receive-resident-notif", response.data);
             
             setCreateFiles([]);
             setResponseData({
@@ -1365,9 +1351,6 @@ function ReplyServiceModal({
                                         <option value="Completed">
                                           COMPLETED
                                         </option>
-                                        <option value="Rejected">
-                                          REJECTED
-                                        </option>
                                       </select>
                                     </div>
                                   </div>
@@ -1652,9 +1635,6 @@ function ReplyServiceModal({
                                                 </option>
                                                 <option value="Completed">
                                                   COMPLETED
-                                                </option>
-                                                <option value="Rejected">
-                                                  REJECTED
                                                 </option>
                                               </select>
                                             </div>

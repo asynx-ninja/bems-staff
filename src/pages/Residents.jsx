@@ -72,10 +72,8 @@ const Residents = () => {
 
   useEffect(() => {
     const handleResident = (get_resident) => {
-      setUsers(get_resident)
-      setFilteredResidents(curItem => curItem.map((item) =>
-        item._id === get_resident._id ? get_resident : item
-      ))
+      setUsers(prevUsers => Array.isArray(get_resident) ? get_resident : prevUsers);
+      setFilteredResidents(prev => [get_resident, ...prev]);
     };
 
     socket.on("receive-update-status-resident", handleResident);
@@ -103,6 +101,11 @@ const Residents = () => {
   }, [brgy, statusFilter]);
 
   useEffect(() => {
+    if (!Array.isArray(users)) {
+      console.error('Users is not an array', users);
+      return;
+    }
+
     const filteredData = users.filter((item) => {
       const fullName = item.lastName.toLowerCase() +
         ", " +

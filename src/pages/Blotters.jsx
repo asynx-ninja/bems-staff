@@ -441,13 +441,6 @@ const Blotters = () => {
                     COMPLETED
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Rejected")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    REJECTED
-                  </a>
-                  <a
                     onClick={() => handleStatusFilter("NEW")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
@@ -721,13 +714,6 @@ const Blotters = () => {
                           <div className="flex items-center justify-center bg-[#d68f3d] m-2 rounded-lg">
                             <span className="text-sm text-white font-bold p-3 xl:mx-3">
                               IN PROGRESS
-                            </span>
-                          </div>
-                        )}
-                        {mergedItem.blotter_status === "Rejected" && (
-                          <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                            <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
-                              REJECTED
                             </span>
                           </div>
                         )}

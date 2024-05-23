@@ -102,22 +102,17 @@ const Notifications = () => {
     return () => clearInterval(intervalId);
   }, [brgy]);
 
-  // useEffect(() => {
-  //   const handleNotifications = (get_notification) => {
-  //     setNotifications(get_notification);
-  //     setBlotterDetails((curItem) =>
-  //       curItem.map((item) =>
-  //         item._id === get_notification._id ? get_notification : item
-  //       )
-  //     );
-  //   };
+  useEffect(() => {
+    const handleNotifications = (obj) => {
+      setNotifications((prev) => ({ ...prev, ...obj }));
+    };
 
-  //   socket.on("receive-staff-notif", handleNotifications);
+    socket.on("receive-staff-notif", handleNotifications);
 
-  //   return () => {
-  //     socket.off("receive-staff-notif", handleNotifications);
-  //   };
-  // }, [socket, setNotification]);
+    return () => {
+      socket.off("receive-staff-notif", handleNotifications);
+    };
+  }, [socket, setNotifications]);
 
   const handleView = (item) => {
     setNotification(item);
