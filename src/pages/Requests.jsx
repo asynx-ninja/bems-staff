@@ -144,12 +144,36 @@ const Requests = () => {
     fetchData();
   }, [currentPage, brgy]); // Add positionFilter dependency
 
+  useEffect(() => {
+    const filteredData = requests.filter((item) => {
+      const fullName = item.form[0].lastName.value.toLowerCase() +
+        ", " +
+        item.form[0].firstName.value.toLowerCase() +
+        " " +
+        item.form[0].middleName.value.toLowerCase();
+  
+      return (
+        item.service_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.req_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        fullName.includes(searchQuery.toLowerCase())
+      );
+    });
+  
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredRequests(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [requests, searchQuery, currentPage]);
+  
   const handlePageChange = ({ selected }) => {
-    console.log(selected)
     setCurrentPage(selected);
-    const start = selected * 10;
-    const end = start + 10;
-    setFilteredRequests(requests.slice(start, end));
+  };
+  
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
   const handleStatusFilter = (selectedStatus) => {
@@ -618,18 +642,7 @@ const Requests = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const filteredData = requests.filter((item) => {
-                      const fullName = `${item.form[0].lastName.value || ''}, ${item.form[0].firstName.value || ''} ${item.form[0].middleName.value || ''}`.toLowerCase();
-                      const serviceNameMatches = item.service_name.toLowerCase().includes(e.target.value.toLowerCase());
-                      const reqIdMatches = item.req_id.toLowerCase().includes(e.target.value.toLowerCase());
-                      const nameMatches = fullName.includes(e.target.value.toLowerCase());
-                      return serviceNameMatches || reqIdMatches || nameMatches;
-                    });
-                    setFilteredRequests(filteredData.slice(0, 10)); // Show first page of filtered results
-                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
-                  }}
+                  onChange={handleSearchChange}
                 />
 
               </div>

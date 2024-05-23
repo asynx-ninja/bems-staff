@@ -131,16 +131,26 @@ const Services = () => {
     fetch();
   }, [brgy, statusFilter, serviceFilter]);
 
+  useEffect(() => {
+    const filteredData = services.filter((item) =>
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.service_id.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredServices(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [services, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
-    console.log(selected)
     setCurrentPage(selected);
-    const start = selected * 10;
-    const end = start + 10;
-    console.log(services.slice(start, end))
-    setFilteredServices(services.slice(start, end));
-    console.log(services)
   };
 
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
+  };
 
   const handleStatusFilter = (selectedStatus) => {
     setStatusFilter(selectedStatus);
@@ -411,17 +421,7 @@ const Services = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const filteredData = services.filter((item) =>
-                      item.name.toLowerCase()
-                        .includes(e.target.value.toLowerCase()) ||
-                      item.service_id.toLowerCase()
-                        .includes(e.target.value.toLowerCase())
-                    );
-                    setFilteredServices(filteredData.slice(0, 10)); // Show first page of filtered results
-                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center space-x-2">

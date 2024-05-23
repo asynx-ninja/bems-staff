@@ -96,6 +96,27 @@ const Blotters = () => {
   }, [brgy]);
 
   useEffect(() => {
+    const filteredData = requests.filter((item) =>
+      item.req_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredRequests(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [requests, searchQuery, currentPage]);
+
+  const handlePageChange = ({ selected }) => {
+    setCurrentPage(selected);
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
+  };
+
+  useEffect(() => {
     // function to filter
     const fetch = async () => {
       try {
@@ -117,6 +138,7 @@ const Blotters = () => {
 
     fetch();
   }, [brgy, update]);
+
 
   useEffect(() => {
     const handlePatawag = (patawag_blotter) => {
@@ -162,10 +184,6 @@ const Blotters = () => {
 
     fetchData();
   }, [currentPage, brgy]); // Add positionFilter dependency
-
-  const handlePageChange = ({ selected }) => {
-    setCurrentPage(selected);
-  };
 
   const handleStatusFilter = (selectedStatus) => {
     setStatusFilter(selectedStatus);
@@ -567,21 +585,7 @@ const Blotters = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const Requests = requests.filter((item) => {
-                      const fullName = `${item.form[0].firstName.value} ${item.form[0].lastName.value}`;
-                      const reqId = item.req_id.toString(); // Assuming service_id is a number, convert it to string for case-insensitive comparison
-                      return (
-                        fullName
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()) ||
-                        reqId.includes(e.target.value.toLowerCase())
-                      );
-                    });
-
-                    setFilteredRequests(Requests);
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">

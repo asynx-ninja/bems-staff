@@ -41,7 +41,7 @@ const Inquiries = () => {
   //pagination
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
-  
+
   //date filtering
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [selected, setSelected] = useState("date");
@@ -66,29 +66,7 @@ const Inquiries = () => {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    const handleStaffInq = (obj) => {
-      setInquiry(obj);
-      setFilteredInquiries(
-        prev => [obj, ...prev]
-      );
-    };
 
-     const handleReStaffInq = (obj) => {
-      setInquiry(obj);
-      setFilteredInquiries((curItem) =>
-        curItem.map((item) =>
-          item._id === obj._id ? obj : item
-        )
-      );
-    };
-    socket.on("receive-reply-staff-inquiry", handleReStaffInq);
-    socket.on("receive-staff-inquiry", handleStaffInq);
-    return () => {
-      socket.off("receive-reply-staff-inquiry", handleReStaffInq);
-      socket.off("receive-staff-inquiry", handleStaffInq);
-    };
-  }, [socket, setInquiry]);
 
   useEffect(() => {
     document.title = "Inquiries | Barangay E-Services Management";
@@ -114,13 +92,49 @@ const Inquiries = () => {
     fetchInquiries();
   }, [id, brgy, statusFilter]);
 
- 
+  useEffect(() => {
+    const handleStaffInq = (obj) => {
+      setInquiry(obj);
+      setFilteredInquiries(
+        prev => [obj, ...prev]
+      );
+    };
+
+    const handleReStaffInq = (obj) => {
+      setInquiry(obj);
+      setFilteredInquiries((curItem) =>
+        curItem.map((item) =>
+          item._id === obj._id ? obj : item
+        )
+      );
+    };
+    socket.on("receive-reply-staff-inquiry", handleReStaffInq);
+    socket.on("receive-staff-inquiry", handleStaffInq);
+    return () => {
+      socket.off("receive-reply-staff-inquiry", handleReStaffInq);
+      socket.off("receive-staff-inquiry", handleStaffInq);
+    };
+  }, [socket, setInquiry]);
+
+  useEffect(() => {
+    const filteredData = inquiries.filter((item) =>
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.inq_id.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredInquiries(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [inquiries, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
-    const start = selected * 10;
-    const end = start + 10;
-    setFilteredInquiries(inquiries.slice(start, end));
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
   const checkboxHandler = (e) => {
@@ -193,9 +207,9 @@ const Inquiries = () => {
         return inquiries.filter((item) => {
           return (
             new Date(item.compose.date).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.compose.date).getMonth() ===
-              selectedDate.getMonth() &&
+            selectedDate.getMonth() &&
             new Date(item.compose.date).getDate() === selectedDate.getDate()
           );
         });
@@ -208,7 +222,7 @@ const Inquiries = () => {
         return inquiries.filter(
           (item) =>
             new Date(item.compose.date).getFullYear() ===
-              startDate.getFullYear() &&
+            startDate.getFullYear() &&
             new Date(item.compose.date).getMonth() === startDate.getMonth() &&
             new Date(item.compose.date).getDate() >= startDate.getDate() &&
             new Date(item.compose.date).getDate() <= endDate.getDate()
@@ -217,7 +231,7 @@ const Inquiries = () => {
         return inquiries.filter(
           (item) =>
             new Date(item.compose.date).getFullYear() ===
-              selectedDate.getFullYear() &&
+            selectedDate.getFullYear() &&
             new Date(item.compose.date).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -501,20 +515,7 @@ const Inquiries = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const Inquiries = inquiries.filter(
-                      (item) =>
-                        item.name
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()) ||
-                        item.inq_id
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase())
-                    );
-
-                    setFilteredInquiries(Inquiries);
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-64 items-center justify-center">

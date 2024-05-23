@@ -41,20 +41,40 @@ const Inquiries = () => {
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=true&status=${statusFilter}&page=${currentPage}&label=Staff`
+        `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=true&status=${statusFilter}&label=Staff`
       );
       if (response.status === 200) {
         setInquiries(response.data.result);
         setFilteredInquiries(response.data.result);
         setPageCount(response.data.pageCount);
-      } else setInquiries([]);
+      } else {
+        setInquiries([]);
+        setFilteredInquiries([]);
+      }
     };
 
     fetch();
-  }, [id, brgy, statusFilter, currentPage]);
+  }, [id, brgy, statusFilter]);
+
+  useEffect(() => {
+    const filteredData = inquiries.filter((item) =>
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.inq_id.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredInquiries(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [inquiries, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
   const checkboxHandler = (e) => {
@@ -178,7 +198,7 @@ const Inquiries = () => {
   };
 
   const onSelect = (e) => {
-  
+
     setSelected(e.target.value);
 
   };

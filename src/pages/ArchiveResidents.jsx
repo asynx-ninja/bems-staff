@@ -73,11 +73,33 @@ const Residents = () => {
     fetch();
   }, [brgy, statusFilter]);
 
+  useEffect(() => {
+    const filteredData = users.filter((item) => {
+      const fullName = item.lastName.toLowerCase() +
+        ", " +
+        item.firstName.toLowerCase() +
+        (item.middleName !== undefined ? " " + item.middleName.toLowerCase() : "");
+
+      return (
+        item.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        fullName.includes(searchQuery.toLowerCase())
+      );
+    });
+
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredResidents(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [users, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
-    const start = selected * 10;
-    const end = start + 10;
-    setFilteredResidents(users.slice(start, end));
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
   const Users = users.filter((item) => {
@@ -148,8 +170,8 @@ const Residents = () => {
         {/* Header */}
         <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-teal-700 py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]" style={{
-              background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-            }}>
+            background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+          }}>
             <h1
               className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[24px] xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
@@ -171,9 +193,8 @@ const Residents = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -202,41 +223,36 @@ const Residents = () => {
                   <hr className="border-[#4e4e4e] my-1" />
                   <li
                     onClick={() => handleStatusFilter("Verified")}
-                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
-                      statusFilter === "Verified" && "bg-[#b3c5cc]"
-                    }`}
+                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${statusFilter === "Verified" && "bg-[#b3c5cc]"
+                      }`}
                   >
                     VERIFIED
                   </li>
                   <li
                     onClick={() => handleStatusFilter("For Review")}
-                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
-                      statusFilter === "For Review" && "bg-[#b3c5cc]"
-                    }`}
+                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${statusFilter === "For Review" && "bg-[#b3c5cc]"
+                      }`}
                   >
                     FOR REVIEW
                   </li>
                   <li
                     onClick={() => handleStatusFilter("Registered")}
-                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
-                      statusFilter === "Registered" && "bg-[#b3c5cc]"
-                    }`}
+                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${statusFilter === "Registered" && "bg-[#b3c5cc]"
+                      }`}
                   >
                     REGISTERED
                   </li>
                   <li
                     onClick={() => handleStatusFilter("Pending")}
-                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
-                      statusFilter === "Pending" && "bg-[#b3c5cc]"
-                    }`}
+                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${statusFilter === "Pending" && "bg-[#b3c5cc]"
+                      }`}
                   >
                     PENDING
                   </li>
                   <li
                     onClick={() => handleStatusFilter("Denied")}
-                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
-                      statusFilter === "Denied" && "bg-[#b3c5cc]"
-                    }`}
+                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${statusFilter === "Denied" && "bg-[#b3c5cc]"
+                      }`}
                   >
                     DENIED
                   </li>
@@ -273,17 +289,7 @@ const Residents = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const filteredData = users.filter((item) => {
-                      const fullName = `${item.lastName} ${item.firstName} ${item.middleName}`.toLowerCase();
-                      const userIdMatches = item.user_id.toLowerCase().includes(e.target.value.toLowerCase());
-                      const nameMatches = fullName.includes(e.target.value.toLowerCase());
-                      return userIdMatches || nameMatches;
-                    });
-                    setFilteredResidents(filteredData.slice(0, 10)); // Show first page of filtered results
-                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center space-x-2">
@@ -475,7 +481,7 @@ const Residents = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <ViewResidentModal user={user} setUser={setUser} brgy={brgy}/>
+      <ViewResidentModal user={user} setUser={setUser} brgy={brgy} />
       <RestoreResidentModal selectedItems={selectedItems} />
       <GenerateReportsModal />
     </div>

@@ -119,11 +119,32 @@ const ArchivedOfficials = () => {
     fetchData();
   }, [brgy, positionFilter]); // Add positionFilter dependency
 
+  useEffect(() => {
+    const filteredData = officials.filter((item) => {
+      const fullName = item.lastName.toLowerCase() +
+        ", " +
+        item.firstName.toLowerCase() +
+        (item.middleName !== undefined ? " " + item.middleName.toLowerCase() : "");
+
+      return (
+        fullName.includes(searchQuery.toLowerCase())
+      );
+    });
+
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setfilterOfficials(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [officials, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
-    const start = selected * 10;
-    const end = start + 10;
-    setfilterOfficials(officials.slice(start, end));
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
   const Officials = officials.filter((item) => {
@@ -323,17 +344,7 @@ const ArchivedOfficials = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const filteredData = officials.filter((item) => {
-                      const fullName = `${item.lastName || ''} ${item.firstName || ''} ${item.middleName || ''}`.toLowerCase();
-                      const userIdMatches = item.official_id ? item.official_id.toLowerCase().includes(e.target.value.toLowerCase()) : false;
-                      const nameMatches = fullName.includes(e.target.value.toLowerCase());
-                      return userIdMatches || nameMatches;
-                    });
-                    setfilterOfficials(filteredData.slice(0, 10)); // Show first page of filtered results
-                    setPageCount(Math.ceil(filteredData.length / 10)); // Update page count based on filtered results
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center space-x-2">
