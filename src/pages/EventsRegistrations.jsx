@@ -248,6 +248,7 @@ const EventsRegistrations = () => {
     "DATE",
     "CONTACT",
     "EMAIL",
+    "STATUS",
     "ACTIONS",
   ];
 
@@ -346,9 +347,12 @@ const EventsRegistrations = () => {
     const worksheet = workbook.addWorksheet('Event Applications');
 
     const dataForExcel = searchapplications.map((item) => ({
+      "CONTROL #": item.event_id || "N/A",
+      "SERVICE NAME": item.event_name || "N/A",
       SENDER: item.form[0].lastName.value + ", " + item.form[0].firstName.value + " " + item.form[0].middleName.value,
       CONTACT: item.form[0].contact?.value || "N/A",
-      EMAIL: item.form[0].email?.value || "N/A"
+      EMAIL: item.form[0].email?.value || "N/A",
+      DATE: moment(item.createdAt).format("MMMM DD, YYYY") || "N/A",
     }));
 
     // Check for empty data BEFORE creating the worksheet
@@ -413,9 +417,10 @@ const EventsRegistrations = () => {
     doc.autoTable({
       startY: 30,
       head: [
-        ["NAME", "CONTACT", "EMAIL"],
+        ["EVENT", "NAME", "CONTACT", "EMAIL", "DATE"],
       ],
       body: searchapplications.map((item) => [
+        item.event_name,
         item.form[0].lastName.value +
         ", " +
         item.form[0].firstName.value +
@@ -424,6 +429,7 @@ const EventsRegistrations = () => {
 
         item.form[0].contact?.value || "N/A",
         item.form[0].email?.value || "N/A",
+        moment(application.createdAt).format("MMMM DD, YYYY hh:mm A"),
         // ... other data fields
       ]),
       styles: {
@@ -889,6 +895,36 @@ const EventsRegistrations = () => {
                       <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
                         {item.form[0].email?.value || "N/A"}
                       </span>
+                    </td>
+                    <td className="px-2 xl:px-6 py-3 xxl:w-3/12">
+                      {item.status === "Approved" && (
+                        <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            APPROVED
+                          </span>
+                        </div>
+                      )}
+                      {item.status === "Rejected" && (
+                        <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            REJECTED
+                          </span>
+                        </div>
+                      )}
+                      {item.status === "For Review" && (
+                        <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            For Revew
+                          </span>
+                        </div>
+                      )}
+                      {item.status === "Cancelled" && (
+                        <div className="flex items-center justify-center bg-[#555555] m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
+                            CANCELLED
+                          </span>
+                        </div>
+                      )}
                     </td>
                     <td className="px-3 xl:px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">
