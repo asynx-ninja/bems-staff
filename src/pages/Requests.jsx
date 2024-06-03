@@ -427,32 +427,49 @@ const Requests = () => {
 
   const exportToPDF = () => {
     const doc = new jsPDF();
-    const titleText = `LIST OF SERVICE APPLICANTS FOR ${selectedReqFilter.toUpperCase()}`;
+    const titleText = `LIST OF SERVICE APPLICANTS`;
     doc.setFontSize(18);
-    doc.setTextColor(41, 81, 65); // Dark green color (hex: #295141)
+    doc.setTextColor(41, 81, 65);
     const textWidth = doc.getTextWidth(titleText);
     const pageWidth = doc.internal.pageSize.getWidth();
     const xPosition = (pageWidth - textWidth) / 2;
     doc.text(titleText, xPosition, 20); // Place the title
 
-    doc.autoTable({
-      startY: 30,
-      head: [["NAME", "CONTACT", "EMAIL"]],
-      body: requests.map((item) => [
-        item.form[0].lastName.value +
-          ", " +
-          item.form[0].firstName.value +
-          " " +
-          item.form[0].middleName.value,
+    const tableColumn = [
+      "Control #",
+      "Service Name",
+      "Sender",
+      "Date",
+      "Status",
+    ];
 
-        item.form[0].contact?.value || "N/A",
-        item.form[0].email?.value || "N/A",
-        // ... other data fields
-      ]),
-      styles: {
-        halign: "center",
-      },
+    const tableRows = [];
+
+    // Check for empty data BEFORE creating the worksheet
+    if (filteredRequests.length === 0) {
+      alert("No data to export!");
+      return;
+    }
+
+    filteredRequests.forEach((request) => {
+      const senderName = `${request.form[0].lastName.value}, ${request.form[0].firstName.value} ${request.form[0].middleName.value}`;
+      const rowData = [
+        request.req_id,
+        request.service_name,
+        senderName,
+        moment(request.createdAt).format("YYYY-MM-DD hh:mm A"),
+        request.status,
+      ];
+      tableRows.push(rowData);
     });
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 25,
+      styles: { fontSize: 8 },
+    });
+
     doc.save(`Service-Requests-${selectedReqFilter}.pdf`);
   };
 
