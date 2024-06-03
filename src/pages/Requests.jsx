@@ -343,6 +343,7 @@ const Requests = () => {
 
     const dataForExcel = filteredRequests.map((item) => ({
       "CONTROL #": item.req_id || "N/A",
+      "SERVICE NAME": item.service_name || "N/A",
       SENDER:
         item.form[0].lastName.value +
         ", " +
@@ -363,7 +364,7 @@ const Requests = () => {
 
     // Add Title Row
     const titleRow = worksheet.addRow([
-      `LIST OF SERVICE APPLICANTS FOR ${selectedReqFilter.toUpperCase()}`,
+      `LIST OF SERVICE APPLICANTS`,
     ]);
     // Merge cells for the title row
     worksheet.mergeCells(
