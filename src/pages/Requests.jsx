@@ -617,8 +617,8 @@ const Requests = () => {
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12 lg:ml-2 xl:ml-0">
               <div className="flex flex-row w-full md:mr-2">
                 <button
-                  className="bg-teal-700  p-3 rounded-l-md"
-                  style={{ backgroundColor: information?.theme?.primary }}
+                 className="bg-teal-700 p-3 rounded-l-md"
+                 style={{ backgroundColor: information?.theme?.primary }}
                 >
                   <div className="w-full overflow-hidden">
                     <svg

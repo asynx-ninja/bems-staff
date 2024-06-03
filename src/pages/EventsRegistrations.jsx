@@ -16,6 +16,10 @@ import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
 import { io } from "socket.io-client";
 import Socket_link from "../config/Socket";
+import * as XLSX from 'xlsx';
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+import ExcelJS from 'exceljs';
 
 const socket = io(Socket_link);
 
@@ -30,7 +34,7 @@ const EventsRegistrations = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const information = GetBrgy(brgy);
   const chatContainerRef = useRef();
-
+  const [searchapplications, setSearchApplications] = useState([]);
   //Status filter and pagination
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(0);
@@ -106,6 +110,7 @@ const EventsRegistrations = () => {
           `${API_LINK}/application/?brgy=${brgy}&archived=false&status=${statusFilter}&title=${selecteEventFilter}`
         );
         if (response.status === 200) {
+          setSearchApplications(response.data.result);
           setApplications(response.data.result);
           setFilteredApplications(response.data.result.slice(0, 10));
           setPageCount(response.data.pageCount);
@@ -154,32 +159,32 @@ const EventsRegistrations = () => {
   }, [currentPage, brgy]); // Add positionFilter dependency
 
   useEffect(() => {
-    const filteredData = applications.filter((item) => {
+    const filteredData = searchapplications.filter((item) => {
       const fullName = item.form[0].lastName.value.toLowerCase() +
         ", " +
         item.form[0].firstName.value.toLowerCase() +
         " " +
         item.form[0].middleName.value.toLowerCase();
-  
+
       return (
         item.event_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.application_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
         fullName.includes(searchQuery.toLowerCase())
       );
     });
-  
+
     const startIndex = currentPage * 10;
     const endIndex = startIndex + 10;
     setFilteredApplications(filteredData.slice(startIndex, endIndex));
     setPageCount(Math.ceil(filteredData.length / 10));
-  }, [applications, searchQuery, currentPage]);
+  }, [searchapplications, searchQuery, currentPage]);
 
-  
-  
+
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
-  
+
 
   // Handle search input change
   const handleSearchChange = (e) => {
@@ -202,7 +207,7 @@ const EventsRegistrations = () => {
     document.title = "Events Applications | Barangay E-Services Management";
   }, []);
 
-  const Applications = applications.filter((item) =>
+  const Applications = searchapplications.filter((item) =>
     item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -241,7 +246,8 @@ const EventsRegistrations = () => {
     "EVENT NAME",
     "SENDER",
     "DATE",
-    "STATUS",
+    "CONTACT",
+    "EMAIL",
     "ACTIONS",
   ];
 
@@ -333,6 +339,98 @@ const EventsRegistrations = () => {
       setSpecifiedDate(date);
       setFilteredApplications(filters(selected, date));
     }
+  };
+
+  const exportToExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Event Applications');
+
+    const dataForExcel = searchapplications.map((item) => ({
+      SENDER: item.form[0].lastName.value + ", " + item.form[0].firstName.value + " " + item.form[0].middleName.value,
+      CONTACT: item.form[0].contact?.value || "N/A",
+      EMAIL: item.form[0].email?.value || "N/A"
+    }));
+
+    // Check for empty data BEFORE creating the worksheet
+    if (dataForExcel.length === 0) {
+      alert("No data to export!");
+      return;
+    }
+
+    // Add Title Row
+    const titleRow = worksheet.addRow([`LIST OF EVENT APPLICANTS FOR ${selecteEventFilter.toUpperCase()}`]);
+    // Merge cells for the title row
+    worksheet.mergeCells(`A1:${String.fromCharCode(65 + Object.keys(dataForExcel[0]).length - 1)}1`);
+    titleRow.getCell(1).font = { bold: true, size: 16, color: { argb: 'FFFFFFFF' } };
+    titleRow.getCell(1).alignment = { horizontal: 'center' };
+    titleRow.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '295141' } };
+
+    // Add Header Row
+    const headerRow = worksheet.addRow(Object.keys(dataForExcel[0]));
+    headerRow.eachCell((cell) => {
+      if (cell.value) {
+        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        cell.alignment = { horizontal: 'center' };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFB13C' } };
+      }
+    });
+
+    // Add Data Rows
+    dataForExcel.forEach((item, index) => {
+      const row = worksheet.addRow(Object.values(item));
+      const rowStyle = index % 2 === 0 ? 'EBF6EB' : 'F5FDF5';
+      row.eachCell({ includeEmpty: true }, (cell) => {
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: rowStyle } };
+      });
+    });
+
+    // Set Column Widths
+    worksheet.columns.forEach((column) => {
+      column.width = 30; // Adjust the column width as needed
+    });
+
+    // Save the Workbook
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Event-Applications-${selecteEventFilter}.xlsx`;
+    link.click();
+  };
+
+
+  // Function to export data to PDF
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    const titleText = `LIST OF EVENT APPLICANTS FOR ${selecteEventFilter.toUpperCase()}`;
+    doc.setFontSize(18);
+    doc.setTextColor(41, 81, 65); // Dark green color (hex: #295141)
+    const textWidth = doc.getTextWidth(titleText);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const xPosition = (pageWidth - textWidth) / 2;
+    doc.text(titleText, xPosition, 20); // Place the title
+
+    doc.autoTable({
+      startY: 30,
+      head: [
+        ["NAME", "CONTACT", "EMAIL"],
+      ],
+      body: searchapplications.map((item) => [
+        item.form[0].lastName.value +
+        ", " +
+        item.form[0].firstName.value +
+        " " +
+        item.form[0].middleName.value,
+
+        item.form[0].contact?.value || "N/A",
+        item.form[0].email?.value || "N/A",
+        // ... other data fields
+      ]),
+      styles: {
+        halign: 'center',
+      }
+    });
+    doc.save(`Event-Applications-${selecteEventFilter}.pdf`);
   };
 
   return (
@@ -427,18 +525,11 @@ const EventsRegistrations = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handleStatusFilter("For Review")}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    PENDING
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Processing")}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    PROCESSING
+                    FOR REVIEW
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Cancelled")}
@@ -448,11 +539,11 @@ const EventsRegistrations = () => {
                     CANCELLED
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Application Completed")}
+                    onClick={() => handleStatusFilter("Approved")}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    APPLICATION COMPLETED
+                    APPROVED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Rejected")}
@@ -610,6 +701,57 @@ const EventsRegistrations = () => {
                   </div>
                 </ul>
               </div>
+              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+                <button
+                  id="hs-dropdown-export" // Unique ID for this dropdown
+                  type="button"
+                  className="bg-[#295141] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm "
+                  style={{ backgroundColor: information?.theme?.primary }}
+                >
+                  EXPORT
+                  <svg
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+                <ul
+                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-48 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2"
+                  aria-labelledby="hs-dropdown-export"
+                >
+                  <li>
+                    <a
+                      href="#"
+                      onClick={
+                        exportToExcel // Export immediately after selection
+                      }
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 w-full text-left"
+                    >
+                      EXCEL
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      onClick={exportToPDF}
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 w-full text-left"
+                    >
+                      PDF
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
 
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12">
@@ -738,51 +880,15 @@ const EventsRegistrations = () => {
                         </span>
                       </div>
                     </td>
-                    <td className="px-2 xl:px-6 py-3 xxl:w-3/12">
-                      {item.status === "Application Completed" && (
-                        <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            APPLICATION COMPLETED
-                          </span>
-                        </div>
-                      )}
-                      {item.status === "Rejected" && (
-                        <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            REJECTED
-                          </span>
-                        </div>
-                      )}
-                      {item.status === "Pending" && (
-                        <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            PENDING
-                          </span>
-                        </div>
-                      )}
-                      {item.status === "Paid" && (
-                        <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            PAID
-                          </span>
-                        </div>
-                      )}
-
-                      {item.status === "Processing" && (
-                        <div className="flex items-center justify-center bg-[#3b66b6] m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            PROCESSING
-                          </span>
-                        </div>
-                      )}
-
-                      {item.status === "Cancelled" && (
-                        <div className="flex items-center justify-center bg-[#555555] m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            CANCELLED
-                          </span>
-                        </div>
-                      )}
+                    <td className="px-6 py-3">
+                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
+                        {item.form[0].contact?.value || "N/A"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-3">
+                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
+                        {item.form[0].email?.value || "N/A"}
+                      </span>
                     </td>
                     <td className="px-3 xl:px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">
@@ -804,27 +910,7 @@ const EventsRegistrations = () => {
                           >
                             View Application
                           </span>
-                        </div>
-
-                        <div className="hs-tooltip inline-block">
-                          <button
-                            type="button"
-                            data-hs-overlay="#hs-reply-modal"
-                            onClick={() => handleView({ ...item })}
-                            className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
-                          >
-                            <AiOutlineSend
-                              size={24}
-                              style={{ color: "#ffffff" }}
-                            />
-                          </button>
-                          <span
-                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
-                            role="tooltip"
-                          >
-                            Reply to Application
-                          </span>
-                        </div>
+                        </div>                     
                       </div>
                     </td>
                   </tr>
@@ -882,7 +968,7 @@ const EventsRegistrations = () => {
         socket={socket}
         chatContainerRef={chatContainerRef}
       />
-      <ArchiveRegistrationModal selectedItems={selectedItems} socket={socket}/>
+      <ArchiveRegistrationModal selectedItems={selectedItems} socket={socket} />
     </div>
   );
 };
