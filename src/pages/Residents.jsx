@@ -17,6 +17,12 @@ import ManageResidentModal from "../components/residents/ManageResidentsModal";
 import MessageResidentModal from "../components/residents/messageResident";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import moment from "moment";
+import * as XLSX from "xlsx";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+import ExcelJS from "exceljs";
+
 import { io } from "socket.io-client";
 import Socket_link from "../config/Socket";
 
@@ -217,6 +223,163 @@ const Residents = () => {
     });
   };
 
+  const exportToExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Barangay Residents");
+
+    console.log("Filtered Residents", filteredResidents);
+
+    const dataForExcel = filteredResidents.map((item) => ({
+      FULLNAME: item.lastName + ", " + item.firstName + " " + item.middleName,
+      EMAIL: item.email || "N/A",
+      CONTACT: item.contact || "N/A",
+      BIRTHDAY: moment(item.birthday).format("MMMM DD, YYYY") || "N/A",
+      AGE: item.age || 'N/A"',
+      GENDER: item.sex || "N/A",
+      "CIVIL STATUS": item.civil_status || "N/A",
+      RELIGION: item.religion || "N/A",
+      ADDRESS: item.address.street + ", " + item.address.brgy + ", " + item.address.city || "N/A",
+      "REGISTERED VOTER": item.isVoter || "N/A",
+      STATUS: item.isApproved || "N/A",
+    }));
+
+    // Check for empty data BEFORE creating the worksheet
+    if (dataForExcel.length === 0) {
+      alert("No data to export!");
+      return;
+    }
+
+    // Add Title Row
+    const titleRow = worksheet.addRow([
+      `LIST OF RESIDENTS FOR BARANGAY ${brgy} `,
+    ]);
+    // Merge cells for the title row
+    worksheet.mergeCells(
+      `A1:${String.fromCharCode(65 + Object.keys(dataForExcel[0]).length - 1)}1`
+    );
+    titleRow.getCell(1).font = {
+      bold: true,
+      size: 16,
+      color: { argb: "FFFFFFFF" },
+    };
+    titleRow.getCell(1).alignment = { horizontal: "center" };
+    titleRow.getCell(1).fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "295141" },
+    };
+
+    // Add Header Row
+    const headerRow = worksheet.addRow(Object.keys(dataForExcel[0]));
+    headerRow.eachCell((cell) => {
+      if (cell.value) {
+        cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+        cell.alignment = { horizontal: "center" };
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFB13C" },
+        };
+      }
+    });
+
+    // Add Data Rows
+    dataForExcel.forEach((item, index) => {
+      const row = worksheet.addRow(Object.values(item));
+      const rowStyle = index % 2 === 0 ? "EBF6EB" : "F5FDF5";
+      row.eachCell({ includeEmpty: true }, (cell) => {
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: rowStyle },
+        };
+      });
+    });
+
+    // Set Column Widths
+    worksheet.columns.forEach((column) => {
+      column.width = 30; // Adjust the column width as needed
+    });
+
+    // Save the Workbook
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "residents/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `Residents of Barangay ${brgy}.xlsx`;
+    link.click();
+  };
+
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    const titleText = `LIST OF RESIDENTS FOR BARANGAY ${brgy}`;
+    doc.setFontSize(18);
+    doc.setTextColor(41, 81, 65);
+    const textWidth = doc.getTextWidth(titleText);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const xPosition = (pageWidth - textWidth) / 2;
+    doc.text(titleText, xPosition, 20); // Place the title
+
+    const tableColumn = [
+      "FULLNAME",
+      "EMAIL",
+      "CONTACT",
+      "BIRTHDAY",
+      "AGE",
+      "GENDER",
+      "ADDRESS",
+      "STATUS",
+    ];
+
+    const tableRows = [];
+
+    // Check for empty data BEFORE creating the worksheet
+    if (filteredResidents.length === 0) {
+      alert("No data to export!");
+      return;
+    }
+
+    filteredResidents.forEach((resident) => {
+      const FullName = `${resident.lastName}, ${resident.firstName} ${resident.middleName}`;
+      const Address = `${resident.address.street}, ${resident.address.brgy}, ${resident.address.city}`;
+      const rowData = [
+        FullName,
+        resident.email,
+        resident.contact,
+        moment(resident.birthday).format("MMMM DD, YYYY"),
+        resident.age,
+        resident.sex,
+        Address,
+        resident.isApproved,
+      ];
+      tableRows.push(rowData);
+    });
+
+    // Set column widths
+    const columnWidths = [35, 25, 20, 25, 10, 15, 35, 20]; // Adjust column widths as needed
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 25,
+      styles: { fontSize: 7.5 },
+      columnStyles: {
+        0: { cellWidth: columnWidths[0] },
+        1: { cellWidth: columnWidths[1] },
+        2: { cellWidth: columnWidths[2] },
+        3: { cellWidth: columnWidths[3] },
+        4: { cellWidth: columnWidths[4] },
+        5: { cellWidth: columnWidths[5] },
+        6: { cellWidth: columnWidths[6] },
+        7: { cellWidth: columnWidths[7] },
+      },
+    });
+
+    doc.save(`Residents of Barangay ${brgy}.pdf`);
+};
+
   return (
     <div className="mx-4 mt-4">
       <div className="flex flex-col ">
@@ -386,12 +549,12 @@ const Residents = () => {
                     PARTIALLY VERIFIED
                   </li>
                   <li
-                    onClick={() => handleStatusFilter("Verified")}
+                    onClick={() => handleStatusFilter("Fully Verified")}
                     className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
                       statusFilter === "Verified" && "bg-[#b3c5cc]"
                     }`}
                   >
-                    VERIFIED
+                    FULLY VERIFIED
                   </li>
                 </ul>
               </div>
@@ -431,15 +594,20 @@ const Residents = () => {
                     <a
                       className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
+                      onClick={
+                        exportToExcel // Export immediately after selection
+                      }
                     >
-                      Export to PDF
+                      Export to Excel
                     </a>
-
                     <a
                       className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
+                      onClick={
+                        exportToPDF // Export immediately after selection
+                      }
                     >
-                      Export to Excel
+                      Export to PDF
                     </a>
                   </div>
                 </ul>

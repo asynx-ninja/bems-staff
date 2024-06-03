@@ -457,7 +457,7 @@ const Requests = () => {
         request.req_id,
         request.service_name,
         senderName,
-        moment(request.createdAt).format("YYYY-MM-DD hh:mm A"),
+        moment(request.createdAt).format("MMMM DD, YYYY hh:mm A"),
         request.status,
       ];
       tableRows.push(rowData);
