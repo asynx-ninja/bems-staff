@@ -17,10 +17,10 @@ import API_LINK from "../config/API";
 import axios from "axios";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
-import * as XLSX from 'xlsx';
+import * as XLSX from "xlsx";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
-import ExcelJS from 'exceljs';
+import ExcelJS from "exceljs";
 
 import { io } from "socket.io-client";
 import Socket_link from "../config/Socket";
@@ -339,12 +339,20 @@ const Requests = () => {
 
   const exportToExcel = async () => {
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Service Requests');
+    const worksheet = workbook.addWorksheet("Service Requests");
 
     const dataForExcel = filteredRequests.map((item) => ({
-      SENDER: item.form[0].lastName.value + ", " + item.form[0].firstName.value + " " + item.form[0].middleName.value,
+      "CONTROL #": item.req_id || "N/A",
+      SENDER:
+        item.form[0].lastName.value +
+        ", " +
+        item.form[0].firstName.value +
+        " " +
+        item.form[0].middleName.value,
       CONTACT: item.form[0].contact?.value || "N/A",
-      EMAIL: item.form[0].email?.value || "N/A"
+      EMAIL: item.form[0].email?.value || "N/A",
+      DATE: moment(item.createdAt).format("MMMM DD, YYYY") || "N/A",
+      STATUS: item.status || "N/A",
     }));
 
     // Check for empty data BEFORE creating the worksheet
@@ -354,29 +362,49 @@ const Requests = () => {
     }
 
     // Add Title Row
-    const titleRow = worksheet.addRow([`LIST OF SERVICE APPLICANTS FOR ${selectedReqFilter.toUpperCase()}`]);
+    const titleRow = worksheet.addRow([
+      `LIST OF SERVICE APPLICANTS FOR ${selectedReqFilter.toUpperCase()}`,
+    ]);
     // Merge cells for the title row
-    worksheet.mergeCells(`A1:${String.fromCharCode(65 + Object.keys(dataForExcel[0]).length - 1)}1`);
-    titleRow.getCell(1).font = { bold: true, size: 16, color: { argb: 'FFFFFFFF' } };
-    titleRow.getCell(1).alignment = { horizontal: 'center' };
-    titleRow.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '295141' } };
+    worksheet.mergeCells(
+      `A1:${String.fromCharCode(65 + Object.keys(dataForExcel[0]).length - 1)}1`
+    );
+    titleRow.getCell(1).font = {
+      bold: true,
+      size: 16,
+      color: { argb: "FFFFFFFF" },
+    };
+    titleRow.getCell(1).alignment = { horizontal: "center" };
+    titleRow.getCell(1).fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "295141" },
+    };
 
     // Add Header Row
     const headerRow = worksheet.addRow(Object.keys(dataForExcel[0]));
     headerRow.eachCell((cell) => {
       if (cell.value) {
-        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-        cell.alignment = { horizontal: 'center' };
-        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFB13C' } };
+        cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+        cell.alignment = { horizontal: "center" };
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFB13C" },
+        };
       }
     });
 
     // Add Data Rows
     dataForExcel.forEach((item, index) => {
       const row = worksheet.addRow(Object.values(item));
-      const rowStyle = index % 2 === 0 ? 'EBF6EB' : 'F5FDF5';
+      const rowStyle = index % 2 === 0 ? "EBF6EB" : "F5FDF5";
       row.eachCell({ includeEmpty: true }, (cell) => {
-        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: rowStyle } };
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: rowStyle },
+        };
       });
     });
 
@@ -387,8 +415,10 @@ const Requests = () => {
 
     // Save the Workbook
     const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const link = document.createElement('a');
+    const blob = new Blob([buffer], {
+      type: "request/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = `Service-Requests-${selectedReqFilter}.xlsx`;
     link.click();
@@ -406,27 +436,24 @@ const Requests = () => {
 
     doc.autoTable({
       startY: 30,
-      head: [
-        ["NAME", "CONTACT", "EMAIL"],
-      ],
+      head: [["NAME", "CONTACT", "EMAIL"]],
       body: requests.map((item) => [
         item.form[0].lastName.value +
-        ", " +
-        item.form[0].firstName.value +
-        " " +
-        item.form[0].middleName.value,
+          ", " +
+          item.form[0].firstName.value +
+          " " +
+          item.form[0].middleName.value,
 
         item.form[0].contact?.value || "N/A",
         item.form[0].email?.value || "N/A",
         // ... other data fields
       ]),
       styles: {
-        halign: 'center',
-      }
+        halign: "center",
+      },
     });
     doc.save(`Service-Requests-${selectedReqFilter}.pdf`);
   };
-
 
   return (
     <div className="mx-4 ">
@@ -743,20 +770,19 @@ const Requests = () => {
                       className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
                       onClick={
-                        exportToPDF // Export immediately after selection
+                        exportToExcel // Export immediately after selection
                       }
                     >
-                      Export to PDF
+                      Export to Excel
                     </a>
-
                     <a
                       className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
                       onClick={
-                        exportToExcel // Export immediately after selection
+                        exportToPDF // Export immediately after selection
                       }
                     >
-                     Export to Excel
+                      Export to PDF
                     </a>
                   </div>
                 </ul>
@@ -766,8 +792,8 @@ const Requests = () => {
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12 lg:ml-2 xl:ml-0">
               <div className="flex flex-row w-full md:mr-2">
                 <button
-                 className="bg-teal-700 p-3 rounded-l-md"
-                 style={{ backgroundColor: information?.theme?.primary }}
+                  className="bg-teal-700 p-3 rounded-l-md"
+                  style={{ backgroundColor: information?.theme?.primary }}
                 >
                   <div className="w-full overflow-hidden">
                     <svg

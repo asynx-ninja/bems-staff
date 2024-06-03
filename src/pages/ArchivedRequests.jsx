@@ -15,8 +15,11 @@ import Breadcrumbs from "../components/archivedRequests/Breadcrumbs";
 import RestoreRequestsModal from "../components/requests/RestoreRequestsModal";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
-import { io } from "socket.io-client";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+import ExcelJS from 'exceljs';
 
+import { io } from "socket.io-client";
 import Socket_link from "../config/Socket";
 
 const socket = io(Socket_link);
