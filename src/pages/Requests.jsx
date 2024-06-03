@@ -17,8 +17,12 @@ import API_LINK from "../config/API";
 import axios from "axios";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
-import { io } from "socket.io-client";
+import * as XLSX from 'xlsx';
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+import ExcelJS from 'exceljs';
 
+import { io } from "socket.io-client";
 import Socket_link from "../config/Socket";
 
 const socket = io(Socket_link);
@@ -110,7 +114,7 @@ const Requests = () => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/requests/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${selectedReqFilter}`
+          `${API_LINK}/requests/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${selectedReqFilter}&title=${selectedReqFilter}`
         );
 
         if (response.status === 200) {
@@ -127,7 +131,7 @@ const Requests = () => {
     };
 
     fetch();
-  }, [brgy, statusFilter, selectedReqFilter]);
+  }, [brgy, statusFilter, selectedReqFilter, selectedReqFilter]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -350,7 +354,7 @@ const Requests = () => {
     }
 
     // Add Title Row
-    const titleRow = worksheet.addRow([`LIST OF SERVICE APPLICANTS FOR ${selecteEventFilter.toUpperCase()}`]);
+    const titleRow = worksheet.addRow([`LIST OF SERVICE APPLICANTS FOR ${selectedReqFilter.toUpperCase()}`]);
     // Merge cells for the title row
     worksheet.mergeCells(`A1:${String.fromCharCode(65 + Object.keys(dataForExcel[0]).length - 1)}1`);
     titleRow.getCell(1).font = { bold: true, size: 16, color: { argb: 'FFFFFFFF' } };
@@ -386,8 +390,41 @@ const Requests = () => {
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `Service-Requests-${selecteEventFilter}.xlsx`;
+    link.download = `Service-Requests-${selectedReqFilter}.xlsx`;
     link.click();
+  };
+
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    const titleText = `LIST OF SERVICE APPLICANTS FOR ${selectedReqFilter.toUpperCase()}`;
+    doc.setFontSize(18);
+    doc.setTextColor(41, 81, 65); // Dark green color (hex: #295141)
+    const textWidth = doc.getTextWidth(titleText);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const xPosition = (pageWidth - textWidth) / 2;
+    doc.text(titleText, xPosition, 20); // Place the title
+
+    doc.autoTable({
+      startY: 30,
+      head: [
+        ["NAME", "CONTACT", "EMAIL"],
+      ],
+      body: requests.map((item) => [
+        item.form[0].lastName.value +
+        ", " +
+        item.form[0].firstName.value +
+        " " +
+        item.form[0].middleName.value,
+
+        item.form[0].contact?.value || "N/A",
+        item.form[0].email?.value || "N/A",
+        // ... other data fields
+      ]),
+      styles: {
+        halign: 'center',
+      }
+    });
+    doc.save(`Service-Requests-${selectedReqFilter}.pdf`);
   };
 
 
@@ -705,6 +742,9 @@ const Requests = () => {
                     <a
                       className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
+                      onClick={
+                        exportToPDF // Export immediately after selection
+                      }
                     >
                       Export to PDF
                     </a>
