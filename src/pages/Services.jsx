@@ -63,7 +63,7 @@ const Services = () => {
           ? a.name.localeCompare(b.name)
           : b.name.localeCompare(a.name);
       } else if (sortBy === "isApproved") {
-        const order = { Approved: 1, Pending: 2, Disapproved: 3 };
+        const order = { Approved: 1, "For Review": 2, Disapproved: 3 };
         return newSortOrder === "asc"
           ? order[a.isApproved] - order[b.isApproved]
           : order[b.isApproved] - order[a.isApproved];
@@ -377,11 +377,11 @@ const Services = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handleStatusFilter("For Review")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    PENDING
+                    FOR REVIEW
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Approved")}
@@ -542,10 +542,10 @@ const Services = () => {
                           </span>
                         </div>
                       )}
-                      {item.isApproved === "Pending" && (
+                      {item.isApproved === "For Review" && (
                         <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
-                            PENDING
+                            FOR REVIEW
                           </span>
                         </div>
                       )}

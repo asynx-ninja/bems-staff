@@ -48,7 +48,7 @@ const AddResidents = () => {
     username: "",
     password: "",
     isArchived: false,
-    isApproved: "Registered",
+    isApproved: "Fully Verified",
     city: "Rodriguez, Rizal",
     brgy: brgy,
     verification: {
@@ -379,7 +379,7 @@ const AddResidents = () => {
               username: "",
               password: "",
               isArchived: false,
-              isApproved: "Registered",
+              isApproved: "Fully Verified",
               city: "Rodriguez, Rizal",
               brgy: brgy,
               verification: {

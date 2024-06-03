@@ -14,7 +14,13 @@ import ReplyLoader from "./loaders/ReplyLoader";
 import moment from "moment";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef, socket }) {
+function ReplyServiceModal({
+  request,
+  setRequest,
+  brgy,
+  chatContainerRef,
+  socket,
+}) {
   const information = GetBrgy(brgy);
   const [reply, setReply] = useState(false);
   const [statusChanger, setStatusChanger] = useState(false);
@@ -270,33 +276,38 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef, socket
           setReplyingStatus(null);
           setReply(false);
           setStatusChanger(false);
-          
+
           const notify = {
             category: "One",
             compose: {
               subject: `REQUEST - ${request.service_name}`,
-              message: `A barangay staff has updated/replied your request for the barangay service of ${request.service_name
-                }.\n\n
+              message: `A barangay staff has updated/replied your request for the barangay service of ${
+                request.service_name
+              }.\n\n
         
               Request Details:\n
-              - Name: ${request.form && request.form[0]
+              - Name: ${
+                request.form && request.form[0]
                   ? request.form[0].lastName.value
                   : ""
-                }, ${request.form && request.form[0]
+              }, ${
+                request.form && request.form[0]
                   ? request.form[0].firstName.value
                   : ""
-                } ${request.form && request.form[0]
+              } ${
+                request.form && request.form[0]
                   ? request.form[0].middleName.value
                   : ""
-                }
+              }
               - Service Applied: ${request.service_name}\n
               - Request ID: ${request.req_id}\n
               - Date Created: ${moment(request.createdAt).format(
-                  "MMM. DD, YYYY h:mm a"
-                )}\n
+                "MMM. DD, YYYY h:mm a"
+              )}\n
               - Status: ${response.data.status}\n
-              - Staff Handled: ${userData.lastName}, ${userData.firstName} ${userData.middleName
-                }\n\n
+              - Staff Handled: ${userData.lastName}, ${userData.firstName} ${
+                userData.middleName
+              }\n\n
               Please update this service request as you've seen this notification!\n\n
               Thank you!!,`,
               go_to: "Requests",
@@ -386,8 +397,8 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef, socket
                               newMessage.message
                                 ? newMessage.message
                                 : statusChanger
-                                  ? `The status of your service request is ${request.status}`
-                                  : ""
+                                ? `The status of your service request is ${request.status}`
+                                : ""
                             }
                             className="p-4 pb-12 block w-full  border-[#b7e4c7] rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border focus:outline-none focus:ring-0 focus:border-[#b7e4c7]"
                             placeholder="Input response..."
@@ -504,8 +515,9 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef, socket
                                         value={request.status}
                                         hidden={!statusChanger}
                                       >
-                                        <option value="Pending">PENDING</option>
-                                        <option value="Paid">PAID</option>
+                                        <option value="For Review">
+                                          FOR REVIEW
+                                        </option>
                                         <option value="Processing">
                                           PROCESSING
                                         </option>
@@ -590,8 +602,9 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef, socket
                           key={index}
                           className={
                             responseItem.sender ===
-                              `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
-                              } (${userData.type})`
+                            `${userData?.firstName?.toUpperCase() ?? ""} ${
+                              userData?.lastName?.toUpperCase() ?? ""
+                            } (${userData.type})`
                               ? "flex flex-col justify-end items-end mb-2 w-full h-auto"
                               : "flex flex-col justify-start items-start mb-2 w-full h-auto"
                           }
@@ -599,8 +612,9 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef, socket
                           <div
                             className={
                               responseItem.sender ===
-                                `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
-                                } (${userData.type})`
+                              `${userData?.firstName?.toUpperCase() ?? ""} ${
+                                userData?.lastName?.toUpperCase() ?? ""
+                              } (${userData.type})`
                                 ? "flex flex-col items-end h-auto max-w-[80%]"
                                 : "flex flex-col items-start h-auto max-w-[80%]"
                             }
@@ -608,8 +622,9 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef, socket
                             <div
                               className={
                                 responseItem.sender ===
-                                  `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
-                                  } (${userData.type})`
+                                `${userData?.firstName?.toUpperCase() ?? ""} ${
+                                  userData?.lastName?.toUpperCase() ?? ""
+                                } (${userData.type})`
                                   ? "hidden"
                                   : "flex flex-row w-full justify-between"
                               }
@@ -625,9 +640,11 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef, socket
                               <div
                                 className={
                                   responseItem.sender ===
-                                    `${userData?.firstName?.toUpperCase() ?? ""
-                                    } ${userData?.lastName?.toUpperCase() ?? ""
-                                    } (${userData.type})`
+                                  `${
+                                    userData?.firstName?.toUpperCase() ?? ""
+                                  } ${
+                                    userData?.lastName?.toUpperCase() ?? ""
+                                  } (${userData.type})`
                                     ? "flex flex-col rounded-xl bg-[#52b788] border border-[#2d6a4f] mb-1 text-white px-2 md:px-4 py-2 cursor-pointer"
                                     : "flex flex-col rounded-xl bg-gray-100 border text-black border-gray-300 px-2 md:px-4 py-2 cursor-pointer"
                                 }
@@ -684,8 +701,8 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef, socket
                                       newMessage.message
                                         ? newMessage.message
                                         : statusChanger
-                                          ? `The status of your service request is ${request.status}`
-                                          : ""
+                                        ? `The status of your service request is ${request.status}`
+                                        : ""
                                     }
                                     className="p-4 pb-12 block w-full  border-[#b7e4c7] rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border focus:outline-none focus:ring-0 focus:border-[#b7e4c7]"
                                     placeholder="Input response..."
@@ -807,11 +824,8 @@ function ReplyServiceModal({ request, setRequest, brgy, chatContainerRef, socket
                                                 value={request.status}
                                                 hidden={!statusChanger}
                                               >
-                                                <option value="Pending">
-                                                  PENDING
-                                                </option>
-                                                <option value="Paid">
-                                                  PAID
+                                                <option value="For Review">
+                                                  FOR REVIEW
                                                 </option>
                                                 <option value="Processing">
                                                   PROCESSING

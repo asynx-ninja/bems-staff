@@ -9,7 +9,6 @@ import {
     StyleSheet,
 } from "@react-pdf/renderer";
 import logo from "../../../assets/header/montalban-logo.png";
-import id_picture from "../../../assets/sample/official.jpg";
 import BALITE from "../../../assets/logo/BALITE.png";
 import BURGOS from "../../../assets/logo/BURGOS.png";
 import GERONIMO from "../../../assets/logo/GERONIMO.png";

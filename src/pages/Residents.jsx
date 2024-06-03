@@ -25,13 +25,13 @@ const socket = io(Socket_link);
 const Residents = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [users, setUsers] = useState([]);
-  const [newUsers, setNewUsers] = useState([])
+  const [newUsers, setNewUsers] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
   const [user, setUser] = useState({});
   const [status, setStatus] = useState({});
-  const [filteredResidents, setFilteredResidents] = useState([])
+  const [filteredResidents, setFilteredResidents] = useState([]);
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -42,7 +42,6 @@ const Residents = () => {
   const [update, setUpdate] = useState(false);
   const [editupdate, setEditUpdate] = useState(false);
   const [eventsForm, setEventsForm] = useState([]);
-
 
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
@@ -75,18 +74,17 @@ const Residents = () => {
     const handleResident = (obj) => {
       setUsers(obj);
       setFilteredResidents((curItem) =>
-        curItem.map((item) =>
-          item._id === obj._id ? obj : item
-        )
+        curItem.map((item) => (item._id === obj._id ? obj : item))
       );
     };
 
     const handleEventArchive = (obj) => {
       setUser(obj);
-      setUsers((prev) => prev.filter(item => item._id !== obj._id));
-      setFilteredResidents((prev) => prev.filter(item => item._id !== obj._id));
+      setUsers((prev) => prev.filter((item) => item._id !== obj._id));
+      setFilteredResidents((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
     };
-
 
     socket.on("receive-update-status-resident", handleResident);
     socket.on("receive-archive-staff", handleEventArchive);
@@ -105,7 +103,7 @@ const Residents = () => {
       if (response.status === 200) {
         setUsers(response.data.result);
         setFilteredResidents(response.data.result.slice(0, 10));
-        setNewUsers(response.data.result)
+        setNewUsers(response.data.result);
         setPageCount(response.data.pageCount);
       } else {
         setUsers([]);
@@ -117,10 +115,13 @@ const Residents = () => {
 
   useEffect(() => {
     const filteredData = newUsers.filter((item) => {
-      const fullName = item.lastName.toLowerCase() +
+      const fullName =
+        item.lastName.toLowerCase() +
         ", " +
         item.firstName.toLowerCase() +
-        (item.middleName !== undefined ? " " + item.middleName.toLowerCase() : "");
+        (item.middleName !== undefined
+          ? " " + item.middleName.toLowerCase()
+          : "");
 
       return (
         item.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -142,13 +143,11 @@ const Residents = () => {
     setStatusFilter(selectedStatus);
   };
 
-  
   // Handle search input change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
     setCurrentPage(0); // Reset current page when search query changes
   };
-
 
   // const Users = users.filter((item) => {
   //   const fullName =
@@ -333,8 +332,9 @@ const Residents = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -362,40 +362,86 @@ const Residents = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <li
-                    onClick={() => handleStatusFilter("Verified")}
-                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${statusFilter === "Verified" && "bg-[#b3c5cc]"
-                      }`}
-                  >
-                    VERIFIED
-                  </li>
-                  <li
                     onClick={() => handleStatusFilter("For Review")}
-                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${statusFilter === "For Review" && "bg-[#b3c5cc]"
-                      }`}
+                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
+                      statusFilter === "For Review" && "bg-[#b3c5cc]"
+                    }`}
                   >
                     FOR REVIEW
                   </li>
                   <li
-                    onClick={() => handleStatusFilter("Registered")}
-                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${statusFilter === "Registered" && "bg-[#b3c5cc]"
-                      }`}
+                    onClick={() => handleStatusFilter("Rejected")}
+                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
+                      statusFilter === "Denied" && "bg-[#b3c5cc]"
+                    }`}
                   >
-                    REGISTERED
+                    REJECTED
                   </li>
                   <li
-                    onClick={() => handleStatusFilter("Pending")}
-                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${statusFilter === "Pending" && "bg-[#b3c5cc]"
-                      }`}
+                    onClick={() => handleStatusFilter("Partially Verified")}
+                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
+                      statusFilter === "Verified" && "bg-[#b3c5cc]"
+                    }`}
                   >
-                    PENDING
+                    PARTIALLY VERIFIED
                   </li>
                   <li
-                    onClick={() => handleStatusFilter("Denied")}
-                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${statusFilter === "Denied" && "bg-[#b3c5cc]"
-                      }`}
+                    onClick={() => handleStatusFilter("Verified")}
+                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
+                      statusFilter === "Verified" && "bg-[#b3c5cc]"
+                    }`}
                   >
-                    DENIED
+                    VERIFIED
                   </li>
+                </ul>
+              </div>
+
+              {/* Generate Report */}
+              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+                <button
+                  id="hs-dropdown"
+                  type="button"
+                  className=" sm:w-full md:w-full bg-teal-700 sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                  style={{ backgroundColor: information?.theme?.primary }}
+                >
+                  GENERATE REPORT
+                  <svg
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+                <ul
+                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
+                  aria-labelledby="hs-dropdown"
+                >
+                  <div className="flex flex-col h-auto">
+                    <a
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      href="#"
+                    >
+                      Export to PDF
+                    </a>
+
+                    <a
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      href="#"
+                    >
+                      Export to Excel
+                    </a>
+                  </div>
                 </ul>
               </div>
             </div>
@@ -530,13 +576,6 @@ const Residents = () => {
                       </div>
                     </td>
                     <td className="py-3">
-                      {item.isApproved === "Verified" && (
-                        <div className="flex w-full items-center justify-center bg-[#6f75c2] xl:m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
-                            VERIFIED
-                          </span>
-                        </div>
-                      )}
                       {item.isApproved === "For Review" && (
                         <div className="flex w-full items-center justify-center bg-[#cf8455] xl:m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
@@ -544,24 +583,24 @@ const Residents = () => {
                           </span>
                         </div>
                       )}
-                      {item.isApproved === "Registered" && (
-                        <div className="flex w-full items-center justify-center bg-custom-green-button3 xl:m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
-                            REGISTERED
-                          </span>
-                        </div>
-                      )}
-                      {item.isApproved === "Denied" && (
-                        <div className="flex w-full items-center justify-center bg-custom-red-button xl:m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
-                            DENIED
-                          </span>
-                        </div>
-                      )}
-                      {item.isApproved === "Pending" && (
+                      {item.isApproved === "Partially Verified" && (
                         <div className="flex w-full items-center justify-center bg-custom-amber xl:m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
-                            PENDING
+                            PARTIALLY VERIFIED
+                          </span>
+                        </div>
+                      )}
+                      {item.isApproved === "Fully Verified" && (
+                        <div className="flex w-full items-center justify-center bg-[#6f75c2] xl:m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
+                            FULLY VERIFIED
+                          </span>
+                        </div>
+                      )}
+                      {item.isApproved === "Rejected" && (
+                        <div className="flex w-full items-center justify-center bg-custom-red-button xl:m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
+                            REJECTED
                           </span>
                         </div>
                       )}
@@ -661,7 +700,7 @@ const Residents = () => {
           />
         </div>
         <AddResidentsModal brgy={brgy} socket={socket} />
-        <ArchiveResidentModal selectedItems={selectedItems} socket={socket}/>
+        <ArchiveResidentModal selectedItems={selectedItems} socket={socket} />
         <GenerateReportsModal />
         <StatusResident
           user={user}
@@ -671,7 +710,12 @@ const Residents = () => {
           setStatus={setStatus}
           socket={socket}
         />
-        <MessageResidentModal user={user} setUser={setUser} brgy={brgy} socket={socket} />
+        <MessageResidentModal
+          user={user}
+          setUser={setUser}
+          brgy={brgy}
+          socket={socket}
+        />
         <ManageResidentModal user={user} setUser={setUser} brgy={brgy} />
       </div>
     </div>

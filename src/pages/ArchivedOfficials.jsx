@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { BsPrinter } from "react-icons/bs";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { MdRestartAlt } from "react-icons/md";
-import officialimage from "../assets/sample/official.jpg";
+// import officialimage from "../assets/sample/official.jpg";
 import GenerateReportsModal from "../components/officials/GenerateReportsModal";
 import ArchiveOfficialModal from "../components/officials/ArchiveOfficialModal";
 import Breadcrumbs from "../components/archivedOfficials/Breadcrumbs";

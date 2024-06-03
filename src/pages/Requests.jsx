@@ -54,20 +54,24 @@ const Requests = () => {
 
   useEffect(() => {
     const handleServiceReq = (service_req) => {
-      setFilteredRequests(prev => [service_req, ...prev])
+      setFilteredRequests((prev) => [service_req, ...prev]);
     };
 
     const handleServiceReqReply = (service_req) => {
-      setRequest(service_req)
-      setFilteredRequests(curItem => curItem.map((item) =>
-        item._id === service_req._id ? service_req : item
-      ))
+      setRequest(service_req);
+      setFilteredRequests((curItem) =>
+        curItem.map((item) =>
+          item._id === service_req._id ? service_req : item
+        )
+      );
     };
 
     const handleRequestArchive = (obj) => {
       setRequest(obj);
-      setRequests((prev) => prev.filter(item => item._id !== obj._id));
-      setFilteredRequests((prev) => prev.filter(item => item._id !== obj._id));
+      setRequests((prev) => prev.filter((item) => item._id !== obj._id));
+      setFilteredRequests((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
     };
 
     socket.on("receive-reply-service-req", handleServiceReqReply);
@@ -84,9 +88,11 @@ const Requests = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get(`${API_LINK}/services/get_distinct_services/?brgy=${brgy}&archived=false`);
+        const response = await axios.get(
+          `${API_LINK}/services/get_distinct_services/?brgy=${brgy}&archived=false`
+        );
         if (response.status === 200) {
-          const services = response.data.map(item => item._id);
+          const services = response.data.map((item) => item._id);
           setRequestFilter(services);
         }
       } catch (err) {
@@ -108,7 +114,7 @@ const Requests = () => {
         );
 
         if (response.status === 200) {
-          console.log("Filtered Requests:", response.data.result);
+          // console.log("Filtered Requests:", response.data.result);
           setRequests(response.data.result);
           setPageCount(Math.ceil(response.data.result.length / 10));
           setFilteredRequests(response.data.result.slice(0, 10));
@@ -122,7 +128,6 @@ const Requests = () => {
 
     fetch();
   }, [brgy, statusFilter, selectedReqFilter]);
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -154,7 +159,8 @@ const Requests = () => {
 
   useEffect(() => {
     const filteredData = requests.filter((item) => {
-      const fullName = item.form[0].lastName.value.toLowerCase() +
+      const fullName =
+        item.form[0].lastName.value.toLowerCase() +
         ", " +
         item.form[0].firstName.value.toLowerCase() +
         " " +
@@ -187,8 +193,6 @@ const Requests = () => {
   const handleStatusFilter = (selectedStatus) => {
     setStatusFilter(selectedStatus);
   };
-
-
 
   const handleResetFilter = () => {
     setRequest();
@@ -263,7 +267,7 @@ const Requests = () => {
         return requests.filter((item) => {
           return (
             new Date(item.createdAt).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
             new Date(item.createdAt).getDate() === selectedDate.getDate()
           );
@@ -276,7 +280,7 @@ const Requests = () => {
         return requests.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-            startDate.getFullYear() &&
+              startDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === startDate.getMonth() &&
             new Date(item.createdAt).getDate() >= startDate.getDate() &&
             new Date(item.createdAt).getDate() <= endDate.getDate()
@@ -285,7 +289,7 @@ const Requests = () => {
         return requests.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -328,6 +332,64 @@ const Requests = () => {
       setFilteredRequests(filters(selected, date));
     }
   };
+
+  const exportToExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Service Requests');
+
+    const dataForExcel = filteredRequests.map((item) => ({
+      SENDER: item.form[0].lastName.value + ", " + item.form[0].firstName.value + " " + item.form[0].middleName.value,
+      CONTACT: item.form[0].contact?.value || "N/A",
+      EMAIL: item.form[0].email?.value || "N/A"
+    }));
+
+    // Check for empty data BEFORE creating the worksheet
+    if (dataForExcel.length === 0) {
+      alert("No data to export!");
+      return;
+    }
+
+    // Add Title Row
+    const titleRow = worksheet.addRow([`LIST OF SERVICE APPLICANTS FOR ${selecteEventFilter.toUpperCase()}`]);
+    // Merge cells for the title row
+    worksheet.mergeCells(`A1:${String.fromCharCode(65 + Object.keys(dataForExcel[0]).length - 1)}1`);
+    titleRow.getCell(1).font = { bold: true, size: 16, color: { argb: 'FFFFFFFF' } };
+    titleRow.getCell(1).alignment = { horizontal: 'center' };
+    titleRow.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '295141' } };
+
+    // Add Header Row
+    const headerRow = worksheet.addRow(Object.keys(dataForExcel[0]));
+    headerRow.eachCell((cell) => {
+      if (cell.value) {
+        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        cell.alignment = { horizontal: 'center' };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFB13C' } };
+      }
+    });
+
+    // Add Data Rows
+    dataForExcel.forEach((item, index) => {
+      const row = worksheet.addRow(Object.values(item));
+      const rowStyle = index % 2 === 0 ? 'EBF6EB' : 'F5FDF5';
+      row.eachCell({ includeEmpty: true }, (cell) => {
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: rowStyle } };
+      });
+    });
+
+    // Set Column Widths
+    worksheet.columns.forEach((column) => {
+      column.width = 30; // Adjust the column width as needed
+    });
+
+    // Save the Workbook
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Service-Requests-${selecteEventFilter}.xlsx`;
+    link.click();
+  };
+
 
   return (
     <div className="mx-4 ">
@@ -392,8 +454,9 @@ const Requests = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -421,25 +484,11 @@ const Requests = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handleStatusFilter("For Review")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    PENDING
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Paid")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    PAID
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Processing")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    PROCESSING
+                    FOR REVIEW
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Cancelled")}
@@ -449,18 +498,25 @@ const Requests = () => {
                     CANCELLED
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Transaction Completed")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    TRANSACTION COMPLETED
-                  </a>
-                  <a
                     onClick={() => handleStatusFilter("Rejected")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     REJECTED
+                  </a>
+                  <a
+                    onClick={() => handleStatusFilter("Processing")}
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    PROCESSING
+                  </a>
+                  <a
+                    onClick={() => handleStatusFilter("Transaction Completed")}
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    TRANSACTION COMPLETED
                   </a>
                 </ul>
               </div>
@@ -570,8 +626,9 @@ const Requests = () => {
                 >
                   SERVICE TYPE
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -612,6 +669,58 @@ const Requests = () => {
                   </div>
                 </ul>
               </div>
+
+              {/* Generate Report */}
+              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+                <button
+                  id="hs-dropdown"
+                  type="button"
+                  className=" sm:w-full md:w-full bg-teal-700 sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                  style={{ backgroundColor: information?.theme?.primary }}
+                >
+                  GENERATE REPORT
+                  <svg
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+                <ul
+                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
+                  aria-labelledby="hs-dropdown"
+                >
+                  <div className="flex flex-col h-auto">
+                    <a
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      href="#"
+                    >
+                      Export to PDF
+                    </a>
+
+                    <a
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      href="#"
+                      onClick={
+                        exportToExcel // Export immediately after selection
+                      }
+                    >
+                     Export to Excel
+                    </a>
+                  </div>
+                </ul>
+              </div>
             </div>
 
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12 lg:ml-2 xl:ml-0">
@@ -648,7 +757,6 @@ const Requests = () => {
                   value={searchQuery}
                   onChange={handleSearchChange}
                 />
-
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
                 <div className="hs-tooltip inline-block w-full">
@@ -756,21 +864,13 @@ const Requests = () => {
                           </span>
                         </div>
                       )}
-                      {item.status === "Pending" && (
+                      {item.status === "For Review" && (
                         <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
-                            PENDING
+                            FOR REVIEW
                           </span>
                         </div>
                       )}
-                      {item.status === "Paid" && (
-                        <div className="flex items-center justify-center bg-[#bb4b90] m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
-                            PAID
-                          </span>
-                        </div>
-                      )}
-
                       {item.status === "Processing" && (
                         <div className="flex items-center justify-center bg-[#3b66b6] m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
@@ -881,7 +981,7 @@ const Requests = () => {
         chatContainerRef={chatContainerRef}
         socket={socket}
       />
-      <ArchiveRequestsModal selectedItems={selectedItems} socket={socket}/>
+      <ArchiveRequestsModal selectedItems={selectedItems} socket={socket} />
       <RequestsReportsModal />
     </div>
   );
