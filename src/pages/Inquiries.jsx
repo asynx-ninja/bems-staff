@@ -373,11 +373,11 @@ const Inquiries = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handleStatusFilter("Submitted")}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    PENDING
+                    Submitted
                   </a>
                   <a
                     onClick={() => handleStatusFilter("In Progress")}
@@ -387,11 +387,11 @@ const Inquiries = () => {
                     IN PROGRESS
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Completed")}
+                    onClick={() => handleStatusFilter("Resolved")}
                     className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    COMPLETED
+                    Resolved
                   </a>
                 </ul>
               </div>

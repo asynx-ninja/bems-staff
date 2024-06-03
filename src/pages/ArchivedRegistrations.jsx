@@ -401,7 +401,7 @@ const ArchivedRegistrations = () => {
                     />
                   </svg>
                 </button>
-                <ul
+                 <ul
                   className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
                   aria-labelledby="hs-dropdown"
                 >
@@ -414,43 +414,29 @@ const ArchivedRegistrations = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    onClick={() => handleStatusFilter("Pending")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    onClick={() => handleStatusFilter("For Review")}
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    PENDING
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Paid")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    PAID
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Processing")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    PROCESSING
+                    FOR REVIEW
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Cancelled")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     CANCELLED
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Application Completed")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    onClick={() => handleStatusFilter("Approved")}
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    APPLICATION COMPLETED
+                    APPROVED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Rejected")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     REJECTED
@@ -733,10 +719,10 @@ const ArchivedRegistrations = () => {
                       </div>
                     </td>
                     <td className="px-2 xl:px-6 py-3 xxl:w-3/12">
-                      {item.status === "Application Completed" && (
+                      {item.status === "Approved" && (
                         <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            APPLICATION COMPLETED
+                            APPROVED
                           </span>
                         </div>
                       )}
@@ -747,31 +733,15 @@ const ArchivedRegistrations = () => {
                           </span>
                         </div>
                       )}
-                      {item.status === "Pending" && (
+                      {item.status === "For Review" && (
                         <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            PENDING
+                            For Review
                           </span>
                         </div>
                       )}
-                      {item.status === "Paid" && (
-                        <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            PAID
-                          </span>
-                        </div>
-                      )}
-
-                      {item.status === "Processing" && (
-                        <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            PROCESSING
-                          </span>
-                        </div>
-                      )}
-
                       {item.status === "Cancelled" && (
-                        <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
+                        <div className="flex items-center justify-center bg-[#555555] m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
                             CANCELLED
                           </span>
