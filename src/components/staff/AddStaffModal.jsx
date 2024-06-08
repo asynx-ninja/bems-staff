@@ -28,7 +28,7 @@ function AddStaffModal({ brgy, socket }) {
     username: "",
     password: "",
     isArchived: false,
-    isApproved: "Registered",
+    isApproved: "Fully Verified",
     city: "Rodriguez, Rizal",
     brgy: brgy,
   });

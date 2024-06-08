@@ -652,7 +652,7 @@ const AddResidents = () => {
                     Additional Data
                   </b>
                   <div>
-                    <div className="flex flex flex-col md:flex-row mt-2 px-1 md:space-x-2">
+                    <div className="flex flex-col md:flex-row mt-2 px-1 md:space-x-2">
                       <div className="flex flex-col w-full">
                         <label
                           htmlFor="status"
@@ -884,7 +884,7 @@ const AddResidents = () => {
                   <b className="border-solid border-0 border-black/50 border-b-2 uppercase font-medium text-lg md:text-lg mt-5">
                     Account
                   </b>
-                  <div className="flex flex-row mt-2 md:mt-4 px-1 flex-col md:flex-row">
+                  <div className="flex flex-row mt-2 md:mt-4 px-1 md:flex-row">
                     <div className="flex flex-col w-full">
                       <h1
                         className="font-medium mb-1 text-black text-sm"

@@ -145,9 +145,9 @@ const Residents = () => {
     setCurrentPage(selected);
   };
 
-  const handleStatusFilter = (selectedStatus) => {
-    setStatusFilter(selectedStatus);
-  };
+  // const handleStatusFilter = (selectedStatus) => {
+  //   setStatusFilter(selectedStatus);
+  // };
 
   // Handle search input change
   const handleSearchChange = (e) => {
@@ -238,7 +238,12 @@ const Residents = () => {
       GENDER: item.sex || "N/A",
       "CIVIL STATUS": item.civil_status || "N/A",
       RELIGION: item.religion || "N/A",
-      ADDRESS: item.address.street + ", " + item.address.brgy + ", " + item.address.city || "N/A",
+      ADDRESS:
+        item.address.street +
+          ", " +
+          item.address.brgy +
+          ", " +
+          item.address.city || "N/A",
       "REGISTERED VOTER": item.isVoter || "N/A",
       STATUS: item.isApproved || "N/A",
     }));
@@ -249,50 +254,45 @@ const Residents = () => {
       return;
     }
 
+    // Define a common border style
+    const borderStyle = {
+      top: { style: "thin" },
+      left: { style: "thin" },
+      bottom: { style: "thin" },
+      right: { style: "thin" },
+    };
+
     // Add Title Row
     const titleRow = worksheet.addRow([
       `LIST OF RESIDENTS FOR BARANGAY ${brgy} `,
     ]);
-    // Merge cells for the title row
     worksheet.mergeCells(
       `A1:${String.fromCharCode(65 + Object.keys(dataForExcel[0]).length - 1)}1`
     );
     titleRow.getCell(1).font = {
       bold: true,
       size: 16,
-      color: { argb: "FFFFFFFF" },
     };
     titleRow.getCell(1).alignment = { horizontal: "center" };
-    titleRow.getCell(1).fill = {
-      type: "pattern",
-      pattern: "solid",
-      fgColor: { argb: "295141" },
-    };
+    titleRow.eachCell((cell) => {
+      cell.border = borderStyle;
+    });
 
     // Add Header Row
     const headerRow = worksheet.addRow(Object.keys(dataForExcel[0]));
     headerRow.eachCell((cell) => {
       if (cell.value) {
-        cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+        cell.font = { bold: true };
         cell.alignment = { horizontal: "center" };
-        cell.fill = {
-          type: "pattern",
-          pattern: "solid",
-          fgColor: { argb: "FFB13C" },
-        };
+        cell.border = borderStyle;
       }
     });
 
     // Add Data Rows
     dataForExcel.forEach((item, index) => {
       const row = worksheet.addRow(Object.values(item));
-      const rowStyle = index % 2 === 0 ? "EBF6EB" : "F5FDF5";
       row.eachCell({ includeEmpty: true }, (cell) => {
-        cell.fill = {
-          type: "pattern",
-          pattern: "solid",
-          fgColor: { argb: rowStyle },
-        };
+        cell.border = borderStyle;
       });
     });
 
@@ -313,7 +313,7 @@ const Residents = () => {
   };
 
   const exportToPDF = () => {
-    const doc = new jsPDF();
+    const doc = new jsPDF({ orientation: "landscape" });
     const titleText = `LIST OF RESIDENTS FOR BARANGAY ${brgy}`;
     doc.setFontSize(18);
     doc.setTextColor(41, 81, 65);
@@ -329,7 +329,10 @@ const Residents = () => {
       "BIRTHDAY",
       "AGE",
       "GENDER",
+      "CIVIL STATUS",
+      "RELIGION",
       "ADDRESS",
+      "REGISTERED VOTER",
       "STATUS",
     ];
 
@@ -351,34 +354,63 @@ const Residents = () => {
         moment(resident.birthday).format("MMMM DD, YYYY"),
         resident.age,
         resident.sex,
+        resident.civil_status,
+        resident.religion,
         Address,
+        resident.isVoter,
         resident.isApproved,
       ];
       tableRows.push(rowData);
     });
 
-    // Set column widths
-    const columnWidths = [35, 25, 20, 25, 10, 15, 35, 20]; // Adjust column widths as needed
-
     doc.autoTable({
       head: [tableColumn],
       body: tableRows,
       startY: 25,
-      styles: { fontSize: 7.5 },
+      styles: { fontSize: 7 },
       columnStyles: {
-        0: { cellWidth: columnWidths[0] },
-        1: { cellWidth: columnWidths[1] },
-        2: { cellWidth: columnWidths[2] },
-        3: { cellWidth: columnWidths[3] },
-        4: { cellWidth: columnWidths[4] },
-        5: { cellWidth: columnWidths[5] },
-        6: { cellWidth: columnWidths[6] },
-        7: { cellWidth: columnWidths[7] },
+        0: { cellWidth: "wrap" },
+        1: { cellWidth: "wrap" },
+        2: { cellWidth: "wrap" },
+        3: { cellWidth: "wrap" },
+        4: { cellWidth: "wrap" },
+        5: { cellWidth: "wrap" },
+        6: { cellWidth: "wrap" },
+        7: { cellWidth: "wrap" },
+        8: { cellWidth: "wrap" },
+        9: { cellWidth: "wrap" },
+        10: { cellWidth: "wrap" },
       },
     });
 
     doc.save(`Residents of Barangay ${brgy}.pdf`);
-};
+  };
+
+  const [minAge, setMinAge] = useState("");
+  const [maxAge, setMaxAge] = useState("");
+
+  const handleStatusFilter = (selectedStatus) => {
+    setStatusFilter(selectedStatus);
+    // Pass minAge and maxAge to filterResidents function
+    filterResidents(selectedStatus, minAge, maxAge);
+  };
+
+  // Create a new function to filter residents based on status and age
+  const filterResidents = (selectedStatus, minAge, maxAge) => {
+    let filteredData = newUsers;
+    // Filter by status
+    filteredData = filteredData.filter((item) =>
+      selectedStatus === "all" ? true : item.isApproved === selectedStatus
+    );
+    // Filter by age range
+    if (minAge && maxAge) {
+      filteredData = filteredData.filter(
+        (item) => item.age >= minAge && item.age <= maxAge
+      );
+    }
+    // Update filtered residents state
+    setFilteredResidents(filteredData);
+  };
 
   return (
     <div className="mx-4 mt-4">
@@ -485,6 +517,174 @@ const Residents = () => {
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse lg:flex-row flex justify-between w-full">
             <div className="flex flex-col lg:flex-row lg:space-x-2 md:mt-2 lg:mt-0 md:space-y-2 lg:space-y-0">
+              {/* Status Sort */}
+              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+                <button
+                  id="hs-dropdown"
+                  type="button"
+                  className=" sm:w-full md:w-full bg-teal-700 sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                  style={{ backgroundColor: information?.theme?.primary }}
+                >
+                  FILTERS
+                  <svg
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+
+                <div
+                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10 shadow-xl rounded-xl p-2 overflow-hidden"
+                  aria-labelledby="hs-dropdown"
+                >
+                  <a
+                    onClick={handleResetFilter}
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    RESET FILTERS
+                  </a>
+                  <hr className="border-[#4e4e4e] my-1" />
+
+                  <div className="flex flex-col gap-1 mt-2">
+                    <div className="flex flex-row gap-1 items-center">
+                      <input
+                        type="checkbox"
+                        checked={statusFilter === "Partially Verified"}
+                        onChange={() =>
+                          handleStatusFilter("Partially Verified")
+                        }
+                        className="form-checkbox h-5 w-5 text-blue-600"
+                      />
+                      <label> REGISTERED VOTER </label>
+                    </div>
+
+                    <div className="flex flex-row gap-1 items-center">
+                      <input
+                        type="checkbox"
+                        checked={statusFilter === "Fully Verified"}
+                        onChange={() => handleStatusFilter("Fully Verified")}
+                        className="form-checkbox h-5 w-5 text-blue-600"
+                      />
+                      HEAD OF THE FAMILY
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col w-full mt-3">
+                    <label className="font-medium text-sm">
+                      {" "}
+                      CIVIL STATUS{" "}
+                    </label>
+                    <hr className="border-[#4e4e4e] my-1" />
+                  </div>
+
+                  <div className="flex flex-wrap w-full gap-3 mt-1">
+                    <div className="flex flex-row gap-1 items-center">
+                      <input
+                        type="checkbox"
+                        checked={statusFilter === "Fully Verified"}
+                        onChange={() => handleStatusFilter("Fully Verified")}
+                        className="form-checkbox h-5 w-5 text-blue-600"
+                      />
+                      SINGLE
+                    </div>
+
+                    <div className="flex flex-row gap-1 items-center">
+                      <input
+                        type="checkbox"
+                        checked={statusFilter === "Fully Verified"}
+                        onChange={() => handleStatusFilter("Fully Verified")}
+                        className="form-checkbox h-5 w-5 text-blue-600"
+                      />
+                      MARRIED
+                    </div>
+
+                    <div className="flex flex-row gap-1 items-center">
+                      <input
+                        type="checkbox"
+                        checked={statusFilter === "Fully Verified"}
+                        onChange={() => handleStatusFilter("Fully Verified")}
+                        className="form-checkbox h-5 w-5 text-blue-600"
+                      />
+                      WIDOWED
+                    </div>
+
+                    <div className="flex flex-row gap-1 items-center">
+                      <input
+                        type="checkbox"
+                        checked={statusFilter === "Fully Verified"}
+                        onChange={() => handleStatusFilter("Fully Verified")}
+                        className="form-checkbox h-5 w-5 text-blue-600"
+                      />
+                      LEGALLY SEPARATED
+                    </div>
+                  </div>
+
+                  {/* Age Range Section */}
+                  <div className="flex flex-col w-full mt-4">
+                    <label
+                      htmlFor="basic-range-slider-usage"
+                      className="text-sm font-medium"
+                    >
+                      AGE RANGE
+                    </label>
+                    <hr className="border-[#4e4e4e] my-1" />
+                  </div>
+
+                  <div className="flex flex-col justify-between mt-1 w-full">
+                    <div className="flex flex-row gap-6">
+                      <div className="flex w-1/2 items-center justify-center">
+                        <label
+                          htmlFor="min-age"
+                          className="text-sm font-medium"
+                        >
+                          Minimum Age
+                        </label>
+                      </div>
+                      
+                      <div className="flex w-1/2 items-center justify-center">
+                        <label
+                          htmlFor="min-age"
+                          className="text-sm font-medium"
+                        >
+                          Maximum Age
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-row gap-2 items-center w-full">
+                      <input
+                        type="number"
+                        id="min-age"
+                        value={minAge}
+                        onChange={(e) => setMinAge(e.target.value)}
+                        className="border rounded-md w-[50%] px-2 py-1 focus:outline-none focus:ring focus:border-blue-300"
+                      />
+                      <label className="font-medium"> - </label>
+                      <input
+                        type="number"
+                        id="max-age"
+                        value={maxAge}
+                        onChange={(e) => setMaxAge(e.target.value)}
+                        className="border rounded-md w-[50%] px-2 py-1 focus:outline-none focus:ring focus:border-blue-300"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Status Sort */}
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button

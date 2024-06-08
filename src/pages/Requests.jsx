@@ -340,7 +340,7 @@ const Requests = () => {
   const exportToExcel = async () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Service Requests");
-
+  
     const dataForExcel = filteredRequests.map((item) => ({
       "CONTROL #": item.req_id || "N/A",
       "SERVICE NAME": item.service_name || "N/A",
@@ -355,17 +355,15 @@ const Requests = () => {
       DATE: moment(item.createdAt).format("MMMM DD, YYYY") || "N/A",
       STATUS: item.status || "N/A",
     }));
-
+  
     // Check for empty data BEFORE creating the worksheet
     if (dataForExcel.length === 0) {
       alert("No data to export!");
       return;
     }
-
+  
     // Add Title Row
-    const titleRow = worksheet.addRow([
-      `LIST OF SERVICE APPLICANTS`,
-    ]);
+    const titleRow = worksheet.addRow([`LIST OF SERVICE APPLICANTS`]);
     // Merge cells for the title row
     worksheet.mergeCells(
       `A1:${String.fromCharCode(65 + Object.keys(dataForExcel[0]).length - 1)}1`
@@ -373,47 +371,49 @@ const Requests = () => {
     titleRow.getCell(1).font = {
       bold: true,
       size: 16,
-      color: { argb: "FFFFFFFF" },
     };
     titleRow.getCell(1).alignment = { horizontal: "center" };
-    titleRow.getCell(1).fill = {
-      type: "pattern",
-      pattern: "solid",
-      fgColor: { argb: "295141" },
+    titleRow.getCell(1).border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' }
     };
-
+  
     // Add Header Row
     const headerRow = worksheet.addRow(Object.keys(dataForExcel[0]));
     headerRow.eachCell((cell) => {
       if (cell.value) {
-        cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+        cell.font = { bold: true };
         cell.alignment = { horizontal: "center" };
-        cell.fill = {
-          type: "pattern",
-          pattern: "solid",
-          fgColor: { argb: "FFB13C" },
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
         };
       }
     });
-
+  
     // Add Data Rows
     dataForExcel.forEach((item, index) => {
       const row = worksheet.addRow(Object.values(item));
       const rowStyle = index % 2 === 0 ? "EBF6EB" : "F5FDF5";
       row.eachCell({ includeEmpty: true }, (cell) => {
-        cell.fill = {
-          type: "pattern",
-          pattern: "solid",
-          fgColor: { argb: rowStyle },
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
         };
       });
     });
-
+  
     // Set Column Widths
     worksheet.columns.forEach((column) => {
       column.width = 30; // Adjust the column width as needed
     });
-
+  
     // Save the Workbook
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], {
@@ -424,6 +424,7 @@ const Requests = () => {
     link.download = `Service-Requests-${selectedReqFilter}.xlsx`;
     link.click();
   };
+  
 
   const exportToPDF = () => {
     const doc = new jsPDF();
