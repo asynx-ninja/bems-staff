@@ -41,13 +41,26 @@ const Residents = () => {
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all"); // Default is "all"
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const information = GetBrgy(brgy);
   const [update, setUpdate] = useState(false);
   const [editupdate, setEditUpdate] = useState(false);
   const [eventsForm, setEventsForm] = useState([]);
+
+  // Filters
+  const [statusFilter, setStatusFilter] = useState("all"); // Default is "all"
+  const [isVoterFilter, setIsVoterFilter] = useState("all");
+  const [isHeadFilter, setIsHeadFilter] = useState("all");
+  const [civilStatusFilter, setCivilStatusFilter] = useState([]);
+  const [minAge, setMinAge] = useState(1);
+  const [maxAge, setMaxAge] = useState(100);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleToggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+  // console.log("civil status filter: ", civilStatusFilter);
 
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
@@ -103,8 +116,10 @@ const Residents = () => {
 
   useEffect(() => {
     const fetch = async () => {
+      const civilStatusStr = civilStatusFilter.join(",");
+
       const response = await axios.get(
-        `${API_LINK}/users/?brgy=${brgy}&type=Resident&status=${statusFilter}`
+        `${API_LINK}/users/?brgy=${brgy}&type=Resident&status=${statusFilter}&civil_status=${civilStatusStr}&isVoter=${isVoterFilter}&isHead=${isHeadFilter}&minAge=${minAge}&maxAge=${maxAge}`
       );
       if (response.status === 200) {
         setUsers(response.data.result);
@@ -117,7 +132,15 @@ const Residents = () => {
     };
 
     fetch();
-  }, [brgy, statusFilter]);
+  }, [
+    brgy,
+    statusFilter,
+    civilStatusFilter,
+    isVoterFilter,
+    isHeadFilter,
+    minAge,
+    maxAge,
+  ]);
 
   useEffect(() => {
     const filteredData = newUsers.filter((item) => {
@@ -211,8 +234,12 @@ const Residents = () => {
 
   const handleResetFilter = () => {
     setStatusFilter("all");
-    setDateFilter(null);
+    setIsVoterFilter("all");
+    setIsHeadFilter("all");
+    setCivilStatusFilter([]);
     setSearchQuery("");
+    setMinAge(1);
+    setMaxAge(100);
   };
 
   const handleCombinedActions = (item) => {
@@ -386,13 +413,28 @@ const Residents = () => {
     doc.save(`Residents of Barangay ${brgy}.pdf`);
   };
 
-  const [minAge, setMinAge] = useState("");
-  const [maxAge, setMaxAge] = useState("");
-
   const handleStatusFilter = (selectedStatus) => {
     setStatusFilter(selectedStatus);
     // Pass minAge and maxAge to filterResidents function
     filterResidents(selectedStatus, minAge, maxAge);
+  };
+
+  const handleVoterFilter = (status) => {
+    setIsVoterFilter((prev) => (status === "all" ? [] : [status]));
+  };
+
+  const handleHeadFilter = (status) => {
+    setIsHeadFilter((prev) => (status === "all" ? [] : [status]));
+  };
+
+  const handleCivilStatusFilter = (status) => {
+    setCivilStatusFilter((prev) => {
+      if (prev.includes(status)) {
+        return prev.filter((s) => s !== status);
+      } else {
+        return [...prev, status];
+      }
+    });
   };
 
   // Create a new function to filter residents based on status and age
@@ -517,13 +559,14 @@ const Residents = () => {
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse lg:flex-row flex justify-between w-full">
             <div className="flex flex-col lg:flex-row lg:space-x-2 md:mt-2 lg:mt-0 md:space-y-2 lg:space-y-0">
-              {/* Status Sort */}
+              {/* Filter Sort */}
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button
                   id="hs-dropdown"
                   type="button"
                   className=" sm:w-full md:w-full bg-teal-700 sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
                   style={{ backgroundColor: information?.theme?.primary }}
+                  onClick={handleToggleDropdown}
                 >
                   FILTERS
                   <svg
@@ -545,144 +588,126 @@ const Residents = () => {
                   </svg>
                 </button>
 
-                <div
-                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10 shadow-xl rounded-xl p-2 overflow-hidden"
-                  aria-labelledby="hs-dropdown"
-                >
-                  <a
-                    onClick={handleResetFilter}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    RESET FILTERS
-                  </a>
-                  <hr className="border-[#4e4e4e] my-1" />
-
-                  <div className="flex flex-col gap-1 mt-2">
-                    <div className="flex flex-row gap-1 items-center">
-                      <input
-                        type="checkbox"
-                        checked={statusFilter === "Partially Verified"}
-                        onChange={() =>
-                          handleStatusFilter("Partially Verified")
-                        }
-                        className="form-checkbox h-5 w-5 text-blue-600"
-                      />
-                      <label> REGISTERED VOTER </label>
-                    </div>
-
-                    <div className="flex flex-row gap-1 items-center">
-                      <input
-                        type="checkbox"
-                        checked={statusFilter === "Fully Verified"}
-                        onChange={() => handleStatusFilter("Fully Verified")}
-                        className="form-checkbox h-5 w-5 text-blue-600"
-                      />
-                      HEAD OF THE FAMILY
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col w-full mt-3">
-                    <label className="font-medium text-sm">
-                      {" "}
-                      CIVIL STATUS{" "}
-                    </label>
-                    <hr className="border-[#4e4e4e] my-1" />
-                  </div>
-
-                  <div className="flex flex-wrap w-full gap-3 mt-1">
-                    <div className="flex flex-row gap-1 items-center">
-                      <input
-                        type="checkbox"
-                        checked={statusFilter === "Fully Verified"}
-                        onChange={() => handleStatusFilter("Fully Verified")}
-                        className="form-checkbox h-5 w-5 text-blue-600"
-                      />
-                      SINGLE
-                    </div>
-
-                    <div className="flex flex-row gap-1 items-center">
-                      <input
-                        type="checkbox"
-                        checked={statusFilter === "Fully Verified"}
-                        onChange={() => handleStatusFilter("Fully Verified")}
-                        className="form-checkbox h-5 w-5 text-blue-600"
-                      />
-                      MARRIED
-                    </div>
-
-                    <div className="flex flex-row gap-1 items-center">
-                      <input
-                        type="checkbox"
-                        checked={statusFilter === "Fully Verified"}
-                        onChange={() => handleStatusFilter("Fully Verified")}
-                        className="form-checkbox h-5 w-5 text-blue-600"
-                      />
-                      WIDOWED
-                    </div>
-
-                    <div className="flex flex-row gap-1 items-center">
-                      <input
-                        type="checkbox"
-                        checked={statusFilter === "Fully Verified"}
-                        onChange={() => handleStatusFilter("Fully Verified")}
-                        className="form-checkbox h-5 w-5 text-blue-600"
-                      />
-                      LEGALLY SEPARATED
-                    </div>
-                  </div>
-
-                  {/* Age Range Section */}
-                  <div className="flex flex-col w-full mt-4">
-                    <label
-                      htmlFor="basic-range-slider-usage"
-                      className="text-sm font-medium"
+                {isOpen && (
+                 <div className="absolute top-full bg-gray-100 border-2 border-[#ffb13c] hs-dropdown-menu w-72 shadow-xl rounded-xl p-2 overflow-hidden z-10">
+                    <a
+                      onClick={handleResetFilter}
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
+                      href="#"
                     >
-                      AGE RANGE
-                    </label>
+                      RESET FILTERS
+                    </a>
                     <hr className="border-[#4e4e4e] my-1" />
-                  </div>
 
-                  <div className="flex flex-col justify-between mt-1 w-full">
-                    <div className="flex flex-row gap-6">
-                      <div className="flex w-1/2 items-center justify-center">
-                        <label
-                          htmlFor="min-age"
-                          className="text-sm font-medium"
-                        >
-                          Minimum Age
-                        </label>
+                    <div className="flex flex-col gap-1 mt-2">
+                      <div className="flex flex-row gap-1 items-center">
+                        <input
+                          type="checkbox"
+                          onChange={(e) =>
+                            handleVoterFilter(
+                              e.target.checked ? "true" : "false"
+                            )
+                          }
+                          className="form-checkbox h-5 w-5 text-blue-600"
+                        />
+                        <label> REGISTERED VOTER ({isVoterFilter})</label>
                       </div>
-                      
-                      <div className="flex w-1/2 items-center justify-center">
-                        <label
-                          htmlFor="min-age"
-                          className="text-sm font-medium"
-                        >
-                          Maximum Age
-                        </label>
+
+                      <div className="flex flex-row gap-1 items-center">
+                        <input
+                          type="checkbox"
+                          onChange={(e) =>
+                            handleHeadFilter(
+                              e.target.checked ? "true" : "false"
+                            )
+                          }
+                          className="form-checkbox h-5 w-5 text-blue-600"
+                        />
+                        HEAD OF THE FAMILY ({isHeadFilter})
                       </div>
                     </div>
 
-                    <div className="flex flex-row gap-2 items-center w-full">
-                      <input
-                        type="number"
-                        id="min-age"
-                        value={minAge}
-                        onChange={(e) => setMinAge(e.target.value)}
-                        className="border rounded-md w-[50%] px-2 py-1 focus:outline-none focus:ring focus:border-blue-300"
-                      />
-                      <label className="font-medium"> - </label>
-                      <input
-                        type="number"
-                        id="max-age"
-                        value={maxAge}
-                        onChange={(e) => setMaxAge(e.target.value)}
-                        className="border rounded-md w-[50%] px-2 py-1 focus:outline-none focus:ring focus:border-blue-300"
-                      />
+                    <div className="flex flex-col w-full mt-3">
+                      <label className="font-medium text-sm">
+                        CIVIL STATUS
+                      </label>
+                      <hr className="border-[#4e4e4e] my-1" />
+                    </div>
+
+                    <div className="flex flex-wrap w-full gap-3 mt-1">
+                      {[
+                        "Single",
+                        "Married",
+                        "Widowed",
+                        "Legally Separated",
+                      ].map((status) => (
+                        <div
+                          key={status}
+                          className="flex flex-row gap-1 items-center"
+                        >
+                          <input
+                            type="checkbox"
+                            onChange={() => handleCivilStatusFilter(status)}
+                            checked={civilStatusFilter.includes(status)}
+                            className="form-checkbox h-5 w-5 text-blue-600"
+                          />
+                          <label>{status.toUpperCase()}</label>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Age Range Section */}
+                    <div className="flex flex-col w-full mt-4">
+                      <label
+                        htmlFor="basic-range-slider-usage"
+                        className="text-sm font-medium"
+                      >
+                        AGE RANGE
+                      </label>
+                      <hr className="border-[#4e4e4e] my-1" />
+                    </div>
+
+                    <div className="flex flex-col justify-between mt-1 w-full">
+                      <div className="flex flex-row gap-6">
+                        <div className="flex w-1/2 items-center justify-center">
+                          <label
+                            htmlFor="min-age"
+                            className="text-sm font-medium"
+                          >
+                            Minimum Age
+                          </label>
+                        </div>
+
+                        <div className="flex w-1/2 items-center justify-center">
+                          <label
+                            htmlFor="min-age"
+                            className="text-sm font-medium"
+                          >
+                            Maximum Age
+                          </label>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-row gap-2 items-center w-full">
+                        <input
+                          type="number"
+                          id="min-age"
+                          value={minAge}
+                          onChange={(e) => setMinAge(e.target.value)}
+                          className="border rounded-md w-[50%] px-2 py-1 focus:outline-none focus:ring focus:border-blue-300"
+                        />
+                        <label className="font-medium"> - </label>
+                        <input
+                          type="number"
+                          id="max-age"
+                          value={maxAge}
+                          onChange={(e) => setMaxAge(e.target.value)}
+                          className="border rounded-md w-[50%] px-2 py-1 focus:outline-none focus:ring focus:border-blue-300"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Status Sort */}
@@ -965,10 +990,10 @@ const Residents = () => {
                           </span>
                         </div>
                       )}
-                      {item.isApproved === "Rejected" && (
+                      {item.isApproved === "Denied" && (
                         <div className="flex w-full items-center justify-center bg-custom-red-button xl:m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
-                            REJECTED
+                            DENIED
                           </span>
                         </div>
                       )}

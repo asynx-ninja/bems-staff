@@ -199,7 +199,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket }) {
                           <option value="For Review">FOR REVIEW</option>
                           <option value="Partially Verified">PARTIALLY VERIFIED</option>
                           <option value="Fully Verified">FULLY VERIFIED</option>
-                          <option value="Rejected">REJECTED</option>
+                          <option value="Denied">DENIED</option>
                         </select>
                       </div>
                     </div>
