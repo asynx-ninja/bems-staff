@@ -19,6 +19,7 @@ function CreateAnnouncementModal({ brgy, socket }) {
     date: "",
     brgy: brgy,
     isOpen: false,
+    application_limit: "",
   });
 
   const information = GetBrgy(brgy);
@@ -108,53 +109,56 @@ function CreateAnnouncementModal({ brgy, socket }) {
       setError(null); // Reset error state
       setCreationStatus(null);
       setEmpty(false);
-  
+
       console.log("Submit button clicked");
-  
+
       const emptyFieldsArr = checkEmptyFieldsForAnnouncement();
-  
+
       if (emptyFieldsArr.length > 0) {
         console.log("Empty fields detected:", emptyFieldsArr);
         setEmpty(true);
         setSubmitClicked(false);
         return;
       }
-  
+
       const formData = new FormData();
       const newFiles = [banner, logo, ...files].filter((file) => file);
-  
+
       for (const file of newFiles) {
         formData.append("files", file);
       }
-  
+
       const obj = {
         title: announcement.title,
         details: announcement.details,
         date: announcement.date,
         brgy: brgy,
         isOpen: announcement.isOpen,
+        application_limit: announcement.application_limit
       };
-  
+
       formData.append("announcement", JSON.stringify(obj));
-  
+
       console.log("Form data prepared:", obj);
-  
-      const res_folder = await axios.get(`${API_LINK}/folder/specific/?brgy=${brgy}`);
-  
+
+      const res_folder = await axios.get(
+        `${API_LINK}/folder/specific/?brgy=${brgy}`
+      );
+
       if (res_folder.status === 200) {
         console.log("Folder fetched successfully:", res_folder.data[0].events);
-  
+
         const response = await axios.post(
           `${API_LINK}/announcement/?event_folder_id=${res_folder.data[0].events}`,
           formData
         );
-  
+
         console.log("Announcement response:", response);
-  
+
         if (response.status === 200) {
           socket.emit("send-get-event", response.data);
           let notify;
-  
+
           if (announcement.isOpen) {
             notify = {
               category: "All",
@@ -202,15 +206,15 @@ function CreateAnnouncementModal({ brgy, socket }) {
               logo: response.data.collections.logo,
             };
           }
-  
+
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {
               "Content-Type": "application/json",
             },
           });
-  
+
           console.log("Notification response:", result);
-  
+
           if (result.status === 200) {
             socket.emit("send-resident-notif", result.data);
             clearForm();
@@ -231,7 +235,6 @@ function CreateAnnouncementModal({ brgy, socket }) {
       setError(err.message);
     }
   };
-  
 
   const checkEmptyFieldsForAnnouncement = () => {
     let arr = [];
@@ -438,6 +441,24 @@ function CreateAnnouncementModal({ brgy, socket }) {
                   value={announcement.date}
                   onChange={handleChange}
                   required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="fee"
+                >
+                  Limit Event Applications
+                </label>
+                <input
+                  className="shadow text-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                  id="application_limit"
+                  name="application_limit"
+                  type="number"
+                  value={announcement.application_limit}
+                  onChange={handleChange}
+                  placeholder="Enter Number Limit..."
                 />
               </div>
               <Dropbox

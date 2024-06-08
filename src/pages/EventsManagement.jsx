@@ -198,6 +198,7 @@ const EventsManagement = () => {
     "creation date",
     "event date",
     "# of applicants",
+    "applicantion limits",
     "actions",
   ];
 
@@ -622,6 +623,13 @@ const EventsManagement = () => {
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
                           {item.completedCount}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {item.application_limit || "N/A"}
                         </span>
                       </div>
                     </td>
