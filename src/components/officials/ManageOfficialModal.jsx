@@ -15,6 +15,8 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy, sock
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
 
+  console.log(selectedOfficial)
+
   const handleOnEdit = () => {
     setEdit(!edit);
   };
@@ -80,7 +82,7 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy, sock
 
           const logsData = {
             action: "Updated",
-            details: "a barangay official with an id of" + id,
+            details: `Updated the information for the barangay official named "${selectedOfficial.firstName} ${selectedOfficial.lastName}"`,
             ip: ip,
           };
 

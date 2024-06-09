@@ -7,6 +7,7 @@ import GetBrgy from "../../../GETBrgy/getbrgy";
 
 const EditEventsForm = ({
   announcement_id,
+  announcement_title,
   brgy,
   setEditUpdate,
   editupdate,
@@ -85,7 +86,7 @@ const EditEventsForm = ({
 
             const logsData = {
               action: "Updated",
-              details: `An events forms for events (${service_id}) entitled ` + detail.title,
+              details: `A new events forms for "${announcement_title}" was updated.`,
               ip: ip,
             };
 
@@ -140,9 +141,10 @@ const EditEventsForm = ({
 
           const logsData = {
             action: "Updated",
-            details: `An events forms for events (${announcement_id}, )`,
+            details: `A new events forms for "${announcement_title}" was updated.`,
             ip: ip,
           };
+
 
           const logsResult = await axios.post(
             `${API_LINK}/act_logs/add_logs/?id=${id}`,

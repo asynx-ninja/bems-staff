@@ -6,7 +6,7 @@ import EditFormLoader from "../../loaders/EditFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 import { useRef } from "react";
 
-const EditServicesDocument = ({ service_id, brgy, officials, documentForm, setDocumentForm, serviceForm, setServiceForm, socket }) => {
+const EditServicesDocument = ({ service_id, service_title, brgy, officials, documentForm, setDocumentForm, serviceForm, setServiceForm, socket }) => {
   const information = GetBrgy(brgy);
   const modal = useRef()
   const [details, setDetails] = useState([]);

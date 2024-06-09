@@ -152,7 +152,7 @@ const ArchivedStaffsManagement = () => {
     }
   };
 
-  const tableHeader = ["NAME", "EMAIL", "CONTACT", "TYPE", "STATUS", "ACTIONS"];
+  const tableHeader = ["NAME", "EMAIL", "CONTACT", "TYPE",  "ACTIONS"];
 
   useEffect(() => {
     document.title = "Archived Residents | Barangay E-Services Management";
@@ -389,7 +389,7 @@ const ArchivedStaffsManagement = () => {
                         </span>
                       </div>
                     </td>
-                    <td className="px-2 xl:px-6 py-3">
+                    {/* <td className="px-2 xl:px-6 py-3">
                       {item.isApproved === "Registered" && (
                         <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
@@ -411,7 +411,7 @@ const ArchivedStaffsManagement = () => {
                           </span>
                         </div>
                       )}
-                    </td>
+                    </td> */}
                     <td className="px-2 xl:px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">
                         <div className="hs-tooltip inline-block">

@@ -373,7 +373,7 @@ const AddResidents = () => {
 
               const logsData = {
                 action: "Created",
-                details: "A new Resident",
+                details: "A new resident was registered in the system.",
                 ip: ip,
               };
 

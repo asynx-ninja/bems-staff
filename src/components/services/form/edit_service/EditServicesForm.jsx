@@ -5,7 +5,7 @@ import EditSectionForm from "./EditSectionForm";
 import EditFormLoader from "../../loaders/EditFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 
-const EditServicesForm = ({ service_id, brgy, serviceForm, socket, id }) => {
+const EditServicesForm = ({ service_id, service_title, brgy, serviceForm, socket, id }) => {
   const information = GetBrgy(brgy);
   const [details, setDetails] = useState([]);
   const [detail, setDetail] = useState({});
@@ -71,9 +71,11 @@ const EditServicesForm = ({ service_id, brgy, serviceForm, socket, id }) => {
 
         const logsData = {
           action: "Updated",
-          details: `An events forms for events (${service_id}) entitled ` + detail.form_name,
+          details: `A service form for the service titled "${service_title}" was updated.`,
           ip: ip,
         };
+
+        console.log(detail)
 
         const logsResult = await axios.post(
           `${API_LINK}/act_logs/add_logs/?id=${id}`,

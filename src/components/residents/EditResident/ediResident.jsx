@@ -435,7 +435,7 @@ const EditResidents = ({ props }) => {
 
         const logsData = {
           action: "Updated",
-          details: "A Resident",
+          details: "Updated a resident's account information.",
           ip: ip,
         };
 

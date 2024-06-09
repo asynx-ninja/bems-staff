@@ -46,7 +46,7 @@ function RestoreServicesModal({ selectedItems, socket, id }) {
           const ip = await getIP(); // Retrieve IP address
           const logsData = {
             action: "Restored",
-            details: `An service info (${selectedItems[i]})`,
+            details: `Restored a service (ID: ${selectedItems[i]}).`,
             ip: ip,
           };
 

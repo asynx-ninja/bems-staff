@@ -117,7 +117,7 @@ const Information = () => {
 
         const logsData = {
           action: "Updated",
-          details: "The barangay information" ,
+          details: "Updated the barangay information." ,
           ip: ip,
         };
 

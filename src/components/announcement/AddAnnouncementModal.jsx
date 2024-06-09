@@ -227,7 +227,7 @@ function CreateAnnouncementModal({ brgy, socket, id }) {
 
             const logsData = {
               action: "Created",
-              details: "A new event named" + announcement.title,
+              details: "Published a new event titled " + announcement.title + ".",
               ip: ip,
             };
 
@@ -235,6 +235,7 @@ function CreateAnnouncementModal({ brgy, socket, id }) {
               `${API_LINK}/act_logs/add_logs/?id=${id}`,
               logsData
             );
+
             if (logsResult.status === 200) {
               socket.emit("send-resident-notif", result.data);
               clearForm();

@@ -257,7 +257,7 @@ function ViewInquiriesModal({
           const ip = await getIP(); // Retrieve IP address
           const logsData = {
             action: "Updated",
-            details: `Status of an inquiry with a inquiry id ${inquiry.inq_id} sent by ${inquiry.name} is been updated`,
+            details: `The status of the inquiry with ID ${inquiry.inq_id}, submitted by ${inquiry.name}, has been updated.`,
             ip: ip,
           };
 

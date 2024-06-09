@@ -64,7 +64,7 @@ const Activitylogs = () => {
     const tableHeader = ["action", "user", "account type", "ip", "date",];
 
     useEffect(() => {
-        document.title = "Activity Logs| Barangay E-Services Management";
+        document.title = "Activity Logs | Barangay E-Services Management";
     }, []);
 
     const TimeFormat = (date) => {

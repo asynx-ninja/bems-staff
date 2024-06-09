@@ -44,7 +44,7 @@ function RestoreResidentModal({ selectedItems, socket, id, user }) {
           const ip = await getIP(); // Retrieve IP address
           const logsData = {
             action: "Restored",
-            details: `A Resident with an id of (${selectedItems[i]})`,
+            details: `Restored a resident (ID: ${selectedItems[i]}).`,
             ip: ip,
           };
 

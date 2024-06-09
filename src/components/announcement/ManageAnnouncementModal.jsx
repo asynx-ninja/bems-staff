@@ -212,7 +212,7 @@ function ManageAnnouncementModal({
             const ip = await getIP(); // Retrieve IP address
             const logsData = {
               action: "Updated",
-              details: "An events entitled" + announcement.title,
+              details: "The event titled " + announcement.title + " was updated.",
               ip: ip,
             };
 

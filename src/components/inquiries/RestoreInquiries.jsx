@@ -46,7 +46,7 @@ function RestoreInquiryModal({ selectedItems, socket, id }) {
           const ip = await getIP(); // Retrieve IP address
           const logsData = {
             action: "Restored",
-            details: `An inquiry info (${selectedItems[i]})`,
+            details: `Restored an inquiry (ID: ${selectedItems[i]}).`,
             ip: ip,
           };
 

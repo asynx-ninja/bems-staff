@@ -47,7 +47,7 @@ function ArchiveInquiryModal({ selectedItems, socket, id }) {
           const ip = await getIP(); // Retrieve IP address
           const logsData = {
             action: "Archived",
-            details: `An inquiry (${selectedItems[i]})`,
+            details: `Archived an inquiry (ID: ${selectedItems[i]}).`,
             ip: ip,
           };
 

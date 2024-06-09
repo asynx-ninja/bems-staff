@@ -43,9 +43,11 @@ function RestoreAnnouncementModal({ selectedItems, socket, id }) {
           const ip = await getIP(); // Retrieve IP address
           const logsData = {
             action: "Restored",
-            details: `An events info (${selectedItems[i]})`,
+            details: `Restored an event (ID: ${selectedItems[i]}).`,
             ip: ip,
           };
+
+          console.log("selected: ", selectedItems[i]);
 
           const logsResult = await axios.post(
             `${API_LINK}/act_logs/add_logs/?id=${id}`,

@@ -176,7 +176,7 @@ function ManageServiceModal({ service, setService, brgy, socket, id }) {
             const ip = await getIP(); // Retrieve IP address
             const logsData = {
               action: "Updated",
-              details: `A service entitled ${service.name} is been updated`,
+              details: `Updated the information for the service titled "${service.name}."`,
               ip: ip,
             };
 
@@ -184,6 +184,7 @@ function ManageServiceModal({ service, setService, brgy, socket, id }) {
               `${API_LINK}/act_logs/add_logs/?id=${id}`,
               logsData
             );
+
             if (logsResult.status === 200) {
               socket.emit("send-resident-notif", result.data);
               setEdit(!edit);

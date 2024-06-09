@@ -40,7 +40,7 @@ const initialState = {
   },
 };
 
-const AddServicesForm = ({ service_id, socket, brgy, setUpdate, id }) => {
+const AddServicesForm = ({ service_id, service_title, socket, brgy, setUpdate, id }) => {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
@@ -173,7 +173,7 @@ const AddServicesForm = ({ service_id, socket, brgy, setUpdate, id }) => {
 
             const logsData = {
               action: "Created",
-              details: `A new events forms for events (${service_id}) entitled`,
+              details: `A new service form for the service titled "${service_title}" was created.`,
               ip: ip,
             };
 

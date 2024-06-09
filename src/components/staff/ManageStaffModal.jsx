@@ -95,7 +95,7 @@ function ManageStaffModal({
 
         const logsData = {
           action: "Updated",
-          details: "a barangay staff / admin" + id,
+          details: `Updated the account information for the barangay user ${user.firstName} ${user.lastName}.`,
           ip: ip,
         };
 

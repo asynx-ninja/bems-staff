@@ -13,8 +13,6 @@ function ArchiveResidentModal({ selectedItems, socket, id, user }) {
   const [error, setError] = useState(null);
   console.log("error", selectedItems);
 
-
-
   const handleSave = async (e) => {
     e.preventDefault();
     try {
@@ -48,7 +46,7 @@ function ArchiveResidentModal({ selectedItems, socket, id, user }) {
 
           const logsData = {
             action: "Archived",
-            details: `A Resident with an id of (${selectedItems[i]})`,
+            details: `Archived a resident (ID: ${selectedItems[i]}).`,
             ip: ip,
           };
 

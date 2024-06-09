@@ -7,7 +7,7 @@ import GetBrgy from "../../../GETBrgy/getbrgy";
 import API_LINK from "../../../../config/API";
 import { useRef } from "react";
 
-const AddServicesDocument = ({ service_id, brgy, officials, socket, setUpdate }) => {
+const AddServicesDocument = ({ service_id, service_title, brgy, officials, socket, setUpdate }) => {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);

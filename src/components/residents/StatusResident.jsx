@@ -122,7 +122,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket, id }) 
 
             const logsData = {
               action: "Updated",
-              details: `A Resident`,
+              details: `Updated the status of a resident account.`,
               ip: ip,
             };
 
@@ -130,6 +130,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket, id }) 
               `${API_LINK}/act_logs/add_logs/?id=${id}`,
               logsData
             );
+            
             if (logsResult.status === 200) {
 
               setSubmitClicked(null);

@@ -199,7 +199,7 @@ const AddEventsForm = ({
 
             const logsData = {
               action: "Created",
-              details: `A new events forms for events (${announcement_id} entitled ${titleName})`,
+              details: `A new events forms for "${titleName}" was created.`,
               ip: ip,
             };
 
@@ -207,6 +207,7 @@ const AddEventsForm = ({
               `${API_LINK}/act_logs/add_logs/?id=${id}`,
               logsData
             );
+
             if (logsResult.status === 200) {
               socket.emit("send-create-event-form", response.data);
               setSubmitClicked(false);

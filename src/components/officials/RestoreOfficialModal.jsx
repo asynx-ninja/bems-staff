@@ -47,7 +47,7 @@ function RestoreOfficialModal({ selectedItems, socket, id }) {
           const ip = await getIP(); // Retrieve IP address
           const logsData = {
             action: "Restored",
-            details: `An official (${selectedItems[i]})`,
+            details: `Restored an official (ID: ${selectedItems[i]}).`,
             ip: ip,
           };
 

@@ -190,7 +190,7 @@ function CreateServiceModal({ brgy, socket, id }) {
 
             const logsData = {
               action: "Created",
-              details: "A new service named" + service.name,
+              details: `Published a new service titled "${service.name}."`,
               ip: ip,
             };
 

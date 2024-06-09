@@ -83,7 +83,7 @@ const Services = () => {
       console.log("wew", filteredServices);
       console.log("wew", obj);
       setServices(obj);
-      setNewServices((prev) => [obj, ...prev])
+      setNewServices((prev) => [obj, ...prev]);
       setFilteredServices((prev) => [obj, ...prev]);
     };
 
@@ -105,8 +105,10 @@ const Services = () => {
 
     const handleServiceArchive = (obj) => {
       setService(obj);
-      setServices((prev) => prev.filter(item => item._id !== obj._id));
-      setFilteredServices((prev) => prev.filter(item => item._id !== obj._id));
+      setServices((prev) => prev.filter((item) => item._id !== obj._id));
+      setFilteredServices((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
     };
 
     socket.on("receive-get-service", handleService);
@@ -124,19 +126,17 @@ const Services = () => {
     };
   }, [socket, setServices, setService]);
 
-
-
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
         `${API_LINK}/services/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${serviceFilter}`
       );
       if (response.status === 200) {
-        console.log(response.data)
+        console.log(response.data);
         setServices(response.data.result);
         setFilteredServices(response.data.result.slice(0, 10));
         setPageCount(response.data.pageCount);
-        setNewServices(response.data.result)
+        setNewServices(response.data.result);
       } else setServices([]);
     };
 
@@ -144,9 +144,10 @@ const Services = () => {
   }, [brgy, statusFilter, serviceFilter]);
 
   useEffect(() => {
-    const filteredData = newServices.filter((item) =>
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.service_id.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredData = newServices.filter(
+      (item) =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.service_id.toLowerCase().includes(searchQuery.toLowerCase())
     );
     const startIndex = currentPage * 10;
     const endIndex = startIndex + 10;
@@ -226,7 +227,7 @@ const Services = () => {
         `${API_LINK}/document/?brgy=${brgy}&service_id=${item.service_id}`
       );
       setServiceForm(response.data);
-      setDocumentForm(response1.data)
+      setDocumentForm(response1.data);
     } catch (err) {
       console.log(err.message);
     }
@@ -348,8 +349,9 @@ const Services = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -705,7 +707,11 @@ const Services = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <ArchiveServicesModal selectedItems={selectedItems}  socket = {socket} id={id}/>
+      <ArchiveServicesModal
+        selectedItems={selectedItems}
+        socket={socket}
+        id={id}
+      />
       <CreateServiceModal brgy={brgy} socket={socket} id={id} />
       {/*<StatusServices status={status} setStatus={setStatus}/>*/}
       <ManageServiceModal
@@ -716,10 +722,28 @@ const Services = () => {
         id={id}
       />
       <GenerateReportsModal />
-      <AddServicesForm service_id={service.service_id} brgy={brgy} socket={socket} setUpdate={setUpdate} editupdate={editupdate} setEditUpdate={setEditUpdate}  id={id}/>
-      <EditServicesForm service_id={service.service_id} brgy={brgy} socket={socket} serviceForm={serviceForm} setServiceForm={setServiceForm}  id={id}/>
+      <AddServicesForm
+        service_id={service.service_id}
+        service_title={service.name}
+        brgy={brgy}
+        socket={socket}
+        setUpdate={setUpdate}
+        editupdate={editupdate}
+        setEditUpdate={setEditUpdate}
+        id={id}
+      />
+      <EditServicesForm
+        service_id={service.service_id}
+        service_title={service.name}
+        brgy={brgy}
+        socket={socket}
+        serviceForm={serviceForm}
+        setServiceForm={setServiceForm}
+        id={id}
+      />
       <AddServicesDocument
         service_id={service.service_id}
+        service_title={service.name}
         brgy={brgy}
         officials={officials}
         socket={socket}
@@ -728,13 +752,14 @@ const Services = () => {
       />
       <EditServicesDocument
         service_id={service.service_id}
+        service_title={service.name}
         brgy={brgy}
         officials={officials}
         documentForm={documentForm}
         setDocumentForm={setDocumentForm}
-        serviceForm = {serviceForm}
-        setServiceForm = {setServiceForm}
-        socket = {socket}
+        serviceForm={serviceForm}
+        setServiceForm={setServiceForm}
+        socket={socket}
         id={id}
       />
     </div>

@@ -47,7 +47,7 @@ function ArchiveStaffModal({ selectedItems, socket, id }) {
           const ip = await getIP(); // Retrieve IP address
           const logsData = {
             action: "Archived",
-            details: `An Barangay Admin / Staff (${selectedItems[i]})`,
+            details: `Archived a Barangay Staff / Admin (ID: ${selectedItems[i]}).`,
             ip: ip,
           };
 

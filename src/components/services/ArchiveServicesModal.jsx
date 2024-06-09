@@ -46,7 +46,7 @@ function ArchiveServicesModal({ selectedItems, socket, id }) {
           const ip = await getIP(); // Retrieve IP address
           const logsData = {
             action: "Archived",
-            details: `An service info (${selectedItems[i]})`,
+            details: `Archived a service (ID: ${selectedItems[i]}).`,
             ip: ip,
           };
 

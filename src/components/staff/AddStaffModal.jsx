@@ -120,7 +120,7 @@ function AddStaffModal({ brgy, socket, id }) {
 
               const logsData = {
                 action: "Created",
-                details: `A new ${user.type} named` + user.firstName + " " + user.lastName,
+                details: `Created a new barangay user named ${user.firstName} ${user.lastName}.`,
                 ip: ip,
               };
 

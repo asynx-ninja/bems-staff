@@ -526,7 +526,7 @@ const StaffManagement = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <AddStaffModal brgy={brgy} socket={socket} />
+      <AddStaffModal brgy={brgy} socket={socket} id={id}/>
       <ArchiveStaffModal selectedItems={selectedItems} socket={socket}/>
       <GenerateReportsModal />
       <ManageStaffModal

@@ -780,6 +780,7 @@ const EventsManagement = () => {
         />
         <EditEventsForm
           announcement_id={announcement.event_id}
+          announcement_title={announcement.title}
           brgy={brgy}
           editupdate={editupdate}
           setEditUpdate={setEditUpdate}

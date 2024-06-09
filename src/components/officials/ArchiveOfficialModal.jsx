@@ -47,7 +47,7 @@ function ArchiveOfficialModal({ selectedItems, socket, id }) {
           const ip = await getIP(); // Retrieve IP address
           const logsData = {
             action: "Archived",
-            details: `An official (${selectedItems[i]})`,
+            details: `Archived an official (ID: ${selectedItems[i]}).`,
             ip: ip,
           };
 

@@ -336,7 +336,7 @@ const Settings = () => {
 
           const logsData = {
             action: "Updated",
-            details: "The Account Settings",
+            details: `The barangay user ${userData.firstName} ${userData.lastName} updated their account information.`,
             ip: ip,
           };
 

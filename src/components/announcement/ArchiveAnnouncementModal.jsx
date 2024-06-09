@@ -45,7 +45,7 @@ function ArchiveAnnouncementModal({ selectedItems, socket, id }) {
           const ip = await getIP(); // Retrieve IP address
           const logsData = {
             action: "Archived",
-            details: `An events info (${selectedItems[i]})`,
+            details: `Archived an event (ID: ${selectedItems[i]}).`,
             ip: ip,
           };
 
@@ -53,6 +53,7 @@ function ArchiveAnnouncementModal({ selectedItems, socket, id }) {
             `${API_LINK}/act_logs/add_logs/?id=${id}`,
             logsData
           );
+
           if (logsResult.status === 200) {
             socket.emit("send-archive-staff", response.data);
 

@@ -100,7 +100,7 @@ function CreateOfficialModal({ brgy, socket, id }) {
 
           const logsData = {
             action: "Created",
-            details: "A new barangay official named" + official.firstName + " " + official.lastName,
+            details: `Created a new barangay official named "${official.firstName} ${official.lastName}"`,
             ip: ip,
           };
 

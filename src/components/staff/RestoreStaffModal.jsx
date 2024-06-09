@@ -46,7 +46,7 @@ function RestoreStaffModal({ selectedItems, socket, id }) {
           const ip = await getIP(); // Retrieve IP address
           const logsData = {
             action: "Restored",
-            details: `An baranga staff / admin (${selectedItems[i]})`,
+            details: `Restored a Barangay Staff / Admin (ID: ${selectedItems[i]}).`,
             ip: ip,
           };
 
