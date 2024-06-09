@@ -17,22 +17,51 @@ import ManageResidentModal from "../components/residents/ManageResidentsModal";
 import MessageResidentModal from "../components/residents/messageResident";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import moment from "moment";
+import * as XLSX from "xlsx";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+import ExcelJS from "exceljs";
+
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+
+const socket = io(Socket_link);
 
 const Residents = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [users, setUsers] = useState([]);
+  const [newUsers, setNewUsers] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
   const [user, setUser] = useState({});
   const [status, setStatus] = useState({});
+  const [filteredResidents, setFilteredResidents] = useState([]);
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all"); // Default is "all"
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const information = GetBrgy(brgy);
+  const [update, setUpdate] = useState(false);
+  const [editupdate, setEditUpdate] = useState(false);
+  const [eventsForm, setEventsForm] = useState([]);
+
+  // Filters
+  const [statusFilter, setStatusFilter] = useState("all"); // Default is "all"
+  const [isVoterFilter, setIsVoterFilter] = useState("all");
+  const [isHeadFilter, setIsHeadFilter] = useState("all");
+  const [civilStatusFilter, setCivilStatusFilter] = useState([]);
+  const [minAge, setMinAge] = useState(1);
+  const [maxAge, setMaxAge] = useState(100);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleToggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+  // console.log("civil status filter: ", civilStatusFilter);
+
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
     setSortOrder(newSortOrder);
@@ -61,12 +90,41 @@ const Residents = () => {
   };
 
   useEffect(() => {
+    const handleResident = (obj) => {
+      setUsers(obj);
+      setFilteredResidents((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item))
+      );
+    };
+
+    const handleEventArchive = (obj) => {
+      setUser(obj);
+      setUsers((prev) => prev.filter((item) => item._id !== obj._id));
+      setFilteredResidents((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+    };
+
+    socket.on("receive-update-status-resident", handleResident);
+    socket.on("receive-archive-staff", handleEventArchive);
+
+    return () => {
+      socket.off("receive-update-status-resident", handleResident);
+      socket.off("receive-archive-staff", handleEventArchive);
+    };
+  }, [socket, setUsers]);
+
+  useEffect(() => {
     const fetch = async () => {
+      const civilStatusStr = civilStatusFilter.join(",");
+
       const response = await axios.get(
-        `${API_LINK}/users/?brgy=${brgy}&type=Resident&status=${statusFilter}&page=${currentPage}`
+        `${API_LINK}/users/?brgy=${brgy}&type=Resident&status=${statusFilter}&civil_status=${civilStatusStr}&isVoter=${isVoterFilter}&isHead=${isHeadFilter}&minAge=${minAge}&maxAge=${maxAge}`
       );
       if (response.status === 200) {
         setUsers(response.data.result);
+        setFilteredResidents(response.data.result.slice(0, 10));
+        setNewUsers(response.data.result);
         setPageCount(response.data.pageCount);
       } else {
         setUsers([]);
@@ -74,26 +132,62 @@ const Residents = () => {
     };
 
     fetch();
-  }, [brgy, statusFilter, currentPage]);
+  }, [
+    brgy,
+    statusFilter,
+    civilStatusFilter,
+    isVoterFilter,
+    isHeadFilter,
+    minAge,
+    maxAge,
+  ]);
+
+  useEffect(() => {
+    const filteredData = newUsers.filter((item) => {
+      const fullName =
+        item.lastName.toLowerCase() +
+        ", " +
+        item.firstName.toLowerCase() +
+        (item.middleName !== undefined
+          ? " " + item.middleName.toLowerCase()
+          : "");
+
+      return (
+        item.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        fullName.includes(searchQuery.toLowerCase())
+      );
+    });
+
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredResidents(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [newUsers, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
 
-  const handleStatusFilter = (selectedStatus) => {
-    setStatusFilter(selectedStatus);
+  // const handleStatusFilter = (selectedStatus) => {
+  //   setStatusFilter(selectedStatus);
+  // };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
-  const Users = users.filter((item) => {
-    const fullName =
-      `${item.lastName} ${item.firstName} ${item.middleName}`.toLowerCase();
-    const userIdMatches = item.user_id
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const nameMatches = fullName.includes(searchQuery.toLowerCase());
+  // const Users = users.filter((item) => {
+  //   const fullName =
+  //     `${item.lastName} ${item.firstName} ${item.middleName}`.toLowerCase();
+  //   const userIdMatches = item.user_id
+  //     .toLowerCase()
+  //     .includes(searchQuery.toLowerCase());
+  //   const nameMatches = fullName.includes(searchQuery.toLowerCase());
 
-    return userIdMatches || nameMatches;
-  });
+  //   return userIdMatches || nameMatches;
+  // });
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -111,7 +205,7 @@ const Residents = () => {
   };
 
   const checkAllHandler = () => {
-    const usersToCheck = Users.length > 0 ? Users : users;
+    const usersToCheck = users.length > 0 ? users : users;
 
     if (usersToCheck.length === selectedItems.length) {
       setSelectedItems([]);
@@ -140,8 +234,12 @@ const Residents = () => {
 
   const handleResetFilter = () => {
     setStatusFilter("all");
-    setDateFilter(null);
+    setIsVoterFilter("all");
+    setIsHeadFilter("all");
+    setCivilStatusFilter([]);
     setSearchQuery("");
+    setMinAge(1);
+    setMaxAge(100);
   };
 
   const handleCombinedActions = (item) => {
@@ -150,6 +248,210 @@ const Residents = () => {
       id: item._id,
       status: item.isApproved,
     });
+  };
+
+  const exportToExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Barangay Residents");
+
+    console.log("Filtered Residents", filteredResidents);
+
+    const dataForExcel = filteredResidents.map((item) => ({
+      FULLNAME: item.lastName + ", " + item.firstName + " " + item.middleName,
+      EMAIL: item.email || "N/A",
+      CONTACT: item.contact || "N/A",
+      BIRTHDAY: moment(item.birthday).format("MMMM DD, YYYY") || "N/A",
+      AGE: item.age || 'N/A"',
+      GENDER: item.sex || "N/A",
+      "CIVIL STATUS": item.civil_status || "N/A",
+      RELIGION: item.religion || "N/A",
+      ADDRESS:
+        item.address.street +
+          ", " +
+          item.address.brgy +
+          ", " +
+          item.address.city || "N/A",
+      "REGISTERED VOTER": item.isVoter || "N/A",
+      STATUS: item.isApproved || "N/A",
+    }));
+
+    // Check for empty data BEFORE creating the worksheet
+    if (dataForExcel.length === 0) {
+      alert("No data to export!");
+      return;
+    }
+
+    // Define a common border style
+    const borderStyle = {
+      top: { style: "thin" },
+      left: { style: "thin" },
+      bottom: { style: "thin" },
+      right: { style: "thin" },
+    };
+
+    // Add Title Row
+    const titleRow = worksheet.addRow([
+      `LIST OF RESIDENTS FOR BARANGAY ${brgy} `,
+    ]);
+    worksheet.mergeCells(
+      `A1:${String.fromCharCode(65 + Object.keys(dataForExcel[0]).length - 1)}1`
+    );
+    titleRow.getCell(1).font = {
+      bold: true,
+      size: 16,
+    };
+    titleRow.getCell(1).alignment = { horizontal: "center" };
+    titleRow.eachCell((cell) => {
+      cell.border = borderStyle;
+    });
+
+    // Add Header Row
+    const headerRow = worksheet.addRow(Object.keys(dataForExcel[0]));
+    headerRow.eachCell((cell) => {
+      if (cell.value) {
+        cell.font = { bold: true };
+        cell.alignment = { horizontal: "center" };
+        cell.border = borderStyle;
+      }
+    });
+
+    // Add Data Rows
+    dataForExcel.forEach((item, index) => {
+      const row = worksheet.addRow(Object.values(item));
+      row.eachCell({ includeEmpty: true }, (cell) => {
+        cell.border = borderStyle;
+      });
+    });
+
+    // Set Column Widths
+    worksheet.columns.forEach((column) => {
+      column.width = 30; // Adjust the column width as needed
+    });
+
+    // Save the Workbook
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "residents/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `Residents of Barangay ${brgy}.xlsx`;
+    link.click();
+  };
+
+  const exportToPDF = () => {
+    const doc = new jsPDF({ orientation: "landscape" });
+    const titleText = `LIST OF RESIDENTS FOR BARANGAY ${brgy}`;
+    doc.setFontSize(18);
+    doc.setTextColor(41, 81, 65);
+    const textWidth = doc.getTextWidth(titleText);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const xPosition = (pageWidth - textWidth) / 2;
+    doc.text(titleText, xPosition, 20); // Place the title
+
+    const tableColumn = [
+      "FULLNAME",
+      "EMAIL",
+      "CONTACT",
+      "BIRTHDAY",
+      "AGE",
+      "GENDER",
+      "CIVIL STATUS",
+      "RELIGION",
+      "ADDRESS",
+      "REGISTERED VOTER",
+      "STATUS",
+    ];
+
+    const tableRows = [];
+
+    // Check for empty data BEFORE creating the worksheet
+    if (filteredResidents.length === 0) {
+      alert("No data to export!");
+      return;
+    }
+
+    filteredResidents.forEach((resident) => {
+      const FullName = `${resident.lastName}, ${resident.firstName} ${resident.middleName}`;
+      const Address = `${resident.address.street}, ${resident.address.brgy}, ${resident.address.city}`;
+      const rowData = [
+        FullName,
+        resident.email,
+        resident.contact,
+        moment(resident.birthday).format("MMMM DD, YYYY"),
+        resident.age,
+        resident.sex,
+        resident.civil_status,
+        resident.religion,
+        Address,
+        resident.isVoter,
+        resident.isApproved,
+      ];
+      tableRows.push(rowData);
+    });
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 25,
+      styles: { fontSize: 7 },
+      columnStyles: {
+        0: { cellWidth: "wrap" },
+        1: { cellWidth: "wrap" },
+        2: { cellWidth: "wrap" },
+        3: { cellWidth: "wrap" },
+        4: { cellWidth: "wrap" },
+        5: { cellWidth: "wrap" },
+        6: { cellWidth: "wrap" },
+        7: { cellWidth: "wrap" },
+        8: { cellWidth: "wrap" },
+        9: { cellWidth: "wrap" },
+        10: { cellWidth: "wrap" },
+      },
+    });
+
+    doc.save(`Residents of Barangay ${brgy}.pdf`);
+  };
+
+  const handleStatusFilter = (selectedStatus) => {
+    setStatusFilter(selectedStatus);
+    // Pass minAge and maxAge to filterResidents function
+    filterResidents(selectedStatus, minAge, maxAge);
+  };
+
+  const handleVoterFilter = (status) => {
+    setIsVoterFilter((prev) => (status === "all" ? [] : [status]));
+  };
+
+  const handleHeadFilter = (status) => {
+    setIsHeadFilter((prev) => (status === "all" ? [] : [status]));
+  };
+
+  const handleCivilStatusFilter = (status) => {
+    setCivilStatusFilter((prev) => {
+      if (prev.includes(status)) {
+        return prev.filter((s) => s !== status);
+      } else {
+        return [...prev, status];
+      }
+    });
+  };
+
+  // Create a new function to filter residents based on status and age
+  const filterResidents = (selectedStatus, minAge, maxAge) => {
+    let filteredData = newUsers;
+    // Filter by status
+    filteredData = filteredData.filter((item) =>
+      selectedStatus === "all" ? true : item.isApproved === selectedStatus
+    );
+    // Filter by age range
+    if (minAge && maxAge) {
+      filteredData = filteredData.filter(
+        (item) => item.age >= minAge && item.age <= maxAge
+      );
+    }
+    // Update filtered residents state
+    setFilteredResidents(filteredData);
   };
 
   return (
@@ -257,6 +559,157 @@ const Residents = () => {
         <div className="py-2 px-2 bg-gray-400 border-0 border-t-2 border-white">
           <div className="sm:flex-col-reverse lg:flex-row flex justify-between w-full">
             <div className="flex flex-col lg:flex-row lg:space-x-2 md:mt-2 lg:mt-0 md:space-y-2 lg:space-y-0">
+              {/* Filter Sort */}
+              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+                <button
+                  id="hs-dropdown"
+                  type="button"
+                  className=" sm:w-full md:w-full bg-teal-700 sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                  style={{ backgroundColor: information?.theme?.primary }}
+                  onClick={handleToggleDropdown}
+                >
+                  FILTERS
+                  <svg
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+
+                {isOpen && (
+                 <div className="absolute top-full bg-gray-100 border-2 border-[#ffb13c] hs-dropdown-menu w-72 shadow-xl rounded-xl p-2 overflow-hidden z-10">
+                    <a
+                      onClick={handleResetFilter}
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
+                      href="#"
+                    >
+                      RESET FILTERS
+                    </a>
+                    <hr className="border-[#4e4e4e] my-1" />
+
+                    <div className="flex flex-col gap-1 mt-2">
+                      <div className="flex flex-row gap-1 items-center">
+                        <input
+                          type="checkbox"
+                          onChange={(e) =>
+                            handleVoterFilter(
+                              e.target.checked ? "true" : "false"
+                            )
+                          }
+                          className="form-checkbox h-5 w-5 text-blue-600"
+                        />
+                        <label> REGISTERED VOTER ({isVoterFilter})</label>
+                      </div>
+
+                      <div className="flex flex-row gap-1 items-center">
+                        <input
+                          type="checkbox"
+                          onChange={(e) =>
+                            handleHeadFilter(
+                              e.target.checked ? "true" : "false"
+                            )
+                          }
+                          className="form-checkbox h-5 w-5 text-blue-600"
+                        />
+                        HEAD OF THE FAMILY ({isHeadFilter})
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col w-full mt-3">
+                      <label className="font-medium text-sm">
+                        CIVIL STATUS
+                      </label>
+                      <hr className="border-[#4e4e4e] my-1" />
+                    </div>
+
+                    <div className="flex flex-wrap w-full gap-3 mt-1">
+                      {[
+                        "Single",
+                        "Married",
+                        "Widowed",
+                        "Legally Separated",
+                      ].map((status) => (
+                        <div
+                          key={status}
+                          className="flex flex-row gap-1 items-center"
+                        >
+                          <input
+                            type="checkbox"
+                            onChange={() => handleCivilStatusFilter(status)}
+                            checked={civilStatusFilter.includes(status)}
+                            className="form-checkbox h-5 w-5 text-blue-600"
+                          />
+                          <label>{status.toUpperCase()}</label>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Age Range Section */}
+                    <div className="flex flex-col w-full mt-4">
+                      <label
+                        htmlFor="basic-range-slider-usage"
+                        className="text-sm font-medium"
+                      >
+                        AGE RANGE
+                      </label>
+                      <hr className="border-[#4e4e4e] my-1" />
+                    </div>
+
+                    <div className="flex flex-col justify-between mt-1 w-full">
+                      <div className="flex flex-row gap-6">
+                        <div className="flex w-1/2 items-center justify-center">
+                          <label
+                            htmlFor="min-age"
+                            className="text-sm font-medium"
+                          >
+                            Minimum Age
+                          </label>
+                        </div>
+
+                        <div className="flex w-1/2 items-center justify-center">
+                          <label
+                            htmlFor="min-age"
+                            className="text-sm font-medium"
+                          >
+                            Maximum Age
+                          </label>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-row gap-2 items-center w-full">
+                        <input
+                          type="number"
+                          id="min-age"
+                          value={minAge}
+                          onChange={(e) => setMinAge(e.target.value)}
+                          className="border rounded-md w-[50%] px-2 py-1 focus:outline-none focus:ring focus:border-blue-300"
+                        />
+                        <label className="font-medium"> - </label>
+                        <input
+                          type="number"
+                          id="max-age"
+                          value={maxAge}
+                          onChange={(e) => setMaxAge(e.target.value)}
+                          className="border rounded-md w-[50%] px-2 py-1 focus:outline-none focus:ring focus:border-blue-300"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {/* Status Sort */}
               <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
                 <button
@@ -297,14 +750,6 @@ const Residents = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <li
-                    onClick={() => handleStatusFilter("Verified")}
-                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
-                      statusFilter === "Verified" && "bg-[#b3c5cc]"
-                    }`}
-                  >
-                    VERIFIED
-                  </li>
-                  <li
                     onClick={() => handleStatusFilter("For Review")}
                     className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
                       statusFilter === "For Review" && "bg-[#b3c5cc]"
@@ -313,29 +758,83 @@ const Residents = () => {
                     FOR REVIEW
                   </li>
                   <li
-                    onClick={() => handleStatusFilter("Registered")}
-                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
-                      statusFilter === "Registered" && "bg-[#b3c5cc]"
-                    }`}
-                  >
-                    REGISTERED
-                  </li>
-                  <li
-                    onClick={() => handleStatusFilter("Pending")}
-                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
-                      statusFilter === "Pending" && "bg-[#b3c5cc]"
-                    }`}
-                  >
-                    PENDING
-                  </li>
-                  <li
-                    onClick={() => handleStatusFilter("Denied")}
+                    onClick={() => handleStatusFilter("Rejected")}
                     className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
                       statusFilter === "Denied" && "bg-[#b3c5cc]"
                     }`}
                   >
-                    DENIED
+                    REJECTED
                   </li>
+                  <li
+                    onClick={() => handleStatusFilter("Partially Verified")}
+                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
+                      statusFilter === "Verified" && "bg-[#b3c5cc]"
+                    }`}
+                  >
+                    PARTIALLY VERIFIED
+                  </li>
+                  <li
+                    onClick={() => handleStatusFilter("Fully Verified")}
+                    className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
+                      statusFilter === "Verified" && "bg-[#b3c5cc]"
+                    }`}
+                  >
+                    FULLY VERIFIED
+                  </li>
+                </ul>
+              </div>
+
+              {/* Generate Report */}
+              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+                <button
+                  id="hs-dropdown"
+                  type="button"
+                  className=" sm:w-full md:w-full bg-teal-700 sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                  style={{ backgroundColor: information?.theme?.primary }}
+                >
+                  GENERATE REPORT
+                  <svg
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+                <ul
+                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
+                  aria-labelledby="hs-dropdown"
+                >
+                  <div className="flex flex-col h-auto">
+                    <a
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      href="#"
+                      onClick={
+                        exportToExcel // Export immediately after selection
+                      }
+                    >
+                      Export to Excel
+                    </a>
+                    <a
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      href="#"
+                      onClick={
+                        exportToPDF // Export immediately after selection
+                      }
+                    >
+                      Export to PDF
+                    </a>
+                  </div>
                 </ul>
               </div>
             </div>
@@ -372,7 +871,7 @@ const Residents = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center space-x-2">
@@ -426,8 +925,8 @@ const Residents = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {Users.length > 0 ? (
-                Users.map((item, index) => (
+              {filteredResidents.length > 0 ? (
+                filteredResidents.map((item, index) => (
                   <tr key={index} className="odd:bg-slate-100 text-center">
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
@@ -470,13 +969,6 @@ const Residents = () => {
                       </div>
                     </td>
                     <td className="py-3">
-                      {item.isApproved === "Verified" && (
-                        <div className="flex w-full items-center justify-center bg-[#6f75c2] xl:m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
-                            VERIFIED
-                          </span>
-                        </div>
-                      )}
                       {item.isApproved === "For Review" && (
                         <div className="flex w-full items-center justify-center bg-[#cf8455] xl:m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
@@ -484,10 +976,17 @@ const Residents = () => {
                           </span>
                         </div>
                       )}
-                      {item.isApproved === "Registered" && (
-                        <div className="flex w-full items-center justify-center bg-custom-green-button3 xl:m-2 rounded-lg">
+                      {item.isApproved === "Partially Verified" && (
+                        <div className="flex w-full items-center justify-center bg-custom-amber xl:m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
-                            REGISTERED
+                            PARTIALLY VERIFIED
+                          </span>
+                        </div>
+                      )}
+                      {item.isApproved === "Fully Verified" && (
+                        <div className="flex w-full items-center justify-center bg-[#6f75c2] xl:m-2 rounded-lg">
+                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
+                            FULLY VERIFIED
                           </span>
                         </div>
                       )}
@@ -495,13 +994,6 @@ const Residents = () => {
                         <div className="flex w-full items-center justify-center bg-custom-red-button xl:m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
                             DENIED
-                          </span>
-                        </div>
-                      )}
-                      {item.isApproved === "Pending" && (
-                        <div className="flex w-full items-center justify-center bg-custom-amber xl:m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 lg:mx-0 xl:mx-5">
-                            PENDING
                           </span>
                         </div>
                       )}
@@ -600,8 +1092,8 @@ const Residents = () => {
             renderOnZeroPageCount={null}
           />
         </div>
-        <AddResidentsModal brgy={brgy} />
-        <ArchiveResidentModal selectedItems={selectedItems} />
+        <AddResidentsModal brgy={brgy} socket={socket} />
+        <ArchiveResidentModal selectedItems={selectedItems} socket={socket} id={id} user={user}/>
         <GenerateReportsModal />
         <StatusResident
           user={user}
@@ -609,8 +1101,15 @@ const Residents = () => {
           brgy={brgy}
           status={status}
           setStatus={setStatus}
+          socket={socket}
+          id={id}
         />
-        <MessageResidentModal user={user} setUser={setUser} brgy={brgy} />
+        <MessageResidentModal
+          user={user}
+          setUser={setUser}
+          brgy={brgy}
+          socket={socket}
+        />
         <ManageResidentModal user={user} setUser={setUser} brgy={brgy} />
       </div>
     </div>

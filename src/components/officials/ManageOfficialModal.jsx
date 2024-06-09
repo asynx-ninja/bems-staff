@@ -6,7 +6,7 @@ import { useState } from "react";
 import EditLoader from "./loaders/EditLoader";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
+function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy, socket, id }) {
 
   const information = GetBrgy(brgy);
 
@@ -14,6 +14,8 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
+
+  console.log(selectedOfficial)
 
   const handleOnEdit = () => {
     setEdit(!edit);
@@ -50,6 +52,7 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
   const handleSaveChanges = async (e) => {
     e.preventDefault();
     setSubmitClicked(true);
+    setError(null); // Reset error state
 
     try {
       const formData = new FormData();
@@ -69,13 +72,35 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
         );
 
         if (result.status === 200) {
-          setTimeout(() => {
-            setSubmitClicked(false);
-            setUpdatingStatus("success");
+          const getIP = async () => {
+            const response = await fetch("https://api64.ipify.org?format=json");
+            const data = await response.json();
+            return data.ip;
+          };
+
+          const ip = await getIP(); // Retrieve IP address
+
+          const logsData = {
+            action: "Updated",
+            details: `Updated the information for the barangay official named "${selectedOfficial.firstName} ${selectedOfficial.lastName}"`,
+            ip: ip,
+          };
+
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
+            socket.emit("send-update-official", result.data);
             setTimeout(() => {
-              window.location.reload();
-            }, 3000);
-          }, 1000);
+              setSubmitClicked(false);
+              setUpdatingStatus("success");
+              setTimeout(() => {
+                setUpdatingStatus(null);
+                HSOverlay.close(document.getElementById("hs-edit-official-modal"));
+              }, 3000);
+            }, 1000);
+          }
         }
       }
     } catch (error) {
@@ -243,10 +268,13 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy }) {
                         Barangay Chairman
                       </option>
                       <option value="Barangay Kagawad">Barangay Kagawad</option>
+                      <option value="Secretary">Secretary</option>
+                      <option value="Assistant Secretary">Assistant Secretary</option>
+                      <option value="Treasurer">Treasurer</option>
                       <option value="SK Chairman">SK Chairman</option>
                       <option value="SK Kagawad">SK Kagawad</option>
-                      <option value="Secretary">Secretary</option>
-                      <option value="Treasurer">Treasurer</option>
+                      <option value="SK Secretary">SK Secretary</option>
+                      <option value="SK Treasurer">SK Treasurer</option>
                     </select>
                   </div>
                   <div className="w-full mt-2">

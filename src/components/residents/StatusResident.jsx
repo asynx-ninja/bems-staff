@@ -5,7 +5,7 @@ import StatusLoader from "./loaders/StatusLoader";
 import { useState } from "react";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function StatusResident({ user, setUser, brgy, status, setStatus }) {
+function StatusResident({ user, setUser, brgy, status, setStatus, socket, id }) {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
@@ -22,8 +22,6 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
     id: "1SM_QPFb_NmyMTLdsjtEd-2M6ersJhBUc",
   });
 
-
-
   const getType = (type) => {
     switch (type) {
       case "MUNISIPYO":
@@ -37,6 +35,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
     try {
       e.preventDefault();
       setSubmitClicked(true);
+      setError(null); // Reset error state
 
       const response = await axios.patch(
         `${API_LINK}/users/status/${status.id}`,
@@ -47,52 +46,116 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
       );
 
       if (response.status === 200) {
-        // Check if the status is "Registered" before sending notification
-        if (status.status === "Registered") {
-          const notify = {
-            category: "One",
-            compose: {
-              subject: `ACCOUNT ACTIVATION SUCCESSFUL!`,
-              message: `Welcome! Congratulations on successfully activating your account! We're delighted to welcome you to our community. You may now access the system!\n\n`,
-              go_to: null,
-            },
-            target: {
-              user_id: user.user_id,
-              area: brgy,
-            },
-            type: "Resident",
-            banner: banner,
-            logo: logo,
-          };
+        const getIP = async () => {
+          const response = await fetch(
+            "https://api64.ipify.org?format=json"
+          );
+          const data = await response.json();
+          return data.ip;
+        };
+        ;
+        const ip = await getIP(); // Retrieve IP address
+        const logsData = {
+          action: "Updated",
+          details: `Updated the account status of the resident ${user.firstName} ${user.lastName}`,
+          ip: ip,
+        };
 
+        const logsResult = await axios.post(
+          `${API_LINK}/act_logs/add_logs/?id=${id}`,
+          logsData
+        );
+        if (logsResult.status === 200) {
+          socket.emit("send-update-status-resident", response.data);
+          // Check if the status is "Registered" before sending notification
+          if (status.status === "Verified") {
+            const notify = {
+              category: "One",
+              compose: {
+                subject: `ACCOUNT ACTIVATION SUCCESSFUL!`,
+                message: `Welcome! Congratulations on successfully activating your account! We're delighted to welcome you to our community. You may now access the system!\n\n`,
+                go_to: null,
+              },
+              target: {
+                user_id: user.user_id,
+                area: brgy,
+              },
+              type: "Resident",
+              banner: banner,
+              logo: logo,
+            };
 
-          const result = await axios.post(`${API_LINK}/notification/`, notify, {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
+            const result = await axios.post(`${API_LINK}/notification/`, notify, {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
 
-          if (result.status === 200) {
-            setTimeout(() => {
-              setSubmitClicked(false);
-              setUpdatingStatus("success");
+            if (result.status === 200) {
+              socket.emit("send-resident-notif", result.data);
+
               setTimeout(() => {
-                window.location.reload();
+                setSubmitClicked(false);
+                setUpdatingStatus("success");
+                setTimeout(() => {
+                  setSubmitClicked(null);
+                  setUpdatingStatus(null);
+                  HSOverlay.close(
+                    document.getElementById("hs-modal-statusResident")
+                  );
+                }, 3000);
+              }, 1000);
+            }
+          } else if (status.status === "Registered") {
+            const notify = {
+              category: "One",
+              compose: {
+                subject: `ACCOUNT ACTIVATION SUCCESSFUL!`,
+                message: `Welcome! You may now access limited features (Inquiries, Dashboard, and Barangay Information) of the system!\n 
+              You may verify your account to gain access to all available features!
+              \n\n`,
+                go_to: null,
+              },
+              target: {
+                user_id: user.user_id,
+                area: brgy,
+              },
+              type: "Resident",
+              banner: banner,
+              logo: logo,
+            };
+
+            const result = await axios.post(`${API_LINK}/notification/`, notify, {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+
+            if (result.status === 200) {
+
+              setSubmitClicked(null);
+              setUpdatingStatus(null);
+              setTimeout(() => {
+                HSOverlay.close(
+                  document.getElementById("hs-modal-statusResident")
+                );
+              }, 3000);
+            }
+          } else {
+            // Status is not "Registered", proceed without sending notification
+            setTimeout(() => {
+              setSubmitClicked(null);
+              setUpdatingStatus(null);
+              setTimeout(() => {
+                HSOverlay.close(
+                  document.getElementById("hs-modal-statusResident")
+                );
               }, 3000);
             }, 1000);
           }
         } else {
-          // Status is not "Registered", proceed without sending notification
-          setTimeout(() => {
-            setSubmitClicked(false);
-            setUpdatingStatus("success");
-            setTimeout(() => {
-              window.location.reload();
-            }, 3000);
-          }, 1000);
+          // Handle other status codes if needed
         }
-      } else {
-        // Handle other status codes if needed
       }
     } catch (err) {
       console.log(err);
@@ -152,12 +215,10 @@ function StatusResident({ user, setUser, brgy, status, setStatus }) {
                           className="w-full mt-3 p-2 border border-gray-300 rounded"
                           value={status.status}
                         >
-                          <option value="Verified">VERIFIED</option>
                           <option value="For Review">FOR REVIEW</option>
-                          <option value="Registered">REGISTERED</option>
-                          <option value="Pending">PENDING</option>
+                          <option value="Partially Verified">PARTIALLY VERIFIED</option>
+                          <option value="Fully Verified">FULLY VERIFIED</option>
                           <option value="Denied">DENIED</option>
-                          
                         </select>
                       </div>
                     </div>

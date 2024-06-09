@@ -7,11 +7,16 @@ import axios from "axios";
 import API_LINK from "../config/API";
 import { useState } from "react";
 import EditLoader from "../components/information/loaders/EditLoader";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+
+const socket = io(Socket_link);
 
 const Information = () => {
   const [information, setInformation] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
+  const id = searchParams.get("id");
   const [brgyInformation, setBrgyInformation] = useState({});
   const [isEditingMode, setisEditingMode] = useState(false);
   const [logo, setLogo] = useState();
@@ -45,6 +50,17 @@ const Information = () => {
   }, []);
 
   useEffect(() => {
+    const handleInfo = (obj) => {
+      setInformation((prev) => ({ ...prev, ...obj }));
+    };
+
+    socket.on("receive-update-brgy-info", handleInfo);
+    return () => {
+      socket.off("receive-update-brgy-info", handleInfo);
+    };
+  }, [socket, setInformation]);
+
+  useEffect(() => {
     document.title = "Barangay Information | Barangay E-Services Management";
 
     const fetchInformation = async () => {
@@ -73,42 +89,63 @@ const Information = () => {
 
   const handleSaveChanges = async (e) => {
     e.preventDefault();
-    setSubmitClicked(true);
+    setUpdatingStatus("success");
 
     try {
-      const formData = new FormData();
-      if (logo) formData.append("files", logo);
-      if (banner) formData.append("files", banner);
-
-      formData.append("brgyinfo", JSON.stringify(information));
-
-      const res_folder = await axios.get(
+      const response = await axios.get(
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
 
+      if (response.status === 200) {
+        const formData = new FormData();
+        if (logo) formData.append("files", logo);
+        if (banner) formData.append("files", banner);
 
-      if (res_folder.status === 200) {
+        formData.append("brgyinfo", JSON.stringify(information));
+
         const result = await axios.patch(
-          `${API_LINK}/brgyinfo/${brgy}`,
+          `${API_LINK}/brgyinfo/${brgy}/?folder_id=${response.data[0].info}`,
           formData
         );
+        const getIP = async () => {
+          const response = await fetch("https://api64.ipify.org?format=json");
+          const data = await response.json();
+          return data.ip;
+        };
 
-        setTimeout(() => {
+        const ip = await getIP(); // Retrieve IP address
+
+        const logsData = {
+          action: "Updated",
+          details: "Updated the barangay information." ,
+          ip: ip,
+        };
+
+        const logsResult = await axios.post(
+          `${API_LINK}/act_logs/add_logs/?id=${id}`,
+          logsData
+        );
+        if (logsResult.status === 200) {
+          socket.emit("send-update-brgy-info", result.data);
+          setBrgyInformation({});
           setSubmitClicked(false);
-          setUpdatingStatus("success");
           setTimeout(() => {
-            window.location.reload();
-          }, 3000);
-        }, 1000);
-        // setBrgyInformation({});
+            setUpdatingStatus(null);
+            setisEditingMode(false);
+          }, 1000);
+        }
+      } else {
+        console.error("No Data Found");
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.error(error);
       setSubmitClicked(false);
       setUpdatingStatus(null);
       setError("An error occurred while creating the announcement.");
     }
   };
+
 
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
@@ -416,7 +453,7 @@ const Information = () => {
                     STORY
                   </h1>
                 </div>
-                <div className="w-full md:w-2/3 px-6 py-4 border md:rounded-tr-[20px] rounded-b-[20px] md:rounded-br-[20px] flex flex-col">
+                <div className="w-full md:w-2/3 px-6 py-4 border  rounded-b-[20px] md:rounded-br-[20px] md:rounded-tr-[20px] md:rounded-l-none flex flex-col">
                   <textarea
                     name="story"
                     readOnly={!isEditingMode} // This makes the textarea read-only when isEditingMode is false
@@ -444,7 +481,7 @@ const Information = () => {
                     MISSION
                   </h1>
                 </div>
-                <div className="w-full md:w-2/3 px-6 py-4 border md:rounded-tr-[20px] rounded-b-[20px] md:rounded-br-[20px] flex flex-col">
+                <div className="w-full md:w-2/3 px-6 py-4 border  rounded-b-[20px] md:rounded-br-[20px] md:rounded-tr-[20px] md:rounded-l-none flex flex-col">
                   <textarea
                     readOnly={!isEditingMode} // This makes the textarea read-only when isEditingMode is false
                     className="font-base text-black text-sm h-36 lg:h-40 overflow-y-auto mb-5"
@@ -471,7 +508,7 @@ const Information = () => {
                     VISION
                   </h1>
                 </div>
-                <div className="w-full md:w-2/3 px-6 py-4 border md:rounded-tr-[20px] rounded-b-[20px] md:rounded-br-[20px] flex flex-col">
+                <div className="w-full md:w-2/3 px-6 py-4 border  rounded-b-[20px] md:rounded-br-[20px] md:rounded-tr-[20px] md:rounded-l-none flex flex-col">
                   <textarea
                     readOnly={!isEditingMode} // This makes the textarea read-only when isEditingMode is false
                     className="font-base text-black text-sm h-36 lg:h-40 overflow-y-auto mb-5"

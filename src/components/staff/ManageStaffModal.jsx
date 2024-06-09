@@ -7,7 +7,17 @@ import { LiaRandomSolid } from "react-icons/lia";
 import EditLoader from "./loaders/EditLoader";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function ManageStaffModal({ user, setUser, brgy }) {
+function ManageStaffModal({
+  user,
+  setUser,
+  brgy,
+  setEditUpdate,
+  editupdate,
+  socket,
+  eventsForm,
+  setEventsForm,
+  id
+}) {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
@@ -64,6 +74,7 @@ function ManageStaffModal({ user, setUser, brgy }) {
     try {
       e.preventDefault();
       setSubmitClicked(true);
+      setError(null); // Reset error state
 
       var formData = new FormData();
       formData.append("users", JSON.stringify(user));
@@ -74,21 +85,42 @@ function ManageStaffModal({ user, setUser, brgy }) {
       );
 
       if (response.status === 200) {
-      
-        setTimeout(() => {
+        const getIP = async () => {
+          const response = await fetch("https://api64.ipify.org?format=json");
+          const data = await response.json();
+          return data.ip;
+        };
+
+        const ip = await getIP(); // Retrieve IP address
+
+        const logsData = {
+          action: "Updated",
+          details: `Updated the account information for the barangay user ${user.firstName} ${user.lastName}.`,
+          ip: ip,
+        };
+
+        const logsResult = await axios.post(
+          `${API_LINK}/act_logs/add_logs/?id=${id}`,
+          logsData
+        );
+        if (logsResult.status === 200) {
+          socket.emit("send-update-staff", response.data);
+
+
           setSubmitClicked(false);
           setUpdatingStatus("success");
           setTimeout(() => {
-            window.location.reload();
+            setUpdatingStatus(null);
+            HSOverlay.close(document.getElementById("hs-modal-editStaff"));
           }, 3000);
-        }, 1000);
+        }
       } else {
         console.error("Update failed. Status:", response.status);
       }
     } catch (err) {
       console.log(err);
       setSubmitClicked(false);
-      setCreationStatus("error");
+      setUpdatingStatus("error");
       setError("An error occurred while creating the announcement.");
     }
   };

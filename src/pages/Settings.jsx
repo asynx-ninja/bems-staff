@@ -16,6 +16,11 @@ import banner from "../assets/image/1.png";
 import OccupationList from "../components/occupations/OccupationList";
 import EditLoader from "../components/settings/loaders/EditLoader";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+
+const socket = io(Socket_link);
+
 const Settings = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [submitClicked, setSubmitClicked] = useState(false);
@@ -141,6 +146,23 @@ const Settings = () => {
   }, [id]);
 
   useEffect(() => {
+    const handleProfile = (get_profile) => {
+      setUserData(get_profile);
+      setUserData((curItem) =>
+        curItem.map((item) =>
+          item._id === get_profile._id ? get_profile : item
+        )
+      );
+    };
+
+    socket.on("receive-update-staff", handleProfile);
+
+    return () => {
+      socket.off("receive-update-profile", handleProfile);
+    };
+  }, [socket, setUserData]);
+
+  useEffect(() => {
     document.title = "Settings | Barangay E-Services Management";
   }, []);
 
@@ -194,8 +216,6 @@ const Settings = () => {
     });
   };
 
-
-
   const saveChanges = async (e) => {
     if (
       !userData.firstName.trim() ||
@@ -247,7 +267,6 @@ const Settings = () => {
       const res_folder = await axios.get(
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
-
 
       if (res_folder.status === 200) {
         const response = await axios.patch(
@@ -307,13 +326,34 @@ const Settings = () => {
             twitter: response.data.socials.twitter,
           });
           setEditButton(true);
-          setTimeout(() => {
+          const getIP = async () => {
+            const response = await fetch("https://api64.ipify.org?format=json");
+            const data = await response.json();
+            return data.ip;
+          };
+
+          const ip = await getIP(); // Retrieve IP address
+
+          const logsData = {
+            action: "Updated",
+            details: `The barangay user ${userData.firstName} ${userData.lastName} updated their account information.`,
+            ip: ip,
+          };
+
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
+            socket.emit("send-update-profile", response.data);
+
             setSubmitClicked(false);
             setUpdatingStatus("success");
             setTimeout(() => {
-              window.location.reload();
+              setUpdatingStatus(null);
+              // window.location.reload();
             }, 3000);
-          }, 1000);
+          }
         } else {
           console.error("Update failed. Status:", response.status);
         }
@@ -468,9 +508,8 @@ const Settings = () => {
                   <label
                     htmlFor="file_input"
                     onClick={handleAdd}
-                    className={`absolute bg-teal-700 inset-0 flex items-center justify-center rounded-full cursor-pointer opacity-0 ${
-                      editButton ? "hidden" : ""
-                    } `}
+                    className={`absolute bg-teal-700 inset-0 flex items-center justify-center rounded-full cursor-pointer opacity-0 ${editButton ? "hidden" : ""
+                      } `}
                     style={{
                       backgroundColor:
                         editButton || hoverStates["pic"]
@@ -539,16 +578,16 @@ const Settings = () => {
                   </button>
                 )}
                 {userSocials.twitter && userSocials.twitter.name && (
-                   <button
-                   className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
-                   onMouseEnter={() => handleMouseEnter("twitter")}
-                   onMouseLeave={() => handleMouseLeave("twitter")}
-                   style={{
-                     backgroundColor: hoverStates["twitter"]
-                       ? information?.theme?.secondary
-                       : null,
-                   }}
-                 >
+                  <button
+                    className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
+                    onMouseEnter={() => handleMouseEnter("twitter")}
+                    onMouseLeave={() => handleMouseLeave("twitter")}
+                    style={{
+                      backgroundColor: hoverStates["twitter"]
+                        ? information?.theme?.secondary
+                        : null,
+                    }}
+                  >
                     <FaTwitter />
                     <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
                       {userSocials.twitter.name}
@@ -557,15 +596,15 @@ const Settings = () => {
                 )}
                 {userSocials.instagram && userSocials.instagram.name && (
                   <button
-                  className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
-                  onMouseEnter={() => handleMouseEnter("ig")}
-                  onMouseLeave={() => handleMouseLeave("ig")}
-                  style={{
-                    backgroundColor: hoverStates["ig"]
-                      ? information?.theme?.secondary
-                      : null,
-                  }}
-                >
+                    className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
+                    onMouseEnter={() => handleMouseEnter("ig")}
+                    onMouseLeave={() => handleMouseLeave("ig")}
+                    style={{
+                      backgroundColor: hoverStates["ig"]
+                        ? information?.theme?.secondary
+                        : null,
+                    }}
+                  >
                     <FaInstagram />
                     <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
                       {userSocials.instagram.name}
@@ -574,15 +613,15 @@ const Settings = () => {
                 )}
                 {userData.contact && (
                   <button
-                  className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
-                  onMouseEnter={() => handleMouseEnter("phone")}
-                  onMouseLeave={() => handleMouseLeave("phone")}
-                  style={{
-                    backgroundColor: hoverStates["phone"]
-                      ? information?.theme?.secondary
-                      : null,
-                  }}
-                >
+                    className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
+                    onMouseEnter={() => handleMouseEnter("phone")}
+                    onMouseLeave={() => handleMouseLeave("phone")}
+                    style={{
+                      backgroundColor: hoverStates["phone"]
+                        ? information?.theme?.secondary
+                        : null,
+                    }}
+                  >
                     <FaPhone />
                     <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
                       {userData.contact}
@@ -590,16 +629,16 @@ const Settings = () => {
                   </button>
                 )}
                 {userData.email && (
-                     <button
-                     className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
-                     onMouseEnter={() => handleMouseEnter("email")}
-                     onMouseLeave={() => handleMouseLeave("email")}
-                     style={{
-                       backgroundColor: hoverStates["email"]
-                         ? information?.theme?.secondary
-                         : null,
-                     }}
-                   >
+                  <button
+                    className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
+                    onMouseEnter={() => handleMouseEnter("email")}
+                    onMouseLeave={() => handleMouseLeave("email")}
+                    style={{
+                      backgroundColor: hoverStates["email"]
+                        ? information?.theme?.secondary
+                        : null,
+                    }}
+                  >
                     <FaEnvelope />
                     <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
                       {userData.email}
@@ -719,9 +758,8 @@ const Settings = () => {
                           disabled={editButton}
                           type="text"
                           id="firstname"
-                          className={`py-3 px-4 block w-full  rounded-md text-sm bg-white border ${
-                            error && !userData.firstName ? "border-red-500" : ""
-                          }`}
+                          className={`py-3 px-4 block w-full  rounded-md text-sm bg-white border ${error && !userData.firstName ? "border-red-500" : ""
+                            }`}
                           placeholder="First name"
                           value={userData.firstName || ""}
                           onChange={(e) =>
@@ -764,9 +802,8 @@ const Settings = () => {
                           disabled={editButton}
                           id="lastName"
                           type="text"
-                          className={`py-3 px-4 block w-full  rounded-md text-sm bg-white border ${
-                            error && !userData.lastName ? "border-red-500" : ""
-                          }`}
+                          className={`py-3 px-4 block w-full  rounded-md text-sm bg-white border ${error && !userData.lastName ? "border-red-500" : ""
+                            }`}
                           placeholder="Last name"
                           aria-describedby="hs-input-helper-text"
                           value={userData.lastName || ""}
@@ -893,9 +930,8 @@ const Settings = () => {
                           disabled={editButton}
                           type="email"
                           id="email"
-                          className={`py-3 px-4 block w-full  rounded-md text-sm bg-white border ${
-                            error && !userData.email ? "border-red-500" : ""
-                          }`}
+                          className={`py-3 px-4 block w-full  rounded-md text-sm bg-white border ${error && !userData.email ? "border-red-500" : ""
+                            }`}
                           placeholder="you@example.com"
                           aria-describedby="hs-input-helper-text"
                           value={userData.email || ""}
@@ -930,9 +966,8 @@ const Settings = () => {
                           type="text"
                           disabled={editButton}
                           id="street"
-                          className={`py-3 px-4 block w-full  rounded-md text-sm bg-white border ${
-                            error && !userAddress.street ? "border-red-500" : ""
-                          }`}
+                          className={`py-3 px-4 block w-full  rounded-md text-sm bg-white border ${error && !userAddress.street ? "border-red-500" : ""
+                            }`}
                           placeholder="Street"
                           aria-describedby="hs-input-helper-text"
                           value={userAddress.street || ""}
@@ -1326,12 +1361,11 @@ const Settings = () => {
                       type="text"
                       disabled={editButton}
                       id="username"
-                      className={`py-3 px-4 block w-full border-2 text-black rounded-md text-sm  bg-white ${
-                        error && !userCred.username.trim()
+                      className={`py-3 px-4 block w-full border-2 text-black rounded-md text-sm  bg-white ${error && !userCred.username.trim()
                           ? "border-red-500"
                           : "border-gray-200"
-                      }`}
-                      placeholder="username"
+                        }`}
+                      placeholder="Username"
                       aria-describedby="hs-input-helper-text"
                       value={userCred.username || ""}
                       onChange={(e) =>
@@ -1356,12 +1390,11 @@ const Settings = () => {
                       type={oldpasswordShown ? "text" : "password"}
                       disabled={editButton}
                       id="oldpass"
-                      className={`py-3 px-4 block w-full  text-black rounded-md text-sm border-2 bg-white ${
-                        error && !userCred.oldPass.trim()
+                      className={`py-3 px-4 block w-full  text-black rounded-md text-sm border-2 bg-white ${error && !userCred.oldPass.trim()
                           ? "border-red-500"
                           : "border-gray-200"
-                      }`}
-                      placeholder="password"
+                        }`}
+                      placeholder="Password"
                       aria-describedby="hs-input-helper-text"
                       onChange={(e) =>
                         handleUserChangeCred("oldPass", e.target.value)
@@ -1453,12 +1486,11 @@ const Settings = () => {
                         type={oldpasswordShown ? "text" : "password"}
                         disabled={editButton}
                         id="oldpass"
-                        className={`py-3 px-4 block w-full  text-black rounded-md text-sm border-2 bg-white ${
-                          error && !userCred.oldPass.trim()
+                        className={`py-3 px-4 block w-full  text-black rounded-md text-sm border-2 bg-white ${error && !userCred.oldPass.trim()
                             ? "border-red-500"
                             : "border-gray-200"
-                        }`}
-                        placeholder="password"
+                          }`}
+                        placeholder="Password"
                         aria-describedby="hs-input-helper-text"
                         onChange={(e) =>
                           handleUserChangeCred("oldPass", e.target.value)
@@ -1497,12 +1529,11 @@ const Settings = () => {
                         disabled={editButton}
                         readOnly={userCred.oldPass === ""}
                         id="newpass"
-                        className={`py-3 px-4 block w-full  text-black rounded-md text-sm border-2 bg-white ${
-                          error && !userCred.newPass.trim()
+                        className={`py-3 px-4 block w-full  text-black rounded-md text-sm border-2 bg-white ${error && !userCred.newPass.trim()
                             ? "border-red-500"
                             : "border-gray-200"
-                        }`}
-                        placeholder="password"
+                          }`}
+                        placeholder="Password"
                         aria-describedby="hs-input-helper-text"
                         onChange={(e) =>
                           handleUserChangeCred("newPass", e.target.value)
@@ -1533,17 +1564,16 @@ const Settings = () => {
                       {userCred.newPass && (
                         <div className="flex w-full h-1.5 bg-gray-200 rounded-full overflow-hidden dark:bg-gray-700">
                           <div
-                            className={`flex flex-col justify-center overflow-hidden ${
-                              passwordStrength < 25
+                            className={`flex flex-col justify-center overflow-hidden ${passwordStrength < 25
                                 ? "bg-red-500"
                                 : passwordStrength < 50
-                                ? "bg-yellow-500"
-                                : passwordStrength < 75
-                                ? "bg-amber-500"
-                                : passwordStrength < 100
-                                ? "bg-blue-500"
-                                : "bg-green-500"
-                            }`}
+                                  ? "bg-yellow-500"
+                                  : passwordStrength < 75
+                                    ? "bg-amber-500"
+                                    : passwordStrength < 100
+                                      ? "bg-blue-500"
+                                      : "bg-green-500"
+                              }`}
                             role="progressbar"
                             style={{ width: `${passwordStrength}%` }}
                             aria-valuenow={passwordStrength}

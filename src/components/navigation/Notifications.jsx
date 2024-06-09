@@ -9,6 +9,10 @@ import { MdEvent } from "react-icons/md";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import GetBrgy from "../GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../../config/Socket";
+
+const socket = io(Socket_link);
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -90,12 +94,26 @@ const Notifications = () => {
     };
 
     fetchNotifications();
-    const intervalId = setInterval(() => {
-      fetchNotifications();
-    }, 3000);
+    
+    // const intervalId = setInterval(() => {
+    //   fetchNotifications();
+    // }, 10000);
 
-    return () => clearInterval(intervalId);
+    // return () => clearInterval(intervalId);
   }, [brgy]);
+
+  useEffect(() => {
+    const handleNotifications = (get_notifications) => {
+      setNotification(get_notifications);
+      setNotifications((prev) => [get_notifications, ...prev]);
+    };
+
+    socket.on("receive-staff-notif", handleNotifications);
+
+    return () => {
+      socket.off("receive-staff-notif", handleNotifications);
+    };
+  }, [socket, setNotifications]);
 
   const handleView = (item) => {
     setNotification(item);

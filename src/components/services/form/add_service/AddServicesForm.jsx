@@ -6,7 +6,41 @@ import AddFormLoader from "../../loaders/AddFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 import API_LINK from "../../../../config/API";
 
-const AddServicesForm = ({ service_id, brgy }) => {
+const initialState = {
+  user_id: { display: "user id", checked: true, type: "text", value: "" },
+  firstName: { display: "first name", checked: true, type: "text", value: "" },
+  middleName: { display: "middle name", checked: true, type: "text", value: "" },
+  lastName: { display: "last name", checked: true, type: "text", value: "" },
+  suffix: { display: "suffix", checked: true, type: "text", value: "" },
+  birthday: { display: "birthday", checked: false, type: "date", value: "" },
+  age: { display: "age", checked: false, type: "number", value: 1 },
+  sex: { display: "sex", checked: false, type: "radio", value: "" },
+  contact: { display: "contact", checked: false, type: "text", value: "" },
+  civil_status: {
+    display: "civil status",
+    checked: false,
+    type: "select",
+    value: "",
+  },
+  height: { display: "height (ft)", checked: false, type: "text", value: "" },
+  weight: { display: "weight (kg)", checked: false, type: "number", value: 0 },
+  address: { display: "address", checked: false, type: "text", value: "" },
+  religion: {
+    display: "religion",
+    checked: false,
+    type: "select",
+    value: "",
+  },
+  email: { display: "email", checked: false, type: "email", value: "" },
+  occupation: {
+    display: "occupation",
+    checked: false,
+    type: "select",
+    value: "",
+  },
+};
+
+const AddServicesForm = ({ service_id, service_title, socket, brgy, setUpdate, id }) => {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
@@ -76,6 +110,13 @@ const AddServicesForm = ({ service_id, brgy }) => {
     setTitleName(e.target.value);
   };
 
+  const handleResetModal = () => {
+    setForm(initialState);
+    setTitleName("");
+    setSection([]);
+    setChecked(false);
+  };
+
   const [section, setSection] = useState([]);
 
   const [checked, setChecked] = useState(false);
@@ -88,37 +129,105 @@ const AddServicesForm = ({ service_id, brgy }) => {
   };
 
   const handleSubmit = async (e) => {
+    setError(null); // Reset error state
+
     try {
-      setSubmitClicked(true);
+      // Prepare the request payload
+      const requestData = {
+        form_name: titleName,
+        form: form,
+        section: section,
+      };
 
-      const response = await axios.post(
-        `${API_LINK}/forms/?brgy=${brgy}&service_id=${service_id}&checked=${checked}`,
-        {
-          form_name: titleName,
-          form: form,
-          section: section,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
+      if (checked) {
+        // Check if there's an active form
+        const activeFormResponse = await axios.get(
+          `${API_LINK}/forms/check/?brgy=${brgy}&service_id=${service_id}`
+        );
+
+        if (activeFormResponse.data.length > 0) {
+          throw new Error(
+            "There's an active form. Please turn it off before updating the new form."
+          );
+        } else {
+          setSubmitClicked(true);
+          const response = await axios.post(
+            `${API_LINK}/forms/?brgy=${brgy}&service_id=${service_id}&checked=${checked}`,
+            requestData,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          if (response.status === 200) {
+            const getIP = async () => {
+              const response = await fetch(
+                "https://api64.ipify.org?format=json"
+              );
+              const data = await response.json();
+              return data.ip;
+            };
+
+            const ip = await getIP(); // Retrieve IP address
+
+            const logsData = {
+              action: "Created",
+              details: `A new service form for the service titled "${service_title}" was created.`,
+              ip: ip,
+            };
+
+            const logsResult = await axios.post(
+              `${API_LINK}/act_logs/add_logs/?id=${id}`,
+              logsData
+            );
+            if (logsResult.status === 200) {
+              socket.emit("send-create-service-form", response.data);
+              setSubmitClicked(false);
+              setCreationStatus("success");
+              setTimeout(() => {
+                setCreationStatus(null);
+                handleResetModal();
+                HSOverlay.close(
+                  document.getElementById("hs-create-serviceForm-modal")
+                );
+              }, 3000);
+            }
+          }
         }
-      );
-
-      setSubmitClicked(false);
-      setCreationStatus("success");
-      setTimeout(() => {
-        window.location.reload();
-      }, 3000);
+      } else {
+        setSubmitClicked(true);
+        // Make the POST request
+        const response = await axios.post(
+          `${API_LINK}/forms/?brgy=${brgy}&service_id=${service_id}&checked=${checked}`,
+          requestData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        socket.emit("send-create-service-form", response.data);
+        setSubmitClicked(false);
+        setCreationStatus("success");
+        setTimeout(() => {
+          setCreationStatus(null);
+          handleResetModal();
+          HSOverlay.close(
+            document.getElementById("hs-create-serviceForm-modal")
+          );
+        }, 3000);
+      }
+      setUpdate(true);
     } catch (err) {
-      console.log(err.message);
+      console.error(err.message);
       setSubmitClicked(false);
-      setCreationStatus("error");
-      setError(err.message);
+      setError(
+        err.message ||
+        "An error occurred while creating/updating the service."
+      );
     }
   };
-
-
 
   return (
     <div>
@@ -130,9 +239,12 @@ const AddServicesForm = ({ service_id, brgy }) => {
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
             {/* Header */}
-            <div className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl" style={{
+            <div
+              className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl"
+              style={{
                 background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-              }}>
+              }}
+            >
               <h3
                 className="font-bold text-white mx-auto md:text-xl text-center"
                 style={{ letterSpacing: "0.3em" }}
@@ -191,7 +303,7 @@ const AddServicesForm = ({ service_id, brgy }) => {
                             <input
                               className="mr-2"
                               type="checkbox"
-                              defaultChecked={value.checked}
+                              checked={value.checked}
                               onChange={(e) => handleFormChange(e, key)}
                             />
                             {value.display.toUpperCase()}
@@ -227,6 +339,7 @@ const AddServicesForm = ({ service_id, brgy }) => {
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                   data-hs-overlay="#hs-create-serviceForm-modal"
+                  onClick={handleResetModal}
                 >
                   CLOSE
                 </button>

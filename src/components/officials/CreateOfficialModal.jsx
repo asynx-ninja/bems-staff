@@ -7,7 +7,7 @@ import AddLoader from "./loaders/AddLoader";
 import ErrorPopup from "./popup/ErrorPopup";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function CreateOfficialModal({ brgy }) {
+function CreateOfficialModal({ brgy, socket, id }) {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
@@ -15,21 +15,36 @@ function CreateOfficialModal({ brgy }) {
   const [emptyFields, setEmptyFields] = useState([]);
   const [empty, setEmpty] = useState(false);
   const [official, setOfficial] = useState({
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    suffix: "",
-    position: "",
-    fromYear: "",
-    toYear: "",
+    firstName: '',
+    middleName: '',
+    lastName: '',
+    suffix: '',
+    position: '',
+    fromYear: '',
+    toYear: '',
     brgy: brgy,
   });
+  const [pfp, setPfp] = useState();
+
+  const handleResetModal = () => {
+    setOfficial({
+      firstName: '',
+      middleName: '',
+      lastName: '',
+      suffix: '',
+      position: '',
+      fromYear: '',
+      toYear: '',
+      brgy: brgy,
+    });
+    setPfp(null);
+  };
 
   const checkEmptyFields = () => {
     let arr = [];
-    const keysToCheck = ["firstName", "middleName", "lastName", "position"];
+    const keysToCheck = ['firstName', 'middleName', 'lastName', 'position'];
     for (const key of keysToCheck) {
-      if (official[key] === "") {
+      if (official[key] === '') {
         arr.push(key);
       }
     }
@@ -37,41 +52,36 @@ function CreateOfficialModal({ brgy }) {
     return arr;
   };
 
-  const [pfp, setPfp] = useState();
-
   const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitClicked(true);
+    setError(null); // Reset error state
+
+    const emptyFieldsArr = checkEmptyFields();
+
+    if (emptyFieldsArr.length > 0) {
+      setEmpty(true);
+      setSubmitClicked(false);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', pfp);
+
+    const obj = {
+      firstName: official.firstName,
+      middleName: official.middleName,
+      lastName: official.lastName,
+      suffix: official.suffix,
+      position: official.position,
+      fromYear: official.fromYear,
+      toYear: official.toYear,
+    };
+
+    formData.append('official', JSON.stringify(obj));
+
     try {
-      e.preventDefault();
-      setSubmitClicked(true);
-
-      const emptyFieldsArr = checkEmptyFields();
-
-      if (emptyFieldsArr.length > 0) {
-        setEmpty(true);
-        setSubmitClicked(false);
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("file", pfp);
-
-      const obj = {
-        firstName: official.firstName,
-        middleName: official.middleName,
-        lastName: official.lastName,
-        suffix: official.suffix,
-        position: official.position,
-        fromYear: official.fromYear,
-        toYear: official.toYear,
-      };
-
-      formData.append("official", JSON.stringify(obj));
-
-      const res_folder = await axios.get(
-        `${API_LINK}/folder/specific/?brgy=${brgy}`
-      );
-
-
+      const res_folder = await axios.get(`${API_LINK}/folder/specific/?brgy=${brgy}`);
 
       if (res_folder.status === 200) {
         const result = await axios.post(
@@ -80,36 +90,59 @@ function CreateOfficialModal({ brgy }) {
         );
 
         if (result.status === 200) {
+          const getIP = async () => {
+            const response = await fetch("https://api64.ipify.org?format=json");
+            const data = await response.json();
+            return data.ip;
+          };
+
+          const ip = await getIP(); // Retrieve IP address
+
+          const logsData = {
+            action: "Created",
+            details: `Created a new barangay official named "${official.firstName} ${official.lastName}"`,
+            ip: ip,
+          };
+
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
+            socket.emit('send-create-official', result.data);
           setOfficial({
-            firstName: "",
-            middleName: "",
-            lastName: "",
-            suffix: "",
-            position: "",
-            fromYear: "",
-            toYear: "",
-            brgy: "",
+            firstName: '',
+            middleName: '',
+            lastName: '',
+            suffix: '',
+            position: '',
+            fromYear: '',
+            toYear: '',
+            brgy: brgy,
           });
+        }
+          
           setPfp(null);
           setSubmitClicked(false);
-          setCreationStatus("success");
+          setCreationStatus('success');
           setTimeout(() => {
-            window.location.reload();
+            setCreationStatus(null);
+            HSOverlay.close(document.getElementById('hs-create-official-modal'));
           }, 3000);
         }
       }
     } catch (err) {
-      console.error("Error adding official:", err);
+      console.error('Error adding official:', err);
       setSubmitClicked(false);
-      setCreationStatus("error");
-      setError("An error occurred while creating the announcement.");
+      setCreationStatus('error');
+      setError('An error occurred while creating the announcement.');
     }
   };
 
   const handlePfpChange = (e) => {
     setPfp(e.target.files[0]);
 
-    var output = document.getElementById("add_pfp");
+    var output = document.getElementById('add_pfp');
     output.src = URL.createObjectURL(e.target.files[0]);
     output.onload = function () {
       URL.revokeObjectURL(output.src); // free memory
@@ -149,9 +182,8 @@ function CreateOfficialModal({ brgy }) {
                     <div className="relative w-full overflow-y-auto">
                       <div className="relative w-full border rounded-t-xl">
                         <img
-                          className={`${
-                            pfp ? "" : "hidden"
-                          } w-[250px] h-[250px] md:w-full md:h-[350px] lg:w-full lg:h-[250px] rounded-t-xl object-cover`}
+                          className={`${pfp ? "" : "hidden"
+                            } w-[250px] h-[250px] md:w-full md:h-[350px] lg:w-full lg:h-[250px] rounded-t-xl object-cover`}
                           id="add_pfp"
                           alt="Current profile photo"
                         />{" "}
@@ -187,9 +219,8 @@ function CreateOfficialModal({ brgy }) {
                       type="text"
                       id="firstName"
                       name="firstName"
-                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                        emptyFields.includes("firstName") && "border-red-500"
-                      }`}
+                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("firstName") && "border-red-500"
+                        }`}
                       placeholder=""
                       value={official.firstName}
                       onChange={(e) =>
@@ -207,9 +238,8 @@ function CreateOfficialModal({ brgy }) {
                       type="text"
                       id="middleName"
                       name="middleName"
-                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                        emptyFields.includes("middleName") && "border-red-500"
-                      }`}
+                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("middleName") && "border-red-500"
+                        }`}
                       placeholder=""
                       value={official.middleName}
                       onChange={(e) =>
@@ -244,9 +274,8 @@ function CreateOfficialModal({ brgy }) {
                       type="text"
                       id="lastName"
                       name="lastName"
-                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                        emptyFields.includes("lastName") && "border-red-500"
-                      }`}
+                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("lastName") && "border-red-500"
+                        }`}
                       placeholder=""
                       value={official.lastName}
                       onChange={(e) =>
@@ -272,9 +301,8 @@ function CreateOfficialModal({ brgy }) {
                     <select
                       id="position"
                       name="position"
-                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                        emptyFields.includes("position") && "border-red-500"
-                      }`}
+                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("position") && "border-red-500"
+                        }`}
                       onChange={(e) =>
                         setOfficial({ ...official, position: e.target.value })
                       }
@@ -288,13 +316,15 @@ function CreateOfficialModal({ brgy }) {
                         Barangay Chairman
                       </option>
                       <option value="Barangay Kagawad">Barangay Kagawad</option>
-                      <option value="SK Chairman">SK Chairman</option>
-                      <option value="SK Kagawad">SK Kagawad</option>
                       <option value="Secretary">Secretary</option>
                       <option value="Assistant Secretary">
                         Assistant Secretary
                       </option>
                       <option value="Treasurer">Treasurer</option>
+                      <option value="SK Chairman">SK Chairman</option>
+                      <option value="SK Kagawad">SK Kagawad</option>
+                      <option value="SK Secretary">SK Secretary</option>
+                      <option value="SK Treasurer">SK Treasurer</option>
                     </select>
                   </div>
                   <div className="w-full mt-2">
@@ -373,6 +403,7 @@ function CreateOfficialModal({ brgy }) {
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                   data-hs-overlay="#hs-create-official-modal"
+                  onClick={handleResetModal}
                 >
                   CLOSE
                 </button>

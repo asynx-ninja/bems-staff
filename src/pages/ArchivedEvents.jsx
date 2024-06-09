@@ -13,11 +13,18 @@ import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+
+const socket = io(Socket_link);
+
+
 const ArchivedEvents = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
+  const id = searchParams.get("id");
   const [announcement, setAnnouncement] = useState([]);
   const [status, setStatus] = useState({});
   const [sortOrder, setSortOrder] = useState("desc");
@@ -26,6 +33,8 @@ const ArchivedEvents = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const information = GetBrgy(brgy);
+  const [update, setUpdate] = useState(false);
+
   //date filtering
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [filteredAnnouncements, setFilteredAnnouncements] = useState([]);
@@ -36,7 +45,7 @@ const ArchivedEvents = () => {
     const fetchData = async () => {
       try {
         const announcementsResponse = await axios.get(
-          `${API_LINK}/announcement/?brgy=${brgy}&archived=true&page=${currentPage}`
+          `${API_LINK}/announcement/?brgy=${brgy}&archived=true`
         );
 
         if (announcementsResponse.status === 200) {
@@ -61,6 +70,7 @@ const ArchivedEvents = () => {
           });
 
           setPageCount(announcementsResponse.data.pageCount);
+          setUpdate(false);
         } else {
           setAnnouncementWithCounts([]);
         }
@@ -73,11 +83,46 @@ const ArchivedEvents = () => {
     };
 
     fetchData();
-  }, [currentPage, brgy]);
+  }, [brgy, update]);
+
+  
+  useEffect(() => {
+    const filteredData = announcements.filter((item) =>
+      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.event_id.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredAnnouncements(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [announcements, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
+  };
+
+  useEffect(() => {
+    const handleEventRestore = (obj) => {
+      setAnnouncement(obj);
+      setAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
+      setFilteredAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
+    };
+
+
+    socket.on("receive-restore-staff", handleEventRestore);
+
+    return () => {
+
+      socket.on("receive-restore-staff", handleEventRestore);
+    };
+  }, [socket, setAnnouncement, setAnnouncements]);
+
 
   const Announcements = announcements.filter(
     (item) =>
@@ -118,7 +163,7 @@ const ArchivedEvents = () => {
   const tableHeader = [
     "Event id",
     "title",
-    "details",
+    // "details",
     "creation date",
     "event date",
     "# of applicants",
@@ -371,15 +416,7 @@ const ArchivedEvents = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const Announcements = announcements.filter((item) =>
-                      item.title
-                        .toLowerCase()
-                        .includes(e.target.value.toLowerCase())
-                    );
-                    setFilteredAnnouncements(Announcements);
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center space-x-2">
@@ -457,13 +494,13 @@ const ArchivedEvents = () => {
                         </span>
                       </div>
                     </td>
-                    <td className="px-2 xl:px-6 py-3 ">
+                    {/* <td className="px-2 xl:px-6 py-3 ">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-1 tas w-[100px] text-left ">
                           {item.details}
                         </span>
                       </div>
-                    </td>
+                    </td> */}
                     <td className="px-2 py-3 w-2/12">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
@@ -552,7 +589,7 @@ const ArchivedEvents = () => {
           setAnnouncement={setAnnouncement}
           brgy={brgy}
         />
-        <RestoreAnnouncementModal selectedItems={selectedItems} />
+        <RestoreAnnouncementModal selectedItems={selectedItems} socket={socket} id={id}/>
       </div>
     </div>
   );

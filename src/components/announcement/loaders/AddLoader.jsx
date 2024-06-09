@@ -6,7 +6,7 @@ function AddLoader({ creationStatus, error }) {
     creating: "Creating the announcement...",
     waiting: "Please wait...",
     success: "Announcement Creation Successful!",
-    error: error,
+    error: "Error creating event. Please try again.",
   };
 
   const [loadingText, setLoadingText] = useState(

@@ -9,8 +9,8 @@ const CreateOccupationList = ({edit, handleChange}) => {
       name="occupation"
       onChange={handleChange}
     >
-      <option value="" disabled="disabled">
-        Select Occupation
+      <option value="">
+        -- Select Occupation --
       </option>
       <optgroup label="Healthcare Practitioners and Technical Occupations:">
         <option value="Chiropractor" >Chiropractor</option>

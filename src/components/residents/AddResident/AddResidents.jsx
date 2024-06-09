@@ -48,7 +48,7 @@ const AddResidents = () => {
     username: "",
     password: "",
     isArchived: false,
-    isApproved: "Registered",
+    isApproved: "Fully Verified",
     city: "Rodriguez, Rizal",
     brgy: brgy,
     verification: {
@@ -190,7 +190,7 @@ const AddResidents = () => {
             }
           );
 
-        
+
           setUser((prev) => ({
             ...prev,
             verification: {
@@ -243,151 +243,177 @@ const AddResidents = () => {
     try {
       e.preventDefault();
       setSubmitClicked(true);
+      setError(null); // Reset error state
+      setCreationStatus(null);
 
       const emptyFieldsArr = checkEmptyFields();
 
       if (emptyFieldsArr.length > 0) {
-       
+
         setEmpty(true);
         setSubmitClicked(false);
       } else {
         const calculatedAge = calculateAge(user.birthday);
 
-        const obj = {
-          firstName: user.firstName,
-          middleName: user.middleName,
-          lastName: user.lastName,
-          suffix: user.suffix,
-          religion: user.religion,
-          email: user.email,
-          birthday: user.birthday,
-          age: calculatedAge,
-          contact: user.contact,
-          sex: user.sex,
-          address: { street: user.street, brgy: user.brgy, city: user.city },
-          occupation: user.occupation,
-          civil_status: user.civil_status,
-          type: user.type === "" ? "Resident" : user.type,
-          isVoter: user.isVoter,
-          isHead: user.isHead,
-          isArchived: user.isArchived,
-          isApproved: user.isApproved,
-          username: user.username,
-          password: user.password,
-          verification: user.verification,
-          primary_id: user.verification.primary_id,
-          secondary_id: user.verification.secondary_id,
-        };
+        if (calculatedAge < 16) {
+          // Set an error message if the age is less than 17
+          setCreationStatus("ageError");
+          setSubmitClicked(false);
+          return;
+        } else {
+          const obj = {
+            firstName: user.firstName,
+            middleName: user.middleName,
+            lastName: user.lastName,
+            suffix: user.suffix,
+            religion: user.religion,
+            email: user.email,
+            birthday: user.birthday,
+            age: calculatedAge,
+            contact: user.contact,
+            sex: user.sex,
+            address: { street: user.street, brgy: user.brgy, city: user.city },
+            occupation: user.occupation,
+            civil_status: user.civil_status,
+            type: user.type === "" ? "Resident" : user.type,
+            isVoter: user.isVoter,
+            isHead: user.isHead,
+            isArchived: user.isArchived,
+            isApproved: user.isApproved,
+            username: user.username,
+            password: user.password,
+            verification: user.verification,
+            primary_id: user.verification.primary_id,
+            secondary_id: user.verification.secondary_id,
+          };
 
-        const folderResponse = await axios.get(
-          `${API_LINK}/folder/specific/?brgy=${brgy}`
-        );
+          const folderResponse = await axios.get(
+            `${API_LINK}/folder/specific/?brgy=${brgy}`
+          );
 
-        if (folderResponse.status === 200) {
-          var formData = new FormData();
+          if (folderResponse.status === 200) {
+            var formData = new FormData();
 
-          formData.append("user", JSON.stringify(obj));
+            formData.append("user", JSON.stringify(obj));
 
-          if (user.verification && user.verification.selfie) {
-            let selfieFile = new File(
-              [user.verification.selfie[0]],
-              `${user.lastName}, ${user.firstName} - SELFIE`,
+            if (user.verification && user.verification.selfie) {
+              let selfieFile = new File(
+                [user.verification.selfie[0]],
+                `${user.lastName}, ${user.firstName} - SELFIE`,
+                {
+                  type: "image/jpeg",
+                  size: user.verification.selfie[0].size,
+                  uri: user.verification.selfie[0].uri,
+                }
+              );
+
+              formData.append("files", selfieFile);
+            }
+
+            if (user.verification && user.verification.primary_file) {
+              for (let i = 0; i < user.verification.primary_file.length; i++) {
+                let file = {
+                  name: `${user.lastName}, ${user.firstName
+                    } - PRIMARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
+                  size: user.verification.primary_file[i].size,
+                  type: user.verification.primary_file[i].type,
+                  uri: user.verification.primary_file[i].uri,
+                };
+
+
+
+                formData.append(
+                  "files",
+                  new File([user.verification.primary_file[i]], file.name, {
+                    type: file.type,
+                  })
+                );
+              }
+            }
+
+            if (user.verification && user.verification.secondary_file) {
+              for (let i = 0; i < user.verification.secondary_file.length; i++) {
+                let file = {
+                  name: `${user.lastName}, ${user.firstName
+                    } - SECONDARY ID ${moment(new Date()).format(
+                      "MMDDYYYYHHmmss"
+                    )}`,
+                  uri: user.verification.secondary_file[i].uri,
+                  type: user.verification.secondary_file[i].type,
+                  size: user.verification.secondary_file[i].size,
+                };
+
+                formData.append(
+                  "files",
+                  new File([user.verification.secondary_file[i]], file.name, {
+                    type: file.type,
+                  })
+                );
+              }
+            }
+
+            const response = await axios.post(
+              `${API_LINK}/users/?folder_id=${folderResponse.data[0].verification}`,
+              formData,
               {
-                type: "image/jpeg",
-                size: user.verification.selfie[0].size,
-                uri: user.verification.selfie[0].uri,
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
               }
             );
 
-            formData.append("files", selfieFile);
-          }
-
-          if (user.verification && user.verification.primary_file) {
-            for (let i = 0; i < user.verification.primary_file.length; i++) {
-              let file = {
-                name: `${user.lastName}, ${
-                  user.firstName
-                } - PRIMARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
-                size: user.verification.primary_file[i].size,
-                type: user.verification.primary_file[i].type,
-                uri: user.verification.primary_file[i].uri,
+            if (response.status === 200) {
+              const getIP = async () => {
+                const response = await fetch("https://api64.ipify.org?format=json");
+                const data = await response.json();
+                return data.ip;
               };
 
-          
+              const ip = await getIP(); // Retrieve IP address
 
-              formData.append(
-                "files",
-                new File([user.verification.primary_file[i]], file.name, {
-                  type: file.type,
-                })
-              );
-            }
-          }
-
-          if (user.verification && user.verification.secondary_file) {
-            for (let i = 0; i < user.verification.secondary_file.length; i++) {
-              let file = {
-                name: `${user.lastName}, ${
-                  user.firstName
-                } - SECONDARY ID ${moment(new Date()).format(
-                  "MMDDYYYYHHmmss"
-                )}`,
-                uri: user.verification.secondary_file[i].uri,
-                type: user.verification.secondary_file[i].type,
-                size: user.verification.secondary_file[i].size,
+              const logsData = {
+                action: "Created",
+                details: "A new resident was registered in the system.",
+                ip: ip,
               };
 
-              formData.append(
-                "files",
-                new File([user.verification.secondary_file[i]], file.name, {
-                  type: file.type,
-                })
+              const logsResult = await axios.post(
+                `${API_LINK}/act_logs/add_logs/?id=${id}`,
+                logsData
               );
+              if (logsResult.status === 200) {
+                setUser({
+                  user_id: "",
+                  firstName: "",
+                  lastName: "",
+                  email: "",
+                  birthday: "",
+                  age: "",
+                  contact: "",
+                  address: "",
+                  type: "",
+                  username: "",
+                  password: "",
+                  isArchived: false,
+                  isApproved: "Fully Verified",
+                  city: "Rodriguez, Rizal",
+                  brgy: brgy,
+                  verification: {
+                    primary_id: "",
+                    primary_file: [],
+                    secondary_id: "",
+                    secondary_file: [],
+                    selfie: [],
+                  },
+                });
+
+                setSubmitClicked(false);
+                setCreationStatus("success");
+                setTimeout(() => {
+                  window.location.reload();
+                }, 3000);
+              }
             }
-          }
-
-          const response = await axios.post(
-            `${API_LINK}/users/?folder_id=${folderResponse.data[0].verification}`,
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
-          );
-
-          if (response.status === 200) {
-          
-            setUser({
-              user_id: "",
-              firstName: "",
-              lastName: "",
-              email: "",
-              birthday: "",
-              age: "",
-              contact: "",
-              address: "",
-              type: "",
-              username: "",
-              password: "",
-              isArchived: false,
-              isApproved: "Registered",
-              city: "Rodriguez, Rizal",
-              brgy: brgy,
-              verification: {
-                primary_id: "",
-                primary_file: [],
-                secondary_id: "",
-                secondary_file: [],
-                selfie: [],
-              },
-            });
-
-            setSubmitClicked(false);
-            setCreationStatus("success");
-            setTimeout(() => {
-              window.location.reload();
-            }, 3000);
           }
         }
       }
@@ -463,10 +489,9 @@ const AddResidents = () => {
                           id="firstName"
                           name="firstName"
                           onChange={handleChange}
-                          className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                            emptyFields.includes("firstName") &&
+                          className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("firstName") &&
                             "border-red-500"
-                          }`}
+                            }`}
                           placeholder=""
                         />
                       </div>
@@ -500,9 +525,8 @@ const AddResidents = () => {
                           id="lastName"
                           name="lastName"
                           onChange={handleChange}
-                          className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                            emptyFields.includes("lastName") && "border-red-500"
-                          }`}
+                          className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("lastName") && "border-red-500"
+                            }`}
                           placeholder=""
                         />
                       </div>
@@ -538,9 +562,8 @@ const AddResidents = () => {
                           id="birthday"
                           name="birthday"
                           onChange={handleChange}
-                          className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                            emptyFields.includes("birthday") && "border-red-500"
-                          }`}
+                          className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("birthday") && "border-red-500"
+                            }`}
                           placeholder="mm/dd/yyyy"
                           value={birthdayFormat(user.birthday) || ""}
                         />
@@ -577,9 +600,8 @@ const AddResidents = () => {
                           id="email"
                           name="email"
                           onChange={handleChange}
-                          className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                            emptyFields.includes("email") && "border-red-500"
-                          }`}
+                          className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("email") && "border-red-500"
+                            }`}
                           placeholder=""
                         />
                       </div>
@@ -592,13 +614,12 @@ const AddResidents = () => {
                           CONTACT
                         </h1>
                         <input
-                          type="text"
+                          type="number"
                           id="contact"
                           name="contact"
                           onChange={handleChange}
-                          className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                            emptyFields.includes("contact") && "border-red-500"
-                          }`}
+                          className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("contact") && "border-red-500"
+                            }`}
                           placeholder=""
                         />
                       </div>
@@ -643,7 +664,7 @@ const AddResidents = () => {
                     Additional Data
                   </b>
                   <div>
-                    <div className="flex flex flex-col md:flex-row mt-2 px-1 md:space-x-2">
+                    <div className="flex flex-col md:flex-row mt-2 px-1 md:space-x-2">
                       <div className="flex flex-col w-full">
                         <label
                           htmlFor="status"
@@ -712,9 +733,8 @@ const AddResidents = () => {
                           id="street"
                           name="street"
                           onChange={handleChange}
-                          className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                            emptyFields.includes("street") && "border-red-500"
-                          }`}
+                          className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("street") && "border-red-500"
+                            }`}
                           placeholder=""
                         />
                       </div>
@@ -734,17 +754,17 @@ const AddResidents = () => {
                           disabled
                           className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         >
-                          <option value="Balite">Balite</option>
-                          <option value="Burgos">Burgos</option>
-                          <option value="Geronimo">Geronimo</option>
-                          <option value="Macabud">Macabud</option>
-                          <option value="Manggahan">Manggahan</option>
-                          <option value="Mascap">Mascap</option>
-                          <option value="Puray">Puray</option>
-                          <option value="Rosario">Rosario</option>
-                          <option value="San Isidro">San Isidro</option>
-                          <option value="San Jose">San Jose</option>
-                          <option value="San Rafael">San Rafael</option>
+                          <option value="BALITE">Balite</option>
+                          <option value="BURGOS">Burgos</option>
+                          <option value="GERONIMO">Geronimo</option>
+                          <option value="MACABUD">Macabud</option>
+                          <option value="MANGGAHAN">Manggahan</option>
+                          <option value="MASCAP">Mascap</option>
+                          <option value="PURAY">Puray</option>
+                          <option value="ROSARIO">Rosario</option>
+                          <option value="SAN ISIDRO">San Isidro</option>
+                          <option value="SAN JOSE">San Jose</option>
+                          <option value="SAN RAFAEL">San Rafael</option>
                         </select>
                       </div>
 
@@ -875,7 +895,7 @@ const AddResidents = () => {
                   <b className="border-solid border-0 border-black/50 border-b-2 uppercase font-medium text-lg md:text-lg mt-5">
                     Account
                   </b>
-                  <div className="flex flex-row mt-2 md:mt-4 px-1 flex-col md:flex-row">
+                  <div className="flex flex-row mt-2 md:mt-4 px-1 md:flex-row">
                     <div className="flex flex-col w-full">
                       <h1
                         className="font-medium mb-1 text-black text-sm"
@@ -888,9 +908,8 @@ const AddResidents = () => {
                         id="username"
                         name="username"
                         onChange={handleChange}
-                        className={`shadow appearance-none border w-full p-1.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                          emptyFields.includes("username") && "border-red-500"
-                        }`}
+                        className={`shadow appearance-none border w-full p-1.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("username") && "border-red-500"
+                          }`}
                         placeholder=""
                       />
                     </div>
@@ -923,9 +942,8 @@ const AddResidents = () => {
                           id="password"
                           name="password"
                           onChange={handleChange}
-                          className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-r-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                            emptyFields.includes("password") && "border-red-500"
-                          }`}
+                          className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-r-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("password") && "border-red-500"
+                            }`}
                           value={user.password}
                         />
                       </div>
@@ -1025,7 +1043,7 @@ const AddResidents = () => {
                                       src={URL.createObjectURL(item)}
                                       alt={`Primary File ${idx + 1}`}
                                       className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
-                                      // onClick={() => handleImageTab(item)}
+                                    // onClick={() => handleImageTab(item)}
                                     />
                                     <div className="text-black rounded-b-xl py-1 flex justify-between items-center">
                                       <label className="text-xs pl-2">
@@ -1146,7 +1164,7 @@ const AddResidents = () => {
                                       src={URL.createObjectURL(item)}
                                       alt={`Secondary File ${idx + 1}`}
                                       className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
-                                      // onClick={() => handleImageTab(item)}
+                                    // onClick={() => handleImageTab(item)}
                                     />
 
                                     <div className="text-black rounded-b-xl py-1 flex justify-between items-center">
@@ -1206,15 +1224,15 @@ const AddResidents = () => {
                                   <img
                                     src={
                                       user.verification.selfie[0] instanceof
-                                      File
+                                        File
                                         ? URL.createObjectURL(
-                                            user.verification.selfie[0]
-                                          )
+                                          user.verification.selfie[0]
+                                        )
                                         : user.verification.selfie[0].hasOwnProperty(
-                                            "link"
-                                          )
-                                        ? user.verification.selfie[0].link
-                                        : user.verification.selfie[0].uri
+                                          "link"
+                                        )
+                                          ? user.verification.selfie[0].link
+                                          : user.verification.selfie[0].uri
                                     }
                                     alt={`Selfie`}
                                     className="w-full h-[410px] p-2 object-cover rounded-xl"
@@ -1240,15 +1258,15 @@ const AddResidents = () => {
                                   <img
                                     src={
                                       user.verification.selfie[0] instanceof
-                                      File
+                                        File
                                         ? URL.createObjectURL(
-                                            user.verification.selfie[0]
-                                          )
+                                          user.verification.selfie[0]
+                                        )
                                         : user.verification.selfie[0].hasOwnProperty(
-                                            "link"
-                                          )
-                                        ? user.verification.selfie[0].link
-                                        : user.verification.selfie[0].uri
+                                          "link"
+                                        )
+                                          ? user.verification.selfie[0].link
+                                          : user.verification.selfie[0].uri
                                     }
                                     alt={`Selfie`}
                                     className="w-full p-2 object-cover rounded-xl"

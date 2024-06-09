@@ -3,21 +3,76 @@ import Error from "../../assets/modals/Error.png";
 import axios from "axios";
 import API_LINK from "../../config/API";
 import { IoArchiveOutline } from "react-icons/io5";
+import { useState } from "react";
+import ArchiveLoader from "./loaders/ArchiveLoader";
 
-function ArchiveServicesModal({ selectedItems }) {
+function ArchiveServicesModal({ selectedItems, socket, id }) {
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
+  const [error, setError] = useState(null);
+
   const handleSave = async (e) => {
     try {
       e.preventDefault();
+      setError(null); // Reset error state
+
+      if (selectedItems.length === 0) {
+        setUpdatingStatus("error");
+        setError("Unable to archive, Please select first to archive.");
+        setTimeout(() => {
+          setUpdatingStatus(null);
+          HSOverlay.close(document.getElementById("hs-archive-services-modal"));
+        }, 3000);
+
+        console.log("error", selectedItems);
+        return;
+      }
+      setSubmitClicked(true);
 
       for (let i = 0; i < selectedItems.length; i++) {
         const response = await axios.patch(
           `${API_LINK}/services/archived/${selectedItems[i]}/true`
         );
+
+        if (response.status === 200) {
+          const getIP = async () => {
+            const response = await fetch(
+              "https://api64.ipify.org?format=json"
+            );
+            const data = await response.json();
+            return data.ip;
+          };
+
+          const ip = await getIP(); // Retrieve IP address
+          const logsData = {
+            action: "Archived",
+            details: `Archived a service (ID: ${selectedItems[i]}).`,
+            ip: ip,
+          };
+
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
+            socket.emit("send-archive-staff", response.data);
+
+            setSubmitClicked(false);
+            setError(null);
+            setUpdatingStatus("success");
+            setTimeout(() => {
+              setUpdatingStatus(null);
+              HSOverlay.close(document.getElementById("hs-archive-services-modal"));
+            }, 3000);
+          }
+        }
       }
 
-      window.location.reload();
     } catch (err) {
       console.log(err);
+      setSubmitClicked(false);
+      setUpdatingStatus(null);
+      setError("An error occurred while creating the announcement.");
     }
   };
 
@@ -54,6 +109,10 @@ function ArchiveServicesModal({ selectedItems }) {
           </div>
         </div>
       </div>
+      {submitClicked && <ArchiveLoader updatingStatus="updating" />}
+      {updatingStatus && (
+        <ArchiveLoader updatingStatus={updatingStatus} error={error} />
+      )}
     </div>
   );
 }

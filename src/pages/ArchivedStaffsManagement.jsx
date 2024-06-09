@@ -15,6 +15,11 @@ import RestoreStaffModal from "../components/staff/RestoreStaffModal";
 import ViewArchivedStaff from "../components/staff/ViewArchivedStaff";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+
+const socket = io(Socket_link);
+
 const ArchivedStaffsManagement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [users, setUsers] = useState([]);
@@ -28,6 +33,7 @@ const ArchivedStaffsManagement = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [positionFilter, setPositionFilter] = useState("all");
+  const [filterUsers, setfilterUsers] = useState([]);
   const information = GetBrgy(brgy);
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
@@ -67,19 +73,46 @@ const ArchivedStaffsManagement = () => {
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/staffs/showArchived/${brgy}/?page=${currentPage}&type=${positionFilter}`
+        `${API_LINK}/staffs/showArchived/${brgy}/?&type=${positionFilter}`
       );
 
       if (response.status === 200) {
         setUsers(response.data.result);
         setPageCount(response.data.pageCount);
+        setfilterUsers(response.data.result.slice(0, 10));
       } else setUsers([]);
     };
 
     fetch();
-  }, [currentPage, positionFilter]);
+  }, [positionFilter]);
+
+  useEffect(() => {
+    const filteredData = users.filter((item) => {
+      const fullName =
+        item.lastName.toLowerCase() +
+        ", " +
+        item.firstName.toLowerCase() +
+        (item.middleName !== undefined
+          ? " " + item.middleName.toLowerCase()
+          : "");
+
+      return fullName.includes(searchQuery.toLowerCase());
+    });
+
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setfilterUsers(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [users, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
   const checkboxHandler = (e) => {
@@ -119,7 +152,7 @@ const ArchivedStaffsManagement = () => {
     }
   };
 
-  const tableHeader = ["NAME", "EMAIL", "CONTACT", "TYPE", "STATUS", "ACTIONS"];
+  const tableHeader = ["NAME", "EMAIL", "CONTACT", "TYPE",  "ACTIONS"];
 
   useEffect(() => {
     document.title = "Archived Residents | Barangay E-Services Management";
@@ -128,6 +161,20 @@ const ArchivedStaffsManagement = () => {
   const handleView = (item) => {
     setUser(item);
   };
+
+  useEffect(() => {
+    const handleEventArchive = (obj) => {
+      setUser(obj);
+      setUsers((prev) => prev.filter((item) => item._id !== obj._id));
+      setfilterUsers((prev) => prev.filter((item) => item._id !== obj._id));
+    };
+
+    socket.on("receive-restore-staff", handleEventArchive);
+
+    return () => {
+      socket.on("receive-restore-staff", handleEventArchive);
+    };
+  }, [socket, setUsers, setUser]);
 
   return (
     <div className="mx-4 mt-8">
@@ -164,8 +211,9 @@ const ArchivedStaffsManagement = () => {
                 >
                   TYPE
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -242,7 +290,7 @@ const ArchivedStaffsManagement = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center space-x-2">
@@ -296,8 +344,8 @@ const ArchivedStaffsManagement = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {Users.length > 0 ? (
-                Users.map((item, index) => (
+              {filterUsers.length > 0 ? (
+                filterUsers.map((item, index) => (
                   <tr key={index} className="odd:bg-slate-100 text-center">
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
@@ -341,7 +389,7 @@ const ArchivedStaffsManagement = () => {
                         </span>
                       </div>
                     </td>
-                    <td className="px-2 xl:px-6 py-3">
+                    {/* <td className="px-2 xl:px-6 py-3">
                       {item.isApproved === "Registered" && (
                         <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
@@ -363,7 +411,7 @@ const ArchivedStaffsManagement = () => {
                           </span>
                         </div>
                       )}
-                    </td>
+                    </td> */}
                     <td className="px-2 xl:px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">
                         <div className="hs-tooltip inline-block">
@@ -429,7 +477,7 @@ const ArchivedStaffsManagement = () => {
         />
       </div>
       <ViewArchivedStaff user={user} setUser={setUser} brgy={brgy} />
-      <RestoreStaffModal selectedItems={selectedItems} />
+      <RestoreStaffModal selectedItems={selectedItems} socket={socket} id ={id}/>
       <GenerateReportsModal />
     </div>
   );

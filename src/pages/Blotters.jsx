@@ -2,7 +2,7 @@ import React from "react";
 import moment from "moment";
 import ReactPaginate from "react-paginate";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { BsPrinter } from "react-icons/bs";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { HiDocumentAdd } from "react-icons/hi";
@@ -21,6 +21,10 @@ import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
 import AddBlotterDocument from "../components/blotters/document_forms/create_document/AddBlotterDocument";
 import EditBlotterDocument from "../components/blotters/document_forms/edit_document/EditBlotterDocument";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+
+const socket = io(Socket_link);
 
 const Blotters = () => {
   const [requests, setRequests] = useState([]);
@@ -34,6 +38,12 @@ const Blotters = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedReqFilter, setSelectedReqFilter] = useState("all");
   const information = GetBrgy(brgy);
+  const [update, setUpdate] = useState(false);
+  const [editupdate, setEditUpdate] = useState(false);
+  const [eventsForm, setEventsForm] = useState([]);
+  // const chatContainerRef = useRef();
+  // const [correspondingBlotterDetail, setCorrespondingBlotterDetail] = useState(null);
+
   //status filter
   const [statusFilter, setStatusFilter] = useState("all");
   //request filter
@@ -70,7 +80,7 @@ const Blotters = () => {
           });
 
           setRequests(result);
-          setFilteredRequests(result);
+          setFilteredRequests(response.data.result.slice(0, 10));
         } else {
           setRequests([]);
           setFilteredRequests([]);
@@ -86,6 +96,27 @@ const Blotters = () => {
   }, [brgy]);
 
   useEffect(() => {
+    const filteredData = requests.filter((item) =>
+      item.req_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredRequests(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [requests, searchQuery, currentPage]);
+
+  const handlePageChange = ({ selected }) => {
+    setCurrentPage(selected);
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
+  };
+
+  useEffect(() => {
     // function to filter
     const fetch = async () => {
       try {
@@ -95,6 +126,10 @@ const Blotters = () => {
 
         // filter
         setBlotterDetails(response.data);
+        setUpdate(false);
+
+        // const container = chatContainerRef.current;
+        // container.scrollTop = container.scrollHeight;
       } catch (err) {
         console.log(err.message);
         setBlotterDetails([]);
@@ -102,7 +137,33 @@ const Blotters = () => {
     };
 
     fetch();
-  }, [brgy]);
+  }, [brgy, update]);
+
+
+  useEffect(() => {
+    const handlePatawag = (patawag_blotter) => {
+      setRequest(patawag_blotter);
+      setBlotterDetails((curItem) =>
+        curItem.map((item) =>
+          item._id === patawag_blotter._id ? patawag_blotter : item
+        )
+      );
+    };
+
+    const handleEventArchive = (obj) => {
+      setRequest(obj);
+      setRequests((prev) => prev.filter(item => item._id !== obj._id));
+      setFilteredRequests((prev) => prev.filter(item => item._id !== obj._id));
+    };
+
+    socket.on("receive-reply-patawag", handlePatawag);
+    socket.on("receive-archive-staff", handleEventArchive);
+
+    return () => {
+      socket.off("receive-reply-patawag", handlePatawag);
+      socket.off("receive-archive-staff", handleEventArchive);
+    };
+  }, [socket, setRequest, setRequests]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -132,10 +193,6 @@ const Blotters = () => {
     fetchData();
   }, [currentPage, brgy]); // Add positionFilter dependency
 
-  const handlePageChange = ({ selected }) => {
-    setCurrentPage(selected);
-  };
-
   const handleStatusFilter = (selectedStatus) => {
     setStatusFilter(selectedStatus);
   };
@@ -156,7 +213,7 @@ const Blotters = () => {
   );
 
   useEffect(() => {
-    document.title = "Service Requests | Barangay E-Services Management";
+    document.title = "Patawag (Blotters) | Barangay E-Services Management";
   }, []);
 
   const checkboxHandler = (e) => {
@@ -217,7 +274,6 @@ const Blotters = () => {
     switch (choice) {
       case "date":
         return requests.filter((item) => {
-
           return (
             new Date(item.createdAt).getFullYear() ===
               selectedDate.getFullYear() &&
@@ -393,13 +449,6 @@ const Blotters = () => {
                     COMPLETED
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Rejected")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    REJECTED
-                  </a>
-                  <a
                     onClick={() => handleStatusFilter("NEW")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
@@ -537,21 +586,7 @@ const Blotters = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const Requests = requests.filter((item) => {
-                      const fullName = `${item.form[0].firstName.value} ${item.form[0].lastName.value}`;
-                      const reqId = item.req_id.toString(); // Assuming service_id is a number, convert it to string for case-insensitive comparison
-                      return (
-                        fullName
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()) ||
-                        reqId.includes(e.target.value.toLowerCase())
-                      );
-                    });
-
-                    setFilteredRequests(Requests);
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
@@ -690,13 +725,6 @@ const Blotters = () => {
                             </span>
                           </div>
                         )}
-                        {mergedItem.blotter_status === "Rejected" && (
-                          <div className="flex items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                            <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
-                              REJECTED
-                            </span>
-                          </div>
-                        )}
                         {mergedItem.blotter_status === "NEW" && (
                           <div className="flex items-center justify-center bg-[#6d6fcc] m-2 rounded-lg">
                             <span className="text-sm text-white font-bold p-3 xl:mx-1">
@@ -830,17 +858,36 @@ const Blotters = () => {
         />
       </div>
       {Object.hasOwn(request, "service_id") ? (
-        <ViewBlotterModal request={request} brgy={brgy} officials={officials} />
+        <ViewBlotterModal request={request} brgy={brgy} officials={officials}  id={id}/>
       ) : null}
       <ReplyServiceModal
         request={request}
         setRequest={setRequest}
         brgy={brgy}
+        setUpdate={setUpdate}
+        // chatContainerRef={chatContainerRef}
+        socket={socket}
+        id={id}
       />
-      <ArchiveRequestsModal selectedItems={selectedItems} />
+      <ArchiveRequestsModal selectedItems={selectedItems} socket={socket}  id={id}/>
       <RequestsReportsModal />
-      <AddBlotterDocument request={request} brgy={brgy} />
-      <EditBlotterDocument request={request} brgy={brgy} />
+      <AddBlotterDocument
+        request={request}
+        brgy={brgy}
+        socket={socket}
+        setUpdate={setUpdate}
+        id={id}
+      />
+      <EditBlotterDocument
+        request={request}
+        brgy={brgy}
+        editupdate={editupdate}
+        setEditUpdate={setEditUpdate}
+        socket={socket}
+        eventsForm={eventsForm}
+        setEventsForm={setEventsForm}
+        id={id}
+      />
     </div>
   );
 };

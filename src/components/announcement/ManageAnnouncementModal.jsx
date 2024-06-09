@@ -7,7 +7,13 @@ import API_LINK from "../../config/API";
 import EditLoader from "./loaders/EditLoader";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
+function ManageAnnouncementModal({
+  announcement,
+  setAnnouncement,
+  brgy,
+  socket,
+  id
+}) {
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
   const [files, setFiles] = useState([]);
@@ -71,7 +77,6 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
   };
 
   const handleChange = (e) => {
-
     setAnnouncement((prev) => ({
       ...prev,
       [e.target.name]:
@@ -98,6 +103,7 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
     try {
       e.preventDefault();
       setSubmitClicked(true);
+      setError(null); // Reset error state
 
       var formData = new FormData();
 
@@ -123,15 +129,11 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
           formData.append("files", newFiles[f]);
         }
 
-
-
       formData.append("announcement", JSON.stringify(announcement));
 
       const res_folder = await axios.get(
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
-
-
 
       if (res_folder.status === 200) {
         const response = await axios.patch(
@@ -140,7 +142,6 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
         );
 
         if (response.status === 200) {
-
           let notify;
 
           if (announcement.isOpen) {
@@ -191,22 +192,45 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
             };
           }
 
-
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {
               "Content-Type": "application/json",
             },
           });
 
+          socket.emit("send-update-event", response.data);
+
           if (result.status === 200) {
-            setTimeout(() => {
-              // HSOverlay.close(document.getElementById("hs-modal-editAnnouncement"));
+            const getIP = async () => {
+              const response = await fetch(
+                "https://api64.ipify.org?format=json"
+              );
+              const data = await response.json();
+              return data.ip;
+            };
+            ;
+            const ip = await getIP(); // Retrieve IP address
+            const logsData = {
+              action: "Updated",
+              details: "The event titled " + announcement.title + " was updated.",
+              ip: ip,
+            };
+
+            const logsResult = await axios.post(
+              `${API_LINK}/act_logs/add_logs/?id=${id}`,
+              logsData
+            );
+            if (logsResult.status === 200) {
+              socket.emit("send-resident-notif", result.data);
               setSubmitClicked(false);
               setUpdatingStatus("success");
               setTimeout(() => {
-                window.location.reload();
+                setUpdatingStatus(null);
+                HSOverlay.close(
+                  document.getElementById("hs-modal-editAnnouncement")
+                );
               }, 3000);
-            }, 1000);
+            }
           }
         }
       }
@@ -370,6 +394,23 @@ function ManageAnnouncementModal({ announcement, setAnnouncement, brgy }) {
                     value={announcement && dateFormat(announcement.date)}
                     disabled={!edit}
                     onChange={handleChange}
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                    htmlFor="fee"
+                  >
+                  Limit Event Applications
+                  </label>
+                  <input
+                     className="shadow text-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                    id="application_limit"
+                    name="application_limit"
+                    type="number"
+                    value={announcement?.application_limit || ""}
+                    onChange={handleChange}
+                    placeholder="Enter Number Limit..."
                   />
                 </div>
 

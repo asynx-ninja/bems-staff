@@ -19,10 +19,15 @@ import ManageAnnouncementModal from "../components/announcement/ManageAnnounceme
 import AddEventsForm from "../components/announcement/form/add_event/AddEventsForm";
 import EditEventsForm from "../components/announcement/form/edit_event/EditEventsForm";
 import noData from "../assets/image/no-data.png";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+
+const socket = io(Socket_link);
 
 const EventsManagement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
+  const [newEvents, setNewEvents] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
@@ -32,6 +37,9 @@ const EventsManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
+  const [update, setUpdate] = useState(false);
+  const [editupdate, setEditUpdate] = useState(false);
+  const [eventsForm, setEventsForm] = useState([]);
 
   //date filtering
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
@@ -43,10 +51,11 @@ const EventsManagement = () => {
     const fetchData = async () => {
       try {
         const announcementsResponse = await axios.get(
-          `${API_LINK}/announcement/?brgy=${brgy}&archived=false&page=${currentPage}`
+          `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
         );
 
         if (announcementsResponse.status === 200) {
+          const currentDate = moment();
           const announcementsData = announcementsResponse.data.result.map(
             async (announcement) => {
               const completedResponse = await axios.get(
@@ -60,30 +69,102 @@ const EventsManagement = () => {
             }
           );
 
-          setAnnouncements(announcementsResponse.data.result);
+          const filteredAnnouncementsData = announcementsResponse.data.result.filter(
+            (announcement) => {
+              return moment(announcement.date).isSameOrAfter(currentDate, 'day');
+            }
+          );
+
+          setAnnouncements(filteredAnnouncementsData);
 
           Promise.all(announcementsData).then((announcementsWithCounts) => {
-            setAnnouncementWithCounts(announcementsWithCounts);
-            setFilteredAnnouncements(announcementsWithCounts);
+            const filteredAnnouncementsWithCounts = announcementsWithCounts.filter(
+              (announcement) => {
+                return moment(announcement.date).isSameOrAfter(currentDate, 'day');
+              }
+            );
+            setAnnouncementWithCounts(filteredAnnouncementsWithCounts);
+            setFilteredAnnouncements(filteredAnnouncementsWithCounts.slice(0, 10));
+            setNewEvents(filteredAnnouncementsWithCounts);
           });
 
           setPageCount(announcementsResponse.data.pageCount);
+          setUpdate(false);
         } else {
           setAnnouncementWithCounts([]);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-
         console.error("Error response data:", error.response?.data);
         console.error("Error response status:", error.response?.status);
       }
     };
 
     fetchData();
-  }, [currentPage, brgy]);
+  }, [brgy, update]);
+
+  useEffect(() => {
+    const handleEvent = (obj) => {
+      setAnnouncement(obj);
+      setNewEvents((prev) => [obj, ...prev]);
+      setFilteredAnnouncements((prev) => [obj, ...prev]);
+    };
+
+    const handleEventForm = (get_events_forms) => {
+      setEventsForm((curItem) =>
+        curItem.map((item) =>
+          item._id === get_events_forms._id ? get_events_forms : item
+        )
+      );
+    };
+
+    const handleEventUpdate = (get_updated_event) => {
+      setAnnouncement(get_updated_event);
+      setFilteredAnnouncements((curItem) =>
+        curItem.map((item) =>
+          item._id === get_updated_event._id ? get_updated_event : item
+        )
+      );
+    };
+
+    const handleEventArchive = (obj) => {
+      setAnnouncement(obj);
+      setAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
+      setFilteredAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
+    };
+
+    socket.on("receive-get-event", handleEvent);
+    socket.on("receive-create-event-form", handleEventForm);
+    socket.on("receive-update-event", handleEventUpdate);
+    socket.on("receive-archive-staff", handleEventArchive);
+
+    return () => {
+      socket.off("receive-get-event", handleEvent);
+      socket.off("receive-create-event-form", handleEventForm);
+      socket.off("receive-update-event", handleEventUpdate);
+      socket.off("receive-archive-staff", handleEventArchive);
+    };
+  }, [socket, setAnnouncement, setAnnouncements]);
+
+  useEffect(() => {
+    const filteredData = newEvents.filter((item) =>
+      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.event_id.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredAnnouncements(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [newEvents, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
   const Announcements = announcements.filter(
@@ -124,10 +205,11 @@ const EventsManagement = () => {
   const tableHeader = [
     "Event id",
     "title",
-    "details",
+    // "details",
     "creation date",
     "event date",
     "# of applicants",
+    "applicantion limits",
     "actions",
   ];
 
@@ -161,23 +243,23 @@ const EventsManagement = () => {
       case "date":
         const newArr = announcementWithCounts.filter((item) => {
           const createdAt = new Date(item.createdAt.slice(0, 10));
-  
+
           return (
             createdAt.getFullYear() === selectedDate.getFullYear() &&
             createdAt.getMonth() === selectedDate.getMonth() &&
             createdAt.getDate() === selectedDate.getDate()
           );
         });
-  
+
         return newArr;
       case "week":
         const startDate = selectedDate;
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
-  
+
         return announcementWithCounts.filter((item) => {
           const createdAt = new Date(item.createdAt.slice(0, 10));
-  
+
           return (
             createdAt.getFullYear() === startDate.getFullYear() &&
             createdAt.getMonth() === startDate.getMonth() &&
@@ -188,7 +270,7 @@ const EventsManagement = () => {
       case "month":
         return announcementWithCounts.filter((item) => {
           const createdAt = new Date(item.createdAt.slice(0, 10));
-  
+
           return (
             createdAt.getFullYear() === selectedDate.getFullYear() &&
             createdAt.getMonth() === selectedDate.getMonth()
@@ -259,8 +341,12 @@ const EventsManagement = () => {
                   <button
                     type="button"
                     data-hs-overlay="#hs-modal-add "
-                    className="hs-tooltip-toggle justify-center bg-teal-700 sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg w-full text-white font-medium text-sm  text-center inline-flex items-center "  style={{
+                    className="hs-tooltip-toggle justify-center bg-teal-700 sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg w-full text-white font-medium text-sm  text-center inline-flex items-center "
+                    style={{
                       background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+                    }}
+                    onClick={() => {
+                      setUpdate(true); // Set update to true
                     }}
                   >
                     <FaPlus size={24} style={{ color: "#ffffff" }} />
@@ -283,7 +369,8 @@ const EventsManagement = () => {
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"
-                      className="hs-tooltip-toggle bg-teal-700 justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg  w-full text-white font-medium text-sm text-center inline-flex items-center"  style={{
+                      className="hs-tooltip-toggle bg-teal-700 justify-center sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg  w-full text-white font-medium text-sm text-center inline-flex items-center"
+                      style={{
                         background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
                       }}
                     >
@@ -317,7 +404,8 @@ const EventsManagement = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className="sm:w-full md:w-full sm:mt-2 bg-teal-700 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  " style={{ backgroundColor: information?.theme?.primary }}
+                  className="sm:w-full md:w-full sm:mt-2 bg-teal-700 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                  style={{ backgroundColor: information?.theme?.primary }}
                 >
                   DATE
                   <svg
@@ -410,7 +498,10 @@ const EventsManagement = () => {
 
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12">
               <div className="flex flex-row w-full md:mr-2">
-                <button className=" p-3 rounded-l-md" style={{ backgroundColor: information?.theme?.primary }}>
+                <button
+                  className=" p-3 rounded-l-md"
+                  style={{ backgroundColor: information?.theme?.primary }}
+                >
                   <div className="w-full overflow-hidden">
                     <svg
                       className="h-3.5 w-3.5 text-white"
@@ -437,19 +528,7 @@ const EventsManagement = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const Announcements = announcementWithCounts.filter(
-                      (item) =>
-                        item.title
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()) ||
-                        item.event_id
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase())
-                    );
-                    setFilteredAnnouncements(Announcements);
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
@@ -475,7 +554,10 @@ const EventsManagement = () => {
 
         <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_275px)] xxl:h-[calc(100vh_-_275px)] xxxl:h-[calc(100vh_-_300px)]">
           <table className="relative table-auto w-full">
-            <thead className="sticky top-0 bg-teal-700" style={{ backgroundColor: information?.theme?.primary }}>
+            <thead
+              className="sticky top-0 bg-teal-700"
+              style={{ backgroundColor: information?.theme?.primary }}
+            >
               <tr className="">
                 <th scope="col" className="px-6 py-4">
                   <div className="flex justify-center items-center">
@@ -526,13 +608,13 @@ const EventsManagement = () => {
                         </span>
                       </div>
                     </td>
-                    <td className="px-2 xl:px-6 py-3 ">
+                    {/* <td className="px-2 xl:px-6 py-3 ">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-1 tas w-[100px] text-left ">
                           {item.details}
                         </span>
                       </div>
-                    </td>
+                    </td> */}
                     <td className="px-2 py-3 w-2/12">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
@@ -552,6 +634,13 @@ const EventsManagement = () => {
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
                           {item.completedCount}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex justify-center items-center">
+                        <span className="text-xs sm:text-sm text-black line-clamp-2">
+                          {item.application_limit || "N/A"}
                         </span>
                       </div>
                     </td>
@@ -651,7 +740,10 @@ const EventsManagement = () => {
           </table>
         </div>
 
-        <div className="md:py-4 md:px-4 bg-teal-700 flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3" style={{ backgroundColor: information?.theme?.primary }}>
+        <div
+          className="md:py-4 md:px-4 bg-teal-700 flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3"
+          style={{ backgroundColor: information?.theme?.primary }}
+        >
           <span className="font-medium text-white sm:text-xs text-sm">
             Showing {currentPage + 1} out of {pageCount} pages
           </span>
@@ -668,15 +760,35 @@ const EventsManagement = () => {
             renderOnZeroPageCount={null}
           />
         </div>
-        <AddModal brgy={brgy} />
-        <ArchiveModal selectedItems={selectedItems} />
+        <AddModal brgy={brgy} socket={socket} id={id} />
+        <ArchiveModal selectedItems={selectedItems} socket={socket} id={id}/>
         <ManageAnnouncementModal
           announcement={announcement}
           setAnnouncement={setAnnouncement}
           brgy={brgy}
+          socket={socket}
+          id={id}
         />
-        <AddEventsForm announcement_id={announcement.event_id} brgy={brgy} />
-        <EditEventsForm announcement_id={announcement.event_id} brgy={brgy} />
+        <AddEventsForm
+          announcement_id={announcement.event_id}
+          brgy={brgy}
+          socket={socket}
+          setUpdate={setUpdate}
+          editupdate={editupdate}
+          setEditUpdate={setEditUpdate}
+          id={id}
+        />
+        <EditEventsForm
+          announcement_id={announcement.event_id}
+          announcement_title={announcement.title}
+          brgy={brgy}
+          editupdate={editupdate}
+          setEditUpdate={setEditUpdate}
+          socket={socket}
+          eventsForm={eventsForm}
+          setEventsForm={setEventsForm}
+          id={id}
+        />
       </div>
     </div>
   );

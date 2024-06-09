@@ -15,6 +15,10 @@ import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+const socket = io(Socket_link);
+
 const Inquiries = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -41,20 +45,54 @@ const Inquiries = () => {
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=true&status=${statusFilter}&page=${currentPage}&label=Staff`
+        `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=true&status=${statusFilter}&label=Staff`
       );
       if (response.status === 200) {
         setInquiries(response.data.result);
         setFilteredInquiries(response.data.result);
         setPageCount(response.data.pageCount);
-      } else setInquiries([]);
+      } else {
+        setInquiries([]);
+        setFilteredInquiries([]);
+      }
     };
 
     fetch();
-  }, [id, brgy, statusFilter, currentPage]);
+  }, [id, brgy, statusFilter]);
+
+  useEffect(() => {
+    const filteredData = inquiries.filter((item) =>
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.inq_id.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredInquiries(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [inquiries, searchQuery, currentPage]);
+
+  useEffect(() => {
+    const handleEventArchive = (obj) => {
+      setInquiry(obj);
+      setInquiries((prev) => prev.filter(item => item._id !== obj._id));
+      setFilteredInquiries((prev) => prev.filter(item => item._id !== obj._id));
+    };
+
+    socket.on("receive-restore-staff", handleEventArchive);
+
+    return () => {
+      socket.off("receive-restore-staff", handleEventArchive);
+    };
+  }, [socket, setInquiry, setInquiries]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
   const checkboxHandler = (e) => {
@@ -178,7 +216,7 @@ const Inquiries = () => {
   };
 
   const onSelect = (e) => {
-  
+
     setSelected(e.target.value);
 
   };
@@ -268,25 +306,25 @@ const Inquiries = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    onClick={() => handleStatusFilter("Pending")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    onClick={() => handleStatusFilter("Submitted")}
+                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    PENDING
+                    Submitted
                   </a>
                   <a
                     onClick={() => handleStatusFilter("In Progress")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     IN PROGRESS
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Completed")}
-                    class="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    COMPLETED
+                   Completed
                   </a>
                 </ul>
               </div>
@@ -492,26 +530,26 @@ const Inquiries = () => {
                         />
                       </div>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="xl:px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                           {item.inq_id}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="xl:px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black  line-clamp-2 ">
                           {item.name}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="px-2 xl:px-6 py-3 xl:w-1/4">
                       <span className="text-xs sm:text-sm text-black line-clamp-2 ">
                         {item.compose.message}
                       </span>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="xl:px-6 py-3">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
                           {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
@@ -519,25 +557,25 @@ const Inquiries = () => {
                         </span>
                       </div>
                     </td>
-                    <td className="px-2 xl:px-6 py-3 xxl:w-2/12">
+                    <td className="xl:px-6 py-3 xxl:w-2/12">
                       <div className="flex justify-center items-center">
                         {item.isApproved === "Completed" && (
                           <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                            <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                            <span className="text-xs sm:text-sm font-bold text-white p-3 xl:mx-5">
                               COMPLETED
                             </span>
                           </div>
                         )}
                         {item.isApproved === "Pending" && (
                           <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                            <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                            <span className="text-xs sm:text-sm font-bold text-white p-3 xl:mx-5">
                               PENDING
                             </span>
                           </div>
                         )}
                         {item.isApproved === "In Progress" && (
                           <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
-                            <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
+                            <span className="text-xs sm:text-sm font-bold text-white p-3 xl:mx-5">
                               IN PROGRESS
                             </span>
                           </div>
@@ -604,7 +642,7 @@ const Inquiries = () => {
             renderOnZeroPageCount={null}
           />
         </div>
-        <RestoreModal selectedItems={selectedItems} />
+        <RestoreModal selectedItems={selectedItems} socket={socket} id={id}/>
         <ViewArchivedModal inquiry={inquiry} setInquiry={setInquiry} brgy={brgy} />
       </div>
     </div>

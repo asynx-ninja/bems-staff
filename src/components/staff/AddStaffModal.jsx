@@ -8,7 +8,7 @@ import AddLoader from "./loaders/AddLoader";
 import ErrorPopup from "./popup/ErrorPopup";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function AddStaffModal({ brgy }) {
+function AddStaffModal({ brgy, socket, id }) {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
@@ -28,7 +28,7 @@ function AddStaffModal({ brgy }) {
     username: "",
     password: "",
     isArchived: false,
-    isApproved: "Registered",
+    isApproved: "Fully Verified",
     city: "Rodriguez, Rizal",
     brgy: brgy,
   });
@@ -64,6 +64,7 @@ function AddStaffModal({ brgy }) {
     try {
       e.preventDefault();
       setSubmitClicked(true);
+      setError(null); // Reset error state
 
       const emptyFieldsArr = checkEmptyFields();
 
@@ -73,7 +74,7 @@ function AddStaffModal({ brgy }) {
       } else {
         const calculatedAge = calculateAge(user.birthday);
 
-        if (calculatedAge < 17) {
+        if (calculatedAge <= 16) {
           // Set an error message if the age is less than 17
           setCreationStatus("ageError");
           setSubmitClicked(false);
@@ -109,34 +110,57 @@ function AddStaffModal({ brgy }) {
             const result = await axios.post(`${API_LINK}/staffs/`, obj);
 
             if (result.status === 200) {
-              setUser({
-                user_id: "",
-                firstName: "",
-                lastName: "",
-                email: "",
-                birthday: "",
-                age: "",
-                contact: "",
-                street: "",
-                type: "",
-                username: "",
-                password: "",
-                isArchived: false,
-                isApproved: "Registered",
-                city: "Rodriguez, Rizal",
-                brgy: brgy,
-              });
-              setSubmitClicked(false);
-              setCreationStatus("success");
-              setTimeout(() => {
-                window.location.reload();
-              }, 3000);
+              const getIP = async () => {
+                const response = await fetch("https://api64.ipify.org?format=json");
+                const data = await response.json();
+                return data.ip;
+              };
+
+              const ip = await getIP(); // Retrieve IP address
+
+              const logsData = {
+                action: "Created",
+                details: `Created a new barangay user named ${user.firstName} ${user.lastName}.`,
+                ip: ip,
+              };
+
+              const logsResult = await axios.post(
+                `${API_LINK}/act_logs/add_logs/?id=${id}`,
+                logsData
+              );
+              if (logsResult.status === 200) {
+                setUser({
+                  user_id: "",
+                  firstName: "",
+                  lastName: "",
+                  email: "",
+                  birthday: "",
+                  age: "",
+                  contact: "",
+                  street: "",
+                  type: "",
+                  username: "",
+                  password: "",
+                  isArchived: false,
+                  isApproved: "Fully Verified",
+                  city: "Rodriguez, Rizal",
+                  brgy: brgy,
+                });
+                setSubmitClicked(false);
+                setCreationStatus("success");
+
+                socket.emit("send-create-staff", result.data);
+                setTimeout(() => {
+                  // setSubmitClicked(null);
+                  // setCreationStatus(null);
+                  HSOverlay.close(document.getElementById("hs-modal-addStaff"));
+                }, 3000);
+              }
             }
           } catch (err) {
-       
             setSubmitClicked(false);
             setCreationStatus("error");
-            setError("An error occurred while creating the announcement.");
+            setError("An errorFor Review occurred while creating the announcement.");
           }
         }
       }
@@ -206,6 +230,29 @@ function AddStaffModal({ brgy }) {
     return arr;
   };
 
+  const handleResetModal = () => {
+    // Reset specific fields by setting them to initial state
+    setUser({
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      suffix: "",
+      religion: "",
+      email: "",
+      contact: "",
+      sex: "",
+      occupation: "",
+      civil_status: "",
+      type: "",
+      isVoter: "",
+      isHead: "",
+      isArchived: null,
+      username: "",
+      password: "",
+      street: "",
+    });
+  };
+
   return (
     <div>
       <div className="">
@@ -254,11 +301,11 @@ function AddStaffModal({ brgy }) {
                               type="text"
                               id="firstName"
                               name="firstName"
+                              value={user.firstName}
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("firstName") &&
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("firstName") &&
                                 "border-red-500"
-                              }`}
+                                }`}
                               placeholder=""
                               required
                             />
@@ -275,6 +322,7 @@ function AddStaffModal({ brgy }) {
                               type="text"
                               id="middleName"
                               name="middleName"
+                              value={user.middleName}
                               onChange={handleChange}
                               className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
@@ -292,11 +340,11 @@ function AddStaffModal({ brgy }) {
                               type="text"
                               id="lastName"
                               name="lastName"
+                              value={user.lastName}
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("lastName") &&
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("lastName") &&
                                 "border-red-500"
-                              }`}
+                                }`}
                               placeholder=""
                             />
                           </div>
@@ -314,6 +362,7 @@ function AddStaffModal({ brgy }) {
                               type="text"
                               id="suffix"
                               name="suffix"
+                              value={user.suffix}
                               onChange={handleChange}
                               className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                               placeholder=""
@@ -332,10 +381,9 @@ function AddStaffModal({ brgy }) {
                               id="birthday"
                               name="birthday"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("birthday") &&
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("birthday") &&
                                 "border-red-500"
-                              }`}
+                                }`}
                               placeholder="mm/dd/yyyy"
                               value={birthdayFormat(user.birthday) || ""}
                             />
@@ -372,10 +420,10 @@ function AddStaffModal({ brgy }) {
                               id="email"
                               name="email"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("email") &&
+                              value={user.email}
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("email") &&
                                 "border-red-500"
-                              }`}
+                                }`}
                               placeholder=""
                             />
                           </div>
@@ -391,11 +439,11 @@ function AddStaffModal({ brgy }) {
                               type="text"
                               id="contact"
                               name="contact"
+                              value={user.contact}
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("contact") &&
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("contact") &&
                                 "border-red-500"
-                              }`}
+                                }`}
                               placeholder=""
                             />
                           </div>
@@ -413,17 +461,20 @@ function AddStaffModal({ brgy }) {
                                 id="Male"
                                 name="sex"
                                 value="Male"
+                                checked={user.sex === "Male"}
                                 className="text-green-500 focus:border-green-500 focus:ring-green-500"
                                 onChange={handleChange}
                               />
                               <label htmlFor="Male" className="ml-2">
                                 Male
                               </label>
+
                               <input
                                 type="radio"
                                 id="Female"
                                 name="sex"
                                 value="Female"
+                                checked={user.sex === "Female"}
                                 onChange={handleChange}
                                 className="ml-4 md:ml-2 lg:ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
                               />
@@ -445,13 +496,12 @@ function AddStaffModal({ brgy }) {
                               id="type"
                               name="type"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("type") && "border-red-500"
-                              }`}
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("type") && "border-red-500"
+                                }`}
                               value={user.type}
                             >
                               {user.type === "" && (
-                                <option value="">Select option</option>
+                                <option value="">-- Select Option --</option>
                               )}
                               <option value="Brgy Admin">Barangay Admin</option>
                               <option value="Staff">Barangay Staff</option>
@@ -476,6 +526,7 @@ function AddStaffModal({ brgy }) {
                             <select
                               id="civil_status"
                               name="civil_status"
+                              value={user.civil_status}
                               onChange={handleChange}
                               className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                             >
@@ -499,6 +550,7 @@ function AddStaffModal({ brgy }) {
                             <select
                               name="religion"
                               onChange={handleChange}
+                              value={user.religion}
                               className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                             >
                               <option value="">-- Select Religion --</option>
@@ -534,10 +586,10 @@ function AddStaffModal({ brgy }) {
                               id="street"
                               name="street"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("street") &&
+                              value={user.street}
+                              className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("street") &&
                                 "border-red-500"
-                              }`}
+                                }`}
                               placeholder=""
                             />
                           </div>
@@ -557,17 +609,17 @@ function AddStaffModal({ brgy }) {
                               disabled
                               className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                             >
-                              <option value="Balite">Balite</option>
-                              <option value="Burgos">Burgos</option>
-                              <option value="Geronimo">Geronimo</option>
-                              <option value="Macabud">Macabud</option>
-                              <option value="Manggahan">Manggahan</option>
-                              <option value="Mascap">Mascap</option>
-                              <option value="Puray">Puray</option>
-                              <option value="Rosario">Rosario</option>
-                              <option value="San Isidro">San Isidro</option>
-                              <option value="San Jose">San Jose</option>
-                              <option value="San Rafael">San Rafael</option>
+                              <option value="BALITE">Balite</option>
+                              <option value="BURGOS">Burgos</option>
+                              <option value="GERONIMO">Geronimo</option>
+                              <option value="MACABUD">Macabud</option>
+                              <option value="MANGGAHAN">Manggahan</option>
+                              <option value="MASCAP">Mascap</option>
+                              <option value="PURAY">Puray</option>
+                              <option value="ROSARIO">Rosario</option>
+                              <option value="SAN ISIDRO">San Isidro</option>
+                              <option value="SAN JOSE">San Jose</option>
+                              <option value="SAN RAFAEL">San Rafael</option>
                             </select>
                           </div>
 
@@ -607,17 +659,20 @@ function AddStaffModal({ brgy }) {
                                 name="isVoter"
                                 onChange={handleChange}
                                 value="true"
+                                checked={user.isVoter === "true"}
                                 className="text-green-500 focus:border-green-500 focus:ring-green-500"
                               />
                               <label htmlFor="Male" className="ml-2">
                                 Yes
                               </label>
+
                               <input
                                 type="radio"
                                 id="false"
                                 name="isVoter"
                                 onChange={handleChange}
                                 value="false"
+                                checked={user.isVoter === "false"}
                                 className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
                               />
                               <label htmlFor="No" className="ml-2">
@@ -640,17 +695,20 @@ function AddStaffModal({ brgy }) {
                                 name="isHead"
                                 onChange={handleChange}
                                 value="true"
+                                checked={user.isHead === "true"}
                                 className="text-green-500 focus:border-green-500 focus:ring-green-500"
                               />
                               <label htmlFor="Yes" className="ml-2">
                                 Yes
                               </label>
+
                               <input
                                 type="radio"
                                 id="false"
                                 name="isHead"
                                 onChange={handleChange}
                                 value="false"
+                                checked={user.isHead === "false"}
                                 className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
                               />
                               <label htmlFor="No" className="ml-2">
@@ -675,11 +733,13 @@ function AddStaffModal({ brgy }) {
                                   handleChange2("isArchived", false)
                                 }
                                 value="false"
+                                checked={user.isArchived === false}
                                 className="text-green-500 focus:border-green-500 focus:ring-green-500"
                               />
                               <label htmlFor="Yes" className="ml-2">
                                 Yes
                               </label>
+
                               <input
                                 type="radio"
                                 id="true"
@@ -688,6 +748,7 @@ function AddStaffModal({ brgy }) {
                                   handleChange2("isArchived", true)
                                 }
                                 value="true"
+                                checked={user.isArchived === true}
                                 className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
                               />
                               <label htmlFor="No" className="ml-2">
@@ -715,10 +776,10 @@ function AddStaffModal({ brgy }) {
                             id="username"
                             name="username"
                             onChange={handleChange}
-                            className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                              emptyFields.includes("username") &&
+                            value={user.username}
+                            className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("username") &&
                               "border-red-500"
-                            }`}
+                              }`}
                             placeholder=""
                           />
                         </div>
@@ -750,10 +811,9 @@ function AddStaffModal({ brgy }) {
                               name="password"
                               id="password"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-r-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("password") &&
+                              className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-r-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("password") &&
                                 "border-red-500"
-                              }`}
+                                }`}
                               value={user.password}
                             />
                           </div>
@@ -777,6 +837,7 @@ function AddStaffModal({ brgy }) {
                     type="button"
                     className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                     data-hs-overlay="#hs-modal-addStaff"
+                    onClick={handleResetModal}
                   >
                     CLOSE
                   </button>

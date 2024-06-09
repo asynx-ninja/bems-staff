@@ -1,11 +1,22 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaRegFileLines } from "react-icons/fa6";
 
 const ViewDropbox = ({ viewFiles, setViewFiles }) => {
  
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef();
   const navigate = useNavigate();
+
+  function truncateFileName(fileName) {
+    const maxLength = 20; // Maximum length of the displayed file name
+    if (fileName.length <= maxLength) {
+      return fileName;
+    } else {
+      const truncatedFileName = fileName.substring(0, maxLength / 2) + "..." + fileName.substring(fileName.length - maxLength / 2);
+      return truncatedFileName;
+    }
+  }
 
   const dropHandler = (e) => {
     e.preventDefault();
@@ -51,93 +62,108 @@ const ViewDropbox = ({ viewFiles, setViewFiles }) => {
     document.body.removeChild(a);
   };
 
+  const checkExtension = (item) => {
+    const fileExtension = item.split(".").pop().toLowerCase();
+
+    return fileExtension;
+  };
+
+  const checkImage = (item) => {
+    const fileExtension = checkExtension(item.name);
+
+    if (
+      fileExtension === "jpg" ||
+      fileExtension === "png" ||
+      fileExtension === "jpeg" ||
+      fileExtension === "gif" ||
+      fileExtension === "bmp"
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   return (
     <div className="">
-      <main className="container mx-auto max-w-screen-lg h-full px-1 mb-3">
-        <article
-          aria-label="File Upload Modal"
-          className="relative h-full flex flex-col "
-          onDrop={dropHandler}
-          onDragOver={dragOverHandler}
-          onDragLeave={dragLeaveHandler}
-          onDragEnter={dragEnterHandler}
-        >
-          {isDragging && (
-            <div
-              id="overlay"
-              className="w-full h-full bg-opacity-75 bg-gray-100 absolute top-0 left-0 pointer-events-none z-50 flex flex-col items-center justify-center rounded-md"
-            >
-              <i>{/* SVG code */}</i>
-              <p className="text-lg text-blue-700">Drop files to upload</p>
-            </div>
-          )}
-          <section className="h-full overflow-auto p-1 w-full flex flex-col">
-            <h1 className="pb-2 text-sm font-medium text-gray-700">
-              Files Attached:
-            </h1>
-            <ul id="gallery" className="flex flex-1 flex-wrap -m-1">
-              {viewFiles && viewFiles.length > 0 ? (
-                viewFiles.map((file, idx) => (
-                  <li
-                    className="block p-1 w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/6 xl:w-1/8 h-24"
-                    key={idx}
-                    onClick={() => handleFileClick(file)}
-                  >
+    <main className="container mx-auto h-auto">
+      <article
+        aria-label="File Upload Modal"
+        className="relative h-full flex flex-col "
+        onDragOver={dragOverHandler}
+        onDragLeave={dragLeaveHandler}
+        onDragEnter={dragEnterHandler}
+      >
+        {isDragging && (
+          <div
+            id="overlay"
+            className="h-full bg-opacity-75 bg-gray-100 absolute top-0 left-0 pointer-events-none z-50 flex flex-col items-center justify-center rounded-md"
+          >
+            <i>{/* SVG code */}</i>
+            <p className="text-lg text-blue-700">Drop files to upload</p>
+          </div>
+        )}
+        <section className="h-full overflow-auto p-1 flex flex-col">
+          <ul id="gallery" className="flex flex-col gap-1">
+            {viewFiles && viewFiles.length > 0 ? (
+              viewFiles.map((file, idx) => (
+                <li
+                  className="flex"
+                  key={idx}
+                  // onClick={() => handleFileClick(file)}
+                >
+                  {checkImage(file) === true ? (
                     <article
                       tabIndex={0}
-                      className="group w-full h-full rounded-md focus:outline-none focus:shadow-outline elative bg-gray-100 cursor-pointer relative shadow-sm"
+                      className="group sm:w-[80px] sm:h-[80px] lg:w-[150px] lg:h-[150px] object-contain rounded-xl focus:outline-none focus:shadow-outline bg-gray-100 cursor-pointer relative shadow-sm"
                     >
-                      <img
-                        alt="upload preview"
-                        className="img-preview hidden w-full h-full sticky object-cover rounded-md bg-fixed"
-                      />
-                      <section className="flex flex-col rounded-md text-xs break-words w-full h-full z-20 absolute top-0 py-2 px-3">
+                      <a href={file.link}>
+                        <img
+                          className="sm:w-[80px] sm:h-[80px] lg:w-[150px] lg:h-[150px] object-cover rounded-xl"
+                          src={file.link}
+                          alt=""
+                        />
+                      </a>
+                    </article>
+                  ) : (
+                    <article
+                      tabIndex={0}
+                      className="group rounded-md focus:outline-none focus:shadow-outline relative bg-gray-100 border border-gray-300 cursor-pointer shadow-sm"
+                    >
+                      <section className="flex flex-col rounded-md text-xs break-words w-full h-full z-20 top-0 py-2 px-3">
                         <a
                           href={file.link}
                           target="_blank"
-                          className="flex-1 group-hover:text-blue-800 line-clamp-1"
+                          className="flex-1 relative group-hover:text-blue-800 truncate line-clamp-1 z-20 flex items-center"
                         >
-                          {file.name}
+                          <FaRegFileLines className="mr-1" />
+                          {truncateFileName(file.name)}
                         </a>
-                        <div className="flex">
-                          <span className="p-1 text-blue-800">
-                            <i>
-                              <svg
-                                className="fill-current w-4 h-4 pt-1"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width={24}
-                                height={24}
-                                viewBox="0 0 24 24"
-                              >
-                                <path d="M15 2v5h5v15h-16v-20h11zm1-2h-14v24h20v-18l-6-6z" />
-                              </svg>
-                            </i>
-                          </span>
-                        </div>
                       </section>
                     </article>
-                  </li>
-                ))
-              ) : (
-                <li
-                  id="empty"
-                  className="h-full w-full text-center flex flex-col items-center justify-center"
-                >
-                  <img
-                    className="mx-auto w-32"
-                    src="https://user-images.githubusercontent.com/507615/54591670-ac0a0180-4a65-11e9-846c-e55ffce0fe7b.png"
-                    alt="no data"
-                  />
-                  <span className="text-small text-gray-500">
-                    No files selected
-                  </span>
+                  )}
                 </li>
-              )}
-            </ul>
-          </section>
-        </article>
-      </main>
-    </div>
+              ))
+            ) : (
+              <li
+                id="empty"
+                className="h-full w-full text-center flex flex-col items-center justify-center"
+              >
+                <img
+                  className="mx-auto w-32"
+                  src="https://user-images.githubusercontent.com/507615/54591670-ac0a0180-4a65-11e9-846c-e55ffce0fe7b.png"
+                  alt="no data"
+                />
+                <span className="text-small text-gray-500">
+                  No files Attached
+                </span>
+              </li>
+            )}
+          </ul>
+        </section>
+      </article>
+    </main>
+  </div>
   );
 };
 

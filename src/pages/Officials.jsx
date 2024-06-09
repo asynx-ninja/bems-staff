@@ -26,9 +26,15 @@ import SAN_ISIDRO from "../assets/officials/SAN_ISIDRO.png";
 import SAN_JOSE from "../assets/officials/SAN_JOSE.png";
 import SAN_RAFAEL from "../assets/officials/SAN_RAFAEL.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+
+const socket = io(Socket_link);
+
 const Officials = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [officials, setOfficials] = useState([]);
+  const[newOfficial, setNewOfficials] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
   const id = searchParams.get("id");
@@ -38,6 +44,7 @@ const Officials = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [positionFilter, setPositionFilter] = useState("all");
+  const [filterOfficials, setfilterOfficials] = useState([]);
   const [pageCount, setPageCount] = useState(0);
   const information = GetBrgy(brgy);
   const returnLogo = () => {
@@ -118,7 +125,7 @@ const Officials = () => {
   };
 
   const checkAllHandler = () => {
-    const officialsToCheck = Officials.length > 0 ? Officials : officials;
+    const officialsToCheck = officials.length > 0 ? officials : officials;
 
     if (officialsToCheck.length === selectedItems.length) {
       setSelectedItems([]);
@@ -132,12 +139,45 @@ const Officials = () => {
   };
 
   useEffect(() => {
+    const handleOfficial = (obj) => {
+      setOfficials(obj);
+      setNewOfficials((prev) => [obj, ...prev]);
+      setfilterOfficials((prev) => [obj, ...prev]);
+    };
+
+    const handleOfficialUpdate = (get_updated_official) => {
+      setOfficials(get_updated_official);
+      setfilterOfficials((curItem) =>
+        curItem.map((item) =>
+          item._id === get_updated_official._id ? get_updated_official : item
+        )
+      );
+    };
+
+    const handleEventArchive = (obj) => {
+      setOfficials(obj);
+      setNewOfficials((prev) => prev.filter(item => item._id !== obj._id));
+      setfilterOfficials((prev) => prev.filter(item => item._id !== obj._id));
+    };
+
+    socket.on("receive-create-official", handleOfficial);
+    socket.on("receive-update-official", handleOfficialUpdate);
+    socket.on("receive-archive-staff", handleEventArchive);
+
+    return () => {
+      socket.off("receive-create-official", handleOfficial);
+      socket.off("receive-update-official", handleOfficialUpdate);
+      socket.on("receive-archive-staff", handleEventArchive);
+    };
+  }, [socket, setNewOfficials, setOfficials]);
+
+  useEffect(() => {
     document.title = "Barangay Officials | Barangay E-Services Management";
 
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false&page=${currentPage}&position=${positionFilter}`
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false&position=${positionFilter}`
         );
 
         if (response.status === 200) {
@@ -146,6 +186,8 @@ const Officials = () => {
           if (officialsData.length > 0) {
             setPageCount(response.data.pageCount);
             setOfficials(officialsData);
+            setNewOfficials(officialsData)
+            setfilterOfficials(response.data.result.slice(0, 10))
           } else {
             setOfficials([]);
           }
@@ -160,23 +202,41 @@ const Officials = () => {
     };
 
     fetchData();
-  }, [currentPage, brgy, positionFilter]); // Add positionFilter dependency
+  }, [brgy, positionFilter]); // Add positionFilter dependency
 
   const handlePositionFilter = (selectedPosition) => {
     setPositionFilter(selectedPosition);
   };
 
+  useEffect(() => {
+    const filteredData = newOfficial.filter((item) => {
+      const fullName = item.lastName.toLowerCase() +
+        ", " +
+        item.firstName.toLowerCase() +
+        (item.middleName !== undefined ? " " + item.middleName.toLowerCase() : "");
+
+      return (
+        fullName.includes(searchQuery.toLowerCase())
+      );
+    });
+
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setfilterOfficials(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [newOfficial, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
 
-  const Officials = officials.filter((item) => {
-    const fullName =
-      `${item.lastName} ${item.firstName} ${item.middleName}`.toLowerCase();
-    const nameMatches = fullName.includes(searchQuery.toLowerCase());
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
+  };
 
-    return nameMatches;
-  });
+
 
   const handleEditClick = async (official) => {
     setSelectedOfficial(official);
@@ -417,7 +477,8 @@ const Officials = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={handleSearchChange}
+
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center space-x-2">
@@ -468,8 +529,8 @@ const Officials = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {Officials.length > 0 ? (
-                Officials.map((item, index) => (
+              {filterOfficials.length > 0 ? (
+                filterOfficials.map((item, index) => (
                   <tr key={index} className="odd:bg-slate-100 text-center">
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
@@ -576,13 +637,15 @@ const Officials = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <CreateOfficialModal brgy={brgy} />
+      <CreateOfficialModal brgy={brgy} socket={socket} id ={id}/>
       <GenerateReportsModal />
-      <ArchiveOfficialModal selectedItems={selectedItems} />
+      <ArchiveOfficialModal selectedItems={selectedItems} socket={socket} id={id}/>
       <EditOfficialModal
         selectedOfficial={selectedOfficial}
         setSelectedOfficial={setSelectedOfficial}
         brgy={brgy}
+        socket={socket}
+        id={id}
       />
     </div>
   );

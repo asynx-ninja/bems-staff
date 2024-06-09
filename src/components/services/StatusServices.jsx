@@ -6,6 +6,7 @@ function StatusServices({ status, setStatus }) {
   const handleSave = async (e) => {
     try {
       e.preventDefault();
+      setError(null); // Reset error state
 
       const response = await axios.patch(
         `${API_LINK}/services/status/${status.id}`,

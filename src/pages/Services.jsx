@@ -21,10 +21,14 @@ import noData from "../assets/image/no-data.png";
 import AddServicesDocument from "../components/services/document_forms/create_document/AddServicesDocument";
 import EditServicesDocument from "../components/services/document_forms/edit_document/EditServicesDocument";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+const socket = io(Socket_link);
 
 const Services = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [services, setServices] = useState([]);
+  const [newServices, setNewServices] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
   const id = searchParams.get("id");
@@ -34,10 +38,15 @@ const Services = () => {
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [filteredServices, setFilteredServices] = useState([]);
   const [serviceFilter, setServiceFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [officials, setOfficials] = useState([]);
+  const [serviceForm, setServiceForm] = useState([]);
+  const [documentForm, setDocumentForm] = useState([]);
+  const [update, setUpdate] = useState(false);
+  const [editupdate, setEditUpdate] = useState(false);
   const information = GetBrgy(brgy);
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
@@ -54,7 +63,7 @@ const Services = () => {
           ? a.name.localeCompare(b.name)
           : b.name.localeCompare(a.name);
       } else if (sortBy === "isApproved") {
-        const order = { Approved: 1, Pending: 2, Disapproved: 3 };
+        const order = { Approved: 1, "For Review": 2, Disapproved: 3 };
         return newSortOrder === "asc"
           ? order[a.isApproved] - order[b.isApproved]
           : order[b.isApproved] - order[a.isApproved];
@@ -67,28 +76,94 @@ const Services = () => {
   };
 
   useEffect(() => {
+    const handleService = (obj) => {
+      // setAnnouncement((prevApplication) => ({
+      //   ...prevApplication
+      // }));
+      console.log("wew", filteredServices);
+      console.log("wew", obj);
+      setServices(obj);
+      setNewServices((prev) => [obj, ...prev]);
+      setFilteredServices((prev) => [obj, ...prev]);
+    };
+
+    const handleServiceForm = (obj) => {
+      setServiceForm((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item))
+      );
+    };
+    const handleServiceDocumentForm = (obj) => {
+      setDocumentForm((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item))
+      );
+    };
+    const handleServiceUpdate = (obj) => {
+      setFilteredServices((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item))
+      );
+    };
+
+    const handleServiceArchive = (obj) => {
+      setService(obj);
+      setServices((prev) => prev.filter((item) => item._id !== obj._id));
+      setFilteredServices((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+    };
+
+    socket.on("receive-get-service", handleService);
+    socket.on("receive-service-form", handleServiceForm);
+    socket.on("receive-updated-service", handleServiceUpdate);
+    socket.on("receive-edit-service-doc", handleServiceDocumentForm);
+    socket.on("receive-archive-staff", handleServiceArchive);
+
+    return () => {
+      socket.off("receive-get-service", handleService);
+      socket.off("receive-service-form", handleServiceForm);
+      socket.off("receive-updated-service", handleServiceUpdate);
+      socket.off("receive-edit-service-doc", handleServiceDocumentForm);
+      socket.off("receive-archive-staff", handleServiceArchive);
+    };
+  }, [socket, setServices, setService]);
+
+  useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/services/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${serviceFilter}&page=${currentPage}`
+        `${API_LINK}/services/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${serviceFilter}`
       );
       if (response.status === 200) {
+        console.log(response.data);
         setServices(response.data.result);
+        setFilteredServices(response.data.result.slice(0, 10));
         setPageCount(response.data.pageCount);
+        setNewServices(response.data.result);
       } else setServices([]);
     };
 
     fetch();
-  }, [brgy, statusFilter, serviceFilter, currentPage]);
+  }, [brgy, statusFilter, serviceFilter]);
+
+  useEffect(() => {
+    const filteredData = newServices.filter(
+      (item) =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.service_id.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredServices(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [newServices, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
 
-  const Services = services.filter(
-    (item) =>
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.service_id.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
+  };
 
   const handleStatusFilter = (selectedStatus) => {
     setStatusFilter(selectedStatus);
@@ -132,7 +207,7 @@ const Services = () => {
   const tableHeader = [
     "SERVICE ID",
     "SERVICE NAME",
-    "DETAILS",
+    // "DETAILS",
     "FEES",
     "STATUS",
     "ACTIONS",
@@ -142,8 +217,20 @@ const Services = () => {
     document.title = "Services | Barangay E-Services Management";
   }, []);
 
-  const handleView = (item) => {
-    setService(item);
+  const handleView = async (item) => {
+    try {
+      setService(item);
+      const response = await axios.get(
+        `${API_LINK}/forms/?brgy=${brgy}&service_id=${item.service_id}`
+      );
+      const response1 = await axios.get(
+        `${API_LINK}/document/?brgy=${brgy}&service_id=${item.service_id}`
+      );
+      setServiceForm(response.data);
+      setDocumentForm(response1.data);
+    } catch (err) {
+      console.log(err.message);
+    }
   };
 
   useEffect(() => {
@@ -292,11 +379,11 @@ const Services = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handleStatusFilter("For Review")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    PENDING
+                    FOR REVIEW
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Approved")}
@@ -348,7 +435,7 @@ const Services = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center space-x-2">
@@ -402,8 +489,8 @@ const Services = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {Services.length > 0 ? (
-                Services.map((item, index) => (
+              {filteredServices.length > 0 ? (
+                filteredServices.map((item, index) => (
                   <tr key={index} className="odd:bg-slate-100 text-center">
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
@@ -428,13 +515,13 @@ const Services = () => {
                         {item.name}
                       </span>
                     </td>
-                    <td className="px-2 xl:px-6 py-3 w-4/12">
+                    {/* <td className="px-2 xl:px-6 py-3 w-4/12">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black  line-clamp-1 tas w-[100px] ">
                           {item.details}
                         </span>
                       </div>
-                    </td>
+                    </td> */}
                     <td className="px-2 xl:px-6 py-3 w-4/12">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
@@ -457,10 +544,10 @@ const Services = () => {
                           </span>
                         </div>
                       )}
-                      {item.isApproved === "Pending" && (
+                      {item.isApproved === "For Review" && (
                         <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
                           <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
-                            PENDING
+                            FOR REVIEW
                           </span>
                         </div>
                       )}
@@ -620,26 +707,60 @@ const Services = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <ArchiveServicesModal selectedItems={selectedItems} />
-      <CreateServiceModal brgy={brgy} />
+      <ArchiveServicesModal
+        selectedItems={selectedItems}
+        socket={socket}
+        id={id}
+      />
+      <CreateServiceModal brgy={brgy} socket={socket} id={id} />
       {/*<StatusServices status={status} setStatus={setStatus}/>*/}
       <ManageServiceModal
         service={service}
         setService={setService}
         brgy={brgy}
+        socket={socket}
+        id={id}
       />
       <GenerateReportsModal />
-      <AddServicesForm service_id={service.service_id} brgy={brgy} />
-      <EditServicesForm service_id={service.service_id} brgy={brgy} />
+      <AddServicesForm
+        service_id={service.service_id}
+        service_title={service.name}
+        brgy={brgy}
+        socket={socket}
+        setUpdate={setUpdate}
+        editupdate={editupdate}
+        setEditUpdate={setEditUpdate}
+        id={id}
+      />
+      <EditServicesForm
+        service_id={service.service_id}
+        service_title={service.name}
+        brgy={brgy}
+        socket={socket}
+        serviceForm={serviceForm}
+        setServiceForm={setServiceForm}
+        id={id}
+      />
       <AddServicesDocument
         service_id={service.service_id}
+        service_title={service.name}
         brgy={brgy}
         officials={officials}
+        socket={socket}
+        setUpdate={setUpdate}
+        id={id}
       />
       <EditServicesDocument
         service_id={service.service_id}
+        service_title={service.name}
         brgy={brgy}
         officials={officials}
+        documentForm={documentForm}
+        setDocumentForm={setDocumentForm}
+        serviceForm={serviceForm}
+        setServiceForm={setServiceForm}
+        socket={socket}
+        id={id}
       />
     </div>
   );

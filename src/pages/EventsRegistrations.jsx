@@ -2,9 +2,10 @@ import React from "react";
 import ReactPaginate from "react-paginate";
 import moment from "moment";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { AiOutlineSend } from "react-icons/ai";
+import { FiEdit } from "react-icons/fi";
 import { FaArchive } from "react-icons/fa";
 import ReplyRegistrationModal from "../components/eventRegistrations/ReplyRegistrationModal";
 import ArchiveRegistrationModal from "../components/eventRegistrations/ArchiveRegistrationModal";
@@ -14,6 +15,15 @@ import API_LINK from "../config/API";
 import axios from "axios";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+import * as XLSX from "xlsx";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+import ExcelJS from "exceljs";
+import StatusApplication from "../components/eventRegistrations/StatusApplication";
+
+const socket = io(Socket_link);
 
 const EventsRegistrations = () => {
   const [applications, setApplications] = useState([]);
@@ -24,9 +34,11 @@ const EventsRegistrations = () => {
   const brgy = searchParams.get("brgy");
   const [sortOrder, setSortOrder] = useState("desc");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selecteEventFilter, setSelectedEventFilter] = useState("all");
-  const [eventFilter, setEventFilter] = useState([]);
   const information = GetBrgy(brgy);
+  const chatContainerRef = useRef();
+  const [searchapplications, setSearchApplications] = useState([]);
+  const [status, setStatus] = useState({});
+
   //Status filter and pagination
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(0);
@@ -36,7 +48,8 @@ const EventsRegistrations = () => {
   const [specifiedDate, setSpecifiedDate] = useState(new Date());
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [selected, setSelected] = useState("date");
-
+  const [eventFilter, setEventFilter] = useState([]);
+  const [selecteEventFilter, setSelectedEventFilter] = useState("all");
   const [officials, setOfficials] = useState([]);
 
   const [selectedEventType, setSelectedEventType] = useState("EVENT TYPE");
@@ -44,22 +57,16 @@ const EventsRegistrations = () => {
   useEffect(() => {
     const fetch = async () => {
       try {
-        let page = 0;
-        let arr = [];
-        while (true) {
-          const response = await axios.get(
-            `${API_LINK}/announcement/?brgy=${brgy}&archived=false&page=${page}`
-          );
-          if (response.status === 200 && response.data.result.length > 0) {
-            response.data.result.map((item) => {
-              arr.push(item.title);
-            });
-            page++;
-          } else {
-            break;
-          }
+        const response = await axios.get(
+          `${API_LINK}/announcement/?brgy=${brgy}&page=${currentPage}`
+        );
+        if (response.status === 200) {
+          let arr = [];
+          response.data.result.map((item) => {
+            arr.push(item.title);
+          });
+          setEventFilter(arr);
         }
-        setEventFilter(arr);
       } catch (err) {
         console.log(err);
       }
@@ -73,23 +80,71 @@ const EventsRegistrations = () => {
   };
 
   useEffect(() => {
+    const handleEventAppli = (event_appli) => {
+      setFilteredApplications((prev) => [event_appli, ...prev]);
+    };
+
+    const handleEventReplyAppli = (event_appli) => {
+      setApplication(event_appli);
+      setFilteredApplications((curItem) =>
+        curItem.map((item) =>
+          item._id === event_appli._id ? event_appli : item
+        )
+      );
+    };
+
+    const handleApplicationArchive = (obj) => {
+      setApplication(obj);
+      setApplications((prev) => prev.filter((item) => item._id !== obj._id));
+      setFilteredApplications((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+    };
+
+    const handleApplicationStatus = (obj) => {
+      setApplication(obj);
+      setFilteredApplications((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item))
+      );
+    };
+
+    socket.on("receive-reply-event-appli", handleEventReplyAppli);
+    socket.on("receive-event-appli", handleEventAppli);
+    socket.on("receive-archive-staff", handleApplicationArchive);
+    socket.on("receive-status-request-staff", handleApplicationStatus);
+
+    return () => {
+      socket.off("receive-reply-event-appli", handleEventAppli);
+      socket.off("receive-event-appli", handleEventAppli);
+      socket.off("receive-archive-staff", handleApplicationArchive);
+      socket.off("receive-status-request-staff", handleApplicationStatus);
+    };
+  }, [socket, setApplication, setApplications]);
+
+  useEffect(() => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/application/?brgy=${brgy}&archived=false&status=${statusFilter}&title=${selecteEventFilter}&page=${currentPage}`
+          `${API_LINK}/application/?brgy=${brgy}&archived=false&status=${statusFilter}&title=${selecteEventFilter}`
         );
         if (response.status === 200) {
+          setSearchApplications(response.data.result);
           setApplications(response.data.result);
+          setFilteredApplications(response.data.result.slice(0, 10));
           setPageCount(response.data.pageCount);
-          setFilteredApplications(response.data.result);
-        } else setApplications([]);
+        } else {
+          setApplications([]);
+        }
+
+        const container = chatContainerRef.current;
+        container.scrollTop = container.scrollHeight;
       } catch (err) {
         console.log(err);
       }
     };
 
     fetch();
-  }, [brgy, statusFilter, selecteEventFilter, currentPage]);
+  }, [brgy, statusFilter, selecteEventFilter]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -119,8 +174,36 @@ const EventsRegistrations = () => {
     fetchData();
   }, [currentPage, brgy]); // Add positionFilter dependency
 
+  useEffect(() => {
+    const filteredData = searchapplications.filter((item) => {
+      const fullName =
+        item.form[0].lastName.value.toLowerCase() +
+        ", " +
+        item.form[0].firstName.value.toLowerCase() +
+        " " +
+        item.form[0].middleName.value.toLowerCase();
+
+      return (
+        item.event_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.application_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        fullName.includes(searchQuery.toLowerCase())
+      );
+    });
+
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredApplications(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [searchapplications, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
   const handleStatusFilter = (selectedStatus) => {
@@ -138,7 +221,7 @@ const EventsRegistrations = () => {
     document.title = "Events Applications | Barangay E-Services Management";
   }, []);
 
-  const Applications = applications.filter((item) =>
+  const Applications = searchapplications.filter((item) =>
     item.event_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -177,12 +260,18 @@ const EventsRegistrations = () => {
     "EVENT NAME",
     "SENDER",
     "DATE",
+    "CONTACT",
+    "EMAIL",
     "STATUS",
     "ACTIONS",
   ];
 
   const handleView = (item) => {
     setApplication(item);
+    setStatus({
+      id: item._id,
+      status: item.status,
+    });
   };
 
   const DateFormat = (date) => {
@@ -203,7 +292,7 @@ const EventsRegistrations = () => {
         return applications.filter((item) => {
           return (
             new Date(item.createdAt).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
             new Date(item.createdAt).getDate() === selectedDate.getDate()
           );
@@ -213,11 +302,10 @@ const EventsRegistrations = () => {
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
 
-
         return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-            startDate.getFullYear() &&
+              startDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === startDate.getMonth() &&
             new Date(item.createdAt).getDate() >= startDate.getDate() &&
             new Date(item.createdAt).getDate() <= endDate.getDate()
@@ -226,7 +314,7 @@ const EventsRegistrations = () => {
         return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -239,7 +327,6 @@ const EventsRegistrations = () => {
   };
 
   const onSelect = (e) => {
-
     setSelected(e.target.value);
   };
 
@@ -269,6 +356,120 @@ const EventsRegistrations = () => {
       setSpecifiedDate(date);
       setFilteredApplications(filters(selected, date));
     }
+  };
+
+  const exportToExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Event Applications");
+
+    const dataForExcel = searchapplications.map((item) => ({
+      "CONTROL #": item.event_id || "N/A",
+      "SERVICE NAME": item.event_name || "N/A",
+      SENDER:
+        item.form[0].lastName.value +
+        ", " +
+        item.form[0].firstName.value +
+        " " +
+        item.form[0].middleName.value,
+      CONTACT: item.form[0].contact?.value || "N/A",
+      EMAIL: item.form[0].email?.value || "N/A",
+      DATE: moment(item.createdAt).format("MMMM DD, YYYY") || "N/A",
+    }));
+
+    // Check for empty data BEFORE creating the worksheet
+    if (dataForExcel.length === 0) {
+      alert("No data to export!");
+      return;
+    }
+
+    // Add Title Row
+    const titleRow = worksheet.addRow([
+      `LIST OF EVENT APPLICANTS FOR ${selecteEventFilter.toUpperCase()}`,
+    ]);
+    // Merge cells for the title row
+    worksheet.mergeCells(
+      `A1:${String.fromCharCode(65 + Object.keys(dataForExcel[0]).length - 1)}1`
+    );
+    titleRow.getCell(1).font = { bold: true, size: 16 };
+    titleRow.getCell(1).alignment = { horizontal: "center" };
+
+    // Add Header Row
+    const headerRow = worksheet.addRow(Object.keys(dataForExcel[0]));
+    headerRow.eachCell((cell) => {
+      if (cell.value) {
+        cell.font = { bold: true };
+        cell.alignment = { horizontal: "center" };
+        cell.border = {
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
+        };
+      }
+    });
+
+    // Add Data Rows
+    dataForExcel.forEach((item, index) => {
+      const row = worksheet.addRow(Object.values(item));
+      const rowStyle = index % 2 === 0 ? "EBF6EB" : "F5FDF5";
+      row.eachCell({ includeEmpty: true }, (cell) => {
+        cell.border = {
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
+        };
+      });
+    });
+
+    // Set Column Widths
+    worksheet.columns.forEach((column) => {
+      column.width = 30; // Adjust the column width as needed
+    });
+
+    // Save the Workbook
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `Event-Applications-${selecteEventFilter}.xlsx`;
+    link.click();
+  };
+
+  // Function to export data to PDF
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    const titleText = `LIST OF EVENT APPLICANTS FOR ${selecteEventFilter.toUpperCase()}`;
+    doc.setFontSize(18);
+    doc.setTextColor(41, 81, 65); // Dark green color (hex: #295141)
+    const textWidth = doc.getTextWidth(titleText);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const xPosition = (pageWidth - textWidth) / 2;
+    doc.text(titleText, xPosition, 20); // Place the title
+
+    doc.autoTable({
+      startY: 30,
+      head: [["EVENT", "NAME", "CONTACT", "EMAIL", "DATE"]],
+      body: searchapplications.map((item) => [
+        item.event_name,
+        item.form[0].lastName.value +
+          ", " +
+          item.form[0].firstName.value +
+          " " +
+          item.form[0].middleName.value,
+
+        item.form[0].contact?.value || "N/A",
+        item.form[0].email?.value || "N/A",
+        moment(application.createdAt).format("MMMM DD, YYYY hh:mm A"),
+        // ... other data fields
+      ]),
+      styles: {
+        halign: "center",
+      },
+    });
+    doc.save(`Event-Applications-${selecteEventFilter}.pdf`);
   };
 
   return (
@@ -334,8 +535,9 @@ const EventsRegistrations = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -363,18 +565,11 @@ const EventsRegistrations = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handleStatusFilter("For Review")}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    PENDING
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Processing")}
-                    className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    PROCESSING
+                    FOR REVIEW
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Cancelled")}
@@ -384,11 +579,11 @@ const EventsRegistrations = () => {
                     CANCELLED
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Application Completed")}
+                    onClick={() => handleStatusFilter("Approved")}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    APPLICATION COMPLETED
+                    APPROVED
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Rejected")}
@@ -504,8 +699,9 @@ const EventsRegistrations = () => {
                 >
                   {selectedEventType}
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -546,6 +742,58 @@ const EventsRegistrations = () => {
                   </div>
                 </ul>
               </div>
+              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+                <button
+                  id="hs-dropdown-export" // Unique ID for this dropdown
+                  type="button"
+                  className="bg-[#295141] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm "
+                  style={{ backgroundColor: information?.theme?.primary }}
+                >
+                  EXPORT
+                  <svg
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+                <ul
+                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-48 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2"
+                  aria-labelledby="hs-dropdown-export"
+                >
+                  <li>
+                    <a
+                      href="#"
+                      onClick={
+                        exportToExcel // Export immediately after selection
+                      }
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 w-full text-left"
+                    >
+                      EXCEL
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      onClick={exportToPDF}
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 w-full text-left"
+                    >
+                      PDF
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
 
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12">
@@ -580,29 +828,7 @@ const EventsRegistrations = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const Application = applications.filter(
-                      (item) =>
-                        item.event_name
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()) ||
-                        item.application_id
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()) ||
-                        item.form[0].firstName.value
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()) ||
-                        item.form[0].lastName.value
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()) ||
-                        item.form[0].middleName.value
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase())
-                    );
-
-                    setFilteredApplications(Application);
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
@@ -696,11 +922,21 @@ const EventsRegistrations = () => {
                         </span>
                       </div>
                     </td>
+                    <td className="px-6 py-3">
+                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
+                        {item.form[0].contact?.value || "N/A"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-3">
+                      <span className="text-xs sm:text-sm lg:text-xs xl:text-sm text-black line-clamp-2">
+                        {item.form[0].email?.value || "N/A"}
+                      </span>
+                    </td>
                     <td className="px-2 xl:px-6 py-3 xxl:w-3/12">
-                      {item.status === "Application Completed" && (
+                      {item.status === "Approved" && (
                         <div className="flex items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            APPLICATION COMPLETED
+                            APPROVED
                           </span>
                         </div>
                       )}
@@ -711,31 +947,15 @@ const EventsRegistrations = () => {
                           </span>
                         </div>
                       )}
-                      {item.status === "Pending" && (
+                      {item.status === "For Review" && (
                         <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            PENDING
+                            FOR REVIEW
                           </span>
                         </div>
                       )}
-                      {item.status === "Paid" && (
-                        <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            PAID
-                          </span>
-                        </div>
-                      )}
-
-                      {item.status === "Processing" && (
-                        <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            PROCESSING
-                          </span>
-                        </div>
-                      )}
-
                       {item.status === "Cancelled" && (
-                        <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
+                        <div className="flex items-center justify-center bg-[#555555] m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
                             CANCELLED
                           </span>
@@ -763,24 +983,20 @@ const EventsRegistrations = () => {
                             View Application
                           </span>
                         </div>
-
                         <div className="hs-tooltip inline-block">
                           <button
                             type="button"
-                            data-hs-overlay="#hs-reply-modal"
+                            data-hs-overlay="#hs-modal-status-applications"
                             onClick={() => handleView({ ...item })}
-                            className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                            className="hs-tooltip-toggle text-white bg-yellow-600 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                           >
-                            <AiOutlineSend
-                              size={24}
-                              style={{ color: "#ffffff" }}
-                            />
+                            <FiEdit size={24} style={{ color: "#ffffff" }} />
                           </button>
                           <span
                             className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
                             role="tooltip"
                           >
-                            Reply to Application
+                            Change Status
                           </span>
                         </div>
                       </div>
@@ -837,8 +1053,23 @@ const EventsRegistrations = () => {
         application={application}
         setApplication={setApplication}
         brgy={brgy}
+        socket={socket}
+        chatContainerRef={chatContainerRef}
       />
-      <ArchiveRegistrationModal selectedItems={selectedItems} />
+      <StatusApplication
+        application={application}
+        setApplication={setApplication}
+        brgy={brgy}
+        status={status}
+        setStatus={setStatus}
+        socket={socket}
+        id={id}
+      />
+      <ArchiveRegistrationModal
+        selectedItems={selectedItems}
+        socket={socket}
+        id={id}
+      />
     </div>
   );
 };

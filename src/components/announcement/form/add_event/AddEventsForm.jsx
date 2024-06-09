@@ -6,7 +6,54 @@ import AddFormLoader from "../../loaders/AddFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 import API_LINK from "../../../../config/API";
 
-const AddEventsForm = ({ announcement_id, brgy }) => {
+const initialState = {
+  user_id: { display: "user id", checked: true, type: "text", value: "" },
+  firstName: { display: "first name", checked: true, type: "text", value: "" },
+  middleName: {
+    display: "middle name",
+    checked: true,
+    type: "text",
+    value: "",
+  },
+  lastName: { display: "last name", checked: true, type: "text", value: "" },
+  suffix: { display: "suffix", checked: true, type: "text", value: "" },
+  birthday: { display: "birthday", checked: false, type: "date", value: "" },
+  age: { display: "age", checked: false, type: "number", value: 1 },
+  sex: { display: "sex", checked: false, type: "radio", value: "" },
+  contact: { display: "contact", checked: false, type: "text", value: "" },
+  civil_status: {
+    display: "civil status",
+    checked: false,
+    type: "select",
+    value: "",
+  },
+  height: { display: "height (ft)", checked: false, type: "text", value: "" },
+  weight: { display: "weight (kg)", checked: false, type: "number", value: 0 },
+  address: { display: "address", checked: false, type: "text", value: "" },
+  religion: {
+    display: "religion",
+    checked: false,
+    type: "select",
+    value: "",
+  },
+  email: { display: "email", checked: false, type: "email", value: "" },
+  occupation: {
+    display: "occupation",
+    checked: false,
+    type: "select",
+    value: "",
+  },
+};
+
+const AddEventsForm = ({
+  announcement_id,
+  brgy,
+  socket,
+  setUpdate,
+  editupdate,
+  setEditUpdate,
+  id
+}) => {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
@@ -72,6 +119,13 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
 
   const [titleName, setTitleName] = useState("");
 
+  const handleResetModal = () => {
+    setForm(initialState);
+    setTitleName("");
+    setSection([]);
+    setChecked(false);
+  };
+
   const handleChange = (e) => {
     setTitleName(e.target.value);
   };
@@ -132,11 +186,41 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
               },
             }
           );
-          setSubmitClicked(false);
-          setCreationStatus("success");
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
+          if (response.status === 200) {
+            const getIP = async () => {
+              const response = await fetch(
+                "https://api64.ipify.org?format=json"
+              );
+              const data = await response.json();
+              return data.ip;
+            };
+
+            const ip = await getIP(); // Retrieve IP address
+
+            const logsData = {
+              action: "Created",
+              details: `A new events forms for "${titleName}" was created.`,
+              ip: ip,
+            };
+
+            const logsResult = await axios.post(
+              `${API_LINK}/act_logs/add_logs/?id=${id}`,
+              logsData
+            );
+
+            if (logsResult.status === 200) {
+              socket.emit("send-create-event-form", response.data);
+              setSubmitClicked(false);
+              setCreationStatus("success");
+              setTimeout(() => {
+                setCreationStatus(null);
+                handleResetModal();
+                HSOverlay.close(
+                  document.getElementById("hs-create-eventsForm-modal")
+                );
+              }, 3000);
+            }
+          }
         }
       } else {
         setSubmitClicked(true);
@@ -150,24 +234,30 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
             },
           }
         );
+
+        socket.emit("send-create-event-form", response.data);
         setSubmitClicked(false);
         setCreationStatus("success");
         setTimeout(() => {
-          window.location.reload();
+          setCreationStatus(null);
+          handleResetModal();
+          HSOverlay.close(
+            document.getElementById("hs-create-eventsForm-modal")
+          );
         }, 3000);
       }
+      setUpdate(true);
     } catch (err) {
       console.error(err.message);
       setSubmitClicked(false);
       setCreationStatus("error");
       setError(
         err.message ||
-          "An error occurred while creating/updating the announcement."
+        "An error occurred while creating/updating the announcement."
       );
     }
   };
 
-  
   return (
     <div>
       <div
@@ -242,7 +332,7 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
                             <input
                               className="mr-2"
                               type="checkbox"
-                              defaultChecked={value.checked}
+                              checked={value.checked}
                               onChange={(e) => handleFormChange(e, key)}
                             />
                             {value.display.toUpperCase()}
@@ -278,6 +368,7 @@ const AddEventsForm = ({ announcement_id, brgy }) => {
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                   data-hs-overlay="#hs-create-eventsForm-modal"
+                  onClick={handleResetModal}
                 >
                   CLOSE
                 </button>

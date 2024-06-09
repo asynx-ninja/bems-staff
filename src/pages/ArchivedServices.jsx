@@ -6,24 +6,30 @@ import { MdRestartAlt } from "react-icons/md";
 import ReactPaginate from "react-paginate";
 import ViewArchivedServiceModal from "../components/archivedServices/ViewArchivedServiceModal";
 import ArchivedServicesReportsModal from "../components/archivedServices/ArchivedServicesReportsModal";
-import RestoreServicesModal from "../components/archivedServices/RestoreServicesModal";
+import RestoreServicesModal from "../components/services/RestoreServicesModal";
 import Breadcrumbs from "../components/archivedServices/Breadcrumbs";
 import axios from "axios";
 import API_LINK from "../config/API";
 import { useSearchParams } from "react-router-dom";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+const socket = io(Socket_link);
+
 const ArchivedServices = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [services, setServices] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
+  const id = searchParams.get("id");
   const [service, setService] = useState([]);
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [serviceFilter, setServiceFilter] = useState("all");
+  const [filteredServices, setFilteredServices] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const information = GetBrgy(brgy);
@@ -57,19 +63,38 @@ const ArchivedServices = () => {
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(
-        `${API_LINK}/services/?brgy=${brgy}&archived=true&status=${statusFilter}&type=${serviceFilter}&page=${currentPage}`
+        `${API_LINK}/services/?brgy=${brgy}&archived=true&status=${statusFilter}&type=${serviceFilter}`
       );
       if (response.status === 200) {
+        console.log(response.data)
         setServices(response.data.result);
+        setFilteredServices(response.data.result.slice(0, 10));
         setPageCount(response.data.pageCount);
       } else setServices([]);
     };
 
     fetch();
-  }, [brgy, statusFilter, serviceFilter, currentPage]);
+  }, [brgy, statusFilter, serviceFilter]);
+
+  useEffect(() => {
+    const filteredData = services.filter((item) =>
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.service_id.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredServices(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [services, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
   const handleStatusFilter = (selectedStatus) => {
@@ -123,7 +148,7 @@ const ArchivedServices = () => {
   const tableHeader = [
     "SERVICE ID",
     "SERVICE NAME",
-    "DETAILS",
+    // "DETAILS",
     "FEES",
     "STATUS",
     "ACTIONS",
@@ -137,6 +162,20 @@ const ArchivedServices = () => {
     setService(item);
   };
 
+  useEffect(() => {
+    const handleServiceRestore = (obj) => {
+      setService(obj);
+      setServices((prev) => prev.filter(item => item._id !== obj._id));
+      setFilteredServices((prev) => prev.filter(item => item._id !== obj._id));
+    };
+
+    socket.on("receive-restore-staff", handleServiceRestore);
+
+    return () => {
+      socket.off("receive-restore-staff", handleServiceRestore);
+    };
+  }, [socket, setServices, setService]);
+
   return (
     <div className="mx-4 mt-8">
       <Breadcrumbs />
@@ -145,8 +184,8 @@ const ArchivedServices = () => {
         {/* Header */}
         <div className="flex flex-row lg:mt-5 sm:flex-col-reverse lg:flex-row w-full">
           <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-teal-700 py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]" style={{
-              background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-            }}>
+            background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+          }}>
             <h1
               className="text-center mx-auto font-bold text-xs md:text-xl lg:text-[16px] xl:text-[20px] xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
               style={{ letterSpacing: "0.2em" }}
@@ -168,9 +207,8 @@ const ArchivedServices = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${
-                      sortOrder === "asc" ? "180" : "0"
-                    } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
+                      } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -198,11 +236,11 @@ const ArchivedServices = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handleStatusFilter("For Review")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    PENDING
+                   FOR REVIEW
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Approved")}
@@ -251,7 +289,7 @@ const ArchivedServices = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
@@ -302,8 +340,8 @@ const ArchivedServices = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {Services.length > 0 ? (
-                Services.map((item, index) => (
+              {filteredServices.length > 0 ? (
+                filteredServices.map((item, index) => (
                   <tr key={index} className="odd:bg-slate-100 text-center">
                     <td className="px-6 py-3">
                       <div className="flex justify-center items-center">
@@ -328,13 +366,13 @@ const ArchivedServices = () => {
                         {item.name}
                       </span>
                     </td>
-                    <td className="px-2 xl:px-6 py-3 w-4/12">
+                    {/* <td className="px-2 xl:px-6 py-3 w-4/12">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black  line-clamp-1 tas w-[100px] ">
                           {item.details}
                         </span>
                       </div>
-                    </td>
+                    </td> */}
                     <td className="px-2 xl:px-6 py-3 w-4/12">
                       <div className="flex justify-center items-center">
                         <span className="text-xs sm:text-sm text-black line-clamp-2">
@@ -427,7 +465,7 @@ const ArchivedServices = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <RestoreServicesModal selectedItems={selectedItems} />
+      <RestoreServicesModal selectedItems={selectedItems} socket={socket} id={id}/>
       <ViewArchivedServiceModal service={service} setService={setService} brgy={brgy} />
       <ArchivedServicesReportsModal />
     </div>

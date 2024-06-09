@@ -18,9 +18,15 @@ import ManageStaffModal from "../components/staff/ManageStaffModal";
 import ArchiveStaffModal from "../components/staff/ArchiveStaffModal";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+
+const socket = io(Socket_link);
+
 const StaffManagement = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [users, setUsers] = useState([]);
+  const [newStaff, setNewStaff] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id");
   const brgy = searchParams.get("brgy");
@@ -32,7 +38,11 @@ const StaffManagement = () => {
   const [pageCount, setPageCount] = useState(0);
   const [position, setPosition] = useState({});
   const [positionFilter, setPositionFilter] = useState("all");
+  const [filterUsers, setfilterUsers] = useState([]);
   const information = GetBrgy(brgy);
+  const [update, setUpdate] = useState(false);
+  const [editupdate, setEditUpdate] = useState(false);
+  const [eventsForm, setEventsForm] = useState([]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -41,24 +51,84 @@ const StaffManagement = () => {
       );
       if (response.status === 200) {
         setUsers(response.data.result);
+        setNewStaff(response.data.result);
         setPageCount(response.data.pageCount);
+        setfilterUsers(response.data.result.slice(0, 10));
       } else setUsers([]);
     };
 
     fetch();
   }, [currentPage, positionFilter]);
 
+  useEffect(() => {
+    const handleStaff = (get_staff) => {
+      setUsers(get_staff);
+      setNewStaff((prev) => [get_staff, ...prev]);
+      setfilterUsers((prev) => [get_staff, ...prev]);
+    };
+
+    const handleStaffUpdate = (get_updated_staff) => {
+      setUsers(get_updated_staff);
+      setfilterUsers((curItem) =>
+        curItem.map((item) =>
+          item._id === get_updated_staff._id ? get_updated_staff : item
+        )
+      );
+    };
+
+    const handleEventArchive = (obj) => {
+      setUser(obj);
+      setUsers((prev) => prev.filter((item) => item._id !== obj._id));
+      setfilterUsers((prev) => prev.filter((item) => item._id !== obj._id));
+    };
+
+    socket.on("receive-create-staff", handleStaff);
+    socket.on("receive-update-staff", handleStaffUpdate);
+    socket.on("receive-archive-staff", handleEventArchive);
+
+    return () => {
+      socket.off("receive-create-staff", handleStaff);
+      socket.off("receive-update-staff", handleStaffUpdate);
+      socket.on("receive-archive-staff", handleEventArchive);
+    };
+  }, [socket, setUsers, setUser]);
+
+  useEffect(() => {
+    const filteredData = newStaff.filter((item) => {
+      const fullName =
+        item.lastName.toLowerCase() +
+        ", " +
+        item.firstName.toLowerCase() +
+        (item.middleName !== undefined
+          ? " " + item.middleName.toLowerCase()
+          : "");
+
+      return fullName.includes(searchQuery.toLowerCase());
+    });
+
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setfilterUsers(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [newStaff, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
 
-  const Users = users.filter((item) => {
-    const fullName =
-      `${item.lastName} ${item.firstName} ${item.middleName}`.toLowerCase();
-    const nameMatches = fullName.includes(searchQuery.toLowerCase());
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
+  };
 
-    return nameMatches;
-  });
+  // const Users = users.filter((item) => {
+  //   const fullName =
+  //     `${item.lastName} ${item.firstName} ${item.middleName}`.toLowerCase();
+  //   const nameMatches = fullName.includes(searchQuery.toLowerCase());
+
+  //   return nameMatches;
+  // });
 
   useEffect(() => {
     document.title = "Staffs | Barangay E-Services Management";
@@ -88,7 +158,7 @@ const StaffManagement = () => {
   };
 
   const checkAllHandler = () => {
-    const usersToCheck = Users.length > 0 ? Users : users;
+    const usersToCheck = users.length > 0 ? users : users;
 
     if (usersToCheck.length === selectedItems.length) {
       setSelectedItems([]);
@@ -101,7 +171,7 @@ const StaffManagement = () => {
     }
   };
 
-  const tableHeader = ["NAME", "EMAIL", "CONTACT", "TYPE", "STATUS", "ACTIONS"];
+  const tableHeader = ["NAME", "EMAIL", "CONTACT", "TYPE", "ACTIONS"];
 
   const handleView = (item) => {
     setUser(item);
@@ -293,7 +363,7 @@ const StaffManagement = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center space-x-2">
@@ -347,8 +417,8 @@ const StaffManagement = () => {
               </tr>
             </thead>
             <tbody className="odd:bg-slate-100">
-              {Users.length > 0 ? (
-                Users.map((item, index) => (
+              {filterUsers.length > 0 ? (
+                filterUsers.map((item, index) => (
                   <tr key={index} className="odd:bg-slate-100 text-center">
                     <td className="px-2 xl:px-6 py-3">
                       <div className="flex justify-center items-center">
@@ -391,29 +461,6 @@ const StaffManagement = () => {
                           {item.type}
                         </span>
                       </div>
-                    </td>
-                    <td className="px-2 xl:px-6 py-3">
-                      {item.isApproved === "Registered" && (
-                        <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
-                            REGISTERED
-                          </span>
-                        </div>
-                      )}
-                      {item.isApproved === "Denied" && (
-                        <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
-                            DENIED
-                          </span>
-                        </div>
-                      )}
-                      {item.isApproved === "Pending" && (
-                        <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
-                            PENDING
-                          </span>
-                        </div>
-                      )}
                     </td>
                     <td className="px-2 xl:px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">
@@ -479,10 +526,20 @@ const StaffManagement = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <AddStaffModal brgy={brgy} />
-      <ArchiveStaffModal selectedItems={selectedItems} />
+      <AddStaffModal brgy={brgy} socket={socket} id={id}/>
+      <ArchiveStaffModal selectedItems={selectedItems} socket={socket}/>
       <GenerateReportsModal />
-      <ManageStaffModal user={user} setUser={setUser} brgy={brgy} />
+      <ManageStaffModal
+        user={user}
+        setUser={setUser}
+        brgy={brgy}
+        socket={socket}
+        editupdate={editupdate}
+        setEditUpdate={setEditUpdate}
+        eventsForm={eventsForm}
+        setEventsForm={setEventsForm}
+        id={id}
+      />
     </div>
   );
 };

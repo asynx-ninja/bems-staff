@@ -7,7 +7,7 @@ import API_LINK from "../../config/API";
 import EditLoader from "./loaders/EditLoader";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function ManageServiceModal({ service, setService, brgy }) {
+function ManageServiceModal({ service, setService, brgy, socket, id }) {
   const information = GetBrgy(brgy);
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
@@ -17,6 +17,7 @@ function ManageServiceModal({ service, setService, brgy }) {
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [onSend, setOnSend] = useState(false);
 
   const handleOnEdit = () => {
     setEdit(!edit);
@@ -115,7 +116,7 @@ function ManageServiceModal({ service, setService, brgy }) {
         }
 
       formData.append("service", JSON.stringify(service));
-
+      setOnSend(true);
       const res_folder = await axios.get(
         `${API_LINK}/folder/specific/?brgy=${brgy}`
       );
@@ -163,16 +164,45 @@ function ManageServiceModal({ service, setService, brgy }) {
             },
           });
 
-  
-
           if (result.status === 200) {
-            setTimeout(() => {
+            const getIP = async () => {
+              const response = await fetch(
+                "https://api64.ipify.org?format=json"
+              );
+              const data = await response.json();
+              return data.ip;
+            };
+            ;
+            const ip = await getIP(); // Retrieve IP address
+            const logsData = {
+              action: "Updated",
+              details: `Updated the information for the service titled "${service.name}."`,
+              ip: ip,
+            };
+
+            const logsResult = await axios.post(
+              `${API_LINK}/act_logs/add_logs/?id=${id}`,
+              logsData
+            );
+
+            if (logsResult.status === 200) {
+              socket.emit("send-resident-notif", result.data);
+              setEdit(!edit);
+              socket.emit("send-updated-service", response.data);
+              console.log("ito", response.data)
               setSubmitClicked(false);
               setUpdatingStatus("success");
               setTimeout(() => {
-                window.location.reload();
-              }, 3000);
-            }, 1000);
+                setSubmitClicked(false);
+                setUpdatingStatus("success");
+                setTimeout(() => {
+                  setUpdatingStatus(null);
+                  HSOverlay.close(
+                    document.getElementById("hs-modal-editServices")
+                  );
+                }, 3000);
+              }, 1000);
+            }
           }
         }
       }
@@ -407,10 +437,21 @@ function ManageServiceModal({ service, setService, brgy }) {
                 <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
                   <button
                     type="submit"
+                    disabled={onSend}
                     onClick={handleSubmit}
                     className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
                   >
-                    SAVE CHANGES
+                    {onSend ? (
+                      <div
+                        class="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
+                        role="status"
+                        aria-label="loading"
+                      >
+                        <span class="sr-only">Loading...</span>
+                      </div>
+                    ) : (
+                      "SAVE CHANGES"
+                    )}
                   </button>
                   <button
                     type="button"

@@ -14,9 +14,13 @@ import ArchiveRequestsModal from "../components/blotters/ArchiveRequestsModal";
 import RequestsReportsModal from "../components/blotters/RequestsReportsModal";
 import ViewBlotterModal from "../components/blotters/ViewBlotterModal";
 import Breadcrumbs from "../components/archivedBlotters/Breadcrumbs";
-import RestoreRequestsModal from "../components/archivedBlotters/RestoreRequestsModal";
+import RestoreRequestsModal from "../components/blotters/RestoreRequestsModal";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+
+const socket = io(Socket_link);
 
 const ArchivedBlotters = () => {
   const [requests, setRequests] = useState([]);
@@ -42,8 +46,6 @@ const ArchivedBlotters = () => {
 
   // blotter related
   const [blotterDetails, setBlotterDetails] = useState([]);
-
-
 
   useEffect(() => {
     const fetch = async () => {
@@ -119,7 +121,6 @@ const ArchivedBlotters = () => {
             setOfficials(officialsData);
           } else {
             setOfficials([]);
-
           }
         } else {
           setOfficials([]);
@@ -133,6 +134,22 @@ const ArchivedBlotters = () => {
 
     fetchData();
   }, [currentPage, brgy]); // Add positionFilter dependency
+
+  useEffect(() => {
+    const handleEventArchive = (obj) => {
+      setRequest(obj);
+      setRequests((prev) => prev.filter((item) => item._id !== obj._id));
+      setFilteredRequests((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+    };
+
+    socket.on("receive-restore-staff", handleEventArchive);
+
+    return () => {
+      socket.off("receive-restore-staff", handleEventArchive);
+    };
+  }, [socket, setRequest, setRequests]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -214,7 +231,6 @@ const ArchivedBlotters = () => {
     switch (choice) {
       case "date":
         return requests.filter((item) => {
-        
           return (
             new Date(item.createdAt).getFullYear() ===
               selectedDate.getFullYear() &&
@@ -226,8 +242,6 @@ const ArchivedBlotters = () => {
         const startDate = selectedDate;
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
-
-      
 
         return requests.filter(
           (item) =>
@@ -254,11 +268,7 @@ const ArchivedBlotters = () => {
   };
 
   const onSelect = (e) => {
- 
-
     setSelected(e.target.value);
-
-
   };
 
   const onChangeDate = (e) => {
@@ -611,8 +621,6 @@ const ArchivedBlotters = () => {
                     return null; // Skip rendering if status doesn't match the filter
                   }
 
-                 
-
                   return (
                     <tr key={index} className="odd:bg-slate-100 text-center">
                       <td className="px-6 py-3">
@@ -752,7 +760,7 @@ const ArchivedBlotters = () => {
       ) : null}
       <ArchiveRequestsModal />
       <RequestsReportsModal />
-      <RestoreRequestsModal selectedItems={selectedItems} />
+      <RestoreRequestsModal selectedItems={selectedItems} socket={socket} id={id}/>
     </div>
   );
 };

@@ -2,7 +2,7 @@ import React from "react";
 import moment from "moment";
 import ReactPaginate from "react-paginate";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { BsPrinter } from "react-icons/bs";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { AiOutlineSend } from "react-icons/ai";
@@ -17,6 +17,15 @@ import API_LINK from "../config/API";
 import axios from "axios";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import * as XLSX from "xlsx";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+import ExcelJS from "exceljs";
+
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+
+const socket = io(Socket_link);
 
 const Requests = () => {
   const [requests, setRequests] = useState([]);
@@ -45,51 +54,84 @@ const Requests = () => {
 
   const [officials, setOfficials] = useState([]);
 
+  const chatContainerRef = useRef();
+
   useEffect(() => {
-    const fetch = async () => {
+    const handleServiceReq = (service_req) => {
+      setFilteredRequests((prev) => [service_req, ...prev]);
+    };
+
+    const handleServiceReqReply = (service_req) => {
+      setRequest(service_req);
+      setFilteredRequests((curItem) =>
+        curItem.map((item) =>
+          item._id === service_req._id ? service_req : item
+        )
+      );
+    };
+
+    const handleRequestArchive = (obj) => {
+      setRequest(obj);
+      setRequests((prev) => prev.filter((item) => item._id !== obj._id));
+      setFilteredRequests((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+    };
+
+    socket.on("receive-reply-service-req", handleServiceReqReply);
+    socket.on("receive-service-req", handleServiceReq);
+    socket.on("receive-archive-staff", handleRequestArchive);
+
+    return () => {
+      socket.off("receive-reply-service-req", handleServiceReqReply);
+      socket.off("receive-service-req", handleServiceReq);
+      socket.on("receive-archive-staff", handleRequestArchive);
+    };
+  }, [socket, setRequest, setRequests]);
+
+  useEffect(() => {
+    const fetchServices = async () => {
       try {
-        let page = 0;
-        let arr = [];
-        while (true) {
-          const response = await axios.get(
-            `${API_LINK}/services/?brgy=${brgy}&archived=false&page=${page}`
-          );
-          if (response.status === 200 && response.data.result.length > 0) {
-            response.data.result.map((item) => {
-              arr.push(item.name);
-            });
-            page++;
-          } else {
-            break;
-          }
+        const response = await axios.get(
+          `${API_LINK}/services/get_distinct_services/?brgy=${brgy}&archived=false`
+        );
+        if (response.status === 200) {
+          const services = response.data.map((item) => item._id);
+          setRequestFilter(services);
         }
-        setRequestFilter(arr);
       } catch (err) {
         console.log(err);
       }
     };
-    fetch();
+    fetchServices();
   }, [brgy]);
+
+  const handleRequestFilter = (selectedType) => {
+    setSelectedReqFilter(selectedType);
+  };
 
   useEffect(() => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/requests/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${selectedReqFilter}&page=${currentPage}`
+          `${API_LINK}/requests/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${selectedReqFilter}&title=${selectedReqFilter}`
         );
 
         if (response.status === 200) {
-          console.log("Filtered Requests:", response.data.result);
+          // console.log("Filtered Requests:", response.data.result);
           setRequests(response.data.result);
-          setPageCount(response.data.pageCount);
-          setFilteredRequests(response.data.result);
-        } else setRequests([]);
+          setPageCount(Math.ceil(response.data.result.length / 10));
+          setFilteredRequests(response.data.result.slice(0, 10));
+        } else {
+          setRequests([]);
+        }
       } catch (err) {
+        console.log(err);
       }
     };
 
     fetch();
-  }, [brgy, statusFilter, selectedReqFilter, currentPage]);
+  }, [brgy, statusFilter, selectedReqFilter, selectedReqFilter]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -119,21 +161,44 @@ const Requests = () => {
     fetchData();
   }, [currentPage, brgy]); // Add positionFilter dependency
 
+  useEffect(() => {
+    const filteredData = requests.filter((item) => {
+      const fullName =
+        item.form[0].lastName.value.toLowerCase() +
+        ", " +
+        item.form[0].firstName.value.toLowerCase() +
+        " " +
+        item.form[0].middleName.value.toLowerCase();
+
+      return (
+        item.service_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.req_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        fullName.includes(searchQuery.toLowerCase())
+      );
+    });
+
+    console.log("wew");
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredRequests(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [requests, searchQuery, currentPage]);
+
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
+  };
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
   };
 
   const handleStatusFilter = (selectedStatus) => {
     setStatusFilter(selectedStatus);
   };
 
-  const handleRequestFilter = (selectedType) => {
-    setSelectedReqFilter(selectedType);
-  };
-
   const handleResetFilter = () => {
-    setStatusFilter("all");
-    setRequestFilter("all");
     setRequest();
     setSearchQuery("");
   };
@@ -272,6 +337,143 @@ const Requests = () => {
     }
   };
 
+  const exportToExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Service Requests");
+  
+    const dataForExcel = filteredRequests.map((item) => ({
+      "CONTROL #": item.req_id || "N/A",
+      "SERVICE NAME": item.service_name || "N/A",
+      SENDER:
+        item.form[0].lastName.value +
+        ", " +
+        item.form[0].firstName.value +
+        " " +
+        item.form[0].middleName.value,
+      CONTACT: item.form[0].contact?.value || "N/A",
+      EMAIL: item.form[0].email?.value || "N/A",
+      DATE: moment(item.createdAt).format("MMMM DD, YYYY") || "N/A",
+      STATUS: item.status || "N/A",
+    }));
+  
+    // Check for empty data BEFORE creating the worksheet
+    if (dataForExcel.length === 0) {
+      alert("No data to export!");
+      return;
+    }
+  
+    // Add Title Row
+    const titleRow = worksheet.addRow([`LIST OF SERVICE APPLICANTS`]);
+    // Merge cells for the title row
+    worksheet.mergeCells(
+      `A1:${String.fromCharCode(65 + Object.keys(dataForExcel[0]).length - 1)}1`
+    );
+    titleRow.getCell(1).font = {
+      bold: true,
+      size: 16,
+    };
+    titleRow.getCell(1).alignment = { horizontal: "center" };
+    titleRow.getCell(1).border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' }
+    };
+  
+    // Add Header Row
+    const headerRow = worksheet.addRow(Object.keys(dataForExcel[0]));
+    headerRow.eachCell((cell) => {
+      if (cell.value) {
+        cell.font = { bold: true };
+        cell.alignment = { horizontal: "center" };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+      }
+    });
+  
+    // Add Data Rows
+    dataForExcel.forEach((item, index) => {
+      const row = worksheet.addRow(Object.values(item));
+      const rowStyle = index % 2 === 0 ? "EBF6EB" : "F5FDF5";
+      row.eachCell({ includeEmpty: true }, (cell) => {
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+      });
+    });
+  
+    // Set Column Widths
+    worksheet.columns.forEach((column) => {
+      column.width = 30; // Adjust the column width as needed
+    });
+  
+    // Save the Workbook
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "request/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `Service-Requests-${selectedReqFilter}.xlsx`;
+    link.click();
+  };
+  
+
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    const titleText = `LIST OF SERVICE APPLICANTS`;
+    doc.setFontSize(18);
+    doc.setTextColor(41, 81, 65);
+    const textWidth = doc.getTextWidth(titleText);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const xPosition = (pageWidth - textWidth) / 2;
+    doc.text(titleText, xPosition, 20); // Place the title
+
+    const tableColumn = [
+      "Control #",
+      "Service Name",
+      "Sender",
+      "Date",
+      "Status",
+    ];
+
+    const tableRows = [];
+
+    // Check for empty data BEFORE creating the worksheet
+    if (filteredRequests.length === 0) {
+      alert("No data to export!");
+      return;
+    }
+
+    filteredRequests.forEach((request) => {
+      const senderName = `${request.form[0].lastName.value}, ${request.form[0].firstName.value} ${request.form[0].middleName.value}`;
+      const rowData = [
+        request.req_id,
+        request.service_name,
+        senderName,
+        moment(request.createdAt).format("MMMM DD, YYYY hh:mm A"),
+        request.status,
+      ];
+      tableRows.push(rowData);
+    });
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 25,
+      styles: { fontSize: 8 },
+    });
+
+    doc.save(`Service-Requests-${selectedReqFilter}.pdf`);
+  };
+
   return (
     <div className="mx-4 ">
       {/* Body */}
@@ -365,25 +567,11 @@ const Requests = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handleStatusFilter("For Review")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    PENDING
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Paid")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    PAID
-                  </a>
-                  <a
-                    onClick={() => handleStatusFilter("Processing")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    PROCESSING
+                    FOR REVIEW
                   </a>
                   <a
                     onClick={() => handleStatusFilter("Cancelled")}
@@ -393,18 +581,25 @@ const Requests = () => {
                     CANCELLED
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Transaction Completed")}
-                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    href="#"
-                  >
-                    TRANSACTION COMPLETED
-                  </a>
-                  <a
                     onClick={() => handleStatusFilter("Rejected")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     REJECTED
+                  </a>
+                  <a
+                    onClick={() => handleStatusFilter("Processing")}
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    PROCESSING
+                  </a>
+                  <a
+                    onClick={() => handleStatusFilter("Transaction Completed")}
+                    class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    href="#"
+                  >
+                    TRANSACTION COMPLETED
                   </a>
                 </ul>
               </div>
@@ -557,12 +752,66 @@ const Requests = () => {
                   </div>
                 </ul>
               </div>
+
+              {/* Generate Report */}
+              <div className="hs-dropdown relative inline-flex sm:[--placement:bottom] md:[--placement:bottom-left]">
+                <button
+                  id="hs-dropdown"
+                  type="button"
+                  className=" sm:w-full md:w-full bg-teal-700 sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                  style={{ backgroundColor: information?.theme?.primary }}
+                >
+                  GENERATE REPORT
+                  <svg
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+                <ul
+                  className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
+                  aria-labelledby="hs-dropdown"
+                >
+                  <div className="flex flex-col h-auto">
+                    <a
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      href="#"
+                      onClick={
+                        exportToExcel // Export immediately after selection
+                      }
+                    >
+                      Export to Excel
+                    </a>
+                    <a
+                      className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
+                      href="#"
+                      onClick={
+                        exportToPDF // Export immediately after selection
+                      }
+                    >
+                      Export to PDF
+                    </a>
+                  </div>
+                </ul>
+              </div>
             </div>
 
             <div className="sm:flex-col md:flex-row flex sm:w-full lg:w-7/12 lg:ml-2 xl:ml-0">
               <div className="flex flex-row w-full md:mr-2">
                 <button
-                  className="bg-teal-700  p-3 rounded-l-md"
+                  className="bg-teal-700 p-3 rounded-l-md"
                   style={{ backgroundColor: information?.theme?.primary }}
                 >
                   <div className="w-full overflow-hidden">
@@ -591,21 +840,7 @@ const Requests = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const Requests = requests.filter((item) => {
-                      const fullName = `${item.form[0].firstName.value} ${item.form[0].lastName.value}`;
-                      const reqId = item.req_id.toString(); // Assuming service_id is a number, convert it to string for case-insensitive comparison
-                      return (
-                        fullName
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()) ||
-                        reqId.includes(e.target.value.toLowerCase())
-                      );
-                    });
-
-                    setFilteredRequests(Requests);
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
@@ -714,23 +949,15 @@ const Requests = () => {
                           </span>
                         </div>
                       )}
-                      {item.status === "Pending" && (
+                      {item.status === "For Review" && (
                         <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
-                            PENDING
+                            FOR REVIEW
                           </span>
                         </div>
                       )}
-                      {item.status === "Paid" && (
-                        <div className="flex items-center justify-center bg-violet-800 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
-                            PAID
-                          </span>
-                        </div>
-                      )}
-
                       {item.status === "Processing" && (
-                        <div className="flex items-center justify-center bg-blue-800 m-2 rounded-lg">
+                        <div className="flex items-center justify-center bg-[#3b66b6] m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
                             PROCESSING
                           </span>
@@ -738,7 +965,7 @@ const Requests = () => {
                       )}
 
                       {item.status === "Cancelled" && (
-                        <div className="flex items-center justify-center bg-gray-800 m-2 rounded-lg">
+                        <div className="flex items-center justify-center bg-[#555555] m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 xl:mx-5">
                             CANCELLED
                           </span>
@@ -836,8 +1063,11 @@ const Requests = () => {
         request={request}
         setRequest={setRequest}
         brgy={brgy}
+        chatContainerRef={chatContainerRef}
+        socket={socket}
+        id={id}
       />
-      <ArchiveRequestsModal selectedItems={selectedItems} />
+      <ArchiveRequestsModal selectedItems={selectedItems} socket={socket} id={id} />
       <RequestsReportsModal />
     </div>
   );

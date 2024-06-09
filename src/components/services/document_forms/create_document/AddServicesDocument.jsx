@@ -5,13 +5,14 @@ import AddSectionDocument from "./AddSectionDocument";
 import AddFormLoader from "../../loaders/AddFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 import API_LINK from "../../../../config/API";
+import { useRef } from "react";
 
-const AddServicesDocument = ({ service_id, brgy, officials }) => {
+const AddServicesDocument = ({ service_id, service_title, brgy, officials, socket, setUpdate, id }) => {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
   const [error, setError] = useState(null);
-
+  const modal = useRef()
   const handleChange = (e) => {
     setDocument((prev) => ({
       ...prev,
@@ -44,9 +45,27 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
     tel: "",
   });
 
+  const handleResetModal = () => {
+    setDocument({
+      form_id: "",
+      service_id: "",
+      doc_title: "",
+      details: "",
+      type: "",
+      punong_brgy: "",
+      witnessed_by: "",
+      inputs: [""],
+      email: "",
+      address: "",
+      tel: "",
+    });
+    setSection([]);
+  };
+
   const handleSubmit = async (e) => {
     try {
-      setSubmitClicked(true);
+      // setSubmitClicked(true);
+      // setError(null); // Reset error state
 
       const response = await axios.post(
         `${API_LINK}/document/?brgy=${brgy}&form_id=${document.form_id}&checked=${checked}`,
@@ -68,12 +87,41 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
           },
         }
       );
+      if (response.status === 200) {
+        const getIP = async () => {
+          const response = await fetch(
+            "https://api64.ipify.org?format=json"
+          );
+          const data = await response.json();
+          return data.ip;
+        };
 
-      setSubmitClicked(false);
-      setCreationStatus("success");
-      setTimeout(() => {
-        window.location.reload();
-      }, 3000);
+        const ip = await getIP(); // Retrieve IP address
+
+        const logsData = {
+          action: "Created",
+          details: `A new document form`,
+          ip: ip,
+        };
+
+        const logsResult = await axios.post(
+          `${API_LINK}/act_logs/add_logs/?id=${id}`,
+          logsData
+        );
+        if (logsResult.status === 200) {
+          socket.emit("send-create-service-form", response.data);
+          setSubmitClicked(false);
+          setCreationStatus("success");
+          setTimeout(() => {
+            setCreationStatus(null);
+            handleResetModal();
+            HSOverlay.close(
+              modal.current
+            );
+          }, 3000);
+          setUpdate(true);
+        }
+      }
     } catch (err) {
       console.log(err.message);
       setSubmitClicked(false);
@@ -82,11 +130,10 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
     }
   };
 
-
-
   return (
     <div>
       <div
+        ref={modal}
         id="hs-create-serviceDocument-modal"
         className="hs-overlay hidden fixed top-0 left-0 z-[80] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center "
       >
@@ -94,9 +141,12 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
             {/* Header */}
-            <div className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl" style={{
+            <div
+              className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl"
+              style={{
                 background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-              }}>
+              }}
+            >
               <h3
                 className="font-bold text-white mx-auto md:text-xl text-center"
                 style={{ letterSpacing: "0.3em" }}
@@ -139,7 +189,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="doc_title"
                         type="text"
-                        // value={service.name}
+                        value={document.doc_title}
                         onChange={handleChange}
                         placeholder="Document Name"
                       />
@@ -156,7 +206,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         id="details"
                         rows={7}
                         name="details"
-                        // value={service.details}
+                        value={document.details}
                         onChange={handleChange}
                         className="shadow appearance-none border w-full p-2.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         placeholder="Enter service details..."
@@ -173,6 +223,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                       <select
                         name="type"
                         onChange={handleChange}
+                        value={document.type}
                         className="shadow  border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
                         <option>-- Select a Document Type --</option>
@@ -189,7 +240,9 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         </option>
                         <option value="Type F">Barangay Clearance</option>
                         <option value="Type G">Certificate of Indigency</option>
-                        <option value="Type H">Solo Parent Certification</option>
+                        <option value="Type H">
+                          Solo Parent Certification
+                        </option>
                         {/* <option value="Type I">Barangay Blotter</option> */}
                         <option value="Type J">Late Registration</option>
                         <option value="Type K">Residency Certification</option>
@@ -206,6 +259,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                       <select
                         name="punong_brgy"
                         onChange={handleChange}
+                        value={document.punong_brgy}
                         className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
                         <option>-- Select an Official --</option>
@@ -237,14 +291,14 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                       <select
                         name="witnessed_by"
                         onChange={handleChange}
+                        value={document.witnessed_by}
                         className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
                         <option>-- Select an Official --</option>
                         {/* Map filtered officials with position "Barangay Chairman" to options */}
                         {officials
                           .filter(
-                            (official) =>
-                              official.position === "Secretary"
+                            (official) => official.position === "Secretary"
                           )
                           .map((official) => (
                             <option
@@ -270,7 +324,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="email"
                         type="text"
-                        // value={service.name}
+                        value={document.email}
                         onChange={handleChange}
                         placeholder="E-mail"
                       />
@@ -288,7 +342,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="address"
                         type="text"
-                        // value={service.name}
+                        value={document.address}
                         onChange={handleChange}
                         placeholder="Address"
                       />
@@ -306,7 +360,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="tel"
                         type="number"
-                        // value={service.name}
+                        value={document.tel}
                         onChange={handleChange}
                         placeholder="Telephone Number"
                       />
@@ -347,6 +401,7 @@ const AddServicesDocument = ({ service_id, brgy, officials }) => {
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                   data-hs-overlay="#hs-create-serviceDocument-modal"
+                  onClick={handleResetModal}
                 >
                   CLOSE
                 </button>

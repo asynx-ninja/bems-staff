@@ -6,7 +6,7 @@ import { FiEdit } from "react-icons/fi";
 import moment from "moment";
 import ArchiveModal from "../components/inquiries/ArchiveInquiryModal";
 import Status from "../components/inquiries/Status";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
 import API_LINK from "../config/API";
@@ -14,6 +14,10 @@ import { useSearchParams } from "react-router-dom";
 import ViewInquiriesModal from "../components/inquiries/ViewInquiriesModal";
 import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
+import { io } from "socket.io-client";
+import Socket_link from "../config/Socket";
+const socket = io(Socket_link);
+
 const Inquiries = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -25,6 +29,8 @@ const Inquiries = () => {
     response: [{ file: [] }],
   });
   const information = GetBrgy(brgy);
+  const chatContainerRef = useRef();
+
   //status filtering
   const [status, setStatus] = useState({});
   const [statusFilter, setStatusFilter] = useState("all");
@@ -60,32 +66,86 @@ const Inquiries = () => {
     return () => clearInterval(interval);
   }, []);
 
+
+
   useEffect(() => {
     document.title = "Inquiries | Barangay E-Services Management";
 
     const fetchInquiries = async () => {
       const response = await axios.get(
-        `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=false&status=${statusFilter}&page=${currentPage}&label=Staff`
+        `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=false&status=${statusFilter}&label=Staff`
       );
-    
 
       if (response.status === 200) {
-        setInquiries(response.data.result);
-        setFilteredInquiries(response.data.result);
-        setPageCount(response.data.pageCount);
+        setInquiries(response.data.result); // Set initial page data
+        setFilteredInquiries(response.data.result.slice(0, 10));
+        setPageCount(response.data.pageCount); // Calculate page count based on all data
       } else {
         setInquiries([]);
+        setFilteredInquiries([]);
       }
+      // const container = inqContainerRef.current;
+      // container.scrollTop = container.scrollHeight;
+      // setInqsUpdate((prevState) => !prevState);
     };
 
     fetchInquiries();
-  }, [id, brgy, statusFilter, currentPage]);
+  }, [id, brgy, statusFilter]);
+
+  useEffect(() => {
+    const handleStaffInq = (obj) => {
+      setInquiry(obj);
+      setFilteredInquiries(
+        prev => [obj, ...prev]
+      );
+    };
+
+    const handleReStaffInq = (obj) => {
+      setInquiry(obj);
+      setFilteredInquiries((curItem) =>
+        curItem.map((item) =>
+          item._id === obj._id ? obj : item
+        )
+      );
+    };
+
+    const handleEventArchive = (obj) => {
+      setInquiry(obj);
+      setInquiries((prev) => prev.filter(item => item._id !== obj._id));
+      setFilteredInquiries((prev) => prev.filter(item => item._id !== obj._id));
+    };
+
+    socket.on("receive-reply-staff-inquiry", handleReStaffInq);
+    socket.on("receive-staff-inquiry", handleStaffInq);
+    socket.on("receive-archive-staff", handleEventArchive);
+
+    return () => {
+      socket.off("receive-reply-staff-inquiry", handleReStaffInq);
+      socket.off("receive-staff-inquiry", handleStaffInq);
+      socket.off("receive-archive-staff", handleEventArchive);
+    };
+  }, [socket, setInquiry, setInquiries]);
+
+  useEffect(() => {
+    const filteredData = inquiries.filter((item) =>
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.inq_id.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredInquiries(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [inquiries, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
 
-
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
+  };
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -155,7 +215,6 @@ const Inquiries = () => {
     switch (choice) {
       case "date":
         return inquiries.filter((item) => {
-
           return (
             new Date(item.compose.date).getFullYear() ===
             selectedDate.getFullYear() &&
@@ -250,7 +309,8 @@ const Inquiries = () => {
                   <div className="hs-tooltip inline-block w-full">
                     <button
                       type="button"
-                      className="hs-tooltip-toggle justify-center bg-teal-700 sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg  w-full text-white font-medium text-sm text-center inline-flex items-center" style={{
+                      className="hs-tooltip-toggle justify-center bg-teal-700 sm:px-2 sm:p-2 md:px-5 md:p-3 rounded-lg  w-full text-white font-medium text-sm text-center inline-flex items-center"
+                      style={{
                         background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
                       }}
                     >
@@ -280,7 +340,8 @@ const Inquiries = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  bg-teal-700" style={{ backgroundColor: information?.theme?.primary }}
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  bg-teal-700"
+                  style={{ backgroundColor: information?.theme?.primary }}
                 >
                   STATUS
                   <svg
@@ -312,11 +373,11 @@ const Inquiries = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    onClick={() => handleStatusFilter("Pending")}
+                    onClick={() => handleStatusFilter("Submitted")}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    PENDING
+                    Submitted
                   </a>
                   <a
                     onClick={() => handleStatusFilter("In Progress")}
@@ -330,7 +391,7 @@ const Inquiries = () => {
                     className="font-medium uppercase flex items-center gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
-                    COMPLETED
+                    Completed
                   </a>
                 </ul>
               </div>
@@ -340,7 +401,8 @@ const Inquiries = () => {
                 <button
                   id="hs-dropdown"
                   type="button"
-                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  bg-teal-700" style={{ backgroundColor: information?.theme?.primary }}
+                  className=" sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  bg-teal-700"
+                  style={{ backgroundColor: information?.theme?.primary }}
                 >
                   DATE
                   <svg
@@ -433,7 +495,10 @@ const Inquiries = () => {
 
             <div className="sm:flex-col md:flex-row flex sm:w-full md:w-7/12">
               <div className="flex flex-row w-full md:mr-2">
-                <button className="bg-teal-700  p-3 rounded-l-md" style={{ backgroundColor: information?.theme?.primary }}>
+                <button
+                  className="bg-teal-700  p-3 rounded-l-md"
+                  style={{ backgroundColor: information?.theme?.primary }}
+                >
                   <div className="w-full overflow-hidden">
                     <svg
                       className="h-3.5 w-3.5 text-white"
@@ -460,20 +525,7 @@ const Inquiries = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    const Inquiries = inquiries.filter(
-                      (item) =>
-                        item.name
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()) ||
-                        item.inq_id
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase())
-                    );
-
-                    setFilteredInquiries(Inquiries);
-                  }}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-64 items-center justify-center">
@@ -499,8 +551,10 @@ const Inquiries = () => {
 
         <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb overflow-y-scroll lg:overflow-x-hidden h-[calc(100vh_-_280px)] xxxl:h-[calc(100vh_-_300px)]">
           <table className="relative table-auto w-full">
-            <thead className="bg-teal-700 sticky top-0"
-              style={{ backgroundColor: information?.theme?.primary }}>
+            <thead
+              className="bg-teal-700 sticky top-0"
+              style={{ backgroundColor: information?.theme?.primary }}
+            >
               <tr className="">
                 <th scope="col" className="px-6 py-4">
                   <div className="flex justify-center items-center">
@@ -552,7 +606,7 @@ const Inquiries = () => {
                         </span>
                       </div>
                     </td>
-                    <td className="px-2 xl:px-6 py-3">
+                    <td className="px-2 xl:px-6 py-3 xl:w-1/4">
                       <span className="text-xs sm:text-sm text-black line-clamp-2 ">
                         {item.compose.message}
                       </span>
@@ -647,7 +701,10 @@ const Inquiries = () => {
             </tbody>
           </table>
         </div>
-        <div className="md:py-4 md:px-4 bg-teal-700 flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3" style={{ backgroundColor: information?.theme?.primary }}>
+        <div
+          className="md:py-4 md:px-4 bg-teal-700 flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3"
+          style={{ backgroundColor: information?.theme?.primary }}
+        >
           <span className="font-medium text-white sm:text-xs text-sm">
             Showing {currentPage + 1} out of {pageCount} pages
           </span>
@@ -664,11 +721,14 @@ const Inquiries = () => {
             renderOnZeroPageCount={null}
           />
         </div>
-        <ArchiveModal selectedItems={selectedItems} />
+        <ArchiveModal selectedItems={selectedItems} socket={socket} id={id}/>
         <ViewInquiriesModal
           inquiry={inquiry}
           setInquiry={setInquiry}
           brgy={brgy}
+          chatContainerRef={chatContainerRef}
+          socket={socket}
+          id={id}
         />
         <Status status={status} setStatus={setStatus} />
       </div>
