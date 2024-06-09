@@ -923,7 +923,7 @@ const EventsRegistrations = () => {
                       {item.status === "For Review" && (
                         <div className="flex items-center justify-center bg-custom-amber m-2 rounded-lg">
                           <span className="text-xs sm:text-sm text-white font-bold p-3 mx-5">
-                            For Revew
+                            FOR REVIEW
                           </span>
                         </div>
                       )}

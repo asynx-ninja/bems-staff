@@ -858,7 +858,7 @@ const Blotters = () => {
         />
       </div>
       {Object.hasOwn(request, "service_id") ? (
-        <ViewBlotterModal request={request} brgy={brgy} officials={officials} />
+        <ViewBlotterModal request={request} brgy={brgy} officials={officials}  id={id}/>
       ) : null}
       <ReplyServiceModal
         request={request}
@@ -867,14 +867,16 @@ const Blotters = () => {
         setUpdate={setUpdate}
         // chatContainerRef={chatContainerRef}
         socket={socket}
+        id={id}
       />
-      <ArchiveRequestsModal selectedItems={selectedItems} socket={socket} />
+      <ArchiveRequestsModal selectedItems={selectedItems} socket={socket}  id={id}/>
       <RequestsReportsModal />
       <AddBlotterDocument
         request={request}
         brgy={brgy}
         socket={socket}
         setUpdate={setUpdate}
+        id={id}
       />
       <EditBlotterDocument
         request={request}
@@ -884,6 +886,7 @@ const Blotters = () => {
         socket={socket}
         eventsForm={eventsForm}
         setEventsForm={setEventsForm}
+        id={id}
       />
     </div>
   );

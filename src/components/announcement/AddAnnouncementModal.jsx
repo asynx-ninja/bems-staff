@@ -19,6 +19,7 @@ function CreateAnnouncementModal({ brgy, socket, id }) {
     date: "",
     brgy: brgy,
     isOpen: false,
+    application_limit: "",
   });
 
   const information = GetBrgy(brgy);
@@ -109,9 +110,12 @@ function CreateAnnouncementModal({ brgy, socket, id }) {
       setCreationStatus(null);
       setEmpty(false);
 
+
       console.log("Submit button clicked");
 
+
       const emptyFieldsArr = checkEmptyFieldsForAnnouncement();
+
 
       if (emptyFieldsArr.length > 0) {
         console.log("Empty fields detected:", emptyFieldsArr);
@@ -133,14 +137,15 @@ function CreateAnnouncementModal({ brgy, socket, id }) {
         date: announcement.date,
         brgy: brgy,
         isOpen: announcement.isOpen,
+        application_limit: announcement.application_limit
       };
 
       formData.append("announcement", JSON.stringify(obj));
 
       console.log("Form data prepared:", obj);
-
+  
       const res_folder = await axios.get(`${API_LINK}/folder/specific/?brgy=${brgy}`);
-
+  
       if (res_folder.status === 200) {
         console.log("Folder fetched successfully:", res_folder.data[0].events);
 
@@ -251,7 +256,7 @@ function CreateAnnouncementModal({ brgy, socket, id }) {
       setError(err.message);
     }
   };
-
+  
 
   const checkEmptyFieldsForAnnouncement = () => {
     let arr = [];
@@ -451,6 +456,24 @@ function CreateAnnouncementModal({ brgy, socket, id }) {
                   value={announcement.date}
                   onChange={handleChange}
                   required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="fee"
+                >
+                  Limit Event Applications
+                </label>
+                <input
+                  className="shadow text-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+                  id="application_limit"
+                  name="application_limit"
+                  type="number"
+                  value={announcement.application_limit}
+                  onChange={handleChange}
+                  placeholder="Enter Number Limit..."
                 />
               </div>
               <Dropbox

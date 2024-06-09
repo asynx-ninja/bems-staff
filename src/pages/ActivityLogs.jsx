@@ -17,7 +17,7 @@ const Activitylogs = () => {
     const brgy = searchParams.get("brgy");
     const [currentPage, setCurrentPage] = useState(0);
     const [pageCount, setPageCount] = useState(0);
-
+    const information = GetBrgy(brgy);
     const [searchQuery, setSearchQuery] = useState("");
     const [specifiedDate, setSpecifiedDate] = useState(new Date());
     const [filteredlogs, setFilteredLogs] = useState([]);
@@ -186,7 +186,11 @@ const Activitylogs = () => {
         <div className="mx-4 mt-4">
             <div className="flex flex-col ">
                 <div className="flex flex-row sm:flex-col-reverse lg:flex-row w-full ">
-                    <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#408D51] to-[#295141] py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]">
+
+                    <div className="sm:mt-5 md:mt-4 lg:mt-0 bg-teal-700 py-2 lg:py-4 px-5 md:px-10 lg:px-0 xl:px-10 sm:rounded-t-lg lg:rounded-t-[1.75rem]  w-full lg:w-2/5 xxl:h-[4rem] xxxl:h-[5rem]"
+                        style={{
+                            background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+                        }}>
                         <h1
                             className="text-center sm:text-[15px] mx-auto font-bold md:text-xl lg:text-[15px] xl:text-xl xxl:text-2xl xxxl:text-3xl xxxl:mt-1 text-white"
                             style={{ letterSpacing: "0.2em" }}
@@ -202,7 +206,8 @@ const Activitylogs = () => {
                             <button
                                 id="hs-dropdown"
                                 type="button"
-                                className="bg-[#295141] sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                                className="bg-teal-700 sm:w-full md:w-full sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
+                                style={{ backgroundColor: information?.theme?.primary }}
                             >
                                 DATE
                                 <svg
@@ -293,7 +298,7 @@ const Activitylogs = () => {
                         </div>
                         <div className="sm:flex-col md:flex-row flex sm:w-full md:w-4/12">
                             <div className="flex flex-row w-full md:mr-2">
-                                <button className=" bg-[#295141] p-3 rounded-l-md">
+                                <button className=" bg-teal-700 p-3 rounded-l-md">
                                     <div className="w-full overflow-hidden">
                                         <svg
                                             className="h-3.5 w-3.5 text-white"
@@ -399,117 +404,69 @@ const Activitylogs = () => {
               )}
             </tbody>
           </table> */}
-                    <table
-                        className="divide-y relative table-auto w-full rounded border-slate-200"
-                        cellspacing="0"
-                    >
-                        <thead className="bg-[#295141] sticky top-0">
+                    <table className="divide-y table-auto w-full rounded-lg border border-gray-300 shadow-lg overflow-hidden">
+                        <thead className="bg-gray-900 sticky top-0">
                             <tr>
                                 {tableHeader.map((item, idx) => (
-                                    <th
-                                        key={idx}
-                                        className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider"
-                                    >
+                                    <th key={idx} className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
                                         {item.replace(/_/g, " ")}
                                     </th>
                                 ))}
                             </tr>
                         </thead>
-                        <tbody className="bg-white dark:bg-zinc-800 divide-y divide-zinc-200 dark:divide-zinc-700">
+                        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                             {filteredlogs.length === 0 ? (
                                 <tr>
-                                    <td
-                                        colSpan={tableHeader.length}
-                                        className="text-center  overflow-y-hidden h-[calc(100vh_-_315px)] xxxl:h-[calc(100vh_-_326px)]"
-                                    >
-                                        <img
-                                            src={noData}
-                                            alt=""
-                                            className="w-[150px] h-[100px] md:w-[270px] md:h-[200px] lg:w-[250px] lg:h-[180px] xl:h-72 xl:w-96 mx-auto"
-                                        />
-                                        <strong className="text-[#535353]">NO DATA FOUND</strong>
+                                    <td colSpan={tableHeader.length} className="text-center py-20">
+                                        <div className="flex flex-col items-center">
+                                            <img src={noData} alt="No Data" className="w-24 h-24 md:w-36 md:h-36 lg:w-48 lg:h-48 xl:w-60 xl:h-60 mx-auto" />
+                                            <strong className="text-gray-500 mt-4">NO DATA FOUND</strong>
+                                        </div>
                                     </td>
                                 </tr>
                             ) : (
                                 filteredlogs.map((item, index) => (
-                                    <tr
-                                        key={index}
-                                        className="cursor-pointer transition duration-300 ease-in-out hover:shadow-lg hover:shadow-blue-500/50"
-                                        onClick={() => handleRowClick(item)}
-                                    >
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                                    <tr key={index} className="cursor-pointer transition duration-300 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-700" onClick={() => handleRowClick(item)}>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                                             <div className="flex items-center">
-                                                <span
-                                                    className={`bg-${item.action === "Created"
-                                                        ? "yellow-200"
-                                                        : item.action === "Updated"
-                                                            ? "blue-200"
-                                                            : item.action === "Archived"
-                                                                ? "red-500"
-                                                                : item.action === "Restored"
-                                                                    ? "gray-200"
-                                                                    : "yellow-200"
-                                                        } text-${item.action === "Created"
-                                                            ? "yellow-800"
-                                                            : item.action === "Updated"
-                                                                ? "blue-800"
-                                                                : item.action === "Archived"
-                                                                    ? "red-800"
-                                                                    : item.action === "Restored"
-                                                                        ? "gray-800"
-                                                                        : "yellow-800"
-                                                        } inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium mr-2`}
-                                                >
+                                                <span className={`inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium mr-2 
+                                ${item.action === "Created" ? "bg-yellow-200 text-yellow-800" :
+                                                        item.action === "Updated" ? "bg-blue-200 text-blue-800" :
+                                                            item.action === "Archived" ? "bg-red-200 text-red-800" :
+                                                                item.action === "Restored" ? "bg-green-200 text-green-800" :
+                                                                    item.action === "Deleted" ? "bg-red-700 text-white" :
+                                                                        "bg-gray-200 text-gray-800"}`}>
                                                     {item.action}
                                                 </span>
-                                                <span className="truncate">
-                                                    {item.details.slice(0, 100)}
-                                                </span>
+                                                <span className="truncate">{item.details.slice(0, 100)}</span>
                                             </div>
                                         </td>
-
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-300">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                             {item.profile ? (
-                                                <img
-                                                    src={item.profile}
-                                                    alt="User Avatar"
-                                                    className="inline-block w-8 h-8 rounded-full mr-2"
-                                                />
+                                                <img src={item.profile} alt="User Avatar" className="inline-block w-8 h-8 rounded-full mr-2" />
                                             ) : (
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    className="inline-block w-8 h-8 rounded-full mr-2"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth="2"
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                >
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="inline-block w-8 h-8 rounded-full mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                                                     <circle cx="12" cy="7" r="4" />
                                                 </svg>
                                             )}
                                             {item.firstname} {item.lastname}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-300">
-                                            {item.type}
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{item.type}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{item.ip}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                                            {moment(item.createdAt).format("MMMM DD, YYYY")} - {TimeFormat(item.createdAt) || ""}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-300">
-                                            {item.ip}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-300">
-                                            {moment(item.createdAt).format("MMMM DD, YYYY")} -{" "}
-                                            {TimeFormat(item.createdAt) || ""}
-                                        </td>
-
                                     </tr>
                                 ))
                             )}
                         </tbody>
                     </table>
+
+
                 </div>
-                <div className="md:py-4 md:px-4 bg-[#295141] flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3">
+                <div className="md:py-4 md:px-4 bg-teal-700 flex items-center justify-between sm:flex-col-reverse md:flex-row sm:py-3"
+                    style={{ backgroundColor: information?.theme?.primary }}>
                     <span className="font-medium text-white sm:text-xs text-sm">
                         Showing {currentPage + 1} out of {pageCount} pages
                     </span>

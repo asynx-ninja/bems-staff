@@ -51,7 +51,7 @@ const StaffManagement = () => {
       );
       if (response.status === 200) {
         setUsers(response.data.result);
-        setNewStaff(response.data.result)
+        setNewStaff(response.data.result);
         setPageCount(response.data.pageCount);
         setfilterUsers(response.data.result.slice(0, 10));
       } else setUsers([]);
@@ -63,7 +63,7 @@ const StaffManagement = () => {
   useEffect(() => {
     const handleStaff = (get_staff) => {
       setUsers(get_staff);
-      setNewStaff((prev) => [get_staff, ...prev])
+      setNewStaff((prev) => [get_staff, ...prev]);
       setfilterUsers((prev) => [get_staff, ...prev]);
     };
 
@@ -78,8 +78,8 @@ const StaffManagement = () => {
 
     const handleEventArchive = (obj) => {
       setUser(obj);
-      setUsers((prev) => prev.filter(item => item._id !== obj._id));
-      setfilterUsers((prev) => prev.filter(item => item._id !== obj._id));
+      setUsers((prev) => prev.filter((item) => item._id !== obj._id));
+      setfilterUsers((prev) => prev.filter((item) => item._id !== obj._id));
     };
 
     socket.on("receive-create-staff", handleStaff);
@@ -95,14 +95,15 @@ const StaffManagement = () => {
 
   useEffect(() => {
     const filteredData = newStaff.filter((item) => {
-      const fullName = item.lastName.toLowerCase() +
+      const fullName =
+        item.lastName.toLowerCase() +
         ", " +
         item.firstName.toLowerCase() +
-        (item.middleName !== undefined ? " " + item.middleName.toLowerCase() : "");
+        (item.middleName !== undefined
+          ? " " + item.middleName.toLowerCase()
+          : "");
 
-      return (
-        fullName.includes(searchQuery.toLowerCase())
-      );
+      return fullName.includes(searchQuery.toLowerCase());
     });
 
     const startIndex = currentPage * 10;
@@ -120,7 +121,6 @@ const StaffManagement = () => {
     setSearchQuery(e.target.value);
     setCurrentPage(0); // Reset current page when search query changes
   };
-
 
   // const Users = users.filter((item) => {
   //   const fullName =
@@ -284,8 +284,9 @@ const StaffManagement = () => {
                 >
                   ACCOUNT TYPE
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -525,8 +526,8 @@ const StaffManagement = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <AddStaffModal brgy={brgy} socket={socket} id={id} />
-      <ArchiveStaffModal selectedItems={selectedItems} socket={socket} id={id} />
+      <AddStaffModal brgy={brgy} socket={socket} />
+      <ArchiveStaffModal selectedItems={selectedItems} socket={socket}/>
       <GenerateReportsModal />
       <ManageStaffModal
         user={user}
