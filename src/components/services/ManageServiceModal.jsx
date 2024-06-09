@@ -7,7 +7,7 @@ import API_LINK from "../../config/API";
 import EditLoader from "./loaders/EditLoader";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function ManageServiceModal({ service, setService, brgy, socket }) {
+function ManageServiceModal({ service, setService, brgy, socket, id }) {
   const information = GetBrgy(brgy);
   const [logo, setLogo] = useState();
   const [banner, setBanner] = useState();
@@ -165,22 +165,43 @@ function ManageServiceModal({ service, setService, brgy, socket }) {
           });
 
           if (result.status === 200) {
-            socket.emit("send-resident-notif", result.data);
-            setEdit(!edit);
-            socket.emit("send-updated-service", response.data);
-            console.log("ito", response.data)
-            setSubmitClicked(false);
-            setUpdatingStatus("success");
-            setTimeout(() => {
+            const getIP = async () => {
+              const response = await fetch(
+                "https://api64.ipify.org?format=json"
+              );
+              const data = await response.json();
+              return data.ip;
+            };
+            ;
+            const ip = await getIP(); // Retrieve IP address
+            const logsData = {
+              action: "Updated",
+              details: `A service entitled ${service.name} is been updated`,
+              ip: ip,
+            };
+
+            const logsResult = await axios.post(
+              `${API_LINK}/act_logs/add_logs/?id=${id}`,
+              logsData
+            );
+            if (logsResult.status === 200) {
+              socket.emit("send-resident-notif", result.data);
+              setEdit(!edit);
+              socket.emit("send-updated-service", response.data);
+              console.log("ito", response.data)
               setSubmitClicked(false);
               setUpdatingStatus("success");
               setTimeout(() => {
-                setUpdatingStatus(null);
-                HSOverlay.close(
-                  document.getElementById("hs-modal-editServices")
-                );
-              }, 3000);
-            }, 1000);
+                setSubmitClicked(false);
+                setUpdatingStatus("success");
+                setTimeout(() => {
+                  setUpdatingStatus(null);
+                  HSOverlay.close(
+                    document.getElementById("hs-modal-editServices")
+                  );
+                }, 3000);
+              }, 1000);
+            }
           }
         }
       }

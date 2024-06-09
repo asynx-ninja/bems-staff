@@ -21,7 +21,8 @@ function ViewInquiriesModal({
   setInquiry,
   brgy,
   socket,
-  inqContainerRef
+  inqContainerRef,
+  id
 }) {
   const [onSend, setOnSend] = useState(false);
   const [errMsg, setErrMsg] = useState(false);
@@ -36,7 +37,7 @@ function ViewInquiriesModal({
   const [error, setError] = useState(null);
   const [userData, setUserData] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
-  const id = searchParams.get("id");
+
   const chatContainerRef = useRef(null);
   const [statusChanger, setStatusChanger] = useState(false);
   const [newMessage, setNewMessage] = useState({
@@ -245,7 +246,28 @@ function ViewInquiriesModal({
         });
 
         if (result.status === 200) {
-          socket.emit("send-resident-notif", result.data);
+          const getIP = async () => {
+            const response = await fetch(
+              "https://api64.ipify.org?format=json"
+            );
+            const data = await response.json();
+            return data.ip;
+          };
+          ;
+          const ip = await getIP(); // Retrieve IP address
+          const logsData = {
+            action: "Updated",
+            details: `Status of an inquiry with a inquiry id ${inquiry.inq_id} sent by ${inquiry.name} is been updated`,
+            ip: ip,
+          };
+
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
+            socket.emit("send-resident-notif", result.data);
+          }
         }
       }
 

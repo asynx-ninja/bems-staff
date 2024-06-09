@@ -705,24 +705,26 @@ const Services = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <ArchiveServicesModal selectedItems={selectedItems}  socket = {socket}/>
-      <CreateServiceModal brgy={brgy} socket={socket} />
+      <ArchiveServicesModal selectedItems={selectedItems}  socket = {socket} id={id}/>
+      <CreateServiceModal brgy={brgy} socket={socket} id={id} />
       {/*<StatusServices status={status} setStatus={setStatus}/>*/}
       <ManageServiceModal
         service={service}
         setService={setService}
         brgy={brgy}
         socket={socket}
+        id={id}
       />
       <GenerateReportsModal />
-      <AddServicesForm service_id={service.service_id} brgy={brgy} socket={socket} setUpdate={setUpdate} editupdate={editupdate} setEditUpdate={setEditUpdate} />
-      <EditServicesForm service_id={service.service_id} brgy={brgy} socket={socket} serviceForm={serviceForm} setServiceForm={setServiceForm} />
+      <AddServicesForm service_id={service.service_id} brgy={brgy} socket={socket} setUpdate={setUpdate} editupdate={editupdate} setEditUpdate={setEditUpdate}  id={id}/>
+      <EditServicesForm service_id={service.service_id} brgy={brgy} socket={socket} serviceForm={serviceForm} setServiceForm={setServiceForm}  id={id}/>
       <AddServicesDocument
         service_id={service.service_id}
         brgy={brgy}
         officials={officials}
         socket={socket}
         setUpdate={setUpdate}
+        id={id}
       />
       <EditServicesDocument
         service_id={service.service_id}
@@ -733,6 +735,7 @@ const Services = () => {
         serviceForm = {serviceForm}
         setServiceForm = {setServiceForm}
         socket = {socket}
+        id={id}
       />
     </div>
   );

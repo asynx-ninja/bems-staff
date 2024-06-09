@@ -33,6 +33,7 @@ import Blotters from "../pages/Blotters";
 import ArchivedBlotters from "../pages/ArchivedBlotters";
 import AddResidents from "../components/residents/AddResident/AddResidents"
 import EditResidents from "../components/residents/EditResident/ediResident";
+import ActivityLogs from "../pages/ActivityLogs";
 
 const pages = [
   {
@@ -130,6 +131,10 @@ const pages = [
   {
     path: "/officials",
     element: <Navbar comp={<Officials />} />,
+  },
+  {
+    path: "/activity_logs",
+    element: <Navbar comp={<ActivityLogs />} />,
   },
   {
     path: "/archived_officials",

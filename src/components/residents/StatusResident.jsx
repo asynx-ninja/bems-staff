@@ -5,7 +5,7 @@ import StatusLoader from "./loaders/StatusLoader";
 import { useState } from "react";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function StatusResident({ user, setUser, brgy, status, setStatus, socket }) {
+function StatusResident({ user, setUser, brgy, status, setStatus, socket, id }) {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
@@ -72,7 +72,6 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket }) {
           });
 
           if (result.status === 200) {
-           
             socket.emit("send-resident-notif", result.data);
 
             setTimeout(() => {
@@ -113,7 +112,26 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket }) {
           });
 
           if (result.status === 200) {
-            setTimeout(() => {
+            const getIP = async () => {
+              const response = await fetch("https://api64.ipify.org?format=json");
+              const data = await response.json();
+              return data.ip;
+            };
+
+            const ip = await getIP(); // Retrieve IP address
+
+            const logsData = {
+              action: "Updated",
+              details: `A Resident`,
+              ip: ip,
+            };
+
+            const logsResult = await axios.post(
+              `${API_LINK}/act_logs/add_logs/?id=${id}`,
+              logsData
+            );
+            if (logsResult.status === 200) {
+
               setSubmitClicked(null);
               setUpdatingStatus(null);
               setTimeout(() => {
@@ -121,7 +139,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket }) {
                   document.getElementById("hs-modal-statusResident")
                 );
               }, 3000);
-            }, 1000);
+            }
           }
         } else {
           // Status is not "Registered", proceed without sending notification

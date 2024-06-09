@@ -171,7 +171,7 @@ const StaffManagement = () => {
     }
   };
 
-  const tableHeader = ["NAME", "EMAIL", "CONTACT", "TYPE", "STATUS", "ACTIONS"];
+  const tableHeader = ["NAME", "EMAIL", "CONTACT", "TYPE", "ACTIONS"];
 
   const handleView = (item) => {
     setUser(item);
@@ -462,29 +462,6 @@ const StaffManagement = () => {
                       </div>
                     </td>
                     <td className="px-2 xl:px-6 py-3">
-                      {item.isApproved === "Registered" && (
-                        <div className="flex w-full items-center justify-center bg-custom-green-button3 m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
-                            REGISTERED
-                          </span>
-                        </div>
-                      )}
-                      {item.isApproved === "Denied" && (
-                        <div className="flex w-full items-center justify-center bg-custom-red-button m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
-                            DENIED
-                          </span>
-                        </div>
-                      )}
-                      {item.isApproved === "Pending" && (
-                        <div className="flex w-full items-center justify-center bg-custom-amber m-2 rounded-lg">
-                          <span className="text-xs sm:text-sm font-bold text-white p-3 mx-5">
-                            PENDING
-                          </span>
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-2 xl:px-6 py-3">
                       <div className="flex justify-center space-x-1 sm:space-x-none">
                         <div className="hs-tooltip inline-block">
                           <button
@@ -548,8 +525,8 @@ const StaffManagement = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <AddStaffModal brgy={brgy} socket={socket} />
-      <ArchiveStaffModal selectedItems={selectedItems} socket={socket}/>
+      <AddStaffModal brgy={brgy} socket={socket} id={id} />
+      <ArchiveStaffModal selectedItems={selectedItems} socket={socket} id={id} />
       <GenerateReportsModal />
       <ManageStaffModal
         user={user}
@@ -560,6 +537,7 @@ const StaffManagement = () => {
         setEditUpdate={setEditUpdate}
         eventsForm={eventsForm}
         setEventsForm={setEventsForm}
+        id={id}
       />
     </div>
   );

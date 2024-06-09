@@ -8,7 +8,7 @@ import AddLoader from "./loaders/AddLoader";
 import ErrorPopup from "./popup/ErrorPopup";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function CreateServiceModal({ brgy, socket }) {
+function CreateServiceModal({ brgy, socket, id }) {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
@@ -130,7 +130,7 @@ function CreateServiceModal({ brgy, socket }) {
           formData
         );
 
-     
+
 
         if (response.status === 200) {
           socket.emit("send-get-service", response.data);
@@ -141,8 +141,8 @@ function CreateServiceModal({ brgy, socket }) {
           // var bannerSrc = document.getElementById("banner");
           // bannerSrc.src =
           //   "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
-         
-            setService({
+
+          setService({
             name: "",
             type: "",
             details: "",
@@ -180,17 +180,37 @@ function CreateServiceModal({ brgy, socket }) {
 
 
           if (result.status === 200) {
-            socket.emit("send-resident-notif", result.data);
-            handleResetModal();
-            setLogo();
-            setBanner();
-            setFiles([]);
-            setSubmitClicked(false);
-            setCreationStatus(null);
-            setTimeout(() => {
-              setSubmitClicked(null);
-              HSOverlay.close(document.getElementById("hs-create-service-modal"));
-            }, 3000);
+            const getIP = async () => {
+              const response = await fetch("https://api64.ipify.org?format=json");
+              const data = await response.json();
+              return data.ip;
+            };
+
+            const ip = await getIP(); // Retrieve IP address
+
+            const logsData = {
+              action: "Created",
+              details: "A new service named" + service.name,
+              ip: ip,
+            };
+
+            const logsResult = await axios.post(
+              `${API_LINK}/act_logs/add_logs/?id=${id}`,
+              logsData
+            );
+            if (logsResult.status === 200) {
+              socket.emit("send-resident-notif", result.data);
+              handleResetModal();
+              setLogo();
+              setBanner();
+              setFiles([]);
+              setSubmitClicked(false);
+              setCreationStatus(null);
+              setTimeout(() => {
+                setSubmitClicked(null);
+                HSOverlay.close(document.getElementById("hs-create-service-modal"));
+              }, 3000);
+            }
           }
         }
       }
@@ -256,9 +276,8 @@ function CreateServiceModal({ brgy, socket }) {
                       `}
                     >
                       <img
-                        className={`${
-                          logo ? "" : "hidden"
-                        } w-[200px] md:w-[250px]  lg:w-full md:h-[140px] lg:h-[250px] object-cover`}
+                        className={`${logo ? "" : "hidden"
+                          } w-[200px] md:w-[250px]  lg:w-full md:h-[140px] lg:h-[250px] object-cover`}
                         id="add_logo"
                         alt="Current profile photo"
                       />{" "}
@@ -268,11 +287,10 @@ function CreateServiceModal({ brgy, socket }) {
                       />
                     </div>
                     <label
-                      className={`w-full bg-white border ${
-                        emptyFields.includes("logo")
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
+                      className={`w-full bg-white border ${emptyFields.includes("logo")
+                        ? "border-red-500"
+                        : "border-gray-300"
+                        }`}
                     >
                       <span className="sr-only">Choose logo photo</span>
                       <input
@@ -296,9 +314,8 @@ function CreateServiceModal({ brgy, socket }) {
                   <div className="flex flex-col items-center space-y-2 relative">
                     <div className={`w-full border `}>
                       <img
-                        className={`${
-                          logo ? "" : "hidden"
-                        } w-[200px] md:w-[250px]  lg:w-full md:h-[140px] lg:h-[250px] object-cover`}
+                        className={`${logo ? "" : "hidden"
+                          } w-[200px] md:w-[250px]  lg:w-full md:h-[140px] lg:h-[250px] object-cover`}
                         id="add_banner"
                         alt="Current profile photo"
                       />{" "}
@@ -308,11 +325,10 @@ function CreateServiceModal({ brgy, socket }) {
                       />
                     </div>
                     <label
-                      className={`w-full bg-white border ${
-                        emptyFields.includes("banner")
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
+                      className={`w-full bg-white border ${emptyFields.includes("banner")
+                        ? "border-red-500"
+                        : "border-gray-300"
+                        }`}
                     >
                       <span className="sr-only">Choose banner photo</span>
                       <input
@@ -336,9 +352,8 @@ function CreateServiceModal({ brgy, socket }) {
                 </label>
                 <input
                   id="name"
-                  className={`shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                    emptyFields.includes("name") && "border-red-500"
-                  }`}
+                  className={`shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("name") && "border-red-500"
+                    }`}
                   name="name"
                   type="text"
                   value={service.name}
@@ -356,9 +371,8 @@ function CreateServiceModal({ brgy, socket }) {
                 <select
                   name="type"
                   onChange={handleChange}
-                  className={`shadow  border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                    emptyFields.includes("type") && "border-red-500"
-                  }`}
+                  className={`shadow  border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("type") && "border-red-500"
+                    }`}
                 >
                   <option value="Healthcare">Healthcare Services</option>
                   <option value="Education">Education Services</option>
@@ -391,9 +405,8 @@ function CreateServiceModal({ brgy, socket }) {
                   name="details"
                   value={service.details}
                   onChange={handleChange}
-                  className={`shadow appearance-none border w-full p-2.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                    emptyFields.includes("details") && "border-red-500"
-                  }`}
+                  className={`shadow appearance-none border w-full p-2.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("details") && "border-red-500"
+                    }`}
                   placeholder="Enter service details..."
                 />
               </div>
@@ -405,9 +418,8 @@ function CreateServiceModal({ brgy, socket }) {
                   Service Fee
                 </label>
                 <input
-                  className={`shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                    emptyFields.includes("fee") && "border-red-500"
-                  }`}
+                  className={`shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("fee") && "border-red-500"
+                    }`}
                   id="fee"
                   name="fee"
                   type="number"

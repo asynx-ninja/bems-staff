@@ -5,7 +5,7 @@ import EditSectionForm from "./EditSectionForm";
 import EditFormLoader from "../../loaders/EditFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 
-const EditServicesForm = ({ service_id, brgy, serviceForm, socket }) => {
+const EditServicesForm = ({ service_id, brgy, serviceForm, socket, id }) => {
   const information = GetBrgy(brgy);
   const [details, setDetails] = useState([]);
   const [detail, setDetail] = useState({});
@@ -47,7 +47,7 @@ const EditServicesForm = ({ service_id, brgy, serviceForm, socket }) => {
       setSubmitClicked(true);
       setError(null); // Reset error state
 
-     const response = await axios.patch(
+      const response = await axios.patch(
         `${API_LINK}/forms/`,
         {
           detail: detail,
@@ -59,20 +59,41 @@ const EditServicesForm = ({ service_id, brgy, serviceForm, socket }) => {
         }
       );
 
-      setTimeout(() => {
-        socket.emit("send-edit-service-form", response.data);
-       
-        setSubmitClicked(false);
-        setUpdatingStatus("success");
-        setTimeout(() => {
-          setUpdatingStatus(null);
-          setDetail({});
-          setSelectedFormIndex("");
-          setDetail({ title: "" });
-          document.querySelector('select[name="form"]').value = "";
-          HSOverlay.close(document.getElementById("hs-edit-serviceForm-modal"));
-        }, 3000);
-      }, 1000);
+      if (response.status === 200) {
+        const getIP = async () => {
+          const response = await fetch(
+            "https://api64.ipify.org?format=json"
+          );
+          const data = await response.json();
+          return data.ip;
+        };
+        const ip = await getIP(); // Retrieve IP address
+
+        const logsData = {
+          action: "Updated",
+          details: `An events forms for events (${service_id}) entitled ` + detail.form_name,
+          ip: ip,
+        };
+
+        const logsResult = await axios.post(
+          `${API_LINK}/act_logs/add_logs/?id=${id}`,
+          logsData
+        );
+        if (logsResult.status === 200) {
+          socket.emit("send-edit-service-form", response.data);
+
+          setSubmitClicked(false);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            setUpdatingStatus(null);
+            setDetail({});
+            setSelectedFormIndex("");
+            setDetail({ title: "" });
+            document.querySelector('select[name="form"]').value = "";
+            HSOverlay.close(document.getElementById("hs-edit-serviceForm-modal"));
+          }, 3000);
+        }
+      }
     } catch (err) {
       setSubmitClicked(false);
       setUpdatingStatus("error");

@@ -8,7 +8,7 @@ import AddLoader from "./loaders/AddLoader";
 import ErrorPopup from "./popup/ErrorPopup";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function AddStaffModal({ brgy, socket }) {
+function AddStaffModal({ brgy, socket, id }) {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
@@ -110,37 +110,57 @@ function AddStaffModal({ brgy, socket }) {
             const result = await axios.post(`${API_LINK}/staffs/`, obj);
 
             if (result.status === 200) {
-              setUser({
-                user_id: "",
-                firstName: "",
-                lastName: "",
-                email: "",
-                birthday: "",
-                age: "",
-                contact: "",
-                street: "",
-                type: "",
-                username: "",
-                password: "",
-                isArchived: false,
-                isApproved: "Registered",
-                city: "Rodriguez, Rizal",
-                brgy: brgy,
-              });
-              setSubmitClicked(false);
-              setCreationStatus("success");
+              const getIP = async () => {
+                const response = await fetch("https://api64.ipify.org?format=json");
+                const data = await response.json();
+                return data.ip;
+              };
 
-              socket.emit("send-create-staff", result.data);
-              setTimeout(() => {
-                // setSubmitClicked(null);
-                // setCreationStatus(null);
-                HSOverlay.close(document.getElementById("hs-modal-addStaff"));
-              }, 3000);
+              const ip = await getIP(); // Retrieve IP address
+
+              const logsData = {
+                action: "Created",
+                details: `A new ${user.type} named` + user.firstName + " " + user.lastName,
+                ip: ip,
+              };
+
+              const logsResult = await axios.post(
+                `${API_LINK}/act_logs/add_logs/?id=${id}`,
+                logsData
+              );
+              if (logsResult.status === 200) {
+                setUser({
+                  user_id: "",
+                  firstName: "",
+                  lastName: "",
+                  email: "",
+                  birthday: "",
+                  age: "",
+                  contact: "",
+                  street: "",
+                  type: "",
+                  username: "",
+                  password: "",
+                  isArchived: false,
+                  isApproved: "Fully Verified",
+                  city: "Rodriguez, Rizal",
+                  brgy: brgy,
+                });
+                setSubmitClicked(false);
+                setCreationStatus("success");
+
+                socket.emit("send-create-staff", result.data);
+                setTimeout(() => {
+                  // setSubmitClicked(null);
+                  // setCreationStatus(null);
+                  HSOverlay.close(document.getElementById("hs-modal-addStaff"));
+                }, 3000);
+              }
             }
           } catch (err) {
             setSubmitClicked(false);
             setCreationStatus("error");
-            setError("An error occurred while creating the announcement.");
+            setError("An errorFor Review occurred while creating the announcement.");
           }
         }
       }
@@ -283,10 +303,9 @@ function AddStaffModal({ brgy, socket }) {
                               name="firstName"
                               value={user.firstName}
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("firstName") &&
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("firstName") &&
                                 "border-red-500"
-                              }`}
+                                }`}
                               placeholder=""
                               required
                             />
@@ -323,10 +342,9 @@ function AddStaffModal({ brgy, socket }) {
                               name="lastName"
                               value={user.lastName}
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("lastName") &&
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("lastName") &&
                                 "border-red-500"
-                              }`}
+                                }`}
                               placeholder=""
                             />
                           </div>
@@ -363,10 +381,9 @@ function AddStaffModal({ brgy, socket }) {
                               id="birthday"
                               name="birthday"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("birthday") &&
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("birthday") &&
                                 "border-red-500"
-                              }`}
+                                }`}
                               placeholder="mm/dd/yyyy"
                               value={birthdayFormat(user.birthday) || ""}
                             />
@@ -404,10 +421,9 @@ function AddStaffModal({ brgy, socket }) {
                               name="email"
                               onChange={handleChange}
                               value={user.email}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("email") &&
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("email") &&
                                 "border-red-500"
-                              }`}
+                                }`}
                               placeholder=""
                             />
                           </div>
@@ -425,10 +441,9 @@ function AddStaffModal({ brgy, socket }) {
                               name="contact"
                               value={user.contact}
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("contact") &&
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("contact") &&
                                 "border-red-500"
-                              }`}
+                                }`}
                               placeholder=""
                             />
                           </div>
@@ -481,9 +496,8 @@ function AddStaffModal({ brgy, socket }) {
                               id="type"
                               name="type"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("type") && "border-red-500"
-                              }`}
+                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("type") && "border-red-500"
+                                }`}
                               value={user.type}
                             >
                               {user.type === "" && (
@@ -573,10 +587,9 @@ function AddStaffModal({ brgy, socket }) {
                               name="street"
                               onChange={handleChange}
                               value={user.street}
-                              className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("street") &&
+                              className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("street") &&
                                 "border-red-500"
-                              }`}
+                                }`}
                               placeholder=""
                             />
                           </div>
@@ -764,10 +777,9 @@ function AddStaffModal({ brgy, socket }) {
                             name="username"
                             onChange={handleChange}
                             value={user.username}
-                            className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                              emptyFields.includes("username") &&
+                            className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("username") &&
                               "border-red-500"
-                            }`}
+                              }`}
                             placeholder=""
                           />
                         </div>
@@ -799,10 +811,9 @@ function AddStaffModal({ brgy, socket }) {
                               name="password"
                               id="password"
                               onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-r-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                                emptyFields.includes("password") &&
+                              className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-r-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("password") &&
                                 "border-red-500"
-                              }`}
+                                }`}
                               value={user.password}
                             />
                           </div>

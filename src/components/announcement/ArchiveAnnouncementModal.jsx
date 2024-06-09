@@ -6,7 +6,7 @@ import { useState } from "react";
 import ArchiveLoader from "./loaders/ArchiveLoader";
 import { IoArchiveOutline } from "react-icons/io5";
 
-function ArchiveAnnouncementModal({ selectedItems, socket }) {
+function ArchiveAnnouncementModal({ selectedItems, socket, id }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -14,7 +14,7 @@ function ArchiveAnnouncementModal({ selectedItems, socket }) {
   const handleSave = async (e) => {
     try {
       e.preventDefault();
-      
+
       if (selectedItems.length === 0) {
         setUpdatingStatus("error");
         setError("Unable to archive, Please select first to archive.");
@@ -34,15 +34,36 @@ function ArchiveAnnouncementModal({ selectedItems, socket }) {
         );
 
         if (response.status === 200) {
-          socket.emit("send-archive-staff", response.data);
+          const getIP = async () => {
+            const response = await fetch(
+              "https://api64.ipify.org?format=json"
+            );
+            const data = await response.json();
+            return data.ip;
+          };
 
-          setSubmitClicked(false);
-          setError(null);
-          setUpdatingStatus("success");
-          setTimeout(() => {
-            setUpdatingStatus(null);
-            HSOverlay.close(document.getElementById("hs-modal-archive"));
-          }, 3000);
+          const ip = await getIP(); // Retrieve IP address
+          const logsData = {
+            action: "Archived",
+            details: `An events info (${selectedItems[i]})`,
+            ip: ip,
+          };
+
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
+            socket.emit("send-archive-staff", response.data);
+
+            setSubmitClicked(false);
+            setError(null);
+            setUpdatingStatus("success");
+            setTimeout(() => {
+              setUpdatingStatus(null);
+              HSOverlay.close(document.getElementById("hs-modal-archive"));
+            }, 3000);
+          }
         }
       }
     } catch (err) {

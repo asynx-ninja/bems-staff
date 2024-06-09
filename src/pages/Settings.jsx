@@ -326,15 +326,34 @@ const Settings = () => {
             twitter: response.data.socials.twitter,
           });
           setEditButton(true);
-          socket.emit("send-update-profile", response.data);
-          setTimeout(() => {
+          const getIP = async () => {
+            const response = await fetch("https://api64.ipify.org?format=json");
+            const data = await response.json();
+            return data.ip;
+          };
+
+          const ip = await getIP(); // Retrieve IP address
+
+          const logsData = {
+            action: "Updated",
+            details: "The Account Settings",
+            ip: ip,
+          };
+
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
+            socket.emit("send-update-profile", response.data);
+
             setSubmitClicked(false);
             setUpdatingStatus("success");
             setTimeout(() => {
               setUpdatingStatus(null);
               // window.location.reload();
             }, 3000);
-          }, 1000);
+          }
         } else {
           console.error("Update failed. Status:", response.status);
         }
@@ -489,9 +508,8 @@ const Settings = () => {
                   <label
                     htmlFor="file_input"
                     onClick={handleAdd}
-                    className={`absolute bg-teal-700 inset-0 flex items-center justify-center rounded-full cursor-pointer opacity-0 ${
-                      editButton ? "hidden" : ""
-                    } `}
+                    className={`absolute bg-teal-700 inset-0 flex items-center justify-center rounded-full cursor-pointer opacity-0 ${editButton ? "hidden" : ""
+                      } `}
                     style={{
                       backgroundColor:
                         editButton || hoverStates["pic"]
@@ -740,9 +758,8 @@ const Settings = () => {
                           disabled={editButton}
                           type="text"
                           id="firstname"
-                          className={`py-3 px-4 block w-full  rounded-md text-sm bg-white border ${
-                            error && !userData.firstName ? "border-red-500" : ""
-                          }`}
+                          className={`py-3 px-4 block w-full  rounded-md text-sm bg-white border ${error && !userData.firstName ? "border-red-500" : ""
+                            }`}
                           placeholder="First name"
                           value={userData.firstName || ""}
                           onChange={(e) =>
@@ -785,9 +802,8 @@ const Settings = () => {
                           disabled={editButton}
                           id="lastName"
                           type="text"
-                          className={`py-3 px-4 block w-full  rounded-md text-sm bg-white border ${
-                            error && !userData.lastName ? "border-red-500" : ""
-                          }`}
+                          className={`py-3 px-4 block w-full  rounded-md text-sm bg-white border ${error && !userData.lastName ? "border-red-500" : ""
+                            }`}
                           placeholder="Last name"
                           aria-describedby="hs-input-helper-text"
                           value={userData.lastName || ""}
@@ -914,9 +930,8 @@ const Settings = () => {
                           disabled={editButton}
                           type="email"
                           id="email"
-                          className={`py-3 px-4 block w-full  rounded-md text-sm bg-white border ${
-                            error && !userData.email ? "border-red-500" : ""
-                          }`}
+                          className={`py-3 px-4 block w-full  rounded-md text-sm bg-white border ${error && !userData.email ? "border-red-500" : ""
+                            }`}
                           placeholder="you@example.com"
                           aria-describedby="hs-input-helper-text"
                           value={userData.email || ""}
@@ -951,9 +966,8 @@ const Settings = () => {
                           type="text"
                           disabled={editButton}
                           id="street"
-                          className={`py-3 px-4 block w-full  rounded-md text-sm bg-white border ${
-                            error && !userAddress.street ? "border-red-500" : ""
-                          }`}
+                          className={`py-3 px-4 block w-full  rounded-md text-sm bg-white border ${error && !userAddress.street ? "border-red-500" : ""
+                            }`}
                           placeholder="Street"
                           aria-describedby="hs-input-helper-text"
                           value={userAddress.street || ""}
@@ -1347,11 +1361,10 @@ const Settings = () => {
                       type="text"
                       disabled={editButton}
                       id="username"
-                      className={`py-3 px-4 block w-full border-2 text-black rounded-md text-sm  bg-white ${
-                        error && !userCred.username.trim()
+                      className={`py-3 px-4 block w-full border-2 text-black rounded-md text-sm  bg-white ${error && !userCred.username.trim()
                           ? "border-red-500"
                           : "border-gray-200"
-                      }`}
+                        }`}
                       placeholder="Username"
                       aria-describedby="hs-input-helper-text"
                       value={userCred.username || ""}
@@ -1377,11 +1390,10 @@ const Settings = () => {
                       type={oldpasswordShown ? "text" : "password"}
                       disabled={editButton}
                       id="oldpass"
-                      className={`py-3 px-4 block w-full  text-black rounded-md text-sm border-2 bg-white ${
-                        error && !userCred.oldPass.trim()
+                      className={`py-3 px-4 block w-full  text-black rounded-md text-sm border-2 bg-white ${error && !userCred.oldPass.trim()
                           ? "border-red-500"
                           : "border-gray-200"
-                      }`}
+                        }`}
                       placeholder="Password"
                       aria-describedby="hs-input-helper-text"
                       onChange={(e) =>
@@ -1474,11 +1486,10 @@ const Settings = () => {
                         type={oldpasswordShown ? "text" : "password"}
                         disabled={editButton}
                         id="oldpass"
-                        className={`py-3 px-4 block w-full  text-black rounded-md text-sm border-2 bg-white ${
-                          error && !userCred.oldPass.trim()
+                        className={`py-3 px-4 block w-full  text-black rounded-md text-sm border-2 bg-white ${error && !userCred.oldPass.trim()
                             ? "border-red-500"
                             : "border-gray-200"
-                        }`}
+                          }`}
                         placeholder="Password"
                         aria-describedby="hs-input-helper-text"
                         onChange={(e) =>
@@ -1518,11 +1529,10 @@ const Settings = () => {
                         disabled={editButton}
                         readOnly={userCred.oldPass === ""}
                         id="newpass"
-                        className={`py-3 px-4 block w-full  text-black rounded-md text-sm border-2 bg-white ${
-                          error && !userCred.newPass.trim()
+                        className={`py-3 px-4 block w-full  text-black rounded-md text-sm border-2 bg-white ${error && !userCred.newPass.trim()
                             ? "border-red-500"
                             : "border-gray-200"
-                        }`}
+                          }`}
                         placeholder="Password"
                         aria-describedby="hs-input-helper-text"
                         onChange={(e) =>
@@ -1554,17 +1564,16 @@ const Settings = () => {
                       {userCred.newPass && (
                         <div className="flex w-full h-1.5 bg-gray-200 rounded-full overflow-hidden dark:bg-gray-700">
                           <div
-                            className={`flex flex-col justify-center overflow-hidden ${
-                              passwordStrength < 25
+                            className={`flex flex-col justify-center overflow-hidden ${passwordStrength < 25
                                 ? "bg-red-500"
                                 : passwordStrength < 50
-                                ? "bg-yellow-500"
-                                : passwordStrength < 75
-                                ? "bg-amber-500"
-                                : passwordStrength < 100
-                                ? "bg-blue-500"
-                                : "bg-green-500"
-                            }`}
+                                  ? "bg-yellow-500"
+                                  : passwordStrength < 75
+                                    ? "bg-amber-500"
+                                    : passwordStrength < 100
+                                      ? "bg-blue-500"
+                                      : "bg-green-500"
+                              }`}
                             role="progressbar"
                             style={{ width: `${passwordStrength}%` }}
                             aria-valuenow={passwordStrength}

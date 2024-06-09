@@ -1068,7 +1068,7 @@ const Residents = () => {
           />
         </div>
         <AddResidentsModal brgy={brgy} socket={socket} />
-        <ArchiveResidentModal selectedItems={selectedItems} socket={socket} />
+        <ArchiveResidentModal selectedItems={selectedItems} socket={socket} id={id} user={user}/>
         <GenerateReportsModal />
         <StatusResident
           user={user}
@@ -1077,6 +1077,7 @@ const Residents = () => {
           status={status}
           setStatus={setStatus}
           socket={socket}
+          id={id}
         />
         <MessageResidentModal
           user={user}

@@ -511,7 +511,7 @@ const Residents = () => {
         />
       </div>
       <ViewResidentModal user={user} setUser={setUser} brgy={brgy} />
-      <RestoreResidentModal selectedItems={selectedItems} socket={socket} />
+      <RestoreResidentModal selectedItems={selectedItems} socket={socket} id={id} user={user}/>
       <GenerateReportsModal />
     </div>
   );

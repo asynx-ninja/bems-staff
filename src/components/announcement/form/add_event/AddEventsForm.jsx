@@ -52,6 +52,7 @@ const AddEventsForm = ({
   setUpdate,
   editupdate,
   setEditUpdate,
+  id
 }) => {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
@@ -185,17 +186,40 @@ const AddEventsForm = ({
               },
             }
           );
+          if (response.status === 200) {
+            const getIP = async () => {
+              const response = await fetch(
+                "https://api64.ipify.org?format=json"
+              );
+              const data = await response.json();
+              return data.ip;
+            };
 
-          socket.emit("send-create-event-form", response.data);
-          setSubmitClicked(false);
-          setCreationStatus("success");
-          setTimeout(() => {
-            setCreationStatus(null);
-            handleResetModal();
-            HSOverlay.close(
-              document.getElementById("hs-create-eventsForm-modal")
+            const ip = await getIP(); // Retrieve IP address
+
+            const logsData = {
+              action: "Created",
+              details: `A new events forms for events (${announcement_id} entitled ${titleName})`,
+              ip: ip,
+            };
+
+            const logsResult = await axios.post(
+              `${API_LINK}/act_logs/add_logs/?id=${id}`,
+              logsData
             );
-          }, 3000);
+            if (logsResult.status === 200) {
+              socket.emit("send-create-event-form", response.data);
+              setSubmitClicked(false);
+              setCreationStatus("success");
+              setTimeout(() => {
+                setCreationStatus(null);
+                handleResetModal();
+                HSOverlay.close(
+                  document.getElementById("hs-create-eventsForm-modal")
+                );
+              }, 3000);
+            }
+          }
         }
       } else {
         setSubmitClicked(true);
@@ -228,7 +252,7 @@ const AddEventsForm = ({
       setCreationStatus("error");
       setError(
         err.message ||
-          "An error occurred while creating/updating the announcement."
+        "An error occurred while creating/updating the announcement."
       );
     }
   };

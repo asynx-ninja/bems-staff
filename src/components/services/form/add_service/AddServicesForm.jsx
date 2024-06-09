@@ -40,7 +40,7 @@ const initialState = {
   },
 };
 
-const AddServicesForm = ({ service_id, socket, brgy, setUpdate }) => {
+const AddServicesForm = ({ service_id, socket, brgy, setUpdate, id }) => {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
@@ -130,7 +130,7 @@ const AddServicesForm = ({ service_id, socket, brgy, setUpdate }) => {
 
   const handleSubmit = async (e) => {
     setError(null); // Reset error state
-    
+
     try {
       // Prepare the request payload
       const requestData = {
@@ -160,16 +160,40 @@ const AddServicesForm = ({ service_id, socket, brgy, setUpdate }) => {
               },
             }
           );
-          socket.emit("send-create-service-form", response.data);
-          setSubmitClicked(false);
-          setCreationStatus("success");
-          setTimeout(() => {
-            setCreationStatus(null);
-            handleResetModal();
-            HSOverlay.close(
-              document.getElementById("hs-create-serviceForm-modal")
+          if (response.status === 200) {
+            const getIP = async () => {
+              const response = await fetch(
+                "https://api64.ipify.org?format=json"
+              );
+              const data = await response.json();
+              return data.ip;
+            };
+
+            const ip = await getIP(); // Retrieve IP address
+
+            const logsData = {
+              action: "Created",
+              details: `A new events forms for events (${service_id}) entitled`,
+              ip: ip,
+            };
+
+            const logsResult = await axios.post(
+              `${API_LINK}/act_logs/add_logs/?id=${id}`,
+              logsData
             );
-          }, 3000);
+            if (logsResult.status === 200) {
+              socket.emit("send-create-service-form", response.data);
+              setSubmitClicked(false);
+              setCreationStatus("success");
+              setTimeout(() => {
+                setCreationStatus(null);
+                handleResetModal();
+                HSOverlay.close(
+                  document.getElementById("hs-create-serviceForm-modal")
+                );
+              }, 3000);
+            }
+          }
         }
       } else {
         setSubmitClicked(true);
@@ -200,7 +224,7 @@ const AddServicesForm = ({ service_id, socket, brgy, setUpdate }) => {
       setSubmitClicked(false);
       setError(
         err.message ||
-          "An error occurred while creating/updating the service."
+        "An error occurred while creating/updating the service."
       );
     }
   };

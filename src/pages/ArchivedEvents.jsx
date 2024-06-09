@@ -24,6 +24,7 @@ const ArchivedEvents = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
+  const id = searchParams.get("id");
   const [announcement, setAnnouncement] = useState([]);
   const [status, setStatus] = useState({});
   const [sortOrder, setSortOrder] = useState("desc");
@@ -588,7 +589,7 @@ const ArchivedEvents = () => {
           setAnnouncement={setAnnouncement}
           brgy={brgy}
         />
-        <RestoreAnnouncementModal selectedItems={selectedItems} socket={socket}/>
+        <RestoreAnnouncementModal selectedItems={selectedItems} socket={socket} id={id}/>
       </div>
     </div>
   );

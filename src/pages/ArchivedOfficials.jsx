@@ -535,7 +535,7 @@ const ArchivedOfficials = () => {
       </div>
       <GenerateReportsModal />
       <ArchiveOfficialModal />
-      <RestoreOfficialModal selectedItems={selectedItems} socket={socket} />
+      <RestoreOfficialModal selectedItems={selectedItems} socket={socket} id={id}/>
       <ViewOfficialModal
         selectedOfficial={selectedOfficial}
         setSelectedOfficial={setSelectedOfficial}

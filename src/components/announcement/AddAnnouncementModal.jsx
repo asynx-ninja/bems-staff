@@ -12,7 +12,7 @@ import GetBrgy from "../GETBrgy/getbrgy";
 // import { io } from "socket.io-client";
 // const socket = io("http://localhost:8800");
 
-function CreateAnnouncementModal({ brgy, socket }) {
+function CreateAnnouncementModal({ brgy, socket, id }) {
   const [announcement, setAnnouncement] = useState({
     title: "",
     details: "",
@@ -108,25 +108,25 @@ function CreateAnnouncementModal({ brgy, socket }) {
       setError(null); // Reset error state
       setCreationStatus(null);
       setEmpty(false);
-  
+
       console.log("Submit button clicked");
-  
+
       const emptyFieldsArr = checkEmptyFieldsForAnnouncement();
-  
+
       if (emptyFieldsArr.length > 0) {
         console.log("Empty fields detected:", emptyFieldsArr);
         setEmpty(true);
         setSubmitClicked(false);
         return;
       }
-  
+
       const formData = new FormData();
       const newFiles = [banner, logo, ...files].filter((file) => file);
-  
+
       for (const file of newFiles) {
         formData.append("files", file);
       }
-  
+
       const obj = {
         title: announcement.title,
         details: announcement.details,
@@ -134,27 +134,27 @@ function CreateAnnouncementModal({ brgy, socket }) {
         brgy: brgy,
         isOpen: announcement.isOpen,
       };
-  
+
       formData.append("announcement", JSON.stringify(obj));
-  
+
       console.log("Form data prepared:", obj);
-  
+
       const res_folder = await axios.get(`${API_LINK}/folder/specific/?brgy=${brgy}`);
-  
+
       if (res_folder.status === 200) {
         console.log("Folder fetched successfully:", res_folder.data[0].events);
-  
+
         const response = await axios.post(
           `${API_LINK}/announcement/?event_folder_id=${res_folder.data[0].events}`,
           formData
         );
-  
+
         console.log("Announcement response:", response);
-  
+
         if (response.status === 200) {
           socket.emit("send-get-event", response.data);
           let notify;
-  
+
           if (announcement.isOpen) {
             notify = {
               category: "All",
@@ -202,25 +202,45 @@ function CreateAnnouncementModal({ brgy, socket }) {
               logo: response.data.collections.logo,
             };
           }
-  
+
           const result = await axios.post(`${API_LINK}/notification/`, notify, {
             headers: {
               "Content-Type": "application/json",
             },
           });
-  
+
           console.log("Notification response:", result);
-  
+
           if (result.status === 200) {
-            socket.emit("send-resident-notif", result.data);
-            clearForm();
-            setSubmitClicked(false);
-            setCreationStatus("success");
-            setTimeout(() => {
-              setSubmitClicked(null);
-              setCreationStatus(null);
-              HSOverlay.close(document.getElementById("hs-modal-add"));
-            }, 3000);
+            const getIP = async () => {
+              const response = await fetch("https://api64.ipify.org?format=json");
+              const data = await response.json();
+              return data.ip;
+            };
+
+            const ip = await getIP(); // Retrieve IP address
+
+            const logsData = {
+              action: "Created",
+              details: "A new event named" + announcement.title,
+              ip: ip,
+            };
+
+            const logsResult = await axios.post(
+              `${API_LINK}/act_logs/add_logs/?id=${id}`,
+              logsData
+            );
+            if (logsResult.status === 200) {
+              socket.emit("send-resident-notif", result.data);
+              clearForm();
+              setSubmitClicked(false);
+              setCreationStatus("success");
+              setTimeout(() => {
+                setSubmitClicked(null);
+                setCreationStatus(null);
+                HSOverlay.close(document.getElementById("hs-modal-add"));
+              }, 3000);
+            }
           }
         }
       }
@@ -231,7 +251,7 @@ function CreateAnnouncementModal({ brgy, socket }) {
       setError(err.message);
     }
   };
-  
+
 
   const checkEmptyFieldsForAnnouncement = () => {
     let arr = [];
@@ -288,9 +308,8 @@ function CreateAnnouncementModal({ brgy, socket }) {
                       `}
                     >
                       <img
-                        className={`${
-                          logo ? "" : "hidden"
-                        } w-[200px] md:w-[250px]  lg:w-full md:h-[140px] lg:h-[250px] object-cover`}
+                        className={`${logo ? "" : "hidden"
+                          } w-[200px] md:w-[250px]  lg:w-full md:h-[140px] lg:h-[250px] object-cover`}
                         id="add_logo"
                         alt="Current profile photo"
                       />{" "}
@@ -300,11 +319,10 @@ function CreateAnnouncementModal({ brgy, socket }) {
                       />
                     </div>
                     <label
-                      className={`w-full bg-white border ${
-                        emptyFields.includes("logo")
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
+                      className={`w-full bg-white border ${emptyFields.includes("logo")
+                        ? "border-red-500"
+                        : "border-gray-300"
+                        }`}
                     >
                       <span className="sr-only">Choose logo photo</span>
                       <input
@@ -331,9 +349,8 @@ function CreateAnnouncementModal({ brgy, socket }) {
                       `}
                     >
                       <img
-                        className={`${
-                          banner ? "" : "hidden"
-                        } w-[200px] md:w-[250px]  lg:w-full md:h-[140px] lg:h-[250px] object-cover`}
+                        className={`${banner ? "" : "hidden"
+                          } w-[200px] md:w-[250px]  lg:w-full md:h-[140px] lg:h-[250px] object-cover`}
                         id="add_banner"
                         alt="Current profile photo"
                       />{" "}
@@ -343,11 +360,10 @@ function CreateAnnouncementModal({ brgy, socket }) {
                       />
                     </div>
                     <label
-                      className={`w-full bg-white border ${
-                        emptyFields.includes("banner")
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
+                      className={`w-full bg-white border ${emptyFields.includes("banner")
+                        ? "border-red-500"
+                        : "border-gray-300"
+                        }`}
                     >
                       <span className="sr-only">Choose banner photo</span>
                       <input
@@ -386,11 +402,10 @@ function CreateAnnouncementModal({ brgy, socket }) {
                 </label>
                 <input
                   id="title"
-                  className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                    emptyFields.includes("details")
-                      ? "border-red-500"
-                      : "border-gray-300"
-                  } focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline`}
+                  className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("details")
+                    ? "border-red-500"
+                    : "border-gray-300"
+                    } focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline`}
                   name="title"
                   type="text"
                   value={announcement.title}
@@ -412,11 +427,10 @@ function CreateAnnouncementModal({ brgy, socket }) {
                   name="details"
                   value={announcement.details}
                   onChange={handleChange}
-                  className={`block p-2.5 w-full text-sm text-gray-700 rounded-lg border ${
-                    emptyFields.includes("details")
-                      ? "border-red-500"
-                      : "border-gray-300"
-                  } focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline`}
+                  className={`block p-2.5 w-full text-sm text-gray-700 rounded-lg border ${emptyFields.includes("details")
+                    ? "border-red-500"
+                    : "border-gray-300"
+                    } focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline`}
                   placeholder="Enter announcement details..."
                   required
                 />
@@ -429,9 +443,8 @@ function CreateAnnouncementModal({ brgy, socket }) {
                   Date
                 </label>
                 <input
-                  className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                    emptyFields.includes("date") && "border-red-500"
-                  }`}
+                  className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("date") && "border-red-500"
+                    }`}
                   id="date"
                   name="date"
                   type="date"

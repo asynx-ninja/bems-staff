@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { BiSolidDashboard } from "react-icons/bi";
+import { MdLocalActivity } from "react-icons/md";
 import { TfiAnnouncement } from "react-icons/tfi";
 import { SiGoogleforms } from "react-icons/si";
 import { BsCalendar2Event } from "react-icons/bs";
@@ -98,7 +99,7 @@ const Sidebar = () => {
           const residentInquiries = inquiries.filter((inquiry) => {
             const latestResponse =
               inquiry.response[inquiry.response.length - 1];
-     
+
             return (
               latestResponse &&
               latestResponse.type === "Resident" &&
@@ -220,6 +221,8 @@ const Sidebar = () => {
           setSelectedOption("staff_management");
         } else if (currentPath.includes("/info")) {
           setSelectedOption("info");
+        } else if (currentPath.includes("/activity_logs")) {
+          setSelectedOption("activity_logs");
         } else if (currentPath.includes("/settings")) {
           setSelectedOption("settings");
         }
@@ -326,21 +329,21 @@ const Sidebar = () => {
 
                       window.innerWidth >= 320 && window.innerWidth <= 1023
                         ? document
-                            .getQuerySelector(
-                              "[data-hs-overlay-backdrop-template]"
-                            )
-                            .remove()
+                          .getQuerySelector(
+                            "[data-hs-overlay-backdrop-template]"
+                          )
+                          .remove()
                         : null;
                     }}
                     style={{
                       background:
                         selectedOption === "dashboard" ||
-                        hoverStates["dashboard"]
+                          hoverStates["dashboard"]
                           ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
                           : null,
                       color:
                         selectedOption === "dashboard" ||
-                        hoverStates["dashboard"]
+                          hoverStates["dashboard"]
                           ? `${information?.theme.hover}`
                           : null,
                     }}
@@ -374,12 +377,12 @@ const Sidebar = () => {
                         : null,
                       color:
                         isClicked &&
-                        (selectedOption === "events_management" ||
-                          selectedOption === "events_registrations")
+                          (selectedOption === "events_management" ||
+                            selectedOption === "events_registrations")
                           ? `${information?.theme?.hover}`
                           : hoverStates["events"]
-                          ? `${information?.theme?.hover}`
-                          : null,
+                            ? `${information?.theme?.hover}`
+                            : null,
                     }}
                     onMouseEnter={() => handleMouseEnter("events")}
                     onMouseLeave={() => handleMouseLeave("events")}
@@ -418,21 +421,21 @@ const Sidebar = () => {
                         setSelectedOption("events_management");
                         window.innerWidth >= 320 && window.innerWidth <= 1023
                           ? document
-                              .getQuerySelector(
-                                "[data-hs-overlay-backdrop-template]"
-                              )
-                              .remove()
+                            .getQuerySelector(
+                              "[data-hs-overlay-backdrop-template]"
+                            )
+                            .remove()
                           : null;
                       }}
                       style={{
                         background:
                           selectedOption === "events_management" ||
-                          hoverStates["events_management"]
+                            hoverStates["events_management"]
                             ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
                             : null,
                         color:
                           selectedOption === "events_management" ||
-                          hoverStates["events_management"]
+                            hoverStates["events_management"]
                             ? `${information?.theme.hover}`
                             : null,
                       }}
@@ -449,21 +452,21 @@ const Sidebar = () => {
                         setSelectedOption("events_registrations");
                         window.innerWidth >= 320 && window.innerWidth <= 1023
                           ? document
-                              .getQuerySelector(
-                                "[data-hs-overlay-backdrop-template]"
-                              )
-                              .remove()
+                            .getQuerySelector(
+                              "[data-hs-overlay-backdrop-template]"
+                            )
+                            .remove()
                           : null;
                       }}
                       style={{
                         background:
                           selectedOption === "events_registrations" ||
-                          hoverStates["events_registrations"]
+                            hoverStates["events_registrations"]
                             ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
                             : null,
                         color:
                           selectedOption === "events_registrations" ||
-                          hoverStates["events_registrations"]
+                            hoverStates["events_registrations"]
                             ? `${information?.theme.hover}`
                             : null,
                       }}
@@ -503,13 +506,13 @@ const Sidebar = () => {
                         : null,
                       color:
                         isClicked &&
-                        (selectedOption === "services" ||
-                          selectedOption === "requests" ||
-                          hoverStates["parent_services"])
+                          (selectedOption === "services" ||
+                            selectedOption === "requests" ||
+                            hoverStates["parent_services"])
                           ? `${information?.theme?.hover}`
                           : hoverStates["parent_services"]
-                          ? `${information?.theme?.hover}`
-                          : null,
+                            ? `${information?.theme?.hover}`
+                            : null,
                     }}
                     onMouseEnter={() => handleMouseEnter("parent_services")}
                     onMouseLeave={() => handleMouseLeave("parent_services")}
@@ -548,21 +551,21 @@ const Sidebar = () => {
                         setSelectedOption("services");
                         window.innerWidth >= 320 && window.innerWidth <= 1023
                           ? document
-                              .getQuerySelector(
-                                "[data-hs-overlay-backdrop-template]"
-                              )
-                              .remove()
+                            .getQuerySelector(
+                              "[data-hs-overlay-backdrop-template]"
+                            )
+                            .remove()
                           : null;
                       }}
                       style={{
                         background:
                           selectedOption === "services" ||
-                          hoverStates["services"]
+                            hoverStates["services"]
                             ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
                             : null,
                         color:
                           selectedOption === "services" ||
-                          hoverStates["services"]
+                            hoverStates["services"]
                             ? `${information?.theme.hover}`
                             : null,
                       }}
@@ -580,21 +583,21 @@ const Sidebar = () => {
                         setSelectedOption("requests");
                         window.innerWidth >= 320 && window.innerWidth <= 1023
                           ? document
-                              .getQuerySelector(
-                                "[data-hs-overlay-backdrop-template]"
-                              )
-                              .remove()
+                            .getQuerySelector(
+                              "[data-hs-overlay-backdrop-template]"
+                            )
+                            .remove()
                           : null;
                       }}
                       style={{
                         background:
                           selectedOption === "requests" ||
-                          hoverStates["requests"]
+                            hoverStates["requests"]
                             ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
                             : null,
                         color:
                           selectedOption === "requests" ||
-                          hoverStates["requests"]
+                            hoverStates["requests"]
                             ? `${information?.theme.hover}`
                             : null,
                       }}
@@ -625,21 +628,21 @@ const Sidebar = () => {
                     onClick={() => {
                       window.innerWidth >= 320 && window.innerWidth <= 1023
                         ? document
-                            .getQuerySelector(
-                              "[data-hs-overlay-backdrop-template]"
-                            )
-                            .remove()
+                          .getQuerySelector(
+                            "[data-hs-overlay-backdrop-template]"
+                          )
+                          .remove()
                         : null;
                     }}
                     style={{
                       background:
                         selectedOption === "inquiries" ||
-                        hoverStates["inquiries"]
+                          hoverStates["inquiries"]
                           ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
                           : null,
                       color:
                         selectedOption === "inquiries" ||
-                        hoverStates["inquiries"]
+                          hoverStates["inquiries"]
                           ? `${information?.theme.hover}`
                           : null,
                     }}
@@ -666,10 +669,10 @@ const Sidebar = () => {
                     onClick={() => {
                       window.innerWidth >= 320 && window.innerWidth <= 1023
                         ? document
-                            .getQuerySelector(
-                              "[data-hs-overlay-backdrop-template]"
-                            )
-                            .remove()
+                          .getQuerySelector(
+                            "[data-hs-overlay-backdrop-template]"
+                          )
+                          .remove()
                         : null;
                     }}
                     style={{
@@ -705,21 +708,21 @@ const Sidebar = () => {
                     onClick={() => {
                       window.innerWidth >= 320 && window.innerWidth <= 1023
                         ? document
-                            .getQuerySelector(
-                              "[data-hs-overlay-backdrop-template]"
-                            )
-                            .remove()
+                          .getQuerySelector(
+                            "[data-hs-overlay-backdrop-template]"
+                          )
+                          .remove()
                         : null;
                     }}
                     style={{
                       background:
                         selectedOption === "residents" ||
-                        hoverStates["residents"]
+                          hoverStates["residents"]
                           ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
                           : null,
                       color:
                         selectedOption === "residents" ||
-                        hoverStates["residents"]
+                          hoverStates["residents"]
                           ? `${information?.theme.hover}`
                           : null,
                     }}
@@ -744,15 +747,16 @@ const Sidebar = () => {
                           : null,
                         color:
                           isClicked &&
-                          (selectedOption === "reports" ||
-                            selectedOption === "officials" ||
-                            selectedOption === "staff_management" ||
-                            selectedOption === "info" ||
-                            hoverStates["information"])
+                            (selectedOption === "reports" ||
+                              selectedOption === "officials" ||
+                              selectedOption === "staff_management" ||
+                              selectedOption === "info" ||
+                              selectedOption === "activity_logs" ||
+                              hoverStates["information"])
                             ? `${information?.theme?.hover}`
                             : hoverStates["information"]
-                            ? `${information?.theme?.hover}`
-                            : null,
+                              ? `${information?.theme?.hover}`
+                              : null,
                       }}
                       onMouseEnter={() => handleMouseEnter("information")}
                       onMouseLeave={() => handleMouseLeave("information")}
@@ -790,21 +794,21 @@ const Sidebar = () => {
                         onClick={() => {
                           window.innerWidth >= 320 && window.innerWidth <= 1023
                             ? document
-                                .getQuerySelector(
-                                  "[data-hs-overlay-backdrop-template]"
-                                )
-                                .remove()
+                              .getQuerySelector(
+                                "[data-hs-overlay-backdrop-template]"
+                              )
+                              .remove()
                             : null;
                         }}
                         style={{
                           background:
                             selectedOption === "reports" ||
-                            hoverStates["reports"]
+                              hoverStates["reports"]
                               ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
                               : null,
                           color:
                             selectedOption === "reports" ||
-                            hoverStates["reports"]
+                              hoverStates["reports"]
                               ? `${information?.theme.hover}`
                               : null,
                         }}
@@ -821,21 +825,21 @@ const Sidebar = () => {
                         onClick={() => {
                           window.innerWidth >= 320 && window.innerWidth <= 1023
                             ? document
-                                .getQuerySelector(
-                                  "[data-hs-overlay-backdrop-template]"
-                                )
-                                .remove()
+                              .getQuerySelector(
+                                "[data-hs-overlay-backdrop-template]"
+                              )
+                              .remove()
                             : null;
                         }}
                         style={{
                           background:
                             selectedOption === "officials" ||
-                            hoverStates["officials"]
+                              hoverStates["officials"]
                               ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
                               : null,
                           color:
                             selectedOption === "officials" ||
-                            hoverStates["officials"]
+                              hoverStates["officials"]
                               ? `${information?.theme.hover}`
                               : null,
                         }}
@@ -852,21 +856,21 @@ const Sidebar = () => {
                         onClick={() => {
                           window.innerWidth >= 320 && window.innerWidth <= 1023
                             ? document
-                                .getQuerySelector(
-                                  "[data-hs-overlay-backdrop-template]"
-                                )
-                                .remove()
+                              .getQuerySelector(
+                                "[data-hs-overlay-backdrop-template]"
+                              )
+                              .remove()
                             : null;
                         }}
                         style={{
                           background:
                             selectedOption === "staff_management" ||
-                            hoverStates["staff_management"]
+                              hoverStates["staff_management"]
                               ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
                               : null,
                           color:
                             selectedOption === "staff_management" ||
-                            hoverStates["staff_management"]
+                              hoverStates["staff_management"]
                               ? `${information?.theme.hover}`
                               : null,
                         }}
@@ -887,10 +891,10 @@ const Sidebar = () => {
                         onClick={() => {
                           window.innerWidth >= 320 && window.innerWidth <= 1023
                             ? document
-                                .getQuerySelector(
-                                  "[data-hs-overlay-backdrop-template]"
-                                )
-                                .remove()
+                              .getQuerySelector(
+                                "[data-hs-overlay-backdrop-template]"
+                              )
+                              .remove()
                             : null;
                         }}
                         style={{
@@ -910,6 +914,37 @@ const Sidebar = () => {
                         <FaChalkboardTeacher size={15} />
                         Barangay Information
                       </Link>
+
+                      <Link
+                        to={`/activity_logs/?id=${id}&brgy=${brgy}`}
+                        onClick={() => {
+                          window.innerWidth >= 320 && window.innerWidth <= 1023
+                            ? document
+                              .getQuerySelector(
+                                "[data-hs-overlay-backdrop-template]"
+                              )
+                              .remove()
+                            : null;
+                        }}
+                        style={{
+                          background:
+                            selectedOption === "activity_logs" ||
+                              hoverStates["activity_logs"]
+                              ? `linear-gradient(to right, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`
+                              : null,
+                          color:
+                            selectedOption === "activity_logs" ||
+                              hoverStates["activity_logs"]
+                              ? `${information?.theme.hover}`
+                              : null,
+                        }}
+                        onMouseEnter={() => handleMouseEnter("activity_logs")}
+                        onMouseLeave={() => handleMouseLeave("activity_logs")}
+                        className={`flex items-center mt-1 gap-x-3 py-2 px-2.5 ml-3 text-sm rounded-md `}
+                      >
+                        <MdLocalActivity size={15} />
+                       Activity Logs
+                      </Link>
                     </div>
                   </li>
                 ) : null}
@@ -919,10 +954,10 @@ const Sidebar = () => {
                     onClick={() => {
                       window.innerWidth >= 320 && window.innerWidth <= 1023
                         ? document
-                            .getQuerySelector(
-                              "[data-hs-overlay-backdrop-template]"
-                            )
-                            .remove()
+                          .getQuerySelector(
+                            "[data-hs-overlay-backdrop-template]"
+                          )
+                          .remove()
                         : null;
                     }}
                     style={{
@@ -951,10 +986,10 @@ const Sidebar = () => {
                     onClick={() => {
                       window.innerWidth >= 320 && window.innerWidth <= 1023
                         ? document
-                            .getQuerySelector(
-                              "[data-hs-overlay-backdrop-template]"
-                            )
-                            .remove()
+                          .getQuerySelector(
+                            "[data-hs-overlay-backdrop-template]"
+                          )
+                          .remove()
                         : null;
                     }}
                     style={{

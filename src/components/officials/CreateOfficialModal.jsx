@@ -7,7 +7,7 @@ import AddLoader from "./loaders/AddLoader";
 import ErrorPopup from "./popup/ErrorPopup";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function CreateOfficialModal({ brgy, socket }) {
+function CreateOfficialModal({ brgy, socket, id }) {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
@@ -90,7 +90,26 @@ function CreateOfficialModal({ brgy, socket }) {
         );
 
         if (result.status === 200) {
-       
+          const getIP = async () => {
+            const response = await fetch("https://api64.ipify.org?format=json");
+            const data = await response.json();
+            return data.ip;
+          };
+
+          const ip = await getIP(); // Retrieve IP address
+
+          const logsData = {
+            action: "Created",
+            details: "A new barangay official named" + official.firstName + " " + official.lastName,
+            ip: ip,
+          };
+
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
+            socket.emit('send-create-official', result.data);
           setOfficial({
             firstName: '',
             middleName: '',
@@ -101,8 +120,8 @@ function CreateOfficialModal({ brgy, socket }) {
             toYear: '',
             brgy: brgy,
           });
-
-          socket.emit('send-create-official', result.data);
+        }
+          
           setPfp(null);
           setSubmitClicked(false);
           setCreationStatus('success');
@@ -163,9 +182,8 @@ function CreateOfficialModal({ brgy, socket }) {
                     <div className="relative w-full overflow-y-auto">
                       <div className="relative w-full border rounded-t-xl">
                         <img
-                          className={`${
-                            pfp ? "" : "hidden"
-                          } w-[250px] h-[250px] md:w-full md:h-[350px] lg:w-full lg:h-[250px] rounded-t-xl object-cover`}
+                          className={`${pfp ? "" : "hidden"
+                            } w-[250px] h-[250px] md:w-full md:h-[350px] lg:w-full lg:h-[250px] rounded-t-xl object-cover`}
                           id="add_pfp"
                           alt="Current profile photo"
                         />{" "}
@@ -201,9 +219,8 @@ function CreateOfficialModal({ brgy, socket }) {
                       type="text"
                       id="firstName"
                       name="firstName"
-                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                        emptyFields.includes("firstName") && "border-red-500"
-                      }`}
+                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("firstName") && "border-red-500"
+                        }`}
                       placeholder=""
                       value={official.firstName}
                       onChange={(e) =>
@@ -221,9 +238,8 @@ function CreateOfficialModal({ brgy, socket }) {
                       type="text"
                       id="middleName"
                       name="middleName"
-                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                        emptyFields.includes("middleName") && "border-red-500"
-                      }`}
+                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("middleName") && "border-red-500"
+                        }`}
                       placeholder=""
                       value={official.middleName}
                       onChange={(e) =>
@@ -258,9 +274,8 @@ function CreateOfficialModal({ brgy, socket }) {
                       type="text"
                       id="lastName"
                       name="lastName"
-                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                        emptyFields.includes("lastName") && "border-red-500"
-                      }`}
+                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("lastName") && "border-red-500"
+                        }`}
                       placeholder=""
                       value={official.lastName}
                       onChange={(e) =>
@@ -286,9 +301,8 @@ function CreateOfficialModal({ brgy, socket }) {
                     <select
                       id="position"
                       name="position"
-                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${
-                        emptyFields.includes("position") && "border-red-500"
-                      }`}
+                      className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("position") && "border-red-500"
+                        }`}
                       onChange={(e) =>
                         setOfficial({ ...official, position: e.target.value })
                       }

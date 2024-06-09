@@ -16,6 +16,7 @@ const Information = () => {
   const [information, setInformation] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
+  const id = searchParams.get("id");
   const [brgyInformation, setBrgyInformation] = useState({});
   const [isEditingMode, setisEditingMode] = useState(false);
   const [logo, setLogo] = useState();
@@ -106,13 +107,33 @@ const Information = () => {
           `${API_LINK}/brgyinfo/${brgy}/?folder_id=${response.data[0].info}`,
           formData
         );
-        socket.emit("send-update-brgy-info", result.data);
-        setBrgyInformation({});
-        setSubmitClicked(false);
-        setTimeout(() => {
-          setUpdatingStatus(null);
-          setisEditingMode(false);
-        }, 1000);
+        const getIP = async () => {
+          const response = await fetch("https://api64.ipify.org?format=json");
+          const data = await response.json();
+          return data.ip;
+        };
+
+        const ip = await getIP(); // Retrieve IP address
+
+        const logsData = {
+          action: "Updated",
+          details: "The barangay information" ,
+          ip: ip,
+        };
+
+        const logsResult = await axios.post(
+          `${API_LINK}/act_logs/add_logs/?id=${id}`,
+          logsData
+        );
+        if (logsResult.status === 200) {
+          socket.emit("send-update-brgy-info", result.data);
+          setBrgyInformation({});
+          setSubmitClicked(false);
+          setTimeout(() => {
+            setUpdatingStatus(null);
+            setisEditingMode(false);
+          }, 1000);
+        }
       } else {
         console.error("No Data Found");
       }

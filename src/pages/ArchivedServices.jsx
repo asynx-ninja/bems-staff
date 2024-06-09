@@ -22,6 +22,7 @@ const ArchivedServices = () => {
   const [services, setServices] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const brgy = searchParams.get("brgy");
+  const id = searchParams.get("id");
   const [service, setService] = useState([]);
   const [sortOrder, setSortOrder] = useState("desc");
   const [sortColumn, setSortColumn] = useState(null);
@@ -464,7 +465,7 @@ const ArchivedServices = () => {
           renderOnZeroPageCount={null}
         />
       </div>
-      <RestoreServicesModal selectedItems={selectedItems} socket={socket}/>
+      <RestoreServicesModal selectedItems={selectedItems} socket={socket} id={id}/>
       <ViewArchivedServiceModal service={service} setService={setService} brgy={brgy} />
       <ArchivedServicesReportsModal />
     </div>

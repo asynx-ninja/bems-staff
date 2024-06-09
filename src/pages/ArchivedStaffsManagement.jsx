@@ -477,7 +477,7 @@ const ArchivedStaffsManagement = () => {
         />
       </div>
       <ViewArchivedStaff user={user} setUser={setUser} brgy={brgy} />
-      <RestoreStaffModal selectedItems={selectedItems} socket={socket} />
+      <RestoreStaffModal selectedItems={selectedItems} socket={socket} id ={id}/>
       <GenerateReportsModal />
     </div>
   );

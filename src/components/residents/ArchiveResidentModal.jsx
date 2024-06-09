@@ -6,15 +6,18 @@ import { IoArchiveOutline } from "react-icons/io5";
 import { useState } from "react";
 import ArchiveLoader from "./loaders/ArchiveLoader";
 
-function ArchiveResidentModal({ selectedItems, socket }) {
+function ArchiveResidentModal({ selectedItems, socket, id, user }) {
+  console.log(user)
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
   console.log("error", selectedItems);
 
+
+
   const handleSave = async (e) => {
+    e.preventDefault();
     try {
-      e.preventDefault();
       if (selectedItems.length === 0) {
         setUpdatingStatus("error");
         setError("Unable to archive, Please select first to archive.");
@@ -22,7 +25,6 @@ function ArchiveResidentModal({ selectedItems, socket }) {
           setUpdatingStatus(null);
           HSOverlay.close(document.getElementById("hs-modal-archiveResident"));
         }, 3000);
-
         console.log("error", selectedItems);
         return;
       }
@@ -32,20 +34,42 @@ function ArchiveResidentModal({ selectedItems, socket }) {
         const response = await axios.patch(
           `${API_LINK}/users/archived/${selectedItems[i]}/true`
         );
-        
-        if (response.status === 200) {
-          socket.emit("send-archive-staff", response.data);
 
-          setSubmitClicked(false);
-          setError(null);
-          setUpdatingStatus("success");
-          setTimeout(() => {
-            setUpdatingStatus(null);
-            HSOverlay.close(document.getElementById("hs-modal-archiveResident"));
-          }, 3000);
+        if (response.status === 200) {
+          const getIP = async () => {
+            const response = await fetch("https://api64.ipify.org?format=json");
+            const data = await response.json();
+            return data.ip;
+          };
+
+          const ip = await getIP(); // Retrieve IP address
+
+          console.log("User before creating logsData:", user);
+
+          const logsData = {
+            action: "Archived",
+            details: `A Resident with an id of (${selectedItems[i]})`,
+            ip: ip,
+          };
+
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+
+          if (logsResult.status === 200) {
+            socket.emit("send-archive-staff", response.data);
+
+            setSubmitClicked(false);
+            setError(null);
+            setUpdatingStatus("success");
+            setTimeout(() => {
+              setUpdatingStatus(null);
+              HSOverlay.close(document.getElementById("hs-modal-archiveResident"));
+            }, 3000);
+          }
         }
       }
- 
     } catch (err) {
       console.log(err);
     }
@@ -54,7 +78,7 @@ function ArchiveResidentModal({ selectedItems, socket }) {
   return (
     <div
       id="hs-modal-archiveResident"
-        className="z-[100] hs-overlay hidden w-full h-full fixed top-0 left-0 z-60 overflow-x-hidden overflow-y-auto"
+      className="z-[100] hs-overlay hidden w-full h-full fixed top-0 left-0 z-60 overflow-x-hidden overflow-y-auto"
     >
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-400 bg-opacity-0 ">
         <div className="flex items-center justify-center min-h-screen pt-4 pb-20 ">

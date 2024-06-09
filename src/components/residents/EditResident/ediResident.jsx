@@ -155,7 +155,7 @@ const EditResidents = ({ props }) => {
             }
           );
 
-         
+
 
           setVerification((prev) => ({
             ...prev,
@@ -262,7 +262,7 @@ const EditResidents = ({ props }) => {
 
     const newArray = verification[name].filter((item, index) => index !== idx);
 
-   
+
 
     setVerification((prev) => ({
       ...prev,
@@ -341,7 +341,7 @@ const EditResidents = ({ props }) => {
           formData.append("oldVerification", JSON.stringify(user.verification));
           formData.append("newVerification", JSON.stringify(verification));
 
-   
+
 
           if (!verification.selfie.hasOwnProperty("link")) {
             // Use the existing Blob for selfie
@@ -361,15 +361,14 @@ const EditResidents = ({ props }) => {
           if (primaryUpload.length > 0) {
             for (let i = 0; i < primaryUpload.length; i += 1) {
               let file = {
-                name: `${user.lastName}, ${
-                  user.firstName
-                } - PRIMARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
+                name: `${user.lastName}, ${user.firstName
+                  } - PRIMARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
                 size: primaryUpload[i].size,
                 type: primaryUpload[i].type,
                 uri: primaryUpload[i].uri,
               };
 
-           
+
 
               formData.append(
                 "files",
@@ -381,11 +380,10 @@ const EditResidents = ({ props }) => {
           if (secondaryUpload.length > 0)
             for (let i = 0; i < secondaryUpload.length; i += 1) {
               let file = {
-                name: `${user.lastName}, ${
-                  user.firstName
-                } - SECONDARY ID ${moment(new Date()).format(
-                  "MMDDYYYYHHmmss"
-                )}`,
+                name: `${user.lastName}, ${user.firstName
+                  } - SECONDARY ID ${moment(new Date()).format(
+                    "MMDDYYYYHHmmss"
+                  )}`,
                 uri: secondaryUpload[i].uri,
                 type: secondaryUpload[i].type,
                 size: secondaryUpload[i].size,
@@ -407,7 +405,7 @@ const EditResidents = ({ props }) => {
             }
           );
 
-         
+
 
           if (response.status === 200) {
             setVerification(response.data?.verification || {});
@@ -427,14 +425,32 @@ const EditResidents = ({ props }) => {
       );
 
       if (userResponse.status === 200) {
-       
-        setTimeout(() => {
+        const getIP = async () => {
+          const response = await fetch("https://api64.ipify.org?format=json");
+          const data = await response.json();
+          return data.ip;
+        };
+
+        const ip = await getIP(); // Retrieve IP address
+
+        const logsData = {
+          action: "Updated",
+          details: "A Resident",
+          ip: ip,
+        };
+
+        const logsResult = await axios.post(
+          `${API_LINK}/act_logs/add_logs/?id=${id}`,
+          logsData
+        );
+        if (logsResult.status === 200) {
+
           setSubmitClicked(false);
           setUpdatingStatus("success");
           setTimeout(() => {
             window.location.href = `/residents/?id=${id}&brgy=${brgy}`;
           }, 3000);
-        }, 1000);
+        }
       } else {
         console.error("User update failed. Status:", userResponse.status);
       }
@@ -1402,14 +1418,14 @@ const EditResidents = ({ props }) => {
                                       src={
                                         verification.selfie instanceof File
                                           ? URL.createObjectURL(
-                                              verification.selfie
-                                            )
+                                            verification.selfie
+                                          )
                                           : verification.selfie &&
                                             verification.selfie.hasOwnProperty(
                                               "link"
                                             )
-                                          ? verification.selfie.link
-                                          : verification.selfie &&
+                                            ? verification.selfie.link
+                                            : verification.selfie &&
                                             verification.selfie.uri
                                       }
                                       alt={`Selfie`}
@@ -1459,8 +1475,8 @@ const EditResidents = ({ props }) => {
                                         verification.selfie.hasOwnProperty(
                                           "link"
                                         )
-                                      ? verification.selfie.link
-                                      : verification.selfie &&
+                                        ? verification.selfie.link
+                                        : verification.selfie &&
                                         verification.selfie.uri
                                   }
                                   alt={`Selfie`}

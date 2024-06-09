@@ -16,6 +16,7 @@ function ManageStaffModal({
   socket,
   eventsForm,
   setEventsForm,
+  id
 }) {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
@@ -84,16 +85,35 @@ function ManageStaffModal({
       );
 
       if (response.status === 200) {
-        socket.emit("send-update-staff", response.data);
+        const getIP = async () => {
+          const response = await fetch("https://api64.ipify.org?format=json");
+          const data = await response.json();
+          return data.ip;
+        };
 
-        setTimeout(() => {
+        const ip = await getIP(); // Retrieve IP address
+
+        const logsData = {
+          action: "Updated",
+          details: "a barangay staff / admin" + id,
+          ip: ip,
+        };
+
+        const logsResult = await axios.post(
+          `${API_LINK}/act_logs/add_logs/?id=${id}`,
+          logsData
+        );
+        if (logsResult.status === 200) {
+          socket.emit("send-update-staff", response.data);
+
+
           setSubmitClicked(false);
           setUpdatingStatus("success");
           setTimeout(() => {
             setUpdatingStatus(null);
             HSOverlay.close(document.getElementById("hs-modal-editStaff"));
           }, 3000);
-        }, 1000);
+        }
       } else {
         console.error("Update failed. Status:", response.status);
       }
