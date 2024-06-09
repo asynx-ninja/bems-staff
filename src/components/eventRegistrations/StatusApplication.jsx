@@ -5,7 +5,15 @@ import StatusLoader from "./loaders/StatusLoader";
 import { useState } from "react";
 import GetBrgy from "../GETBrgy/getbrgy";
 
-function StatusResident({ user, setUser, brgy, status, setStatus, socket, id }) {
+function StatusApplication({
+  application,
+  setApplication,
+  brgy,
+  status,
+  setStatus,
+  socket,
+  id,
+}) {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
@@ -21,6 +29,8 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket, id }) 
     name: "resident_logo.png",
     id: "1SM_QPFb_NmyMTLdsjtEd-2M6ersJhBUc",
   });
+
+  console.log(status);
 
   const getType = (type) => {
     switch (type) {
@@ -38,26 +48,24 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket, id }) 
       setError(null); // Reset error state
 
       const response = await axios.patch(
-        `${API_LINK}/users/status/${status.id}`,
+        `${API_LINK}/application/status/?id=${status.id}`,
         {
-          isApproved: status.status,
+          status: status.status,
         },
         { headers: { "Content-Type": "application/json" } }
       );
 
       if (response.status === 200) {
         const getIP = async () => {
-          const response = await fetch(
-            "https://api64.ipify.org?format=json"
-          );
+          const response = await fetch("https://api64.ipify.org?format=json");
           const data = await response.json();
           return data.ip;
         };
-        ;
+
         const ip = await getIP(); // Retrieve IP address
         const logsData = {
           action: "Updated",
-          details: `Updated the account status of the resident ${user.firstName} ${user.lastName}`,
+          details: `Updated the status of the event application.`,
           ip: ip,
         };
 
@@ -65,96 +73,45 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket, id }) 
           `${API_LINK}/act_logs/add_logs/?id=${id}`,
           logsData
         );
+
         if (logsResult.status === 200) {
-          socket.emit("send-update-status-resident", response.data);
-          // Check if the status is "Registered" before sending notification
-          if (status.status === "Verified") {
-            const notify = {
-              category: "One",
-              compose: {
-                subject: `ACCOUNT ACTIVATION SUCCESSFUL!`,
-                message: `Welcome! Congratulations on successfully activating your account! We're delighted to welcome you to our community. You may now access the system!\n\n`,
-                go_to: null,
-              },
-              target: {
-                user_id: user.user_id,
-                area: brgy,
-              },
-              type: "Resident",
-              banner: banner,
-              logo: logo,
-            };
+          socket.emit("send-status-request-staff", response.data);
+          const notify = {
+            category: "One",
+            compose: {
+              subject: `EVENT APPLICATION STATUS UPDATED`,
+              message: `The event application you have submitted has been updated.\n\n`,
+              go_to: null,
+            },
+            target: {
+              user_id: application.form[0].user_id.value,
+              area: brgy,
+            },
+            type: "Resident",
+            banner: banner,
+            logo: logo,
+          };
 
-            const result = await axios.post(`${API_LINK}/notification/`, notify, {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            });
+          const result = await axios.post(`${API_LINK}/notification/`, notify, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
 
-            if (result.status === 200) {
-              socket.emit("send-resident-notif", result.data);
-
-              setTimeout(() => {
-                setSubmitClicked(false);
-                setUpdatingStatus("success");
-                setTimeout(() => {
-                  setSubmitClicked(null);
-                  setUpdatingStatus(null);
-                  HSOverlay.close(
-                    document.getElementById("hs-modal-statusResident")
-                  );
-                }, 3000);
-              }, 1000);
-            }
-          } else if (status.status === "Registered") {
-            const notify = {
-              category: "One",
-              compose: {
-                subject: `ACCOUNT ACTIVATION SUCCESSFUL!`,
-                message: `Welcome! You may now access limited features (Inquiries, Dashboard, and Barangay Information) of the system!\n 
-              You may verify your account to gain access to all available features!
-              \n\n`,
-                go_to: null,
-              },
-              target: {
-                user_id: user.user_id,
-                area: brgy,
-              },
-              type: "Resident",
-              banner: banner,
-              logo: logo,
-            };
-
-            const result = await axios.post(`${API_LINK}/notification/`, notify, {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            });
-
-            if (result.status === 200) {
-
-              setSubmitClicked(null);
-              setUpdatingStatus(null);
-              setTimeout(() => {
-                HSOverlay.close(
-                  document.getElementById("hs-modal-statusResident")
-                );
-              }, 3000);
-            }
-          } else {
-            // Status is not "Registered", proceed without sending notification
+          if (result.status === 200) {
+            socket.emit("send-status-request-staff", response.data);
             setTimeout(() => {
-              setSubmitClicked(null);
-              setUpdatingStatus(null);
+              setSubmitClicked(false);
+              setUpdatingStatus("success");
               setTimeout(() => {
+                setSubmitClicked(null);
+                setUpdatingStatus(null);
                 HSOverlay.close(
-                  document.getElementById("hs-modal-statusResident")
+                  document.getElementById("hs-modal-status-applications")
                 );
               }, 3000);
             }, 1000);
           }
-        } else {
-          // Handle other status codes if needed
         }
       }
     } catch (err) {
@@ -176,7 +133,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket, id }) 
     <div>
       <div className="">
         <div
-          id="hs-modal-statusResident"
+          id="hs-modal-status-applications"
           className="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center"
         >
           {/* Modal */}
@@ -203,22 +160,22 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket, id }) 
                     <div className="mb-4 px-4 w-full">
                       <div className="mb-4 px-4">
                         <label
-                          htmlFor="civilStatus"
+                          htmlFor="status"
                           className="block text-sm font-medium text-gray-700"
                         >
-                          STATUS OF RESIDENT
+                          STATUS OF THE EVENT APPLICATION
                         </label>
                         <select
-                          id="civilStatus"
+                          id="status"
                           onChange={handleOnChange}
                           name="status"
                           className="w-full mt-3 p-2 border border-gray-300 rounded"
                           value={status.status}
                         >
                           <option value="For Review">FOR REVIEW</option>
-                          <option value="Partially Verified">PARTIALLY VERIFIED</option>
-                          <option value="Fully Verified">FULLY VERIFIED</option>
-                          <option value="Denied">DENIED</option>
+                          <option value="Cancelled">CANCELLED</option>
+                          <option value="Rejected">REJECTED</option>
+                          <option value="Approved">APPROVED</option>
                         </select>
                       </div>
                     </div>
@@ -238,7 +195,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket, id }) 
                   <button
                     type="button"
                     className="h-[2.5rem] w-full md:w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
-                    data-hs-overlay="#hs-modal-statusResident"
+                    data-hs-overlay="#hs-modal-status-applications"
                   >
                     CLOSE
                   </button>
@@ -256,4 +213,4 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket, id }) 
   );
 }
 
-export default StatusResident;
+export default StatusApplication;

@@ -6,7 +6,7 @@ import EditSectionDocument from "./EditSectionDocument";
 import EditFormLoader from "../../loaders/EditFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 
-const EditBlotterDocument = ({ request, brgy, setEditUpdate, editupdate }) => {
+const EditBlotterDocument = ({ request, brgy, setEditUpdate, editupdate, id, socket }) => {
   const information = GetBrgy(brgy);
   const [details, setDetails] = useState([]);
   const [detail, setDetail] = useState({});
@@ -79,19 +79,43 @@ const EditBlotterDocument = ({ request, brgy, setEditUpdate, editupdate }) => {
           },
         }
       );
-
-      setTimeout(() => {
-        setSubmitClicked(false);
-        setUpdatingStatus("success");
-        setTimeout(() => {
-          setSubmitClicked(null);
-          setUpdatingStatus(null);
-          handleResetServiceId();
-          HSOverlay.close(
-            document.getElementById("hs-edit-serviceDocument-modal")
+      if (response.status === 200) {
+        const getIP = async () => {
+          const response = await fetch(
+            "https://api64.ipify.org?format=json"
           );
-        }, 3000);
-      }, 1000);
+          const data = await response.json();
+          return data.ip;
+        };
+
+        const ip = await getIP(); // Retrieve IP address
+
+        const logsData = {
+          action: "Updated",
+          details: `Updated a blotter document for the patawag with the control number: (${request.req_id}).`,
+          ip: ip,
+        };
+
+        const logsResult = await axios.post(
+          `${API_LINK}/act_logs/add_logs/?id=${id}`,
+          logsData
+        );
+        if (logsResult.status === 200) {
+          socket.emit("send-edit-patawag-doc", response.data);
+          setTimeout(() => {
+            setSubmitClicked(false);
+            setUpdatingStatus("success");
+            setTimeout(() => {
+              setSubmitClicked(null);
+              setUpdatingStatus(null);
+              handleResetServiceId();
+              HSOverlay.close(
+                document.getElementById("hs-edit-serviceDocument-modal")
+              );
+            }, 3000);
+          }, 1000);
+        }
+      }
     } catch (err) {
       setSubmitClicked(false);
       setUpdatingStatus("error");

@@ -6,7 +6,7 @@ import { IoArchiveOutline } from "react-icons/io5";
 import { useState } from "react";
 import RestoreLoader from "./loaders/RestoreLoader";
 
-function RestoreRequestsModal({ selectedItems, socket }) {
+function RestoreRequestsModal({ selectedItems, socket, id }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -33,15 +33,36 @@ function RestoreRequestsModal({ selectedItems, socket }) {
         );
 
         if (response.status === 200) {
-          socket.emit("send-restore-staff", response.data);
+          const getIP = async () => {
+            const response = await fetch(
+              "https://api64.ipify.org?format=json"
+            );
+            const data = await response.json();
+            return data.ip;
+          };
 
-          setSubmitClicked(false);
-          setError(null);
-          setUpdatingStatus("success");
-          setTimeout(() => {
-            setUpdatingStatus(null);
-            HSOverlay.close(document.getElementById("hs-restore-requests-modal"));
-          }, 3000);
+          const ip = await getIP(); // Retrieve IP address
+          const logsData = {
+            action: "Restored",
+            details: `Restored a patawag (blotter) with the (ID: ${selectedItems[i]})`,
+            ip: ip,
+          };
+
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
+            socket.emit("send-restore-staff", response.data);
+
+            setSubmitClicked(false);
+            setError(null);
+            setUpdatingStatus("success");
+            setTimeout(() => {
+              setUpdatingStatus(null);
+              HSOverlay.close(document.getElementById("hs-restore-requests-modal"));
+            }, 3000);
+          }
         }
       }
 

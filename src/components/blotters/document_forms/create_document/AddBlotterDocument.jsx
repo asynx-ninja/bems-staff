@@ -6,7 +6,7 @@ import AddFormLoader from "../../loaders/AddFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 import API_LINK from "../../../../config/API";
 
-const AddBlotterDocument = ({ request, brgy, socket, setUpdate }) => {
+const AddBlotterDocument = ({ request, brgy, socket, setUpdate, id }) => {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
@@ -69,19 +69,42 @@ const AddBlotterDocument = ({ request, brgy, socket, setUpdate }) => {
           },
         }
       );
+      if (response.status === 200) {
+        const getIP = async () => {
+          const response = await fetch(
+            "https://api64.ipify.org?format=json"
+          );
+          const data = await response.json();
+          return data.ip;
+        };
 
-      socket.emit("send-create-patawag-doc", response.data);
+        const ip = await getIP(); // Retrieve IP address
 
-      setSubmitClicked(false);
-      setCreationStatus("success");
-      setTimeout(() => {
-        setCreationStatus(null);
-        handleResetModal();
-        HSOverlay.close(
-          document.getElementById("hs-create-serviceDocument-modal")
+        const logsData = {
+          action: "Created",
+          details: `Created a new blotter document for the patawag with the control number: (${request.req_id}).`,
+          ip: ip,
+        };
+
+        const logsResult = await axios.post(
+          `${API_LINK}/act_logs/add_logs/?id=${id}`,
+          logsData
         );
-      }, 3000);
-      setUpdate(true);
+        if (logsResult.status === 200) {
+          socket.emit("send-create-patawag-doc", response.data);
+
+          setSubmitClicked(false);
+          setCreationStatus("success");
+          setTimeout(() => {
+            setCreationStatus(null);
+            handleResetModal();
+            HSOverlay.close(
+              document.getElementById("hs-create-serviceDocument-modal")
+            );
+          }, 3000);
+          setUpdate(true);
+        }
+      }
     } catch (err) {
       console.log(err.message);
       setSubmitClicked(false);

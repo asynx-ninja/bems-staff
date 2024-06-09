@@ -6,7 +6,7 @@ import { IoArchiveOutline } from "react-icons/io5";
 import { useState } from "react";
 import RestoreLoader from "./loaders/RestoreLoader";
 
-function RestoreRegistrationModal({ selectedItems, socket}) {
+function RestoreRegistrationModal({ selectedItems, socket, id }) {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -15,7 +15,7 @@ function RestoreRegistrationModal({ selectedItems, socket}) {
     try {
       e.preventDefault();
       setError(null); // Reset error state
-      
+
       if (selectedItems.length === 0) {
         setUpdatingStatus("error");
         setError("Unable to restore, Please select first to restore.");
@@ -34,8 +34,28 @@ function RestoreRegistrationModal({ selectedItems, socket}) {
           `${API_LINK}/application/archived/${selectedItems[i]}/false`
         );
         if (response.status === 200) {
-          socket.emit("send-restore-staff", response.data);
-          
+          const getIP = async () => {
+            const response = await fetch(
+              "https://api64.ipify.org?format=json"
+            );
+            const data = await response.json();
+            return data.ip;
+          };
+
+          const ip = await getIP(); // Retrieve IP address
+          const logsData = {
+            action: "Restored",
+            details: `An events application (${selectedItems[i]})`,
+            ip: ip,
+          };
+
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
+            socket.emit("send-restore-staff", response.data);
+
             setSubmitClicked(false);
             setError(null);
             setUpdatingStatus("success");
@@ -43,7 +63,8 @@ function RestoreRegistrationModal({ selectedItems, socket}) {
               setUpdatingStatus(null);
               HSOverlay.close(document.getElementById("hs-restore-requests-modal"));
             }, 3000);
-         
+
+          }
         }
       }
     } catch (err) {

@@ -13,7 +13,7 @@ import GetBrgy from "../GETBrgy/getbrgy";
 import Webcam from "react-webcam";
 import moment from "moment";
 
-function ManageResidentModal({ user, setUser, brgy }) {
+function ManageResidentModal({ user, setUser, brgy, id }) {
   const WebcamComponent = () => <Webcam />;
   const [viewerVisible, setViewerVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -288,6 +288,7 @@ X
         );
 
         if (folderResponse.status === 200) {
+          
           var formData = new FormData();
 
           const [primarySaved, primaryUpload] =

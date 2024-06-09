@@ -821,7 +821,7 @@ const ArchivedRegistrations = () => {
       ) : null}
       <ArchiveRegistrationModal />
       <RequestsReportsModal />
-      <RestoreRegistrationModal selectedItems={selectedItems} socket={socket} />
+      <RestoreRegistrationModal selectedItems={selectedItems} socket={socket} id={id}/>
     </div>
   );
 };

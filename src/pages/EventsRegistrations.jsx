@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { AiOutlineStop, AiOutlineEye } from "react-icons/ai";
 import { AiOutlineSend } from "react-icons/ai";
+import { FiEdit } from "react-icons/fi";
 import { FaArchive } from "react-icons/fa";
 import ReplyRegistrationModal from "../components/eventRegistrations/ReplyRegistrationModal";
 import ArchiveRegistrationModal from "../components/eventRegistrations/ArchiveRegistrationModal";
@@ -16,10 +17,11 @@ import noData from "../assets/image/no-data.png";
 import GetBrgy from "../components/GETBrgy/getbrgy";
 import { io } from "socket.io-client";
 import Socket_link from "../config/Socket";
-import * as XLSX from 'xlsx';
+import * as XLSX from "xlsx";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
-import ExcelJS from 'exceljs';
+import ExcelJS from "exceljs";
+import StatusApplication from "../components/eventRegistrations/StatusApplication";
 
 const socket = io(Socket_link);
 
@@ -35,6 +37,8 @@ const EventsRegistrations = () => {
   const information = GetBrgy(brgy);
   const chatContainerRef = useRef();
   const [searchapplications, setSearchApplications] = useState([]);
+  const [status, setStatus] = useState({});
+
   //Status filter and pagination
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(0);
@@ -77,29 +81,43 @@ const EventsRegistrations = () => {
 
   useEffect(() => {
     const handleEventAppli = (event_appli) => {
-      setFilteredApplications(prev => [event_appli, ...prev])
+      setFilteredApplications((prev) => [event_appli, ...prev]);
     };
+
     const handleEventReplyAppli = (event_appli) => {
-      setApplication(event_appli)
-      setFilteredApplications(curItem => curItem.map((item) =>
-        item._id === event_appli._id ? event_appli : item
-      ))
+      setApplication(event_appli);
+      setFilteredApplications((curItem) =>
+        curItem.map((item) =>
+          item._id === event_appli._id ? event_appli : item
+        )
+      );
     };
 
     const handleApplicationArchive = (obj) => {
       setApplication(obj);
-      setApplications((prev) => prev.filter(item => item._id !== obj._id));
-      setFilteredApplications((prev) => prev.filter(item => item._id !== obj._id));
+      setApplications((prev) => prev.filter((item) => item._id !== obj._id));
+      setFilteredApplications((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+    };
+
+    const handleApplicationStatus = (obj) => {
+      setApplication(obj);
+      setFilteredApplications((curItem) =>
+        curItem.map((item) => (item._id === obj._id ? obj : item))
+      );
     };
 
     socket.on("receive-reply-event-appli", handleEventReplyAppli);
     socket.on("receive-event-appli", handleEventAppli);
     socket.on("receive-archive-staff", handleApplicationArchive);
+    socket.on("receive-status-request-staff", handleApplicationStatus);
 
     return () => {
       socket.off("receive-reply-event-appli", handleEventAppli);
       socket.off("receive-event-appli", handleEventAppli);
       socket.off("receive-archive-staff", handleApplicationArchive);
+      socket.off("receive-status-request-staff", handleApplicationStatus);
     };
   }, [socket, setApplication, setApplications]);
 
@@ -120,14 +138,12 @@ const EventsRegistrations = () => {
 
         const container = chatContainerRef.current;
         container.scrollTop = container.scrollHeight;
-
       } catch (err) {
         console.log(err);
       }
     };
 
     fetch();
-
   }, [brgy, statusFilter, selecteEventFilter]);
 
   useEffect(() => {
@@ -160,7 +176,8 @@ const EventsRegistrations = () => {
 
   useEffect(() => {
     const filteredData = searchapplications.filter((item) => {
-      const fullName = item.form[0].lastName.value.toLowerCase() +
+      const fullName =
+        item.form[0].lastName.value.toLowerCase() +
         ", " +
         item.form[0].firstName.value.toLowerCase() +
         " " +
@@ -179,12 +196,9 @@ const EventsRegistrations = () => {
     setPageCount(Math.ceil(filteredData.length / 10));
   }, [searchapplications, searchQuery, currentPage]);
 
-
-
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
   };
-
 
   // Handle search input change
   const handleSearchChange = (e) => {
@@ -254,6 +268,10 @@ const EventsRegistrations = () => {
 
   const handleView = (item) => {
     setApplication(item);
+    setStatus({
+      id: item._id,
+      status: item.status,
+    });
   };
 
   const DateFormat = (date) => {
@@ -274,7 +292,7 @@ const EventsRegistrations = () => {
         return applications.filter((item) => {
           return (
             new Date(item.createdAt).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
             new Date(item.createdAt).getDate() === selectedDate.getDate()
           );
@@ -284,11 +302,10 @@ const EventsRegistrations = () => {
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 6);
 
-
         return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-            startDate.getFullYear() &&
+              startDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === startDate.getMonth() &&
             new Date(item.createdAt).getDate() >= startDate.getDate() &&
             new Date(item.createdAt).getDate() <= endDate.getDate()
@@ -297,7 +314,7 @@ const EventsRegistrations = () => {
         return applications.filter(
           (item) =>
             new Date(item.createdAt).getFullYear() ===
-            selectedDate.getFullYear() &&
+              selectedDate.getFullYear() &&
             new Date(item.createdAt).getMonth() === selectedDate.getMonth()
         );
       case "year":
@@ -310,7 +327,6 @@ const EventsRegistrations = () => {
   };
 
   const onSelect = (e) => {
-
     setSelected(e.target.value);
   };
 
@@ -344,12 +360,17 @@ const EventsRegistrations = () => {
 
   const exportToExcel = async () => {
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Event Applications');
+    const worksheet = workbook.addWorksheet("Event Applications");
 
     const dataForExcel = searchapplications.map((item) => ({
       "CONTROL #": item.event_id || "N/A",
       "SERVICE NAME": item.event_name || "N/A",
-      SENDER: item.form[0].lastName.value + ", " + item.form[0].firstName.value + " " + item.form[0].middleName.value,
+      SENDER:
+        item.form[0].lastName.value +
+        ", " +
+        item.form[0].firstName.value +
+        " " +
+        item.form[0].middleName.value,
       CONTACT: item.form[0].contact?.value || "N/A",
       EMAIL: item.form[0].email?.value || "N/A",
       DATE: moment(item.createdAt).format("MMMM DD, YYYY") || "N/A",
@@ -362,23 +383,27 @@ const EventsRegistrations = () => {
     }
 
     // Add Title Row
-    const titleRow = worksheet.addRow([`LIST OF EVENT APPLICANTS FOR ${selecteEventFilter.toUpperCase()}`]);
+    const titleRow = worksheet.addRow([
+      `LIST OF EVENT APPLICANTS FOR ${selecteEventFilter.toUpperCase()}`,
+    ]);
     // Merge cells for the title row
-    worksheet.mergeCells(`A1:${String.fromCharCode(65 + Object.keys(dataForExcel[0]).length - 1)}1`);
-    titleRow.getCell(1).font = { bold: true, size: 16};
-    titleRow.getCell(1).alignment = { horizontal: 'center' };
+    worksheet.mergeCells(
+      `A1:${String.fromCharCode(65 + Object.keys(dataForExcel[0]).length - 1)}1`
+    );
+    titleRow.getCell(1).font = { bold: true, size: 16 };
+    titleRow.getCell(1).alignment = { horizontal: "center" };
 
     // Add Header Row
     const headerRow = worksheet.addRow(Object.keys(dataForExcel[0]));
     headerRow.eachCell((cell) => {
       if (cell.value) {
         cell.font = { bold: true };
-        cell.alignment = { horizontal: 'center' };
+        cell.alignment = { horizontal: "center" };
         cell.border = {
-          top: { style: 'thin' },
-          left: { style: 'thin' },
-          bottom: { style: 'thin' },
-          right: { style: 'thin' },
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
         };
       }
     });
@@ -386,13 +411,13 @@ const EventsRegistrations = () => {
     // Add Data Rows
     dataForExcel.forEach((item, index) => {
       const row = worksheet.addRow(Object.values(item));
-      const rowStyle = index % 2 === 0 ? 'EBF6EB' : 'F5FDF5';
+      const rowStyle = index % 2 === 0 ? "EBF6EB" : "F5FDF5";
       row.eachCell({ includeEmpty: true }, (cell) => {
         cell.border = {
-          top: { style: 'thin' },
-          left: { style: 'thin' },
-          bottom: { style: 'thin' },
-          right: { style: 'thin' },
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
         };
       });
     });
@@ -404,13 +429,14 @@ const EventsRegistrations = () => {
 
     // Save the Workbook
     const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const link = document.createElement('a');
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = `Event-Applications-${selecteEventFilter}.xlsx`;
     link.click();
-};
-
+  };
 
   // Function to export data to PDF
   const exportToPDF = () => {
@@ -425,16 +451,14 @@ const EventsRegistrations = () => {
 
     doc.autoTable({
       startY: 30,
-      head: [
-        ["EVENT", "NAME", "CONTACT", "EMAIL", "DATE"],
-      ],
+      head: [["EVENT", "NAME", "CONTACT", "EMAIL", "DATE"]],
       body: searchapplications.map((item) => [
         item.event_name,
         item.form[0].lastName.value +
-        ", " +
-        item.form[0].firstName.value +
-        " " +
-        item.form[0].middleName.value,
+          ", " +
+          item.form[0].firstName.value +
+          " " +
+          item.form[0].middleName.value,
 
         item.form[0].contact?.value || "N/A",
         item.form[0].email?.value || "N/A",
@@ -442,8 +466,8 @@ const EventsRegistrations = () => {
         // ... other data fields
       ]),
       styles: {
-        halign: 'center',
-      }
+        halign: "center",
+      },
     });
     doc.save(`Event-Applications-${selecteEventFilter}.pdf`);
   };
@@ -511,8 +535,9 @@ const EventsRegistrations = () => {
                 >
                   STATUS
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -674,8 +699,9 @@ const EventsRegistrations = () => {
                 >
                   {selectedEventType}
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -725,8 +751,9 @@ const EventsRegistrations = () => {
                 >
                   EXPORT
                   <svg
-                    className={`hs-dropdown-open:rotate-${sortOrder === "asc" ? "180" : "0"
-                      } w-2.5 h-2.5 text-white`}
+                    className={`hs-dropdown-open:rotate-${
+                      sortOrder === "asc" ? "180" : "0"
+                    } w-2.5 h-2.5 text-white`}
                     width="16"
                     height="16"
                     viewBox="0 0 16 16"
@@ -955,7 +982,23 @@ const EventsRegistrations = () => {
                           >
                             View Application
                           </span>
-                        </div>                     
+                        </div>
+                        <div className="hs-tooltip inline-block">
+                          <button
+                            type="button"
+                            data-hs-overlay="#hs-modal-status-applications"
+                            onClick={() => handleView({ ...item })}
+                            className="hs-tooltip-toggle text-white bg-yellow-600 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
+                          >
+                            <FiEdit size={24} style={{ color: "#ffffff" }} />
+                          </button>
+                          <span
+                            className="sm:hidden md:block hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible opacity-0 transition-opacity inline-block absolute invisible z-20 py-1 px-2 bg-gray-900 text-xs font-medium text-white rounded-md shadow-sm "
+                            role="tooltip"
+                          >
+                            Change Status
+                          </span>
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -1013,7 +1056,20 @@ const EventsRegistrations = () => {
         socket={socket}
         chatContainerRef={chatContainerRef}
       />
-      <ArchiveRegistrationModal selectedItems={selectedItems} socket={socket} />
+      <StatusApplication
+        application={application}
+        setApplication={setApplication}
+        brgy={brgy}
+        status={status}
+        setStatus={setStatus}
+        socket={socket}
+        id={id}
+      />
+      <ArchiveRegistrationModal
+        selectedItems={selectedItems}
+        socket={socket}
+        id={id}
+      />
     </div>
   );
 };
