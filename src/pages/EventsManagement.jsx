@@ -55,6 +55,7 @@ const EventsManagement = () => {
         );
 
         if (announcementsResponse.status === 200) {
+          const currentDate = moment();
           const announcementsData = announcementsResponse.data.result.map(
             async (announcement) => {
               const completedResponse = await axios.get(
@@ -68,12 +69,23 @@ const EventsManagement = () => {
             }
           );
 
-          setAnnouncements(announcementsResponse.data.result);
+          const filteredAnnouncementsData = announcementsResponse.data.result.filter(
+            (announcement) => {
+              return moment(announcement.date).isSameOrAfter(currentDate, 'day');
+            }
+          );
+
+          setAnnouncements(filteredAnnouncementsData);
 
           Promise.all(announcementsData).then((announcementsWithCounts) => {
-            setAnnouncementWithCounts(announcementsWithCounts);
-            setFilteredAnnouncements(announcementsWithCounts.slice(0, 10));
-            setNewEvents(announcementsWithCounts)
+            const filteredAnnouncementsWithCounts = announcementsWithCounts.filter(
+              (announcement) => {
+                return moment(announcement.date).isSameOrAfter(currentDate, 'day');
+              }
+            );
+            setAnnouncementWithCounts(filteredAnnouncementsWithCounts);
+            setFilteredAnnouncements(filteredAnnouncementsWithCounts.slice(0, 10));
+            setNewEvents(filteredAnnouncementsWithCounts);
           });
 
           setPageCount(announcementsResponse.data.pageCount);
@@ -83,7 +95,6 @@ const EventsManagement = () => {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-
         console.error("Error response data:", error.response?.data);
         console.error("Error response status:", error.response?.status);
       }
