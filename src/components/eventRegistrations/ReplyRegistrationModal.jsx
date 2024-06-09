@@ -290,33 +290,28 @@ function ReplyRegistrationModal({
           category: "One",
           compose: {
             subject: `APPLICATION - ${application.event_name}`,
-            message: `A barangay staff has updated/replied your event application form for the event of ${
-              application.event_name
-            }.\n\n
+            message: `A barangay staff has updated/replied your event application form for the event of ${application.event_name
+              }.\n\n
       
             Application Details:\n
-            - Name: ${
-              application.form && application.form[0]
+            - Name: ${application.form && application.form[0]
                 ? application.form[0].lastName.value
                 : ""
-            }, ${
-              application.form && application.form[0]
+              }, ${application.form && application.form[0]
                 ? application.form[0].firstName.value
                 : ""
-            } ${
-              application.form && application.form[0]
+              } ${application.form && application.form[0]
                 ? application.form[0].middleName.value
                 : ""
-            }
+              }
             - Event Applied: ${application.event_name}\n
             - Application ID: ${application.application_id}\n
             - Date Created: ${moment(application.createdAt).format(
-              "MMM. DD, YYYY h:mm a"
-            )}\n
+                "MMM. DD, YYYY h:mm a"
+              )}\n
             - Status: ${response.data.status}\n
-            - Staff Handled: ${userData.lastName}, ${userData.firstName} ${
-              userData.middleName
-            }\n\n
+            - Staff Handled: ${userData.lastName}, ${userData.firstName} ${userData.middleName
+              }\n\n
             Please update this application as you've seen this notification!\n\n
             Thank you!!,`,
             go_to: "Application",
@@ -338,8 +333,30 @@ function ReplyRegistrationModal({
 
         if (result.status === 200) {
           socket.emit("send-resident-notif", result.data);
-          socket.emit("send-reply-event-appli", response.data);
-          setOnSend(false);
+          const getIP = async () => {
+            const response = await fetch(
+              "https://api64.ipify.org?format=json"
+            );
+            const data = await response.json();
+            return data.ip;
+          };
+          ;
+          const ip = await getIP(); // Retrieve IP address
+          const logsData = {
+            action: "Updated",
+            details: "status of service request is changed",
+            ip: ip,
+          };
+
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
+            socket.emit("send-resident-notif", result.data);
+            socket.emit("send-reply-event-appli", response.data);
+            setOnSend(false);
+          }
         }
       }
 
@@ -387,7 +404,7 @@ function ReplyRegistrationModal({
                 </b>
                 <form>
                   {!application.response ||
-                  application.response.length === 0 ? (
+                    application.response.length === 0 ? (
                     <div className="flex flex-col items-center">
                       <div className="relative w-full mx-2">
                         <div className="relative w-full">
@@ -400,8 +417,8 @@ function ReplyRegistrationModal({
                               newMessage.message
                                 ? newMessage.message
                                 : statusChanger
-                                ? `The status of your event application is ${application.status}`
-                                : ""
+                                  ? `The status of your event application is ${application.status}`
+                                  : ""
                             }
                             className="p-4 pb-12 block w-full  border-[#b7e4c7] rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border focus:outline-none focus:ring-0 focus:border-[#b7e4c7]"
                             placeholder="Input response..."
@@ -585,9 +602,8 @@ function ReplyRegistrationModal({
                         key={index}
                         className={
                           responseItem.sender ===
-                          `${userData?.firstName?.toUpperCase() ?? ""} ${
-                            userData?.lastName?.toUpperCase() ?? ""
-                          } (${userData.type})`
+                            `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
+                            } (${userData.type})`
                             ? "flex flex-col justify-end items-end mb-2 w-full h-auto"
                             : "flex flex-col justify-start items-start mb-2 w-full h-auto"
                         }
@@ -595,9 +611,8 @@ function ReplyRegistrationModal({
                         <div
                           className={
                             responseItem.sender ===
-                            `${userData?.firstName?.toUpperCase() ?? ""} ${
-                              userData?.lastName?.toUpperCase() ?? ""
-                            } (${userData.type})`
+                              `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
+                              } (${userData.type})`
                               ? "flex flex-col items-end h-auto max-w-[80%]"
                               : "flex flex-col items-start h-auto max-w-[80%]"
                           }
@@ -605,9 +620,8 @@ function ReplyRegistrationModal({
                           <div
                             className={
                               responseItem.sender ===
-                              `${userData?.firstName?.toUpperCase() ?? ""} ${
-                                userData?.lastName?.toUpperCase() ?? ""
-                              } (${userData.type})`
+                                `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
+                                } (${userData.type})`
                                 ? "hidden"
                                 : "flex flex-row w-full justify-between"
                             }
@@ -622,9 +636,8 @@ function ReplyRegistrationModal({
                             <div
                               className={
                                 responseItem.sender ===
-                                `${userData?.firstName?.toUpperCase() ?? ""} ${
-                                  userData?.lastName?.toUpperCase() ?? ""
-                                } (${userData.type})`
+                                  `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
+                                  } (${userData.type})`
                                   ? "flex flex-col rounded-xl bg-[#52b788] border border-[#2d6a4f] mb-1 text-white px-2 md:px-4 py-2 cursor-pointer"
                                   : "flex flex-col rounded-xl bg-gray-100 border text-black border-gray-300 px-2 md:px-4 py-2 cursor-pointer"
                               }
@@ -679,8 +692,8 @@ function ReplyRegistrationModal({
                                     newMessage.message
                                       ? newMessage.message
                                       : statusChanger
-                                      ? `The status of your event application is ${application.status}`
-                                      : ""
+                                        ? `The status of your event application is ${application.status}`
+                                        : ""
                                   }
                                   className="p-4 pb-12 block w-full  border-[#b7e4c7] rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border focus:outline-none focus:ring-0 focus:border-[#b7e4c7]"
                                   placeholder="Input response..."

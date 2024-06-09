@@ -1065,8 +1065,9 @@ const Requests = () => {
         brgy={brgy}
         chatContainerRef={chatContainerRef}
         socket={socket}
+        id={id}
       />
-      <ArchiveRequestsModal selectedItems={selectedItems} socket={socket} />
+      <ArchiveRequestsModal selectedItems={selectedItems} socket={socket} id={id} />
       <RequestsReportsModal />
     </div>
   );

@@ -760,7 +760,7 @@ const ArchivedBlotters = () => {
       ) : null}
       <ArchiveRequestsModal />
       <RequestsReportsModal />
-      <RestoreRequestsModal selectedItems={selectedItems} socket={socket} />
+      <RestoreRequestsModal selectedItems={selectedItems} socket={socket} id={id}/>
     </div>
   );
 };

@@ -571,7 +571,7 @@ function ReplyServiceModal({
 
           if (result.status === 200) {
             socket.emit("send-resident-notif", result.data);
-            
+
             setCreateFiles([]);
             setResponseData({
               sender: "",
@@ -678,18 +678,39 @@ function ReplyServiceModal({
           });
 
           if (result.status === 200) {
-            socket.emit("send-resident-notif", result.data);
+            const getIP = async () => {
+              const response = await fetch(
+                "https://api64.ipify.org?format=json"
+              );
+              const data = await response.json();
+              return data.ip;
+            };
+            ;
+            const ip = await getIP(); // Retrieve IP address
+            const logsData = {
+              action: "Updated",
+              details: "An status of blotter service request",
+              ip: ip,
+            };
 
-            setCreateFiles([]);
-            setResponseData({
-              sender: "",
-              type: "Staff",
-              message: "",
-              date: new Date().toISOString(),
-              status: "",
-            });
-            setReply(false);
-            setStatusChanger(false);
+            const logsResult = await axios.post(
+              `${API_LINK}/act_logs/add_logs/?id=${id}`,
+              logsData
+            );
+            if (logsResult.status === 200) {
+              socket.emit("send-resident-notif", result.data);
+
+              setCreateFiles([]);
+              setResponseData({
+                sender: "",
+                type: "Staff",
+                message: "",
+                date: new Date().toISOString(),
+                status: "",
+              });
+              setReply(false);
+              setStatusChanger(false);
+            }
           }
         }
       }
@@ -774,8 +795,8 @@ function ReplyServiceModal({
                 </b>
                 <form>
                   {!blotterDetails ||
-                  !blotterDetails.responses ||
-                  blotterDetails.responses.length === 0 ? (
+                    !blotterDetails.responses ||
+                    blotterDetails.responses.length === 0 ? (
                     <div className="flex flex-col items-center">
                       <div className="relative w-full mx-2">
                         <div className="relative w-full">
@@ -963,11 +984,10 @@ function ReplyServiceModal({
                                     )
                                     .map((user) => (
                                       <option key={user.id} value={user._id}>
-                                        {`${user.firstName} ${
-                                          user.middleName
-                                            ? user.middleName + " "
-                                            : ""
-                                        } ${user.lastName}`}
+                                        {`${user.firstName} ${user.middleName
+                                          ? user.middleName + " "
+                                          : ""
+                                          } ${user.lastName}`}
                                       </option>
                                     ))}
                                 </select>
@@ -1169,11 +1189,10 @@ function ReplyServiceModal({
                                     )
                                     .map((user) => (
                                       <option key={user.id} value={user._id}>
-                                        {`${user.firstName} ${
-                                          user.middleName
-                                            ? user.middleName + " "
-                                            : ""
-                                        } ${user.lastName}`}
+                                        {`${user.firstName} ${user.middleName
+                                          ? user.middleName + " "
+                                          : ""
+                                          } ${user.lastName}`}
                                       </option>
                                     ))}
                                 </select>
@@ -1225,8 +1244,8 @@ function ReplyServiceModal({
                               ResponseData.message
                                 ? ResponseData.message
                                 : statusChanger
-                                ? `The status of this barangay patawag is ${request.status}`
-                                : ""
+                                  ? `The status of this barangay patawag is ${request.status}`
+                                  : ""
                             }
                             className="p-4 pb-12 block w-full  border-[#b7e4c7] rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border focus:outline-none focus:ring-0 focus:border-[#b7e4c7]"
                             placeholder="Input response..."
@@ -1406,9 +1425,8 @@ function ReplyServiceModal({
                           key={index}
                           className={
                             responseItem.sender ===
-                            `${userData?.firstName?.toUpperCase() ?? ""} ${
-                              userData?.lastName?.toUpperCase() ?? ""
-                            } (${userData.type})`
+                              `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
+                              } (${userData.type})`
                               ? "flex flex-col justify-end items-end mb-2 w-full h-auto"
                               : "flex flex-col justify-start items-start mb-2 w-full h-auto"
                           }
@@ -1416,9 +1434,8 @@ function ReplyServiceModal({
                           <div
                             className={
                               responseItem.sender ===
-                              `${userData?.firstName?.toUpperCase() ?? ""} ${
-                                userData?.lastName?.toUpperCase() ?? ""
-                              } (${userData.type})`
+                                `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
+                                } (${userData.type})`
                                 ? "flex flex-col items-end h-auto max-w-[80%]"
                                 : "flex flex-col items-start h-auto max-w-[80%]"
                             }
@@ -1426,9 +1443,8 @@ function ReplyServiceModal({
                             <div
                               className={
                                 responseItem.sender ===
-                                `${userData?.firstName?.toUpperCase() ?? ""} ${
-                                  userData?.lastName?.toUpperCase() ?? ""
-                                } (${userData.type})`
+                                  `${userData?.firstName?.toUpperCase() ?? ""} ${userData?.lastName?.toUpperCase() ?? ""
+                                  } (${userData.type})`
                                   ? "hidden"
                                   : "flex flex-row w-full justify-between"
                               }
@@ -1444,11 +1460,9 @@ function ReplyServiceModal({
                               <div
                                 className={
                                   responseItem.sender ===
-                                  `${
-                                    userData?.firstName?.toUpperCase() ?? ""
-                                  } ${
-                                    userData?.lastName?.toUpperCase() ?? ""
-                                  } (${userData.type})`
+                                    `${userData?.firstName?.toUpperCase() ?? ""
+                                    } ${userData?.lastName?.toUpperCase() ?? ""
+                                    } (${userData.type})`
                                     ? "flex flex-col rounded-xl bg-[#52b788] border border-[#2d6a4f] mb-1 text-white px-2 md:px-4 py-2 cursor-pointer"
                                     : "flex flex-col rounded-xl bg-gray-100 border text-black border-gray-300 px-2 md:px-4 py-2 cursor-pointer"
                                 }
@@ -1505,8 +1519,8 @@ function ReplyServiceModal({
                                       ResponseData.message
                                         ? ResponseData.message
                                         : statusChanger
-                                        ? `The status of this barangay patawag is ${request.status}`
-                                        : ""
+                                          ? `The status of this barangay patawag is ${request.status}`
+                                          : ""
                                     }
                                     className="p-4 pb-12 block w-full  border-[#b7e4c7] rounded-lg text-sm disabled:opacity-50 disabled:pointer-events-none border focus:outline-none focus:ring-0 focus:border-[#b7e4c7]"
                                     placeholder="Input response..."

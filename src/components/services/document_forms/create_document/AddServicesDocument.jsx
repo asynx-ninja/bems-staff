@@ -7,7 +7,7 @@ import GetBrgy from "../../../GETBrgy/getbrgy";
 import API_LINK from "../../../../config/API";
 import { useRef } from "react";
 
-const AddServicesDocument = ({ service_id, brgy, officials, socket, setUpdate }) => {
+const AddServicesDocument = ({ service_id, brgy, officials, socket, setUpdate, id }) => {
   const information = GetBrgy(brgy);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [creationStatus, setCreationStatus] = useState(null);
@@ -87,17 +87,41 @@ const AddServicesDocument = ({ service_id, brgy, officials, socket, setUpdate })
           },
         }
       );
-      socket.emit("send-create-service-form", response.data);
-      setSubmitClicked(false);
-      setCreationStatus("success");
-      setTimeout(() => {
-        setCreationStatus(null);
-        handleResetModal();
-        HSOverlay.close(
-          modal.current
+      if (response.status === 200) {
+        const getIP = async () => {
+          const response = await fetch(
+            "https://api64.ipify.org?format=json"
+          );
+          const data = await response.json();
+          return data.ip;
+        };
+
+        const ip = await getIP(); // Retrieve IP address
+
+        const logsData = {
+          action: "Created",
+          details: `A new document form`,
+          ip: ip,
+        };
+
+        const logsResult = await axios.post(
+          `${API_LINK}/act_logs/add_logs/?id=${id}`,
+          logsData
         );
-      }, 3000);
-      setUpdate(true);
+        if (logsResult.status === 200) {
+          socket.emit("send-create-service-form", response.data);
+          setSubmitClicked(false);
+          setCreationStatus("success");
+          setTimeout(() => {
+            setCreationStatus(null);
+            handleResetModal();
+            HSOverlay.close(
+              modal.current
+            );
+          }, 3000);
+          setUpdate(true);
+        }
+      }
     } catch (err) {
       console.log(err.message);
       setSubmitClicked(false);
@@ -109,7 +133,7 @@ const AddServicesDocument = ({ service_id, brgy, officials, socket, setUpdate })
   return (
     <div>
       <div
-       ref={modal}
+        ref={modal}
         id="hs-create-serviceDocument-modal"
         className="hs-overlay hidden fixed top-0 left-0 z-[80] w-full h-full overflow-x-hidden overflow-y-auto flex items-center justify-center "
       >

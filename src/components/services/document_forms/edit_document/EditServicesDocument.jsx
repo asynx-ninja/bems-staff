@@ -6,7 +6,7 @@ import EditFormLoader from "../../loaders/EditFormLoader";
 import GetBrgy from "../../../GETBrgy/getbrgy";
 import { useRef } from "react";
 
-const EditServicesDocument = ({ service_id, brgy, officials, documentForm, setDocumentForm, serviceForm, setServiceForm, socket }) => {
+const EditServicesDocument = ({ service_id, brgy, officials, documentForm, setDocumentForm, serviceForm, setServiceForm, socket, id }) => {
   const information = GetBrgy(brgy);
   const modal = useRef()
   const [details, setDetails] = useState([]);
@@ -91,18 +91,39 @@ const EditServicesDocument = ({ service_id, brgy, officials, documentForm, setDo
         }
       );
       if (response.status === 200) {
-        socket.emit("send-edit-service-form", response.data);
-        setSubmitClicked(false);
-        setUpdatingStatus("success");
-        setTimeout(() => {
-          setUpdatingStatus(null);
-          
-          HSOverlay.close(
-            modal.current
+        const getIP = async () => {
+          const response = await fetch(
+            "https://api64.ipify.org?format=json"
           );
-        }, 3000);
-      }
+          const data = await response.json();
+          return data.ip;
+        };
 
+        const ip = await getIP(); // Retrieve IP address
+
+        const logsData = {
+          action: "Updated",
+          details: `A document form`,
+          ip: ip,
+        };
+
+        const logsResult = await axios.post(
+          `${API_LINK}/act_logs/add_logs/?id=${id}`,
+          logsData
+        );
+        if (logsResult.status === 200) {
+          socket.emit("send-edit-service-form", response.data);
+          setSubmitClicked(false);
+          setUpdatingStatus("success");
+          setTimeout(() => {
+            setUpdatingStatus(null);
+
+            HSOverlay.close(
+              modal.current
+            );
+          }, 3000);
+        }
+      }
     } catch (err) {
       // setSubmitClicked(false);
       setUpdatingStatus("error");

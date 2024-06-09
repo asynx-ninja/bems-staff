@@ -1013,7 +1013,7 @@ const EventsRegistrations = () => {
         socket={socket}
         chatContainerRef={chatContainerRef}
       />
-      <ArchiveRegistrationModal selectedItems={selectedItems} socket={socket} />
+      <ArchiveRegistrationModal selectedItems={selectedItems} socket={socket} id={id}/>
     </div>
   );
 };
