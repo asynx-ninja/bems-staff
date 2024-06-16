@@ -41,61 +41,61 @@ const ArchivedEvents = () => {
   const [selected, setSelected] = useState("date");
   const [announcementWithCounts, setAnnouncementWithCounts] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const announcementsResponse = await axios.get(
-          `${API_LINK}/announcement/?brgy=${brgy}&archived=true`
-        );
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const announcementsResponse = await axios.get(
+  //         `${API_LINK}/announcement/?brgy=${brgy}&archived=true`
+  //       );
 
-        if (announcementsResponse.status === 200) {
-          const announcementsData = announcementsResponse.data.result.map(
-            async (announcement) => {
-              const completedResponse = await axios.get(
-                `${API_LINK}/application/completed?brgy=${brgy}&event_id=${announcement.event_id}`
-              );
+  //       if (announcementsResponse.status === 200) {
+  //         const announcementsData = announcementsResponse.data.result.map(
+  //           async (announcement) => {
+  //             const completedResponse = await axios.get(
+  //               `${API_LINK}/application/completed?brgy=${brgy}&event_id=${announcement.event_id}`
+  //             );
 
-              if (completedResponse.status === 200) {
-                const completedCount = completedResponse.data.completedCount;
-                return { ...announcement, completedCount };
-              }
-            }
-          );
+  //             if (completedResponse.status === 200) {
+  //               const completedCount = completedResponse.data.completedCount;
+  //               return { ...announcement, completedCount };
+  //             }
+  //           }
+  //         );
 
-          setAnnouncements(announcementsResponse.data.result);
+  //         setAnnouncements(announcementsResponse.data.result);
 
-          Promise.all(announcementsData).then((announcementsWithCounts) => {
-            setAnnouncementWithCounts(announcementsWithCounts);
-            setFilteredAnnouncements(announcementsWithCounts);
-          });
+  //         Promise.all(announcementsData).then((announcementsWithCounts) => {
+  //           setAnnouncementWithCounts(announcementsWithCounts);
+  //           setFilteredAnnouncements(announcementsWithCounts);
+  //         });
 
-          setPageCount(announcementsResponse.data.pageCount);
-          setUpdate(false);
-        } else {
-          setAnnouncementWithCounts([]);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
+  //         setPageCount(announcementsResponse.data.pageCount);
+  //         setUpdate(false);
+  //       } else {
+  //         setAnnouncementWithCounts([]);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
 
-        console.error("Error response data:", error.response?.data);
-        console.error("Error response status:", error.response?.status);
-      }
-    };
+  //       console.error("Error response data:", error.response?.data);
+  //       console.error("Error response status:", error.response?.status);
+  //     }
+  //   };
 
-    fetchData();
-  }, [brgy, update]);
+  //   fetchData();
+  // }, [brgy, update]);
 
   
-  useEffect(() => {
-    const filteredData = announcements.filter((item) =>
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.event_id.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    const startIndex = currentPage * 10;
-    const endIndex = startIndex + 10;
-    setFilteredAnnouncements(filteredData.slice(startIndex, endIndex));
-    setPageCount(Math.ceil(filteredData.length / 10));
-  }, [announcements, searchQuery, currentPage]);
+  // useEffect(() => {
+  //   const filteredData = announcements.filter((item) =>
+  //     item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     item.event_id.toLowerCase().includes(searchQuery.toLowerCase())
+  //   );
+  //   const startIndex = currentPage * 10;
+  //   const endIndex = startIndex + 10;
+  //   setFilteredAnnouncements(filteredData.slice(startIndex, endIndex));
+  //   setPageCount(Math.ceil(filteredData.length / 10));
+  // }, [announcements, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -107,28 +107,28 @@ const ArchivedEvents = () => {
     setCurrentPage(0); // Reset current page when search query changes
   };
 
-  useEffect(() => {
-    const handleEventRestore = (obj) => {
-      setAnnouncement(obj);
-      setAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
-      setFilteredAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
-    };
+  // useEffect(() => {
+  //   const handleEventRestore = (obj) => {
+  //     setAnnouncement(obj);
+  //     setAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
+  //     setFilteredAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
+  //   };
 
 
-    socket.on("receive-restore-staff", handleEventRestore);
+  //   socket.on("receive-restore-staff", handleEventRestore);
 
-    return () => {
+  //   return () => {
 
-      socket.on("receive-restore-staff", handleEventRestore);
-    };
-  }, [socket, setAnnouncement, setAnnouncements]);
+  //     socket.on("receive-restore-staff", handleEventRestore);
+  //   };
+  // }, [socket, setAnnouncement, setAnnouncements]);
 
 
-  const Announcements = announcements.filter(
-    (item) =>
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.event_id.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // const Announcements = announcements.filter(
+  //   (item) =>
+  //     item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     item.event_id.toLowerCase().includes(searchQuery.toLowerCase())
+  // );
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;

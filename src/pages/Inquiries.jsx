@@ -68,74 +68,74 @@ const Inquiries = () => {
 
 
 
-  useEffect(() => {
-    document.title = "Inquiries | Barangay E-Services Management";
+  // useEffect(() => {
+  //   document.title = "Inquiries | Barangay E-Services Management";
 
-    const fetchInquiries = async () => {
-      const response = await axios.get(
-        `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=false&status=${statusFilter}&label=Staff`
-      );
+  //   const fetchInquiries = async () => {
+  //     const response = await axios.get(
+  //       `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=false&status=${statusFilter}&label=Staff`
+  //     );
 
-      if (response.status === 200) {
-        setInquiries(response.data.result); // Set initial page data
-        setFilteredInquiries(response.data.result.slice(0, 10));
-        setPageCount(response.data.pageCount); // Calculate page count based on all data
-      } else {
-        setInquiries([]);
-        setFilteredInquiries([]);
-      }
-      // const container = inqContainerRef.current;
-      // container.scrollTop = container.scrollHeight;
-      // setInqsUpdate((prevState) => !prevState);
-    };
+  //     if (response.status === 200) {
+  //       setInquiries(response.data.result); // Set initial page data
+  //       setFilteredInquiries(response.data.result.slice(0, 10));
+  //       setPageCount(response.data.pageCount); // Calculate page count based on all data
+  //     } else {
+  //       setInquiries([]);
+  //       setFilteredInquiries([]);
+  //     }
+  //     // const container = inqContainerRef.current;
+  //     // container.scrollTop = container.scrollHeight;
+  //     // setInqsUpdate((prevState) => !prevState);
+  //   };
 
-    fetchInquiries();
-  }, [id, brgy, statusFilter]);
+  //   fetchInquiries();
+  // }, [id, brgy, statusFilter]);
 
-  useEffect(() => {
-    const handleStaffInq = (obj) => {
-      setInquiry(obj);
-      setFilteredInquiries(
-        prev => [obj, ...prev]
-      );
-    };
+  // useEffect(() => {
+  //   const handleStaffInq = (obj) => {
+  //     setInquiry(obj);
+  //     setFilteredInquiries(
+  //       prev => [obj, ...prev]
+  //     );
+  //   };
 
-    const handleReStaffInq = (obj) => {
-      setInquiry(obj);
-      setFilteredInquiries((curItem) =>
-        curItem.map((item) =>
-          item._id === obj._id ? obj : item
-        )
-      );
-    };
+    // const handleReStaffInq = (obj) => {
+    //   setInquiry(obj);
+    //   setFilteredInquiries((curItem) =>
+    //     curItem.map((item) =>
+    //       item._id === obj._id ? obj : item
+    //     )
+    //   );
+    // };
 
-    const handleEventArchive = (obj) => {
-      setInquiry(obj);
-      setInquiries((prev) => prev.filter(item => item._id !== obj._id));
-      setFilteredInquiries((prev) => prev.filter(item => item._id !== obj._id));
-    };
+    // const handleEventArchive = (obj) => {
+    //   setInquiry(obj);
+    //   setInquiries((prev) => prev.filter(item => item._id !== obj._id));
+    //   setFilteredInquiries((prev) => prev.filter(item => item._id !== obj._id));
+    // };
 
-    socket.on("receive-reply-staff-inquiry", handleReStaffInq);
-    socket.on("receive-staff-inquiry", handleStaffInq);
-    socket.on("receive-archive-staff", handleEventArchive);
+    // socket.on("receive-reply-staff-inquiry", handleReStaffInq);
+    // socket.on("receive-staff-inquiry", handleStaffInq);
+    // socket.on("receive-archive-staff", handleEventArchive);
 
-    return () => {
-      socket.off("receive-reply-staff-inquiry", handleReStaffInq);
-      socket.off("receive-staff-inquiry", handleStaffInq);
-      socket.off("receive-archive-staff", handleEventArchive);
-    };
-  }, [socket, setInquiry, setInquiries]);
+    // return () => {
+    //   socket.off("receive-reply-staff-inquiry", handleReStaffInq);
+    //   socket.off("receive-staff-inquiry", handleStaffInq);
+    //   socket.off("receive-archive-staff", handleEventArchive);
+    // };
+  // }, [socket, setInquiry, setInquiries]);
 
-  useEffect(() => {
-    const filteredData = inquiries.filter((item) =>
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.inq_id.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    const startIndex = currentPage * 10;
-    const endIndex = startIndex + 10;
-    setFilteredInquiries(filteredData.slice(startIndex, endIndex));
-    setPageCount(Math.ceil(filteredData.length / 10));
-  }, [inquiries, searchQuery, currentPage]);
+  // useEffect(() => {
+  //   const filteredData = inquiries.filter((item) =>
+  //     item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     item.inq_id.toLowerCase().includes(searchQuery.toLowerCase())
+  //   );
+  //   const startIndex = currentPage * 10;
+  //   const endIndex = startIndex + 10;
+  //   setFilteredInquiries(filteredData.slice(startIndex, endIndex));
+  //   setPageCount(Math.ceil(filteredData.length / 10));
+  // }, [inquiries, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -360,7 +360,7 @@ const Inquiries = () => {
                     />
                   </svg>
                 </button>
-                <ul
+                {/* <ul
                   className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
                   aria-labelledby="hs-dropdown"
                 >
@@ -393,7 +393,7 @@ const Inquiries = () => {
                   >
                     Completed
                   </a>
-                </ul>
+                </ul> */}
               </div>
 
               {/* Date Sort */}

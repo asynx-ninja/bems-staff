@@ -62,48 +62,48 @@ const ArchivedStaffsManagement = () => {
     setUsers(sortedData);
   };
 
-  const Users = users.filter((item) => {
-    const fullName =
-      `${item.lastName} ${item.firstName} ${item.middleName}`.toLowerCase();
-    const nameMatches = fullName.includes(searchQuery.toLowerCase());
+  // const Users = users.filter((item) => {
+  //   const fullName =
+  //     `${item.lastName} ${item.firstName} ${item.middleName}`.toLowerCase();
+  //   const nameMatches = fullName.includes(searchQuery.toLowerCase());
 
-    return nameMatches;
-  });
+  //   return nameMatches;
+  // });
 
-  useEffect(() => {
-    const fetch = async () => {
-      const response = await axios.get(
-        `${API_LINK}/staffs/showArchived/${brgy}/?&type=${positionFilter}`
-      );
+  // useEffect(() => {
+  //   const fetch = async () => {
+  //     const response = await axios.get(
+  //       `${API_LINK}/staffs/showArchived/${brgy}/?&type=${positionFilter}`
+  //     );
 
-      if (response.status === 200) {
-        setUsers(response.data.result);
-        setPageCount(response.data.pageCount);
-        setfilterUsers(response.data.result.slice(0, 10));
-      } else setUsers([]);
-    };
+  //     if (response.status === 200) {
+  //       setUsers(response.data.result);
+  //       setPageCount(response.data.pageCount);
+  //       setfilterUsers(response.data.result.slice(0, 10));
+  //     } else setUsers([]);
+  //   };
 
-    fetch();
-  }, [positionFilter]);
+  //   fetch();
+  // }, [positionFilter]);
 
-  useEffect(() => {
-    const filteredData = users.filter((item) => {
-      const fullName =
-        item.lastName.toLowerCase() +
-        ", " +
-        item.firstName.toLowerCase() +
-        (item.middleName !== undefined
-          ? " " + item.middleName.toLowerCase()
-          : "");
+  // useEffect(() => {
+  //   const filteredData = users.filter((item) => {
+  //     const fullName =
+  //       item.lastName.toLowerCase() +
+  //       ", " +
+  //       item.firstName.toLowerCase() +
+  //       (item.middleName !== undefined
+  //         ? " " + item.middleName.toLowerCase()
+  //         : "");
 
-      return fullName.includes(searchQuery.toLowerCase());
-    });
+  //     return fullName.includes(searchQuery.toLowerCase());
+  //   });
 
-    const startIndex = currentPage * 10;
-    const endIndex = startIndex + 10;
-    setfilterUsers(filteredData.slice(startIndex, endIndex));
-    setPageCount(Math.ceil(filteredData.length / 10));
-  }, [users, searchQuery, currentPage]);
+  //   const startIndex = currentPage * 10;
+  //   const endIndex = startIndex + 10;
+  //   setfilterUsers(filteredData.slice(startIndex, endIndex));
+  //   setPageCount(Math.ceil(filteredData.length / 10));
+  // }, [users, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -228,7 +228,7 @@ const ArchivedStaffsManagement = () => {
                     />
                   </svg>
                 </button>
-                <ul
+                {/* <ul
                   className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
                   aria-labelledby="hs-dropdown"
                 >
@@ -254,7 +254,7 @@ const ArchivedStaffsManagement = () => {
                   >
                     BARANGAY ADMIN
                   </a>
-                </ul>
+                </ul> */}
               </div>
             </div>
 

@@ -9,851 +9,851 @@ import ErrorPopup from "./popup/ErrorPopup";
 import GetBrgy from "../GETBrgy/getbrgy";
 
 function AddStaffModal({ brgy, socket, id }) {
-  const information = GetBrgy(brgy);
-  const [submitClicked, setSubmitClicked] = useState(false);
-  const [creationStatus, setCreationStatus] = useState(null);
-  const [error, setError] = useState(null);
-  const [emptyFields, setEmptyFields] = useState([]);
-  const [empty, setEmpty] = useState(false);
-  const [user, setUser] = useState({
-    user_id: "",
-    firstName: "",
-    lastName: "",
-    email: "",
-    birthday: "",
-    age: "",
-    contact: "",
-    street: "",
-    type: "",
-    username: "",
-    password: "",
-    isArchived: false,
-    isApproved: "Fully Verified",
-    city: "Rodriguez, Rizal",
-    brgy: brgy,
-  });
+  // const information = GetBrgy(brgy);
+  // const [submitClicked, setSubmitClicked] = useState(false);
+  // const [creationStatus, setCreationStatus] = useState(null);
+  // const [error, setError] = useState(null);
+  // const [emptyFields, setEmptyFields] = useState([]);
+  // const [empty, setEmpty] = useState(false);
+  // const [user, setUser] = useState({
+  //   user_id: "",
+  //   firstName: "",
+  //   lastName: "",
+  //   email: "",
+  //   birthday: "",
+  //   age: "",
+  //   contact: "",
+  //   street: "",
+  //   type: "",
+  //   username: "",
+  //   password: "",
+  //   isArchived: false,
+  //   isApproved: "Fully Verified",
+  //   city: "Rodriguez, Rizal",
+  //   brgy: brgy,
+  // });
 
-  const handleButtonClick = (e) => {
-    e.preventDefault();
-    setUser((prev) => ({
-      ...prev,
-      password: "User12345",
-    }));
-  };
+  // const handleButtonClick = (e) => {
+  //   e.preventDefault();
+  //   setUser((prev) => ({
+  //     ...prev,
+  //     password: "User12345",
+  //   }));
+  // };
 
-  const handleChange = (e) => {
-    setUser((prev) => {
-      const createUser = { ...prev, [e.target.name]: e.target.value };
+  // const handleChange = (e) => {
+  //   setUser((prev) => {
+  //     const createUser = { ...prev, [e.target.name]: e.target.value };
 
-      if (e.target.name === "birthday") {
-        createUser.age = calculateAge(createUser.birthday);
-      }
+  //     if (e.target.name === "birthday") {
+  //       createUser.age = calculateAge(createUser.birthday);
+  //     }
 
-      return createUser;
-    });
-  };
+  //     return createUser;
+  //   });
+  // };
 
-  const handleChange2 = (field, value) => {
-    setUser((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
+  // const handleChange2 = (field, value) => {
+  //   setUser((prev) => ({
+  //     ...prev,
+  //     [field]: value,
+  //   }));
+  // };
 
-  const handleSubmit = async (e) => {
-    try {
-      e.preventDefault();
-      setSubmitClicked(true);
-      setError(null); // Reset error state
+  // const handleSubmit = async (e) => {
+  //   try {
+  //     e.preventDefault();
+  //     setSubmitClicked(true);
+  //     setError(null); // Reset error state
 
-      const emptyFieldsArr = checkEmptyFields();
+  //     const emptyFieldsArr = checkEmptyFields();
 
-      if (emptyFieldsArr.length > 0) {
-        setEmpty(true);
-        setSubmitClicked(false);
-      } else {
-        const calculatedAge = calculateAge(user.birthday);
+  //     if (emptyFieldsArr.length > 0) {
+  //       setEmpty(true);
+  //       setSubmitClicked(false);
+  //     } else {
+  //       const calculatedAge = calculateAge(user.birthday);
 
-        if (calculatedAge <= 16) {
-          // Set an error message if the age is less than 17
-          setCreationStatus("ageError");
-          setSubmitClicked(false);
-          return;
-        } else {
-          try {
-            const obj = {
-              firstName: user.firstName,
-              middleName: user.middleName,
-              lastName: user.lastName,
-              suffix: user.suffix,
-              religion: user.religion,
-              email: user.email,
-              birthday: user.birthday,
-              age: calculatedAge,
-              contact: user.contact,
-              sex: user.sex,
-              address: {
-                street: user.street,
-                brgy: user.brgy,
-                city: user.city,
-              },
-              occupation: user.occupation,
-              civil_status: user.civil_status,
-              type: user.type,
-              isVoter: user.isVoter,
-              isHead: user.isHead,
-              isArchived: user.isArchived,
-              isApproved: user.isApproved,
-              username: user.username,
-              password: user.password,
-            };
-            const result = await axios.post(`${API_LINK}/staffs/`, obj);
+  //       if (calculatedAge <= 16) {
+  //         // Set an error message if the age is less than 17
+  //         setCreationStatus("ageError");
+  //         setSubmitClicked(false);
+  //         return;
+  //       } else {
+  //         try {
+  //           const obj = {
+  //             firstName: user.firstName,
+  //             middleName: user.middleName,
+  //             lastName: user.lastName,
+  //             suffix: user.suffix,
+  //             religion: user.religion,
+  //             email: user.email,
+  //             birthday: user.birthday,
+  //             age: calculatedAge,
+  //             contact: user.contact,
+  //             sex: user.sex,
+  //             address: {
+  //               street: user.street,
+  //               brgy: user.brgy,
+  //               city: user.city,
+  //             },
+  //             occupation: user.occupation,
+  //             civil_status: user.civil_status,
+  //             type: user.type,
+  //             isVoter: user.isVoter,
+  //             isHead: user.isHead,
+  //             isArchived: user.isArchived,
+  //             isApproved: user.isApproved,
+  //             username: user.username,
+  //             password: user.password,
+  //           };
+  //           const result = await axios.post(`${API_LINK}/staffs/`, obj);
 
-            if (result.status === 200) {
-              const getIP = async () => {
-                const response = await fetch("https://api64.ipify.org?format=json");
-                const data = await response.json();
-                return data.ip;
-              };
+  //           if (result.status === 200) {
+  //             const getIP = async () => {
+  //               const response = await fetch("https://api64.ipify.org?format=json");
+  //               const data = await response.json();
+  //               return data.ip;
+  //             };
 
-              const ip = await getIP(); // Retrieve IP address
+  //             const ip = await getIP(); // Retrieve IP address
 
-              const logsData = {
-                action: "Created",
-                details: `Created a new barangay user named ${user.firstName} ${user.lastName}.`,
-                ip: ip,
-              };
+  //             const logsData = {
+  //               action: "Created",
+  //               details: `Created a new barangay user named ${user.firstName} ${user.lastName}.`,
+  //               ip: ip,
+  //             };
 
-              const logsResult = await axios.post(
-                `${API_LINK}/act_logs/add_logs/?id=${id}`,
-                logsData
-              );
-              if (logsResult.status === 200) {
-                setUser({
-                  user_id: "",
-                  firstName: "",
-                  lastName: "",
-                  email: "",
-                  birthday: "",
-                  age: "",
-                  contact: "",
-                  street: "",
-                  type: "",
-                  username: "",
-                  password: "",
-                  isArchived: false,
-                  isApproved: "Fully Verified",
-                  city: "Rodriguez, Rizal",
-                  brgy: brgy,
-                });
-                setSubmitClicked(false);
-                setCreationStatus("success");
+  //             const logsResult = await axios.post(
+  //               `${API_LINK}/act_logs/add_logs/?id=${id}`,
+  //               logsData
+  //             );
+  //             if (logsResult.status === 200) {
+  //               setUser({
+  //                 user_id: "",
+  //                 firstName: "",
+  //                 lastName: "",
+  //                 email: "",
+  //                 birthday: "",
+  //                 age: "",
+  //                 contact: "",
+  //                 street: "",
+  //                 type: "",
+  //                 username: "",
+  //                 password: "",
+  //                 isArchived: false,
+  //                 isApproved: "Fully Verified",
+  //                 city: "Rodriguez, Rizal",
+  //                 brgy: brgy,
+  //               });
+  //               setSubmitClicked(false);
+  //               setCreationStatus("success");
 
-                socket.emit("send-create-staff", result.data);
-                setTimeout(() => {
-                  // setSubmitClicked(null);
-                  // setCreationStatus(null);
-                  HSOverlay.close(document.getElementById("hs-modal-addStaff"));
-                }, 3000);
-              }
-            }
-          } catch (err) {
-            setSubmitClicked(false);
-            setCreationStatus("error");
-            setError("An errorFor Review occurred while creating the announcement.");
-          }
-        }
-      }
-    } catch (err) {
-      console.log(err);
-      setSubmitClicked(false);
-      setCreationStatus("error");
-      setError("An error occurred while creating the announcement.");
-    }
-  };
+  //               socket.emit("send-create-staff", result.data);
+  //               setTimeout(() => {
+  //                 // setSubmitClicked(null);
+  //                 // setCreationStatus(null);
+  //                 HSOverlay.close(document.getElementById("hs-modal-addStaff"));
+  //               }, 3000);
+  //             }
+  //           }
+  //         } catch (err) {
+  //           setSubmitClicked(false);
+  //           setCreationStatus("error");
+  //           setError("An errorFor Review occurred while creating the announcement.");
+  //         }
+  //       }
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //     setSubmitClicked(false);
+  //     setCreationStatus("error");
+  //     setError("An error occurred while creating the announcement.");
+  //   }
+  // };
 
-  const religions = [
-    "Roman Catholic",
-    "Islam",
-    "Iglesia ni Cristo",
-    "Philippine Independent Church (Aglipayan)",
-    "Seventh-day Adventist",
-    "Bible Baptist Church",
-    "United Church of Christ in the Philippines",
-    "Jehovah Witnesses",
-    "Church of Christ",
-    "Born Again",
-    "Other Religous Affiliation",
-    // Add more religions here...
-  ];
+  // const religions = [
+  //   "Roman Catholic",
+  //   "Islam",
+  //   "Iglesia ni Cristo",
+  //   "Philippine Independent Church (Aglipayan)",
+  //   "Seventh-day Adventist",
+  //   "Bible Baptist Church",
+  //   "United Church of Christ in the Philippines",
+  //   "Jehovah Witnesses",
+  //   "Church of Christ",
+  //   "Born Again",
+  //   "Other Religous Affiliation",
+  //   // Add more religions here...
+  // ];
 
-  const birthdayFormat = (date) => {
-    const birthdate = date === undefined ? "" : date.substr(0, 10);
-    return birthdate;
-  };
+  // const birthdayFormat = (date) => {
+  //   const birthdate = date === undefined ? "" : date.substr(0, 10);
+  //   return birthdate;
+  // };
 
-  const calculateAge = (birthDate) => {
-    const today = new Date();
-    const birthDateObj = new Date(birthDate);
-    let age = today.getFullYear() - birthDateObj.getFullYear();
-    const monthDiff = today.getMonth() - birthDateObj.getMonth();
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birthDateObj.getDate())
-    ) {
-      age--;
-    }
+  // const calculateAge = (birthDate) => {
+  //   const today = new Date();
+  //   const birthDateObj = new Date(birthDate);
+  //   let age = today.getFullYear() - birthDateObj.getFullYear();
+  //   const monthDiff = today.getMonth() - birthDateObj.getMonth();
+  //   if (
+  //     monthDiff < 0 ||
+  //     (monthDiff === 0 && today.getDate() < birthDateObj.getDate())
+  //   ) {
+  //     age--;
+  //   }
 
-    return age;
-  };
+  //   return age;
+  // };
 
-  const checkEmptyFields = () => {
-    let arr = [];
-    const keysToCheck = [
-      "firstName",
-      "lastName",
-      "age",
-      "email",
-      "birthday",
-      "contact",
-      "username",
-      "password",
-      "street",
-      "type",
-    ];
-    for (const key of keysToCheck) {
-      if (user[key] === "") {
-        arr.push(key);
-      }
-    }
-    setEmptyFields(arr);
-    return arr;
-  };
+  // const checkEmptyFields = () => {
+  //   let arr = [];
+  //   const keysToCheck = [
+  //     "firstName",
+  //     "lastName",
+  //     "age",
+  //     "email",
+  //     "birthday",
+  //     "contact",
+  //     "username",
+  //     "password",
+  //     "street",
+  //     "type",
+  //   ];
+  //   for (const key of keysToCheck) {
+  //     if (user[key] === "") {
+  //       arr.push(key);
+  //     }
+  //   }
+  //   setEmptyFields(arr);
+  //   return arr;
+  // };
 
-  const handleResetModal = () => {
-    // Reset specific fields by setting them to initial state
-    setUser({
-      firstName: "",
-      middleName: "",
-      lastName: "",
-      suffix: "",
-      religion: "",
-      email: "",
-      contact: "",
-      sex: "",
-      occupation: "",
-      civil_status: "",
-      type: "",
-      isVoter: "",
-      isHead: "",
-      isArchived: null,
-      username: "",
-      password: "",
-      street: "",
-    });
-  };
+  // const handleResetModal = () => {
+  //   // Reset specific fields by setting them to initial state
+  //   setUser({
+  //     firstName: "",
+  //     middleName: "",
+  //     lastName: "",
+  //     suffix: "",
+  //     religion: "",
+  //     email: "",
+  //     contact: "",
+  //     sex: "",
+  //     occupation: "",
+  //     civil_status: "",
+  //     type: "",
+  //     isVoter: "",
+  //     isHead: "",
+  //     isArchived: null,
+  //     username: "",
+  //     password: "",
+  //     street: "",
+  //   });
+  // };
 
-  return (
-    <div>
-      <div className="">
-        <div
-          id="hs-modal-addStaff"
-          className="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full md:max-h-lg overflow-x-hidden overflow-y-auto flex items-center justify-center"
-        >
-          {/* Modal */}
-          <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
-            <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
-              {/* Header */}
-              <div
-                className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl"
-                style={{
-                  background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
-                }}
-              >
-                <h3
-                  className="font-bold text-white mx-auto md:text-xl text-center"
-                  style={{ letterSpacing: "0.3em" }}
-                >
-                  CREATE BARANGAY STAFF
-                </h3>
-              </div>
+  // return (
+  //   <div>
+  //     <div className="">
+  //       <div
+  //         id="hs-modal-addStaff"
+  //         className="hs-overlay hidden fixed top-0 left-0 z-[60] w-full h-full md:max-h-lg overflow-x-hidden overflow-y-auto flex items-center justify-center"
+  //       >
+  //         {/* Modal */}
+  //         <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 px-3 py-5 md:px-5 opacity-0 transition-all w-full h-auto">
+  //           <div className="flex flex-col bg-white shadow-sm rounded-t-3xl rounded-b-3xl w-full h-full md:max-w-xl lg:max-w-2xl xxl:max-w-3xl mx-auto max-h-screen">
+  //             {/* Header */}
+  //             <div
+  //               className="py-5 px-3 flex justify-between items-center overflow-hidden rounded-t-2xl"
+  //               style={{
+  //                 background: `radial-gradient(ellipse at bottom, ${information?.theme?.gradient?.start}, ${information?.theme?.gradient?.end})`,
+  //               }}
+  //             >
+  //               <h3
+  //                 className="font-bold text-white mx-auto md:text-xl text-center"
+  //                 style={{ letterSpacing: "0.3em" }}
+  //               >
+  //                 CREATE BARANGAY STAFF
+  //               </h3>
+  //             </div>
 
-              <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
-                <form>
-                  <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
-                    <div className="flex flex-col mb-1 w-full">
-                      {/* Service Description */}
+  //             <div className="scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb flex flex-col mx-auto w-full py-5 px-5 overflow-y-auto relative h-[470px]">
+  //               <form>
+  //                 <div className="flex mb-4 w-full flex-col md:flex-row sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0">
+  //                   <div className="flex flex-col mb-1 w-full">
+  //                     {/* Service Description */}
 
-                      {/* Section 1 */}
-                      <div className="relative p-1 pb-6 flex flex-col w-full h-full">
-                        <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg">
-                          Personal Data
-                        </b>
-                        <div className="flex flex-col mt-2">
-                          <div className="flex flex-col w-full">
-                            <h1
-                              className="font-medium mb-1 text-black text-sm"
-                              style={{ letterSpacing: "0.1em" }}
-                            >
-                              FIRST NAME
-                            </h1>
-                            <input
-                              type="text"
-                              id="firstName"
-                              name="firstName"
-                              value={user.firstName}
-                              onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("firstName") &&
-                                "border-red-500"
-                                }`}
-                              placeholder=""
-                              required
-                            />
-                          </div>
+  //                     {/* Section 1 */}
+  //                     <div className="relative p-1 pb-6 flex flex-col w-full h-full">
+  //                       <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg">
+  //                         Personal Data
+  //                       </b>
+  //                       <div className="flex flex-col mt-2">
+  //                         <div className="flex flex-col w-full">
+  //                           <h1
+  //                             className="font-medium mb-1 text-black text-sm"
+  //                             style={{ letterSpacing: "0.1em" }}
+  //                           >
+  //                             FIRST NAME
+  //                           </h1>
+  //                           <input
+  //                             type="text"
+  //                             id="firstName"
+  //                             name="firstName"
+  //                             value={user.firstName}
+  //                             onChange={handleChange}
+  //                             className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("firstName") &&
+  //                               "border-red-500"
+  //                               }`}
+  //                             placeholder=""
+  //                             required
+  //                           />
+  //                         </div>
 
-                          <div className="flex flex-col mt-2 w-full">
-                            <h1
-                              className="font-medium mb-1 text-black text-sm"
-                              style={{ letterSpacing: "0.1em" }}
-                            >
-                              MIDDLE NAME
-                            </h1>
-                            <input
-                              type="text"
-                              id="middleName"
-                              name="middleName"
-                              value={user.middleName}
-                              onChange={handleChange}
-                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                              placeholder=""
-                            />
-                          </div>
+  //                         <div className="flex flex-col mt-2 w-full">
+  //                           <h1
+  //                             className="font-medium mb-1 text-black text-sm"
+  //                             style={{ letterSpacing: "0.1em" }}
+  //                           >
+  //                             MIDDLE NAME
+  //                           </h1>
+  //                           <input
+  //                             type="text"
+  //                             id="middleName"
+  //                             name="middleName"
+  //                             value={user.middleName}
+  //                             onChange={handleChange}
+  //                             className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+  //                             placeholder=""
+  //                           />
+  //                         </div>
 
-                          <div className="flex flex-col mt-2 w-full">
-                            <h1
-                              className="font-medium mb-1 text-black text-sm"
-                              style={{ letterSpacing: "0.1em" }}
-                            >
-                              LAST NAME
-                            </h1>
-                            <input
-                              type="text"
-                              id="lastName"
-                              name="lastName"
-                              value={user.lastName}
-                              onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("lastName") &&
-                                "border-red-500"
-                                }`}
-                              placeholder=""
-                            />
-                          </div>
-                        </div>
+  //                         <div className="flex flex-col mt-2 w-full">
+  //                           <h1
+  //                             className="font-medium mb-1 text-black text-sm"
+  //                             style={{ letterSpacing: "0.1em" }}
+  //                           >
+  //                             LAST NAME
+  //                           </h1>
+  //                           <input
+  //                             type="text"
+  //                             id="lastName"
+  //                             name="lastName"
+  //                             value={user.lastName}
+  //                             onChange={handleChange}
+  //                             className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("lastName") &&
+  //                               "border-red-500"
+  //                               }`}
+  //                             placeholder=""
+  //                           />
+  //                         </div>
+  //                       </div>
 
-                        <div className="flex flex-row mt-2">
-                          <div className="flex flex-col w-full">
-                            <h1
-                              className="font-medium mb-1 text-black text-sm"
-                              style={{ letterSpacing: "0.1em" }}
-                            >
-                              SUFFIX
-                            </h1>
-                            <input
-                              type="text"
-                              id="suffix"
-                              name="suffix"
-                              value={user.suffix}
-                              onChange={handleChange}
-                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                              placeholder=""
-                            />
-                          </div>
+  //                       <div className="flex flex-row mt-2">
+  //                         <div className="flex flex-col w-full">
+  //                           <h1
+  //                             className="font-medium mb-1 text-black text-sm"
+  //                             style={{ letterSpacing: "0.1em" }}
+  //                           >
+  //                             SUFFIX
+  //                           </h1>
+  //                           <input
+  //                             type="text"
+  //                             id="suffix"
+  //                             name="suffix"
+  //                             value={user.suffix}
+  //                             onChange={handleChange}
+  //                             className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+  //                             placeholder=""
+  //                           />
+  //                         </div>
 
-                          <div className="flex flex-col ml-2 w-full">
-                            <h1
-                              className="font-medium mb-1 text-black text-sm"
-                              style={{ letterSpacing: "0.1em" }}
-                            >
-                              BIRTHDAY
-                            </h1>
-                            <input
-                              type="date"
-                              id="birthday"
-                              name="birthday"
-                              onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("birthday") &&
-                                "border-red-500"
-                                }`}
-                              placeholder="mm/dd/yyyy"
-                              value={birthdayFormat(user.birthday) || ""}
-                            />
-                          </div>
+  //                         <div className="flex flex-col ml-2 w-full">
+  //                           <h1
+  //                             className="font-medium mb-1 text-black text-sm"
+  //                             style={{ letterSpacing: "0.1em" }}
+  //                           >
+  //                             BIRTHDAY
+  //                           </h1>
+  //                           <input
+  //                             type="date"
+  //                             id="birthday"
+  //                             name="birthday"
+  //                             onChange={handleChange}
+  //                             className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("birthday") &&
+  //                               "border-red-500"
+  //                               }`}
+  //                             placeholder="mm/dd/yyyy"
+  //                             value={birthdayFormat(user.birthday) || ""}
+  //                           />
+  //                         </div>
 
-                          <div className="flex flex-col  ml-2 mt-0 md:ml-2 md:w-[30%]">
-                            <h1
-                              className="font-medium mb-1 text-black text-sm"
-                              style={{ letterSpacing: "0.1em" }}
-                            >
-                              AGE
-                            </h1>
-                            <input
-                              type="text"
-                              id="age"
-                              name="age"
-                              onChange={handleChange}
-                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                              placeholder=""
-                              value={calculateAge(user.birthday) || ""}
-                            />
-                          </div>
-                        </div>
-                        <div className="flex flex-col md:flex-row mt-2">
-                          <div className="flex flex-col w-full md:w-[36%] lg:w-[40%]">
-                            <h1
-                              className="font-medium mb-1 text-black text-sm"
-                              style={{ letterSpacing: "0.1em" }}
-                            >
-                              E-MAIL
-                            </h1>
-                            <input
-                              type="text"
-                              id="email"
-                              name="email"
-                              onChange={handleChange}
-                              value={user.email}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("email") &&
-                                "border-red-500"
-                                }`}
-                              placeholder=""
-                            />
-                          </div>
+  //                         <div className="flex flex-col  ml-2 mt-0 md:ml-2 md:w-[30%]">
+  //                           <h1
+  //                             className="font-medium mb-1 text-black text-sm"
+  //                             style={{ letterSpacing: "0.1em" }}
+  //                           >
+  //                             AGE
+  //                           </h1>
+  //                           <input
+  //                             type="text"
+  //                             id="age"
+  //                             name="age"
+  //                             onChange={handleChange}
+  //                             className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+  //                             placeholder=""
+  //                             value={calculateAge(user.birthday) || ""}
+  //                           />
+  //                         </div>
+  //                       </div>
+  //                       <div className="flex flex-col md:flex-row mt-2">
+  //                         <div className="flex flex-col w-full md:w-[36%] lg:w-[40%]">
+  //                           <h1
+  //                             className="font-medium mb-1 text-black text-sm"
+  //                             style={{ letterSpacing: "0.1em" }}
+  //                           >
+  //                             E-MAIL
+  //                           </h1>
+  //                           <input
+  //                             type="text"
+  //                             id="email"
+  //                             name="email"
+  //                             onChange={handleChange}
+  //                             value={user.email}
+  //                             className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("email") &&
+  //                               "border-red-500"
+  //                               }`}
+  //                             placeholder=""
+  //                           />
+  //                         </div>
 
-                          <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full md:w-[27%] lg:w-[32%]">
-                            <h1
-                              className="font-medium mb-1 text-black text-sm"
-                              style={{ letterSpacing: "0.1em" }}
-                            >
-                              CONTACT
-                            </h1>
-                            <input
-                              type="text"
-                              id="contact"
-                              name="contact"
-                              value={user.contact}
-                              onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("contact") &&
-                                "border-red-500"
-                                }`}
-                              placeholder=""
-                            />
-                          </div>
+  //                         <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full md:w-[27%] lg:w-[32%]">
+  //                           <h1
+  //                             className="font-medium mb-1 text-black text-sm"
+  //                             style={{ letterSpacing: "0.1em" }}
+  //                           >
+  //                             CONTACT
+  //                           </h1>
+  //                           <input
+  //                             type="text"
+  //                             id="contact"
+  //                             name="contact"
+  //                             value={user.contact}
+  //                             onChange={handleChange}
+  //                             className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("contact") &&
+  //                               "border-red-500"
+  //                               }`}
+  //                             placeholder=""
+  //                           />
+  //                         </div>
 
-                          <div className="w-full md:ml-4 md:w-[20%]">
-                            <h1
-                              className="font-medium mt-2 text-black text-sm"
-                              style={{ letterSpacing: "0.1em" }}
-                            >
-                              GENDER
-                            </h1>
-                            <div className="flex items-center">
-                              <input
-                                type="radio"
-                                id="Male"
-                                name="sex"
-                                value="Male"
-                                checked={user.sex === "Male"}
-                                className="text-green-500 focus:border-green-500 focus:ring-green-500"
-                                onChange={handleChange}
-                              />
-                              <label htmlFor="Male" className="ml-2">
-                                Male
-                              </label>
+  //                         <div className="w-full md:ml-4 md:w-[20%]">
+  //                           <h1
+  //                             className="font-medium mt-2 text-black text-sm"
+  //                             style={{ letterSpacing: "0.1em" }}
+  //                           >
+  //                             GENDER
+  //                           </h1>
+  //                           <div className="flex items-center">
+  //                             <input
+  //                               type="radio"
+  //                               id="Male"
+  //                               name="sex"
+  //                               value="Male"
+  //                               checked={user.sex === "Male"}
+  //                               className="text-green-500 focus:border-green-500 focus:ring-green-500"
+  //                               onChange={handleChange}
+  //                             />
+  //                             <label htmlFor="Male" className="ml-2">
+  //                               Male
+  //                             </label>
 
-                              <input
-                                type="radio"
-                                id="Female"
-                                name="sex"
-                                value="Female"
-                                checked={user.sex === "Female"}
-                                onChange={handleChange}
-                                className="ml-4 md:ml-2 lg:ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
-                              />
-                              <label htmlFor="Female" className="ml-2">
-                                Female
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="mt-2 flex flex-row">
-                          <div className="w-full">
-                            <label
-                              htmlFor="type"
-                              className="block text-sm font-medium"
-                            >
-                              USER TYPE
-                            </label>
-                            <select
-                              id="type"
-                              name="type"
-                              onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("type") && "border-red-500"
-                                }`}
-                              value={user.type}
-                            >
-                              {user.type === "" && (
-                                <option value="">-- Select Option --</option>
-                              )}
-                              <option value="Brgy Admin">Barangay Admin</option>
-                              <option value="Staff">Barangay Staff</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
+  //                             <input
+  //                               type="radio"
+  //                               id="Female"
+  //                               name="sex"
+  //                               value="Female"
+  //                               checked={user.sex === "Female"}
+  //                               onChange={handleChange}
+  //                               className="ml-4 md:ml-2 lg:ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
+  //                             />
+  //                             <label htmlFor="Female" className="ml-2">
+  //                               Female
+  //                             </label>
+  //                           </div>
+  //                         </div>
+  //                       </div>
+  //                       <div className="mt-2 flex flex-row">
+  //                         <div className="w-full">
+  //                           <label
+  //                             htmlFor="type"
+  //                             className="block text-sm font-medium"
+  //                           >
+  //                             USER TYPE
+  //                           </label>
+  //                           <select
+  //                             id="type"
+  //                             name="type"
+  //                             onChange={handleChange}
+  //                             className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("type") && "border-red-500"
+  //                               }`}
+  //                             value={user.type}
+  //                           >
+  //                             {user.type === "" && (
+  //                               <option value="">-- Select Option --</option>
+  //                             )}
+  //                             <option value="Brgy Admin">Barangay Admin</option>
+  //                             <option value="Staff">Barangay Staff</option>
+  //                           </select>
+  //                         </div>
+  //                       </div>
+  //                     </div>
 
-                      {/* Section 2 */}
-                      <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg">
-                        Additional Data
-                      </b>
-                      <div>
-                        <div className="flex flex flex-col md:flex-row mt-2 px-1 md:space-x-2">
-                          <div className="flex flex-col w-full">
-                            <label
-                              htmlFor="status"
-                              className="block text-sm font-medium"
-                            >
-                              CIVIL STATUS
-                            </label>
-                            <select
-                              id="civil_status"
-                              name="civil_status"
-                              value={user.civil_status}
-                              onChange={handleChange}
-                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                            >
-                              <option>-- Select Status --</option>
-                              <option value="Single">Single</option>
-                              <option value="Married">Married</option>
-                              <option value="Legally Separated">
-                                Legally Separated
-                              </option>
-                              <option value="Widowed">Widowed</option>
-                            </select>
-                          </div>
+  //                     {/* Section 2 */}
+  //                     <b className="border-solid border-0 border-black/50 border-b-2  uppercase font-medium text-lg md:text-lg">
+  //                       Additional Data
+  //                     </b>
+  //                     <div>
+  //                       <div className="flex flex flex-col md:flex-row mt-2 px-1 md:space-x-2">
+  //                         <div className="flex flex-col w-full">
+  //                           <label
+  //                             htmlFor="status"
+  //                             className="block text-sm font-medium"
+  //                           >
+  //                             CIVIL STATUS
+  //                           </label>
+  //                           <select
+  //                             id="civil_status"
+  //                             name="civil_status"
+  //                             value={user.civil_status}
+  //                             onChange={handleChange}
+  //                             className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+  //                           >
+  //                             <option>-- Select Status --</option>
+  //                             <option value="Single">Single</option>
+  //                             <option value="Married">Married</option>
+  //                             <option value="Legally Separated">
+  //                               Legally Separated
+  //                             </option>
+  //                             <option value="Widowed">Widowed</option>
+  //                           </select>
+  //                         </div>
 
-                          <div className="flex flex-col w-full mt-2 md:mt-0">
-                            <label
-                              htmlFor="status"
-                              className="block text-sm font-medium"
-                            >
-                              RELIGION
-                            </label>
-                            <select
-                              name="religion"
-                              onChange={handleChange}
-                              value={user.religion}
-                              className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                            >
-                              <option value="">-- Select Religion --</option>
-                              {religions.map((religion, index) => (
-                                <option key={index} value={religion}>
-                                  {religion}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
+  //                         <div className="flex flex-col w-full mt-2 md:mt-0">
+  //                           <label
+  //                             htmlFor="status"
+  //                             className="block text-sm font-medium"
+  //                           >
+  //                             RELIGION
+  //                           </label>
+  //                           <select
+  //                             name="religion"
+  //                             onChange={handleChange}
+  //                             value={user.religion}
+  //                             className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+  //                           >
+  //                             <option value="">-- Select Religion --</option>
+  //                             {religions.map((religion, index) => (
+  //                               <option key={index} value={religion}>
+  //                                 {religion}
+  //                               </option>
+  //                             ))}
+  //                           </select>
+  //                         </div>
+  //                       </div>
 
-                        <div className="mt-2 md:mt-4 px-1 flex flex-col md:flex-row w-full">
-                          <div className="flex flex-col w-full">
-                            <label
-                              htmlFor="status"
-                              className="block text-sm font-medium"
-                            >
-                              OCCUPATION
-                            </label>
-                            <CreateOccupationList handleChange={handleChange} />
-                          </div>
+  //                       <div className="mt-2 md:mt-4 px-1 flex flex-col md:flex-row w-full">
+  //                         <div className="flex flex-col w-full">
+  //                           <label
+  //                             htmlFor="status"
+  //                             className="block text-sm font-medium"
+  //                           >
+  //                             OCCUPATION
+  //                           </label>
+  //                           <CreateOccupationList handleChange={handleChange} />
+  //                         </div>
 
-                          <div className="flex flex-col w-full mt-2 md:mt-0 md:ml-3">
-                            <label
-                              htmlFor="status"
-                              className="block text-sm font-medium"
-                            >
-                              STREET
-                            </label>
-                            <input
-                              type="text"
-                              id="street"
-                              name="street"
-                              onChange={handleChange}
-                              value={user.street}
-                              className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("street") &&
-                                "border-red-500"
-                                }`}
-                              placeholder=""
-                            />
-                          </div>
+  //                         <div className="flex flex-col w-full mt-2 md:mt-0 md:ml-3">
+  //                           <label
+  //                             htmlFor="status"
+  //                             className="block text-sm font-medium"
+  //                           >
+  //                             STREET
+  //                           </label>
+  //                           <input
+  //                             type="text"
+  //                             id="street"
+  //                             name="street"
+  //                             onChange={handleChange}
+  //                             value={user.street}
+  //                             className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("street") &&
+  //                               "border-red-500"
+  //                               }`}
+  //                             placeholder=""
+  //                           />
+  //                         </div>
 
-                          <div className="flex flex-col w-full mt-2 md:mt-0 md:ml-3">
-                            <label
-                              htmlFor="status"
-                              className="block text-sm font-medium"
-                            >
-                              BARANGAY
-                            </label>
-                            <select
-                              id="brgy"
-                              name="brgy"
-                              onChange={handleChange}
-                              defaultValue={brgy}
-                              disabled
-                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                            >
-                              <option value="BALITE">Balite</option>
-                              <option value="BURGOS">Burgos</option>
-                              <option value="GERONIMO">Geronimo</option>
-                              <option value="MACABUD">Macabud</option>
-                              <option value="MANGGAHAN">Manggahan</option>
-                              <option value="MASCAP">Mascap</option>
-                              <option value="PURAY">Puray</option>
-                              <option value="ROSARIO">Rosario</option>
-                              <option value="SAN ISIDRO">San Isidro</option>
-                              <option value="SAN JOSE">San Jose</option>
-                              <option value="SAN RAFAEL">San Rafael</option>
-                            </select>
-                          </div>
+  //                         <div className="flex flex-col w-full mt-2 md:mt-0 md:ml-3">
+  //                           <label
+  //                             htmlFor="status"
+  //                             className="block text-sm font-medium"
+  //                           >
+  //                             BARANGAY
+  //                           </label>
+  //                           <select
+  //                             id="brgy"
+  //                             name="brgy"
+  //                             onChange={handleChange}
+  //                             defaultValue={brgy}
+  //                             disabled
+  //                             className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+  //                           >
+  //                             <option value="BALITE">Balite</option>
+  //                             <option value="BURGOS">Burgos</option>
+  //                             <option value="GERONIMO">Geronimo</option>
+  //                             <option value="MACABUD">Macabud</option>
+  //                             <option value="MANGGAHAN">Manggahan</option>
+  //                             <option value="MASCAP">Mascap</option>
+  //                             <option value="PURAY">Puray</option>
+  //                             <option value="ROSARIO">Rosario</option>
+  //                             <option value="SAN ISIDRO">San Isidro</option>
+  //                             <option value="SAN JOSE">San Jose</option>
+  //                             <option value="SAN RAFAEL">San Rafael</option>
+  //                           </select>
+  //                         </div>
 
-                          <div className="flex flex-col w-full mt-2 md:mt-0 md:ml-3">
-                            <label
-                              htmlFor="status"
-                              className="block text-sm font-medium"
-                            >
-                              CITY
-                            </label>
-                            <select
-                              id="city"
-                              name="city"
-                              onChange={handleChange}
-                              className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                              disabled
-                            >
-                              <option value="Rodriguez, Rizal">
-                                Rodriguez, Rizal
-                              </option>
-                            </select>
-                          </div>
-                        </div>
+  //                         <div className="flex flex-col w-full mt-2 md:mt-0 md:ml-3">
+  //                           <label
+  //                             htmlFor="status"
+  //                             className="block text-sm font-medium"
+  //                           >
+  //                             CITY
+  //                           </label>
+  //                           <select
+  //                             id="city"
+  //                             name="city"
+  //                             onChange={handleChange}
+  //                             className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
+  //                             disabled
+  //                           >
+  //                             <option value="Rodriguez, Rizal">
+  //                               Rodriguez, Rizal
+  //                             </option>
+  //                           </select>
+  //                         </div>
+  //                       </div>
 
-                        <div className="mt-2 md:mt-4 flex flex-col md:flex-row px-1">
-                          <div className="w-full">
-                            <h1
-                              className="font-medium mt-2 text-black text-sm"
-                              style={{ letterSpacing: "0.1em" }}
-                            >
-                              REGISTERED VOTER?
-                            </h1>
-                            <div className="flex items-center">
-                              <input
-                                type="radio"
-                                id="true"
-                                name="isVoter"
-                                onChange={handleChange}
-                                value="true"
-                                checked={user.isVoter === "true"}
-                                className="text-green-500 focus:border-green-500 focus:ring-green-500"
-                              />
-                              <label htmlFor="Male" className="ml-2">
-                                Yes
-                              </label>
+  //                       <div className="mt-2 md:mt-4 flex flex-col md:flex-row px-1">
+  //                         <div className="w-full">
+  //                           <h1
+  //                             className="font-medium mt-2 text-black text-sm"
+  //                             style={{ letterSpacing: "0.1em" }}
+  //                           >
+  //                             REGISTERED VOTER?
+  //                           </h1>
+  //                           <div className="flex items-center">
+  //                             <input
+  //                               type="radio"
+  //                               id="true"
+  //                               name="isVoter"
+  //                               onChange={handleChange}
+  //                               value="true"
+  //                               checked={user.isVoter === "true"}
+  //                               className="text-green-500 focus:border-green-500 focus:ring-green-500"
+  //                             />
+  //                             <label htmlFor="Male" className="ml-2">
+  //                               Yes
+  //                             </label>
 
-                              <input
-                                type="radio"
-                                id="false"
-                                name="isVoter"
-                                onChange={handleChange}
-                                value="false"
-                                checked={user.isVoter === "false"}
-                                className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
-                              />
-                              <label htmlFor="No" className="ml-2">
-                                No
-                              </label>
-                            </div>
-                          </div>
+  //                             <input
+  //                               type="radio"
+  //                               id="false"
+  //                               name="isVoter"
+  //                               onChange={handleChange}
+  //                               value="false"
+  //                               checked={user.isVoter === "false"}
+  //                               className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
+  //                             />
+  //                             <label htmlFor="No" className="ml-2">
+  //                               No
+  //                             </label>
+  //                           </div>
+  //                         </div>
 
-                          <div className="w-full">
-                            <h1
-                              className="font-medium mt-2 text-black text-sm"
-                              style={{ letterSpacing: "0.1em" }}
-                            >
-                              HEAD OF FAMILY?
-                            </h1>
-                            <div className="flex items-center">
-                              <input
-                                type="radio"
-                                id="true"
-                                name="isHead"
-                                onChange={handleChange}
-                                value="true"
-                                checked={user.isHead === "true"}
-                                className="text-green-500 focus:border-green-500 focus:ring-green-500"
-                              />
-                              <label htmlFor="Yes" className="ml-2">
-                                Yes
-                              </label>
+  //                         <div className="w-full">
+  //                           <h1
+  //                             className="font-medium mt-2 text-black text-sm"
+  //                             style={{ letterSpacing: "0.1em" }}
+  //                           >
+  //                             HEAD OF FAMILY?
+  //                           </h1>
+  //                           <div className="flex items-center">
+  //                             <input
+  //                               type="radio"
+  //                               id="true"
+  //                               name="isHead"
+  //                               onChange={handleChange}
+  //                               value="true"
+  //                               checked={user.isHead === "true"}
+  //                               className="text-green-500 focus:border-green-500 focus:ring-green-500"
+  //                             />
+  //                             <label htmlFor="Yes" className="ml-2">
+  //                               Yes
+  //                             </label>
 
-                              <input
-                                type="radio"
-                                id="false"
-                                name="isHead"
-                                onChange={handleChange}
-                                value="false"
-                                checked={user.isHead === "false"}
-                                className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
-                              />
-                              <label htmlFor="No" className="ml-2">
-                                No
-                              </label>
-                            </div>
-                          </div>
+  //                             <input
+  //                               type="radio"
+  //                               id="false"
+  //                               name="isHead"
+  //                               onChange={handleChange}
+  //                               value="false"
+  //                               checked={user.isHead === "false"}
+  //                               className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
+  //                             />
+  //                             <label htmlFor="No" className="ml-2">
+  //                               No
+  //                             </label>
+  //                           </div>
+  //                         </div>
 
-                          <div className="w-full">
-                            <h1
-                              className="font-medium mt-2 text-black text-sm"
-                              style={{ letterSpacing: "0.1em" }}
-                            >
-                              ACTIVE USER
-                            </h1>
-                            <div className="flex items-center">
-                              <input
-                                type="radio"
-                                id="false"
-                                name="isArchived"
-                                onChange={() =>
-                                  handleChange2("isArchived", false)
-                                }
-                                value="false"
-                                checked={user.isArchived === false}
-                                className="text-green-500 focus:border-green-500 focus:ring-green-500"
-                              />
-                              <label htmlFor="Yes" className="ml-2">
-                                Yes
-                              </label>
+  //                         <div className="w-full">
+  //                           <h1
+  //                             className="font-medium mt-2 text-black text-sm"
+  //                             style={{ letterSpacing: "0.1em" }}
+  //                           >
+  //                             ACTIVE USER
+  //                           </h1>
+  //                           <div className="flex items-center">
+  //                             <input
+  //                               type="radio"
+  //                               id="false"
+  //                               name="isArchived"
+  //                               onChange={() =>
+  //                                 handleChange2("isArchived", false)
+  //                               }
+  //                               value="false"
+  //                               checked={user.isArchived === false}
+  //                               className="text-green-500 focus:border-green-500 focus:ring-green-500"
+  //                             />
+  //                             <label htmlFor="Yes" className="ml-2">
+  //                               Yes
+  //                             </label>
 
-                              <input
-                                type="radio"
-                                id="true"
-                                name="isArchived"
-                                onChange={() =>
-                                  handleChange2("isArchived", true)
-                                }
-                                value="true"
-                                checked={user.isArchived === true}
-                                className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
-                              />
-                              <label htmlFor="No" className="ml-2">
-                                No
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+  //                             <input
+  //                               type="radio"
+  //                               id="true"
+  //                               name="isArchived"
+  //                               onChange={() =>
+  //                                 handleChange2("isArchived", true)
+  //                               }
+  //                               value="true"
+  //                               checked={user.isArchived === true}
+  //                               className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
+  //                             />
+  //                             <label htmlFor="No" className="ml-2">
+  //                               No
+  //                             </label>
+  //                           </div>
+  //                         </div>
+  //                       </div>
+  //                     </div>
 
-                      {/* Section 3 */}
-                      <b className="border-solid border-0 border-black/50 border-b-2 uppercase font-medium text-lg md:text-lg mt-5">
-                        Account
-                      </b>
-                      <div className="flex flex-row mt-2 md:mt-4 px-1 flex-col md:flex-row">
-                        <div className="flex flex-col w-full">
-                          <h1
-                            className="font-medium mb-1 text-black text-sm"
-                            style={{ letterSpacing: "0.1em" }}
-                          >
-                            USERNAME
-                          </h1>
-                          <input
-                            type="text"
-                            id="username"
-                            name="username"
-                            onChange={handleChange}
-                            value={user.username}
-                            className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("username") &&
-                              "border-red-500"
-                              }`}
-                            placeholder=""
-                          />
-                        </div>
+  //                     {/* Section 3 */}
+  //                     <b className="border-solid border-0 border-black/50 border-b-2 uppercase font-medium text-lg md:text-lg mt-5">
+  //                       Account
+  //                     </b>
+  //                     <div className="flex flex-row mt-2 md:mt-4 px-1 flex-col md:flex-row">
+  //                       <div className="flex flex-col w-full">
+  //                         <h1
+  //                           className="font-medium mb-1 text-black text-sm"
+  //                           style={{ letterSpacing: "0.1em" }}
+  //                         >
+  //                           USERNAME
+  //                         </h1>
+  //                         <input
+  //                           type="text"
+  //                           id="username"
+  //                           name="username"
+  //                           onChange={handleChange}
+  //                           value={user.username}
+  //                           className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("username") &&
+  //                             "border-red-500"
+  //                             }`}
+  //                           placeholder=""
+  //                         />
+  //                       </div>
 
-                        <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full">
-                          <h1
-                            className="font-medium mb-1 text-black text-sm"
-                            style={{ letterSpacing: "0.1em" }}
-                          >
-                            PASSWORD
-                          </h1>
-                          <div className="flex flex-row w-full md:mr-2">
-                            <button
-                              className="bg-[#295141] p-2.5 rounded-l-md"
-                              onClick={handleButtonClick}
-                            >
-                              <div className="w-full overflow-hidden">
-                                <LiaRandomSolid
-                                  size={15}
-                                  style={{ color: "#ffffff" }}
-                                />
-                              </div>
-                            </button>
-                            <label htmlFor="password" className="sr-only">
-                              password
-                            </label>
-                            <input
-                              type="text"
-                              name="password"
-                              id="password"
-                              onChange={handleChange}
-                              className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-r-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("password") &&
-                                "border-red-500"
-                                }`}
-                              value={user.password}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </form>
-              </div>
-              {/* Buttons */}
-              <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
-                <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
-                  <button
-                    type="button"
-                    onClick={handleSubmit}
-                    className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                  >
-                    ADD
-                  </button>
-                  <button
-                    type="button"
-                    className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
-                    data-hs-overlay="#hs-modal-addStaff"
-                    onClick={handleResetModal}
-                  >
-                    CLOSE
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          {empty && <ErrorPopup />}
-          {submitClicked && <AddLoader creationStatus="creating" />}
-          {creationStatus && (
-            <AddLoader creationStatus={creationStatus} error={error} />
-          )}
-        </div>
-      </div>
-    </div>
-  );
+  //                       <div className="flex flex-col mt-2 md:mt-0 md:ml-2 w-full">
+  //                         <h1
+  //                           className="font-medium mb-1 text-black text-sm"
+  //                           style={{ letterSpacing: "0.1em" }}
+  //                         >
+  //                           PASSWORD
+  //                         </h1>
+  //                         <div className="flex flex-row w-full md:mr-2">
+  //                           <button
+  //                             className="bg-[#295141] p-2.5 rounded-l-md"
+  //                             onClick={handleButtonClick}
+  //                           >
+  //                             <div className="w-full overflow-hidden">
+  //                               <LiaRandomSolid
+  //                                 size={15}
+  //                                 style={{ color: "#ffffff" }}
+  //                               />
+  //                             </div>
+  //                           </button>
+  //                           <label htmlFor="password" className="sr-only">
+  //                             password
+  //                           </label>
+  //                           <input
+  //                             type="text"
+  //                             name="password"
+  //                             id="password"
+  //                             onChange={handleChange}
+  //                             className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-r-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("password") &&
+  //                               "border-red-500"
+  //                               }`}
+  //                             value={user.password}
+  //                           />
+  //                         </div>
+  //                       </div>
+  //                     </div>
+  //                   </div>
+  //                 </div>
+  //               </form>
+  //             </div>
+  //             {/* Buttons */}
+  //             <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
+  //               <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
+  //                 <button
+  //                   type="button"
+  //                   onClick={handleSubmit}
+  //                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
+  //                 >
+  //                   ADD
+  //                 </button>
+  //                 <button
+  //                   type="button"
+  //                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
+  //                   data-hs-overlay="#hs-modal-addStaff"
+  //                   onClick={handleResetModal}
+  //                 >
+  //                   CLOSE
+  //                 </button>
+  //               </div>
+  //             </div>
+  //           </div>
+  //         </div>
+  //         {empty && <ErrorPopup />}
+  //         {submitClicked && <AddLoader creationStatus="creating" />}
+  //         {creationStatus && (
+  //           <AddLoader creationStatus={creationStatus} error={error} />
+  //         )}
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
 }
 
 export default AddStaffModal;

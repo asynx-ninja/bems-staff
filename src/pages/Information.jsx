@@ -36,114 +36,114 @@ const Information = () => {
     window.innerWidth >= 1024
   );
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsSmallerThanLG(window.innerWidth <= 640);
-      setIsBiggerThanMD(window.innerWidth >= 1024);
-    };
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     setIsSmallerThanLG(window.innerWidth <= 640);
+  //     setIsBiggerThanMD(window.innerWidth >= 1024);
+  //   };
 
-    window.addEventListener("resize", handleResize);
+  //   window.addEventListener("resize", handleResize);
 
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener("resize", handleResize);
+  //   };
+  // }, []);
 
-  useEffect(() => {
-    const handleInfo = (obj) => {
-      setInformation((prev) => ({ ...prev, ...obj }));
-    };
+  // useEffect(() => {
+  //   const handleInfo = (obj) => {
+  //     setInformation((prev) => ({ ...prev, ...obj }));
+  //   };
 
-    socket.on("receive-update-brgy-info", handleInfo);
-    return () => {
-      socket.off("receive-update-brgy-info", handleInfo);
-    };
-  }, [socket, setInformation]);
+  //   socket.on("receive-update-brgy-info", handleInfo);
+  //   return () => {
+  //     socket.off("receive-update-brgy-info", handleInfo);
+  //   };
+  // }, [socket, setInformation]);
 
-  useEffect(() => {
-    document.title = "Barangay Information | Barangay E-Services Management";
+  // useEffect(() => {
+  //   document.title = "Barangay Information | Barangay E-Services Management";
 
-    const fetchInformation = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/brgyinfo/?brgy=${brgy}&archived=true`
-        );
+  //   const fetchInformation = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${API_LINK}/brgyinfo/?brgy=${brgy}&archived=true`
+  //       );
 
-        if (response.status === 200) {
-          setInformation(response.data[0]);
-          var logoSrc = document.getElementById("edit_logo");
-          logoSrc.src = response.data[0].logo.link;
-          var bannerSrc = document.getElementById("edit_banner");
-          bannerSrc.src = response.data[0].banner.link;
-        } else {
-          setInformation({});
-        }
-      } catch (error) {
-        console.error("Error fetching information:", error);
-        setInformation({});
-      }
-    };
+  //       if (response.status === 200) {
+  //         setInformation(response.data[0]);
+  //         var logoSrc = document.getElementById("edit_logo");
+  //         logoSrc.src = response.data[0].logo.link;
+  //         var bannerSrc = document.getElementById("edit_banner");
+  //         bannerSrc.src = response.data[0].banner.link;
+  //       } else {
+  //         setInformation({});
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching information:", error);
+  //       setInformation({});
+  //     }
+  //   };
 
-    fetchInformation();
-  }, [brgy]);
+  //   fetchInformation();
+  // }, [brgy]);
 
   const handleSaveChanges = async (e) => {
-    e.preventDefault();
-    setUpdatingStatus("success");
+    // e.preventDefault();
+    // setUpdatingStatus("success");
 
-    try {
-      const response = await axios.get(
-        `${API_LINK}/folder/specific/?brgy=${brgy}`
-      );
+    // try {
+    //   const response = await axios.get(
+    //     `${API_LINK}/folder/specific/?brgy=${brgy}`
+    //   );
 
-      if (response.status === 200) {
-        const formData = new FormData();
-        if (logo) formData.append("files", logo);
-        if (banner) formData.append("files", banner);
+    //   if (response.status === 200) {
+    //     const formData = new FormData();
+    //     if (logo) formData.append("files", logo);
+    //     if (banner) formData.append("files", banner);
 
-        formData.append("brgyinfo", JSON.stringify(information));
+    //     formData.append("brgyinfo", JSON.stringify(information));
 
-        const result = await axios.patch(
-          `${API_LINK}/brgyinfo/${brgy}/?folder_id=${response.data[0].info}`,
-          formData
-        );
-        const getIP = async () => {
-          const response = await fetch("https://api64.ipify.org?format=json");
-          const data = await response.json();
-          return data.ip;
-        };
+    //     const result = await axios.patch(
+    //       `${API_LINK}/brgyinfo/${brgy}/?folder_id=${response.data[0].info}`,
+    //       formData
+    //     );
+    //     const getIP = async () => {
+    //       const response = await fetch("https://api64.ipify.org?format=json");
+    //       const data = await response.json();
+    //       return data.ip;
+    //     };
 
-        const ip = await getIP(); // Retrieve IP address
+    //     const ip = await getIP(); // Retrieve IP address
 
-        const logsData = {
-          action: "Updated",
-          details: "Updated the barangay information." ,
-          ip: ip,
-        };
+    //     const logsData = {
+    //       action: "Updated",
+    //       details: "Updated the barangay information." ,
+    //       ip: ip,
+    //     };
 
-        const logsResult = await axios.post(
-          `${API_LINK}/act_logs/add_logs/?id=${id}`,
-          logsData
-        );
-        if (logsResult.status === 200) {
-          socket.emit("send-update-brgy-info", result.data);
-          setBrgyInformation({});
-          setSubmitClicked(false);
-          setTimeout(() => {
-            setUpdatingStatus(null);
-            setisEditingMode(false);
-          }, 1000);
-        }
-      } else {
-        console.error("No Data Found");
-      }
-    }
-    catch (error) {
-      console.error(error);
-      setSubmitClicked(false);
-      setUpdatingStatus(null);
-      setError("An error occurred while creating the announcement.");
-    }
+    //     const logsResult = await axios.post(
+    //       `${API_LINK}/act_logs/add_logs/?id=${id}`,
+    //       logsData
+    //     );
+    //     if (logsResult.status === 200) {
+    //       socket.emit("send-update-brgy-info", result.data);
+    //       setBrgyInformation({});
+    //       setSubmitClicked(false);
+    //       setTimeout(() => {
+    //         setUpdatingStatus(null);
+    //         setisEditingMode(false);
+    //       }, 1000);
+    //     }
+    //   } else {
+    //     console.error("No Data Found");
+    //   }
+    // }
+    // catch (error) {
+    //   console.error(error);
+    //   setSubmitClicked(false);
+    //   setUpdatingStatus(null);
+    //   setError("An error occurred while creating the announcement.");
+    // }
   };
 
 

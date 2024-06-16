@@ -42,48 +42,48 @@ const Inquiries = () => {
   const [selected, setSelected] = useState("date");
   const [filteredInquiries, setFilteredInquiries] = useState([]);
 
-  useEffect(() => {
-    const fetch = async () => {
-      const response = await axios.get(
-        `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=true&status=${statusFilter}&label=Staff`
-      );
-      if (response.status === 200) {
-        setInquiries(response.data.result);
-        setFilteredInquiries(response.data.result);
-        setPageCount(response.data.pageCount);
-      } else {
-        setInquiries([]);
-        setFilteredInquiries([]);
-      }
-    };
+  // useEffect(() => {
+  //   const fetch = async () => {
+  //     const response = await axios.get(
+  //       `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=true&status=${statusFilter}&label=Staff`
+  //     );
+  //     if (response.status === 200) {
+  //       setInquiries(response.data.result);
+  //       setFilteredInquiries(response.data.result);
+  //       setPageCount(response.data.pageCount);
+  //     } else {
+  //       setInquiries([]);
+  //       setFilteredInquiries([]);
+  //     }
+  //   };
 
-    fetch();
-  }, [id, brgy, statusFilter]);
+  //   fetch();
+  // }, [id, brgy, statusFilter]);
 
-  useEffect(() => {
-    const filteredData = inquiries.filter((item) =>
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.inq_id.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    const startIndex = currentPage * 10;
-    const endIndex = startIndex + 10;
-    setFilteredInquiries(filteredData.slice(startIndex, endIndex));
-    setPageCount(Math.ceil(filteredData.length / 10));
-  }, [inquiries, searchQuery, currentPage]);
+  // useEffect(() => {
+  //   const filteredData = inquiries.filter((item) =>
+  //     item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     item.inq_id.toLowerCase().includes(searchQuery.toLowerCase())
+  //   );
+  //   const startIndex = currentPage * 10;
+  //   const endIndex = startIndex + 10;
+  //   setFilteredInquiries(filteredData.slice(startIndex, endIndex));
+  //   setPageCount(Math.ceil(filteredData.length / 10));
+  // }, [inquiries, searchQuery, currentPage]);
 
-  useEffect(() => {
-    const handleEventArchive = (obj) => {
-      setInquiry(obj);
-      setInquiries((prev) => prev.filter(item => item._id !== obj._id));
-      setFilteredInquiries((prev) => prev.filter(item => item._id !== obj._id));
-    };
+  // useEffect(() => {
+  //   const handleEventArchive = (obj) => {
+  //     setInquiry(obj);
+  //     setInquiries((prev) => prev.filter(item => item._id !== obj._id));
+  //     setFilteredInquiries((prev) => prev.filter(item => item._id !== obj._id));
+  //   };
 
-    socket.on("receive-restore-staff", handleEventArchive);
+  //   socket.on("receive-restore-staff", handleEventArchive);
 
-    return () => {
-      socket.off("receive-restore-staff", handleEventArchive);
-    };
-  }, [socket, setInquiry, setInquiries]);
+  //   return () => {
+  //     socket.off("receive-restore-staff", handleEventArchive);
+  //   };
+  // }, [socket, setInquiry, setInquiries]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);

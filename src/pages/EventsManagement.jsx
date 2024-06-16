@@ -47,115 +47,115 @@ const EventsManagement = () => {
   const [selected, setSelected] = useState("date");
   const information = GetBrgy(brgy);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const announcementsResponse = await axios.get(
-          `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
-        );
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const announcementsResponse = await axios.get(
+  //         `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
+  //       );
 
-        if (announcementsResponse.status === 200) {
-          const currentDate = moment();
-          const announcementsData = announcementsResponse.data.result.map(
-            async (announcement) => {
-              const completedResponse = await axios.get(
-                `${API_LINK}/application/completed?brgy=${brgy}&event_id=${announcement.event_id}`
-              );
+  //       if (announcementsResponse.status === 200) {
+  //         const currentDate = moment();
+  //         const announcementsData = announcementsResponse.data.result.map(
+  //           async (announcement) => {
+  //             const completedResponse = await axios.get(
+  //               `${API_LINK}/application/completed?brgy=${brgy}&event_id=${announcement.event_id}`
+  //             );
 
-              if (completedResponse.status === 200) {
-                const completedCount = completedResponse.data.completedCount;
-                return { ...announcement, completedCount };
-              }
-            }
-          );
+  //             if (completedResponse.status === 200) {
+  //               const completedCount = completedResponse.data.completedCount;
+  //               return { ...announcement, completedCount };
+  //             }
+  //           }
+  //         );
 
-          const filteredAnnouncementsData = announcementsResponse.data.result.filter(
-            (announcement) => {
-              return moment(announcement.date).isSameOrAfter(currentDate, 'day');
-            }
-          );
+  //         const filteredAnnouncementsData = announcementsResponse.data.result.filter(
+  //           (announcement) => {
+  //             return moment(announcement.date).isSameOrAfter(currentDate, 'day');
+  //           }
+  //         );
 
-          setAnnouncements(filteredAnnouncementsData);
+  //         setAnnouncements(filteredAnnouncementsData);
 
-          Promise.all(announcementsData).then((announcementsWithCounts) => {
-            const filteredAnnouncementsWithCounts = announcementsWithCounts.filter(
-              (announcement) => {
-                return moment(announcement.date).isSameOrAfter(currentDate, 'day');
-              }
-            );
-            setAnnouncementWithCounts(filteredAnnouncementsWithCounts);
-            setFilteredAnnouncements(filteredAnnouncementsWithCounts.slice(0, 10));
-            setNewEvents(filteredAnnouncementsWithCounts);
-          });
+  //         Promise.all(announcementsData).then((announcementsWithCounts) => {
+  //           const filteredAnnouncementsWithCounts = announcementsWithCounts.filter(
+  //             (announcement) => {
+  //               return moment(announcement.date).isSameOrAfter(currentDate, 'day');
+  //             }
+  //           );
+  //           setAnnouncementWithCounts(filteredAnnouncementsWithCounts);
+  //           setFilteredAnnouncements(filteredAnnouncementsWithCounts.slice(0, 10));
+  //           setNewEvents(filteredAnnouncementsWithCounts);
+  //         });
 
-          setPageCount(announcementsResponse.data.pageCount);
-          setUpdate(false);
-        } else {
-          setAnnouncementWithCounts([]);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        console.error("Error response data:", error.response?.data);
-        console.error("Error response status:", error.response?.status);
-      }
-    };
+  //         setPageCount(announcementsResponse.data.pageCount);
+  //         setUpdate(false);
+  //       } else {
+  //         setAnnouncementWithCounts([]);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //       console.error("Error response data:", error.response?.data);
+  //       console.error("Error response status:", error.response?.status);
+  //     }
+  //   };
 
-    fetchData();
-  }, [brgy, update]);
+  //   fetchData();
+  // }, [brgy, update]);
 
-  useEffect(() => {
-    const handleEvent = (obj) => {
-      setAnnouncement(obj);
-      setNewEvents((prev) => [obj, ...prev]);
-      setFilteredAnnouncements((prev) => [obj, ...prev]);
-    };
+  // useEffect(() => {
+  //   const handleEvent = (obj) => {
+  //     setAnnouncement(obj);
+  //     setNewEvents((prev) => [obj, ...prev]);
+  //     setFilteredAnnouncements((prev) => [obj, ...prev]);
+  //   };
 
-    const handleEventForm = (get_events_forms) => {
-      setEventsForm((curItem) =>
-        curItem.map((item) =>
-          item._id === get_events_forms._id ? get_events_forms : item
-        )
-      );
-    };
+  //   const handleEventForm = (get_events_forms) => {
+  //     setEventsForm((curItem) =>
+  //       curItem.map((item) =>
+  //         item._id === get_events_forms._id ? get_events_forms : item
+  //       )
+  //     );
+  //   };
 
-    const handleEventUpdate = (get_updated_event) => {
-      setAnnouncement(get_updated_event);
-      setFilteredAnnouncements((curItem) =>
-        curItem.map((item) =>
-          item._id === get_updated_event._id ? get_updated_event : item
-        )
-      );
-    };
+  //   const handleEventUpdate = (get_updated_event) => {
+  //     setAnnouncement(get_updated_event);
+  //     setFilteredAnnouncements((curItem) =>
+  //       curItem.map((item) =>
+  //         item._id === get_updated_event._id ? get_updated_event : item
+  //       )
+  //     );
+  //   };
 
-    const handleEventArchive = (obj) => {
-      setAnnouncement(obj);
-      setAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
-      setFilteredAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
-    };
+  //   const handleEventArchive = (obj) => {
+  //     setAnnouncement(obj);
+  //     setAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
+  //     setFilteredAnnouncements((prev) => prev.filter(item => item._id !== obj._id));
+  //   };
 
-    socket.on("receive-get-event", handleEvent);
-    socket.on("receive-create-event-form", handleEventForm);
-    socket.on("receive-update-event", handleEventUpdate);
-    socket.on("receive-archive-staff", handleEventArchive);
+  //   socket.on("receive-get-event", handleEvent);
+  //   socket.on("receive-create-event-form", handleEventForm);
+  //   socket.on("receive-update-event", handleEventUpdate);
+  //   socket.on("receive-archive-staff", handleEventArchive);
 
-    return () => {
-      socket.off("receive-get-event", handleEvent);
-      socket.off("receive-create-event-form", handleEventForm);
-      socket.off("receive-update-event", handleEventUpdate);
-      socket.off("receive-archive-staff", handleEventArchive);
-    };
-  }, [socket, setAnnouncement, setAnnouncements]);
+  //   return () => {
+  //     socket.off("receive-get-event", handleEvent);
+  //     socket.off("receive-create-event-form", handleEventForm);
+  //     socket.off("receive-update-event", handleEventUpdate);
+  //     socket.off("receive-archive-staff", handleEventArchive);
+  //   };
+  // }, [socket, setAnnouncement, setAnnouncements]);
 
-  useEffect(() => {
-    const filteredData = newEvents.filter((item) =>
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.event_id.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    const startIndex = currentPage * 10;
-    const endIndex = startIndex + 10;
-    setFilteredAnnouncements(filteredData.slice(startIndex, endIndex));
-    setPageCount(Math.ceil(filteredData.length / 10));
-  }, [newEvents, searchQuery, currentPage]);
+  // useEffect(() => {
+  //   const filteredData = newEvents.filter((item) =>
+  //     item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     item.event_id.toLowerCase().includes(searchQuery.toLowerCase())
+  //   );
+  //   const startIndex = currentPage * 10;
+  //   const endIndex = startIndex + 10;
+  //   setFilteredAnnouncements(filteredData.slice(startIndex, endIndex));
+  //   setPageCount(Math.ceil(filteredData.length / 10));
+  // }, [newEvents, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);

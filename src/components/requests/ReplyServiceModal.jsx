@@ -334,7 +334,7 @@ function ReplyServiceModal({
             const ip = await getIP(); // Retrieve IP address
             const logsData = {
               action: "Updated",
-              details: `Updated the status of a service request with the (ID: ${request._id})`,
+              details: "An status service request",
               ip: ip,
             };
 

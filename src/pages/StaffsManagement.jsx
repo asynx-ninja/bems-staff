@@ -44,73 +44,73 @@ const StaffManagement = () => {
   const [editupdate, setEditUpdate] = useState(false);
   const [eventsForm, setEventsForm] = useState([]);
 
-  useEffect(() => {
-    const fetch = async () => {
-      const response = await axios.get(
-        `${API_LINK}/staffs/${brgy}/?page=${currentPage}&type=${positionFilter}`
-      );
-      if (response.status === 200) {
-        setUsers(response.data.result);
-        setNewStaff(response.data.result);
-        setPageCount(response.data.pageCount);
-        setfilterUsers(response.data.result.slice(0, 10));
-      } else setUsers([]);
-    };
+  // useEffect(() => {
+  //   const fetch = async () => {
+  //     const response = await axios.get(
+  //       `${API_LINK}/staffs/${brgy}/?page=${currentPage}&type=${positionFilter}`
+  //     );
+  //     if (response.status === 200) {
+  //       setUsers(response.data.result);
+  //       setNewStaff(response.data.result);
+  //       setPageCount(response.data.pageCount);
+  //       setfilterUsers(response.data.result.slice(0, 10));
+  //     } else setUsers([]);
+  //   };
 
-    fetch();
-  }, [currentPage, positionFilter]);
+  //   fetch();
+  // }, [currentPage, positionFilter]);
 
-  useEffect(() => {
-    const handleStaff = (get_staff) => {
-      setUsers(get_staff);
-      setNewStaff((prev) => [get_staff, ...prev]);
-      setfilterUsers((prev) => [get_staff, ...prev]);
-    };
+  // useEffect(() => {
+  //   const handleStaff = (get_staff) => {
+  //     setUsers(get_staff);
+  //     setNewStaff((prev) => [get_staff, ...prev]);
+  //     setfilterUsers((prev) => [get_staff, ...prev]);
+  //   };
 
-    const handleStaffUpdate = (get_updated_staff) => {
-      setUsers(get_updated_staff);
-      setfilterUsers((curItem) =>
-        curItem.map((item) =>
-          item._id === get_updated_staff._id ? get_updated_staff : item
-        )
-      );
-    };
+  //   const handleStaffUpdate = (get_updated_staff) => {
+  //     setUsers(get_updated_staff);
+  //     setfilterUsers((curItem) =>
+  //       curItem.map((item) =>
+  //         item._id === get_updated_staff._id ? get_updated_staff : item
+  //       )
+  //     );
+  //   };
 
-    const handleEventArchive = (obj) => {
-      setUser(obj);
-      setUsers((prev) => prev.filter((item) => item._id !== obj._id));
-      setfilterUsers((prev) => prev.filter((item) => item._id !== obj._id));
-    };
+  //   const handleEventArchive = (obj) => {
+  //     setUser(obj);
+  //     setUsers((prev) => prev.filter((item) => item._id !== obj._id));
+  //     setfilterUsers((prev) => prev.filter((item) => item._id !== obj._id));
+  //   };
 
-    socket.on("receive-create-staff", handleStaff);
-    socket.on("receive-update-staff", handleStaffUpdate);
-    socket.on("receive-archive-staff", handleEventArchive);
+  //   socket.on("receive-create-staff", handleStaff);
+  //   socket.on("receive-update-staff", handleStaffUpdate);
+  //   socket.on("receive-archive-staff", handleEventArchive);
 
-    return () => {
-      socket.off("receive-create-staff", handleStaff);
-      socket.off("receive-update-staff", handleStaffUpdate);
-      socket.on("receive-archive-staff", handleEventArchive);
-    };
-  }, [socket, setUsers, setUser]);
+  //   return () => {
+  //     socket.off("receive-create-staff", handleStaff);
+  //     socket.off("receive-update-staff", handleStaffUpdate);
+  //     socket.on("receive-archive-staff", handleEventArchive);
+  //   };
+  // }, [socket, setUsers, setUser]);
 
-  useEffect(() => {
-    const filteredData = newStaff.filter((item) => {
-      const fullName =
-        item.lastName.toLowerCase() +
-        ", " +
-        item.firstName.toLowerCase() +
-        (item.middleName !== undefined
-          ? " " + item.middleName.toLowerCase()
-          : "");
+  // useEffect(() => {
+  //   const filteredData = newStaff.filter((item) => {
+  //     const fullName =
+  //       item.lastName.toLowerCase() +
+  //       ", " +
+  //       item.firstName.toLowerCase() +
+  //       (item.middleName !== undefined
+  //         ? " " + item.middleName.toLowerCase()
+  //         : "");
 
-      return fullName.includes(searchQuery.toLowerCase());
-    });
+  //     return fullName.includes(searchQuery.toLowerCase());
+  //   });
 
-    const startIndex = currentPage * 10;
-    const endIndex = startIndex + 10;
-    setfilterUsers(filteredData.slice(startIndex, endIndex));
-    setPageCount(Math.ceil(filteredData.length / 10));
-  }, [newStaff, searchQuery, currentPage]);
+  //   const startIndex = currentPage * 10;
+  //   const endIndex = startIndex + 10;
+  //   setfilterUsers(filteredData.slice(startIndex, endIndex));
+  //   setPageCount(Math.ceil(filteredData.length / 10));
+  // }, [newStaff, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -301,7 +301,7 @@ const StaffManagement = () => {
                     />
                   </svg>
                 </button>
-                <ul
+                {/* <ul
                   className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
                   aria-labelledby="hs-dropdown"
                 >
@@ -327,7 +327,7 @@ const StaffManagement = () => {
                   >
                     BARANGAY ADMIN
                   </a>
-                </ul>
+                </ul> */}
               </div>
             </div>
 

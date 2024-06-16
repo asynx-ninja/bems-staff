@@ -25,32 +25,32 @@ const Activitylogs = () => {
     const [showModal, setShowModal] = useState(false);
     const [selectedLog, setSelectedLog] = useState(null);
 
-    useEffect(() => {
-        const fetch = async () => {
-            const response = await axios.get(`${API_LINK}/act_logs/?brgy=${brgy}`);
-            if (response.status === 200) {
-                setAtcLogs(response.data.result);
-                setFilteredLogs(response.data.result.slice(0, 15));
-                setPageCount(response.data.pageCount);
-                console.log(response.data.result);
-            } else setAtcLogs([]);
-        };
+    // useEffect(() => {
+    //     const fetch = async () => {
+    //         const response = await axios.get(`${API_LINK}/act_logs/?brgy=${brgy}`);
+    //         if (response.status === 200) {
+    //             setAtcLogs(response.data.result);
+    //             setFilteredLogs(response.data.result.slice(0, 15));
+    //             setPageCount(response.data.pageCount);
+    //             console.log(response.data.result);
+    //         } else setAtcLogs([]);
+    //     };
 
-        fetch();
-    }, []);
-    useEffect(() => {
-        const filteredData = actlogs.filter(
-            (item) =>
-                (item.firstname &&
-                    item.firstname.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                (item.lastname &&
-                    item.lastname.toLowerCase().includes(searchQuery.toLowerCase()))
-        );
-        const startIndex = currentPage * 15;
-        const endIndex = startIndex + 15;
-        setFilteredLogs(filteredData.slice(startIndex, endIndex));
-        setPageCount(Math.ceil(filteredData.length / 15));
-    }, [actlogs, searchQuery, currentPage]);
+    //     fetch();
+    // }, []);
+    // useEffect(() => {
+    //     const filteredData = actlogs.filter(
+    //         (item) =>
+    //             (item.firstname &&
+    //                 item.firstname.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    //             (item.lastname &&
+    //                 item.lastname.toLowerCase().includes(searchQuery.toLowerCase()))
+    //     );
+    //     const startIndex = currentPage * 15;
+    //     const endIndex = startIndex + 15;
+    //     setFilteredLogs(filteredData.slice(startIndex, endIndex));
+    //     setPageCount(Math.ceil(filteredData.length / 15));
+    // }, [actlogs, searchQuery, currentPage]);
 
     const handlePageChange = ({ selected }) => {
         setCurrentPage(selected);

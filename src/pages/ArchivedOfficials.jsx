@@ -92,57 +92,57 @@ const ArchivedOfficials = () => {
     setSelectedOfficial(official);
   };
 
-  useEffect(() => {
-    document.title = "Barangay Officials | Barangay E-Services Management";
+  // useEffect(() => {
+  //   document.title = "Barangay Officials | Barangay E-Services Management";
 
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=true&position=${positionFilter}`
-        );
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=true&position=${positionFilter}`
+  //       );
 
-        if (response.status === 200) {
-          const officialsData = response.data.result || [];
+  //       if (response.status === 200) {
+  //         const officialsData = response.data.result || [];
 
-          if (officialsData.length > 0) {
-            setPageCount(response.data.pageCount);
-            setOfficials(officialsData);
-            setNewOfficials(officialsData)
-            setfilterOfficials(response.data.result.slice(0, 10));
-          } else {
-            setOfficials([]);
-          }
-        } else {
-          setOfficials([]);
-          console.error("Failed to fetch officials:", response.status);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setOfficials([]);
-      }
-    };
+  //         if (officialsData.length > 0) {
+  //           setPageCount(response.data.pageCount);
+  //           setOfficials(officialsData);
+  //           setNewOfficials(officialsData)
+  //           setfilterOfficials(response.data.result.slice(0, 10));
+  //         } else {
+  //           setOfficials([]);
+  //         }
+  //       } else {
+  //         setOfficials([]);
+  //         console.error("Failed to fetch officials:", response.status);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //       setOfficials([]);
+  //     }
+  //   };
 
-    fetchData();
-  }, [brgy, positionFilter]); // Add positionFilter dependency
+  //   fetchData();
+  // }, [brgy, positionFilter]); // Add positionFilter dependency
 
-  useEffect(() => {
-    const filteredData = newOfficial.filter((item) => {
-      const fullName =
-        item.lastName.toLowerCase() +
-        ", " +
-        item.firstName.toLowerCase() +
-        (item.middleName !== undefined
-          ? " " + item.middleName.toLowerCase()
-          : "");
+  // useEffect(() => {
+  //   const filteredData = newOfficial.filter((item) => {
+  //     const fullName =
+  //       item.lastName.toLowerCase() +
+  //       ", " +
+  //       item.firstName.toLowerCase() +
+  //       (item.middleName !== undefined
+  //         ? " " + item.middleName.toLowerCase()
+  //         : "");
 
-      return fullName.includes(searchQuery.toLowerCase());
-    });
+  //     return fullName.includes(searchQuery.toLowerCase());
+  //   });
 
-    const startIndex = currentPage * 10;
-    const endIndex = startIndex + 10;
-    setfilterOfficials(filteredData.slice(startIndex, endIndex));
-    setPageCount(Math.ceil(filteredData.length / 10));
-  }, [newOfficial, searchQuery, currentPage]);
+  //   const startIndex = currentPage * 10;
+  //   const endIndex = startIndex + 10;
+  //   setfilterOfficials(filteredData.slice(startIndex, endIndex));
+  //   setPageCount(Math.ceil(filteredData.length / 10));
+  // }, [newOfficial, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -254,7 +254,7 @@ const ArchivedOfficials = () => {
                     />
                   </svg>
                 </button>
-                <ul
+                {/* <ul
                   className="bg-[#f8f8f8] border-2 border-[#ffb13c] hs-dropdown-menu w-72 transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden z-10  shadow-xl rounded-xl p-2 "
                   aria-labelledby="hs-dropdown"
                 >
@@ -329,7 +329,7 @@ const ArchivedOfficials = () => {
                   >
                     SK TREASURER
                   </a>
-                </ul>
+                </ul> */}
               </div>
             </div>
 
