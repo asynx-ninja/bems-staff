@@ -46,144 +46,144 @@ const ArchivedRequests = () => {
   const [selected, setSelected] = useState("date");
   const [officials, setOfficials] = useState([]);
 
-  // useEffect(() => {
-  //   const fetch = async () => {
-  //     try {
-  //       let page = 0;
-  //       let arr = [];
-  //       while (true) {
-  //         const response = await axios.get(
-  //           `${API_LINK}/services/?brgy=${brgy}&archived=false&page=${page}`
-  //         );
-  //         if (response.status === 200 && response.data.result.length > 0) {
-  //           response.data.result.map((item) => {
-  //             arr.push(item.name);
-  //           });
-  //           page++;
-  //         } else {
-  //           break;
-  //         }
-  //       }
-  //       setRequestFilter(arr);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-  //   fetch();
-  // }, [brgy]);
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        let page = 0;
+        let arr = [];
+        while (true) {
+          const response = await axios.get(
+            `${API_LINK}/services/?brgy=${brgy}&archived=false&page=${page}`
+          );
+          if (response.status === 200 && response.data.result.length > 0) {
+            response.data.result.map((item) => {
+              arr.push(item.name);
+            });
+            page++;
+          } else {
+            break;
+          }
+        }
+        setRequestFilter(arr);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetch();
+  }, [brgy]);
 
-  // useEffect(() => {
-  //   const fetch = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `${API_LINK}/requests/?brgy=${brgy}&archived=true&status=${statusFilter}&type=${selectedReqFilter}`
-  //       );
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/requests/?brgy=${brgy}&archived=true&status=${statusFilter}&type=${selectedReqFilter}`
+        );
 
-  //       if (response.status === 200) {
-  //         console.log("Filtered Requests:", response.data.result);
-  //         setRequests(response.data.result);
-  //         setPageCount(response.data.pageCount);
-  //         setFilteredRequests(response.data.result.slice(0, 10));
-  //       } else setRequests([]);
-  //     } catch (err) {}
-  //   };
+        if (response.status === 200) {
+          console.log("Filtered Requests:", response.data.result);
+          setRequests(response.data.result);
+          setPageCount(response.data.pageCount);
+          setFilteredRequests(response.data.result.slice(0, 10));
+        } else setRequests([]);
+      } catch (err) {}
+    };
 
-  //   fetch();
-  // }, [brgy, statusFilter, selectedReqFilter]);
+    fetch();
+  }, [brgy, statusFilter, selectedReqFilter]);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
-  //       );
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
+        );
 
-  //       if (response.status === 200) {
-  //         const officialsData = response.data.result || [];
+        if (response.status === 200) {
+          const officialsData = response.data.result || [];
 
-  //         if (officialsData.length > 0) {
-  //           setOfficials(officialsData);
-  //         } else {
-  //           setOfficials([]);
-  //         }
-  //       } else {
-  //         setOfficials([]);
-  //         console.error("Failed to fetch officials:", response.status);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //       setOfficials([]);
-  //     }
-  //   };
+          if (officialsData.length > 0) {
+            setOfficials(officialsData);
+          } else {
+            setOfficials([]);
+          }
+        } else {
+          setOfficials([]);
+          console.error("Failed to fetch officials:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setOfficials([]);
+      }
+    };
 
-  //   fetchData();
-  // }, [currentPage, brgy]); // Add positionFilter dependency
+    fetchData();
+  }, [currentPage, brgy]); // Add positionFilter dependency
 
-  // useEffect(() => {
-  //   const filteredData = requests.filter((item) => {
-  //     const fullName =
-  //       item.form[0].lastName.value.toLowerCase() +
-  //       ", " +
-  //       item.form[0].firstName.value.toLowerCase() +
-  //       " " +
-  //       item.form[0].middleName.value.toLowerCase();
+  useEffect(() => {
+    const filteredData = requests.filter((item) => {
+      const fullName =
+        item.form[0].lastName.value.toLowerCase() +
+        ", " +
+        item.form[0].firstName.value.toLowerCase() +
+        " " +
+        item.form[0].middleName.value.toLowerCase();
 
-  //     return (
-  //       item.service_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //       item.req_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //       fullName.includes(searchQuery.toLowerCase())
-  //     );
-  //   });
+      return (
+        item.service_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.req_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        fullName.includes(searchQuery.toLowerCase())
+      );
+    });
 
-  //   const startIndex = currentPage * 10;
-  //   const endIndex = startIndex + 10;
-  //   setFilteredRequests(filteredData.slice(startIndex, endIndex));
-  //   setPageCount(Math.ceil(filteredData.length / 10));
-  // }, [requests, searchQuery, currentPage]);
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredRequests(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [requests, searchQuery, currentPage]);
 
-  // const handlePageChange = ({ selected }) => {
-  //   setCurrentPage(selected);
-  // };
+  const handlePageChange = ({ selected }) => {
+    setCurrentPage(selected);
+  };
 
-  // useEffect(() => {
-  //   const handleRequestArchive = (obj) => {
-  //     setRequest(obj);
-  //     setRequests((prev) => prev.filter((item) => item._id !== obj._id));
-  //     setFilteredRequests((prev) =>
-  //       prev.filter((item) => item._id !== obj._id)
-  //     );
-  //   };
+  useEffect(() => {
+    const handleRequestArchive = (obj) => {
+      setRequest(obj);
+      setRequests((prev) => prev.filter((item) => item._id !== obj._id));
+      setFilteredRequests((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+    };
 
-  //   socket.on("receive-restore-staff", handleRequestArchive);
+    socket.on("receive-restore-staff", handleRequestArchive);
 
-  //   return () => {
-  //     socket.on("receive-restore-staff", handleRequestArchive);
-  //   };
-  // }, [socket, setRequest, setRequests]);
+    return () => {
+      socket.on("receive-restore-staff", handleRequestArchive);
+    };
+  }, [socket, setRequest, setRequests]);
 
   // Handle search input change
-  // const handleSearchChange = (e) => {
-  //   setSearchQuery(e.target.value);
-  //   setCurrentPage(0); // Reset current page when search query changes
-  // };
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
+  };
 
-  // const Requests = requests.filter((item) =>
-  //   item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
-  // );
+  const Requests = requests.filter((item) =>
+    item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  // const handleStatusFilter = (selectedStatus) => {
-  //   setStatusFilter(selectedStatus);
-  // };
-  // const handleRequestFilter = (selectedType) => {
-  //   setSelectedReqFilter(selectedType);
-  // };
+  const handleStatusFilter = (selectedStatus) => {
+    setStatusFilter(selectedStatus);
+  };
+  const handleRequestFilter = (selectedType) => {
+    setSelectedReqFilter(selectedType);
+  };
 
-  // const handleResetFilter = () => {
-  //   setStatusFilter("all");
-  //   setRequestFilter("all");
-  //   setRequest();
-  //   setSearchQuery("");
-  // };
+  const handleResetFilter = () => {
+    setStatusFilter("all");
+    setRequestFilter("all");
+    setRequest();
+    setSearchQuery("");
+  };
 
   const checkboxHandler = (e) => {
     let isSelected = e.target.checked;
@@ -224,93 +224,93 @@ const ArchivedRequests = () => {
     "ACTIONS",
   ];
 
-  // const handleView = (item) => {
-  //   setRequest(item);
-  // };
+  const handleView = (item) => {
+    setRequest(item);
+  };
 
-  // const DateFormat = (date) => {
-  //   const dateFormat = date === undefined ? "" : date.substr(0, 10);
-  //   return dateFormat;
-  // };
+  const DateFormat = (date) => {
+    const dateFormat = date === undefined ? "" : date.substr(0, 10);
+    return dateFormat;
+  };
 
-  // const TimeFormat = (date) => {
-  //   if (!date) return "";
+  const TimeFormat = (date) => {
+    if (!date) return "";
 
-  //   const formattedTime = moment(date).format("hh:mm A");
-  //   return formattedTime;
-  // };
+    const formattedTime = moment(date).format("hh:mm A");
+    return formattedTime;
+  };
 
-  // const filters = (choice, selectedDate) => {
-  //   switch (choice) {
-  //     case "date":
-  //       return requests.filter((item) => {
-  //         return (
-  //           new Date(item.createdAt).getFullYear() ===
-  //             selectedDate.getFullYear() &&
-  //           new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
-  //           new Date(item.createdAt).getDate() === selectedDate.getDate()
-  //         );
-  //       });
-  //     case "week":
-  //       const startDate = selectedDate;
-  //       const endDate = new Date(startDate);
-  //       endDate.setDate(startDate.getDate() + 6);
+  const filters = (choice, selectedDate) => {
+    switch (choice) {
+      case "date":
+        return requests.filter((item) => {
+          return (
+            new Date(item.createdAt).getFullYear() ===
+              selectedDate.getFullYear() &&
+            new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
+            new Date(item.createdAt).getDate() === selectedDate.getDate()
+          );
+        });
+      case "week":
+        const startDate = selectedDate;
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 6);
 
-  //       return requests.filter(
-  //         (item) =>
-  //           new Date(item.createdAt).getFullYear() ===
-  //             startDate.getFullYear() &&
-  //           new Date(item.createdAt).getMonth() === startDate.getMonth() &&
-  //           new Date(item.createdAt).getDate() >= startDate.getDate() &&
-  //           new Date(item.createdAt).getDate() <= endDate.getDate()
-  //       );
-  //     case "month":
-  //       return requests.filter(
-  //         (item) =>
-  //           new Date(item.createdAt).getFullYear() ===
-  //             selectedDate.getFullYear() &&
-  //           new Date(item.createdAt).getMonth() === selectedDate.getMonth()
-  //       );
-  //     case "year":
-  //       return requests.filter(
-  //         (item) =>
-  //           new Date(item.createdAt).getFullYear() ===
-  //           selectedDate.getFullYear()
-  //       );
-  //   }
-  // };
+        return requests.filter(
+          (item) =>
+            new Date(item.createdAt).getFullYear() ===
+              startDate.getFullYear() &&
+            new Date(item.createdAt).getMonth() === startDate.getMonth() &&
+            new Date(item.createdAt).getDate() >= startDate.getDate() &&
+            new Date(item.createdAt).getDate() <= endDate.getDate()
+        );
+      case "month":
+        return requests.filter(
+          (item) =>
+            new Date(item.createdAt).getFullYear() ===
+              selectedDate.getFullYear() &&
+            new Date(item.createdAt).getMonth() === selectedDate.getMonth()
+        );
+      case "year":
+        return requests.filter(
+          (item) =>
+            new Date(item.createdAt).getFullYear() ===
+            selectedDate.getFullYear()
+        );
+    }
+  };
 
-  // const onSelect = (e) => {
-  //   setSelected(e.target.value);
-  // };
+  const onSelect = (e) => {
+    setSelected(e.target.value);
+  };
 
-  // const onChangeDate = (e) => {
-  //   const date = new Date(e.target.value);
-  //   setSpecifiedDate(date);
-  //   setFilteredRequests(filters(selected, date));
-  // };
+  const onChangeDate = (e) => {
+    const date = new Date(e.target.value);
+    setSpecifiedDate(date);
+    setFilteredRequests(filters(selected, date));
+  };
 
-  // const onChangeWeek = (e) => {
-  //   const date = moment(e.target.value).toDate();
-  //   setSpecifiedDate(date);
-  //   setFilteredRequests(filters(selected, date));
-  // };
+  const onChangeWeek = (e) => {
+    const date = moment(e.target.value).toDate();
+    setSpecifiedDate(date);
+    setFilteredRequests(filters(selected, date));
+  };
 
-  // const onChangeMonth = (e) => {
-  //   const date = moment(e.target.value).toDate();
-  //   setSpecifiedDate(date);
-  //   setFilteredRequests(filters(selected, date));
-  // };
+  const onChangeMonth = (e) => {
+    const date = moment(e.target.value).toDate();
+    setSpecifiedDate(date);
+    setFilteredRequests(filters(selected, date));
+  };
 
-  // const onChangeYear = (e) => {
-  //   if (e.target.value === "") {
-  //     setFilteredRequests(requests);
-  //   } else {
-  //     const date = new Date(e.target.value, 0, 1);
-  //     setSpecifiedDate(date);
-  //     setFilteredRequests(filters(selected, date));
-  //   }
-  // };
+  const onChangeYear = (e) => {
+    if (e.target.value === "") {
+      setFilteredRequests(requests);
+    } else {
+      const date = new Date(e.target.value, 0, 1);
+      setSpecifiedDate(date);
+      setFilteredRequests(filters(selected, date));
+    }
+  };
 
   return (
     <div className="mx-4 mt-8">
@@ -369,7 +369,7 @@ const ArchivedRequests = () => {
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    // onClick={handleResetFilter}
+                    onClick={handleResetFilter}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -443,7 +443,7 @@ const ArchivedRequests = () => {
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    // onClick={handleResetFilter}
+                    onClick={handleResetFilter}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -457,8 +457,8 @@ const ArchivedRequests = () => {
                     <div className="flex gap-2 flex-col">
                       <select
                         className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
-                        // onChange={onSelect}
-                        // defaultValue={selected}
+                        onChange={onSelect}
+                        defaultValue={selected}
                       >
                         <option value="date">Specific Date</option>
                         <option value="week">Week</option>
@@ -471,7 +471,7 @@ const ArchivedRequests = () => {
                           type="date"
                           id="date"
                           name="date"
-                          // onChange={onChangeDate}
+                          onChange={onChangeDate}
                         />
                       )}
                       {selected === "week" && (
@@ -480,7 +480,7 @@ const ArchivedRequests = () => {
                           type="week"
                           id="week"
                           name="week"
-                          // onChange={onChangeWeek}
+                          onChange={onChangeWeek}
                         />
                       )}
                       {selected === "month" && (
@@ -489,7 +489,7 @@ const ArchivedRequests = () => {
                           type="month"
                           id="month"
                           name="month"
-                          // onChange={onChangeMonth}
+                          onChange={onChangeMonth}
                         />
                       )}
                       {selected === "year" && (
@@ -499,7 +499,7 @@ const ArchivedRequests = () => {
                           id="year"
                           name="year"
                           placeholder="YEAR"
-                          // onChange={onChangeYear}
+                          onChange={onChangeYear}
                           min={1990}
                           max={new Date().getFullYear() + 10}
                         />
@@ -541,7 +541,7 @@ const ArchivedRequests = () => {
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    // onClick={handleResetFilter}
+                    onClick={handleResetFilter}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -597,8 +597,8 @@ const ArchivedRequests = () => {
                   id="hs-table-with-pagination-search"
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
-                  // value={searchQuery}
-                  // onChange={handleSearchChange}
+                  value={searchQuery}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
@@ -759,7 +759,7 @@ const ArchivedRequests = () => {
                           </span>
                         </div>
 
-                        {/* <div className="hs-tooltip inline-block">
+                        <div className="hs-tooltip inline-block">
                           <button
                             type="button"
                             data-hs-overlay="#hs-reply-modal"
@@ -777,7 +777,7 @@ const ArchivedRequests = () => {
                           >
                             Reply to Request
                           </span>
-                        </div> */}
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -811,7 +811,7 @@ const ArchivedRequests = () => {
         <ReactPaginate
           breakLabel="..."
           nextLabel=">>"
-          // onPageChange={handlePageChange}
+          onPageChange={handlePageChange}
           pageRangeDisplayed={3}
           pageCount={pageCount}
           previousLabel="<<"

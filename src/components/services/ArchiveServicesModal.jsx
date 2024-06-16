@@ -11,70 +11,70 @@ function ArchiveServicesModal({ selectedItems, socket, id }) {
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
 
-  // const handleSave = async (e) => {
-  //   try {
-  //     e.preventDefault();
-  //     setError(null); // Reset error state
+  const handleSave = async (e) => {
+    try {
+      e.preventDefault();
+      setError(null); // Reset error state
 
-  //     if (selectedItems.length === 0) {
-  //       setUpdatingStatus("error");
-  //       setError("Unable to archive, Please select first to archive.");
-  //       setTimeout(() => {
-  //         setUpdatingStatus(null);
-  //         HSOverlay.close(document.getElementById("hs-archive-services-modal"));
-  //       }, 3000);
+      if (selectedItems.length === 0) {
+        setUpdatingStatus("error");
+        setError("Unable to archive, Please select first to archive.");
+        setTimeout(() => {
+          setUpdatingStatus(null);
+          HSOverlay.close(document.getElementById("hs-archive-services-modal"));
+        }, 3000);
 
-  //       console.log("error", selectedItems);
-  //       return;
-  //     }
-  //     setSubmitClicked(true);
+        console.log("error", selectedItems);
+        return;
+      }
+      setSubmitClicked(true);
 
-  //     for (let i = 0; i < selectedItems.length; i++) {
-  //       const response = await axios.patch(
-  //         `${API_LINK}/services/archived/${selectedItems[i]}/true`
-  //       );
+      for (let i = 0; i < selectedItems.length; i++) {
+        const response = await axios.patch(
+          `${API_LINK}/services/archived/${selectedItems[i]}/true`
+        );
 
-  //       if (response.status === 200) {
-  //         const getIP = async () => {
-  //           const response = await fetch(
-  //             "https://api64.ipify.org?format=json"
-  //           );
-  //           const data = await response.json();
-  //           return data.ip;
-  //         };
+        if (response.status === 200) {
+          const getIP = async () => {
+            const response = await fetch(
+              "https://api64.ipify.org?format=json"
+            );
+            const data = await response.json();
+            return data.ip;
+          };
 
-  //         const ip = await getIP(); // Retrieve IP address
-  //         const logsData = {
-  //           action: "Archived",
-  //           details: `Archived a service (ID: ${selectedItems[i]}).`,
-  //           ip: ip,
-  //         };
+          const ip = await getIP(); // Retrieve IP address
+          const logsData = {
+            action: "Archived",
+            details: `Archived a service (ID: ${selectedItems[i]}).`,
+            ip: ip,
+          };
 
-  //         const logsResult = await axios.post(
-  //           `${API_LINK}/act_logs/add_logs/?id=${id}`,
-  //           logsData
-  //         );
-  //         if (logsResult.status === 200) {
-  //           socket.emit("send-archive-staff", response.data);
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
+            socket.emit("send-archive-staff", response.data);
 
-  //           setSubmitClicked(false);
-  //           setError(null);
-  //           setUpdatingStatus("success");
-  //           setTimeout(() => {
-  //             setUpdatingStatus(null);
-  //             HSOverlay.close(document.getElementById("hs-archive-services-modal"));
-  //           }, 3000);
-  //         }
-  //       }
-  //     }
+            setSubmitClicked(false);
+            setError(null);
+            setUpdatingStatus("success");
+            setTimeout(() => {
+              setUpdatingStatus(null);
+              HSOverlay.close(document.getElementById("hs-archive-services-modal"));
+            }, 3000);
+          }
+        }
+      }
 
-  //   } catch (err) {
-  //     console.log(err);
-  //     setSubmitClicked(false);
-  //     setUpdatingStatus(null);
-  //     setError("An error occurred while creating the announcement.");
-  //   }
-  // };
+    } catch (err) {
+      console.log(err);
+      setSubmitClicked(false);
+      setUpdatingStatus(null);
+      setError("An error occurred while creating the announcement.");
+    }
+  };
 
   return (
     <div
@@ -93,7 +93,7 @@ function ArchiveServicesModal({ selectedItems, socket, id }) {
             <div className="flex space-x-4 justify-center">
               <button
                 type="button"
-                // onClick={handleSave}
+                onClick={handleSave}
                 className="inline-flex items-center px-8 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-500 focus:ring-4 focus:ring-red-500 focus:outline-none transition ease-in-out duration-150"
               >
                 Archive

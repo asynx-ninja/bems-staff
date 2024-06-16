@@ -56,156 +56,156 @@ const Requests = () => {
 
   const chatContainerRef = useRef();
 
-  // useEffect(() => {
-  //   const handleServiceReq = (service_req) => {
-  //     setFilteredRequests((prev) => [service_req, ...prev]);
-  //   };
+  useEffect(() => {
+    const handleServiceReq = (service_req) => {
+      setFilteredRequests((prev) => [service_req, ...prev]);
+    };
 
-  //   const handleServiceReqReply = (service_req) => {
-  //     setRequest(service_req);
-  //     setFilteredRequests((curItem) =>
-  //       curItem.map((item) =>
-  //         item._id === service_req._id ? service_req : item
-  //       )
-  //     );
-  //   };
+    const handleServiceReqReply = (service_req) => {
+      setRequest(service_req);
+      setFilteredRequests((curItem) =>
+        curItem.map((item) =>
+          item._id === service_req._id ? service_req : item
+        )
+      );
+    };
 
-  //   const handleRequestArchive = (obj) => {
-  //     setRequest(obj);
-  //     setRequests((prev) => prev.filter((item) => item._id !== obj._id));
-  //     setFilteredRequests((prev) =>
-  //       prev.filter((item) => item._id !== obj._id)
-  //     );
-  //   };
+    const handleRequestArchive = (obj) => {
+      setRequest(obj);
+      setRequests((prev) => prev.filter((item) => item._id !== obj._id));
+      setFilteredRequests((prev) =>
+        prev.filter((item) => item._id !== obj._id)
+      );
+    };
 
-  //   socket.on("receive-reply-service-req", handleServiceReqReply);
-  //   socket.on("receive-service-req", handleServiceReq);
-  //   socket.on("receive-archive-staff", handleRequestArchive);
+    socket.on("receive-reply-service-req", handleServiceReqReply);
+    socket.on("receive-service-req", handleServiceReq);
+    socket.on("receive-archive-staff", handleRequestArchive);
 
-  //   return () => {
-  //     socket.off("receive-reply-service-req", handleServiceReqReply);
-  //     socket.off("receive-service-req", handleServiceReq);
-  //     socket.on("receive-archive-staff", handleRequestArchive);
-  //   };
-  // }, [socket, setRequest, setRequests]);
+    return () => {
+      socket.off("receive-reply-service-req", handleServiceReqReply);
+      socket.off("receive-service-req", handleServiceReq);
+      socket.on("receive-archive-staff", handleRequestArchive);
+    };
+  }, [socket, setRequest, setRequests]);
 
-  // useEffect(() => {
-  //   const fetchServices = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `${API_LINK}/services/get_distinct_services/?brgy=${brgy}&archived=false`
-  //       );
-  //       if (response.status === 200) {
-  //         const services = response.data.map((item) => item._id);
-  //         setRequestFilter(services);
-  //       }
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-  //   fetchServices();
-  // }, [brgy]);
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/services/get_distinct_services/?brgy=${brgy}&archived=false`
+        );
+        if (response.status === 200) {
+          const services = response.data.map((item) => item._id);
+          setRequestFilter(services);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchServices();
+  }, [brgy]);
 
-  // const handleRequestFilter = (selectedType) => {
-  //   setSelectedReqFilter(selectedType);
-  // };
+  const handleRequestFilter = (selectedType) => {
+    setSelectedReqFilter(selectedType);
+  };
 
-  // useEffect(() => {
-  //   const fetch = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `${API_LINK}/requests/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${selectedReqFilter}&title=${selectedReqFilter}`
-  //       );
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/requests/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${selectedReqFilter}&title=${selectedReqFilter}`
+        );
 
-  //       if (response.status === 200) {
-  //         // console.log("Filtered Requests:", response.data.result);
-  //         setRequests(response.data.result);
-  //         setPageCount(Math.ceil(response.data.result.length / 10));
-  //         setFilteredRequests(response.data.result.slice(0, 10));
-  //       } else {
-  //         setRequests([]);
-  //       }
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
+        if (response.status === 200) {
+          // console.log("Filtered Requests:", response.data.result);
+          setRequests(response.data.result);
+          setPageCount(Math.ceil(response.data.result.length / 10));
+          setFilteredRequests(response.data.result.slice(0, 10));
+        } else {
+          setRequests([]);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
-  //   fetch();
-  // }, [brgy, statusFilter, selectedReqFilter, selectedReqFilter]);
+    fetch();
+  }, [brgy, statusFilter, selectedReqFilter, selectedReqFilter]);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
-  //       );
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
+        );
 
-  //       if (response.status === 200) {
-  //         const officialsData = response.data.result || [];
+        if (response.status === 200) {
+          const officialsData = response.data.result || [];
 
-  //         if (officialsData.length > 0) {
-  //           setOfficials(officialsData);
-  //         } else {
-  //           setOfficials([]);
-  //         }
-  //       } else {
-  //         setOfficials([]);
-  //         console.error("Failed to fetch officials:", response.status);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //       setOfficials([]);
-  //     }
-  //   };
+          if (officialsData.length > 0) {
+            setOfficials(officialsData);
+          } else {
+            setOfficials([]);
+          }
+        } else {
+          setOfficials([]);
+          console.error("Failed to fetch officials:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setOfficials([]);
+      }
+    };
 
-  //   fetchData();
-  // }, [currentPage, brgy]); // Add positionFilter dependency
+    fetchData();
+  }, [currentPage, brgy]); // Add positionFilter dependency
 
-  // useEffect(() => {
-  //   const filteredData = requests.filter((item) => {
-  //     const fullName =
-  //       item.form[0].lastName.value.toLowerCase() +
-  //       ", " +
-  //       item.form[0].firstName.value.toLowerCase() +
-  //       " " +
-  //       item.form[0].middleName.value.toLowerCase();
+  useEffect(() => {
+    const filteredData = requests.filter((item) => {
+      const fullName =
+        item.form[0].lastName.value.toLowerCase() +
+        ", " +
+        item.form[0].firstName.value.toLowerCase() +
+        " " +
+        item.form[0].middleName.value.toLowerCase();
 
-  //     return (
-  //       item.service_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //       item.req_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //       fullName.includes(searchQuery.toLowerCase())
-  //     );
-  //   });
+      return (
+        item.service_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.req_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        fullName.includes(searchQuery.toLowerCase())
+      );
+    });
 
-  //   console.log("wew");
-  //   const startIndex = currentPage * 10;
-  //   const endIndex = startIndex + 10;
-  //   setFilteredRequests(filteredData.slice(startIndex, endIndex));
-  //   setPageCount(Math.ceil(filteredData.length / 10));
-  // }, [requests, searchQuery, currentPage]);
+    console.log("wew");
+    const startIndex = currentPage * 10;
+    const endIndex = startIndex + 10;
+    setFilteredRequests(filteredData.slice(startIndex, endIndex));
+    setPageCount(Math.ceil(filteredData.length / 10));
+  }, [requests, searchQuery, currentPage]);
 
-  // const handlePageChange = ({ selected }) => {
-  //   setCurrentPage(selected);
-  // };
+  const handlePageChange = ({ selected }) => {
+    setCurrentPage(selected);
+  };
 
   // Handle search input change
-  // const handleSearchChange = (e) => {
-  //   setSearchQuery(e.target.value);
-  //   setCurrentPage(0); // Reset current page when search query changes
-  // };
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(0); // Reset current page when search query changes
+  };
 
-  // const handleStatusFilter = (selectedStatus) => {
-  //   setStatusFilter(selectedStatus);
-  // };
+  const handleStatusFilter = (selectedStatus) => {
+    setStatusFilter(selectedStatus);
+  };
 
-  // const handleResetFilter = () => {
-  //   setRequest();
-  //   setSearchQuery("");
-  // };
+  const handleResetFilter = () => {
+    setRequest();
+    setSearchQuery("");
+  };
 
-  // const Requests = requests.filter((item) =>
-  //   item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
-  // );
+  const Requests = requests.filter((item) =>
+    item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   useEffect(() => {
     document.title = "Service Requests | Barangay E-Services Management";
@@ -249,230 +249,230 @@ const Requests = () => {
     "ACTIONS",
   ];
 
-  // const handleView = (item) => {
-  //   setRequest(item);
-  // };
+  const handleView = (item) => {
+    setRequest(item);
+  };
 
-  // const DateFormat = (date) => {
-  //   const dateFormat = date === undefined ? "" : date.substr(0, 10);
-  //   return dateFormat;
-  // };
+  const DateFormat = (date) => {
+    const dateFormat = date === undefined ? "" : date.substr(0, 10);
+    return dateFormat;
+  };
 
-  // const TimeFormat = (date) => {
-  //   if (!date) return "";
+  const TimeFormat = (date) => {
+    if (!date) return "";
 
-  //   const formattedTime = moment(date).format("hh:mm A");
-  //   return formattedTime;
-  // };
+    const formattedTime = moment(date).format("hh:mm A");
+    return formattedTime;
+  };
 
-  // const filters = (choice, selectedDate) => {
-  //   switch (choice) {
-  //     case "date":
-  //       return requests.filter((item) => {
-  //         return (
-  //           new Date(item.createdAt).getFullYear() ===
-  //             selectedDate.getFullYear() &&
-  //           new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
-  //           new Date(item.createdAt).getDate() === selectedDate.getDate()
-  //         );
-  //       });
-  //     case "week":
-  //       const startDate = selectedDate;
-  //       const endDate = new Date(startDate);
-  //       endDate.setDate(startDate.getDate() + 6);
+  const filters = (choice, selectedDate) => {
+    switch (choice) {
+      case "date":
+        return requests.filter((item) => {
+          return (
+            new Date(item.createdAt).getFullYear() ===
+              selectedDate.getFullYear() &&
+            new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
+            new Date(item.createdAt).getDate() === selectedDate.getDate()
+          );
+        });
+      case "week":
+        const startDate = selectedDate;
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 6);
 
-  //       return requests.filter(
-  //         (item) =>
-  //           new Date(item.createdAt).getFullYear() ===
-  //             startDate.getFullYear() &&
-  //           new Date(item.createdAt).getMonth() === startDate.getMonth() &&
-  //           new Date(item.createdAt).getDate() >= startDate.getDate() &&
-  //           new Date(item.createdAt).getDate() <= endDate.getDate()
-  //       );
-  //     case "month":
-  //       return requests.filter(
-  //         (item) =>
-  //           new Date(item.createdAt).getFullYear() ===
-  //             selectedDate.getFullYear() &&
-  //           new Date(item.createdAt).getMonth() === selectedDate.getMonth()
-  //       );
-  //     case "year":
-  //       return requests.filter(
-  //         (item) =>
-  //           new Date(item.createdAt).getFullYear() ===
-  //           selectedDate.getFullYear()
-  //       );
-  //   }
-  // };
+        return requests.filter(
+          (item) =>
+            new Date(item.createdAt).getFullYear() ===
+              startDate.getFullYear() &&
+            new Date(item.createdAt).getMonth() === startDate.getMonth() &&
+            new Date(item.createdAt).getDate() >= startDate.getDate() &&
+            new Date(item.createdAt).getDate() <= endDate.getDate()
+        );
+      case "month":
+        return requests.filter(
+          (item) =>
+            new Date(item.createdAt).getFullYear() ===
+              selectedDate.getFullYear() &&
+            new Date(item.createdAt).getMonth() === selectedDate.getMonth()
+        );
+      case "year":
+        return requests.filter(
+          (item) =>
+            new Date(item.createdAt).getFullYear() ===
+            selectedDate.getFullYear()
+        );
+    }
+  };
 
   const onSelect = (e) => {
     setSelected(e.target.value);
   };
 
-  // const onChangeDate = (e) => {
-  //   const date = new Date(e.target.value);
-  //   setSpecifiedDate(date);
-  //   setFilteredRequests(filters(selected, date));
-  // };
+  const onChangeDate = (e) => {
+    const date = new Date(e.target.value);
+    setSpecifiedDate(date);
+    setFilteredRequests(filters(selected, date));
+  };
 
-  // const onChangeWeek = (e) => {
-  //   const date = moment(e.target.value).toDate();
-  //   setSpecifiedDate(date);
-  //   setFilteredRequests(filters(selected, date));
-  // };
+  const onChangeWeek = (e) => {
+    const date = moment(e.target.value).toDate();
+    setSpecifiedDate(date);
+    setFilteredRequests(filters(selected, date));
+  };
 
-  // const onChangeMonth = (e) => {
-  //   const date = moment(e.target.value).toDate();
-  //   setSpecifiedDate(date);
-  //   setFilteredRequests(filters(selected, date));
-  // };
+  const onChangeMonth = (e) => {
+    const date = moment(e.target.value).toDate();
+    setSpecifiedDate(date);
+    setFilteredRequests(filters(selected, date));
+  };
 
-  // const onChangeYear = (e) => {
-  //   if (e.target.value === "") {
-  //     setFilteredRequests(requests);
-  //   } else {
-  //     const date = new Date(e.target.value, 0, 1);
-  //     setSpecifiedDate(date);
-  //     setFilteredRequests(filters(selected, date));
-  //   }
-  // };
+  const onChangeYear = (e) => {
+    if (e.target.value === "") {
+      setFilteredRequests(requests);
+    } else {
+      const date = new Date(e.target.value, 0, 1);
+      setSpecifiedDate(date);
+      setFilteredRequests(filters(selected, date));
+    }
+  };
 
-  // const exportToExcel = async () => {
-  //   const workbook = new ExcelJS.Workbook();
-  //   const worksheet = workbook.addWorksheet("Service Requests");
+  const exportToExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Service Requests");
   
-  //   const dataForExcel = filteredRequests.map((item) => ({
-  //     "CONTROL #": item.req_id || "N/A",
-  //     "SERVICE NAME": item.service_name || "N/A",
-  //     SENDER:
-  //       item.form[0].lastName.value +
-  //       ", " +
-  //       item.form[0].firstName.value +
-  //       " " +
-  //       item.form[0].middleName.value,
-  //     CONTACT: item.form[0].contact?.value || "N/A",
-  //     EMAIL: item.form[0].email?.value || "N/A",
-  //     DATE: moment(item.createdAt).format("MMMM DD, YYYY") || "N/A",
-  //     STATUS: item.status || "N/A",
-  //   }));
+    const dataForExcel = filteredRequests.map((item) => ({
+      "CONTROL #": item.req_id || "N/A",
+      "SERVICE NAME": item.service_name || "N/A",
+      SENDER:
+        item.form[0].lastName.value +
+        ", " +
+        item.form[0].firstName.value +
+        " " +
+        item.form[0].middleName.value,
+      CONTACT: item.form[0].contact?.value || "N/A",
+      EMAIL: item.form[0].email?.value || "N/A",
+      DATE: moment(item.createdAt).format("MMMM DD, YYYY") || "N/A",
+      STATUS: item.status || "N/A",
+    }));
   
-  //   // Check for empty data BEFORE creating the worksheet
-  //   if (dataForExcel.length === 0) {
-  //     alert("No data to export!");
-  //     return;
-  //   }
+    // Check for empty data BEFORE creating the worksheet
+    if (dataForExcel.length === 0) {
+      alert("No data to export!");
+      return;
+    }
   
-  //   // Add Title Row
-  //   const titleRow = worksheet.addRow([`LIST OF SERVICE APPLICANTS`]);
-  //   // Merge cells for the title row
-  //   worksheet.mergeCells(
-  //     `A1:${String.fromCharCode(65 + Object.keys(dataForExcel[0]).length - 1)}1`
-  //   );
-  //   titleRow.getCell(1).font = {
-  //     bold: true,
-  //     size: 16,
-  //   };
-  //   titleRow.getCell(1).alignment = { horizontal: "center" };
-  //   titleRow.getCell(1).border = {
-  //     top: { style: 'thin' },
-  //     left: { style: 'thin' },
-  //     bottom: { style: 'thin' },
-  //     right: { style: 'thin' }
-  //   };
+    // Add Title Row
+    const titleRow = worksheet.addRow([`LIST OF SERVICE APPLICANTS`]);
+    // Merge cells for the title row
+    worksheet.mergeCells(
+      `A1:${String.fromCharCode(65 + Object.keys(dataForExcel[0]).length - 1)}1`
+    );
+    titleRow.getCell(1).font = {
+      bold: true,
+      size: 16,
+    };
+    titleRow.getCell(1).alignment = { horizontal: "center" };
+    titleRow.getCell(1).border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' }
+    };
   
-  //   // Add Header Row
-  //   const headerRow = worksheet.addRow(Object.keys(dataForExcel[0]));
-  //   headerRow.eachCell((cell) => {
-  //     if (cell.value) {
-  //       cell.font = { bold: true };
-  //       cell.alignment = { horizontal: "center" };
-  //       cell.border = {
-  //         top: { style: 'thin' },
-  //         left: { style: 'thin' },
-  //         bottom: { style: 'thin' },
-  //         right: { style: 'thin' }
-  //       };
-  //     }
-  //   });
+    // Add Header Row
+    const headerRow = worksheet.addRow(Object.keys(dataForExcel[0]));
+    headerRow.eachCell((cell) => {
+      if (cell.value) {
+        cell.font = { bold: true };
+        cell.alignment = { horizontal: "center" };
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+      }
+    });
   
-  //   // Add Data Rows
-  //   dataForExcel.forEach((item, index) => {
-  //     const row = worksheet.addRow(Object.values(item));
-  //     const rowStyle = index % 2 === 0 ? "EBF6EB" : "F5FDF5";
-  //     row.eachCell({ includeEmpty: true }, (cell) => {
-  //       cell.border = {
-  //         top: { style: 'thin' },
-  //         left: { style: 'thin' },
-  //         bottom: { style: 'thin' },
-  //         right: { style: 'thin' }
-  //       };
-  //     });
-  //   });
+    // Add Data Rows
+    dataForExcel.forEach((item, index) => {
+      const row = worksheet.addRow(Object.values(item));
+      const rowStyle = index % 2 === 0 ? "EBF6EB" : "F5FDF5";
+      row.eachCell({ includeEmpty: true }, (cell) => {
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+      });
+    });
   
-  //   // Set Column Widths
-  //   worksheet.columns.forEach((column) => {
-  //     column.width = 30; // Adjust the column width as needed
-  //   });
+    // Set Column Widths
+    worksheet.columns.forEach((column) => {
+      column.width = 30; // Adjust the column width as needed
+    });
   
-  //   // Save the Workbook
-  //   const buffer = await workbook.xlsx.writeBuffer();
-  //   const blob = new Blob([buffer], {
-  //     type: "request/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  //   });
-  //   const link = document.createElement("a");
-  //   link.href = URL.createObjectURL(blob);
-  //   link.download = `Service-Requests-${selectedReqFilter}.xlsx`;
-  //   link.click();
-  // };
+    // Save the Workbook
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "request/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `Service-Requests-${selectedReqFilter}.xlsx`;
+    link.click();
+  };
   
 
-  // const exportToPDF = () => {
-  //   const doc = new jsPDF();
-  //   const titleText = `LIST OF SERVICE APPLICANTS`;
-  //   doc.setFontSize(18);
-  //   doc.setTextColor(41, 81, 65);
-  //   const textWidth = doc.getTextWidth(titleText);
-  //   const pageWidth = doc.internal.pageSize.getWidth();
-  //   const xPosition = (pageWidth - textWidth) / 2;
-  //   doc.text(titleText, xPosition, 20); // Place the title
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    const titleText = `LIST OF SERVICE APPLICANTS`;
+    doc.setFontSize(18);
+    doc.setTextColor(41, 81, 65);
+    const textWidth = doc.getTextWidth(titleText);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const xPosition = (pageWidth - textWidth) / 2;
+    doc.text(titleText, xPosition, 20); // Place the title
 
-  //   const tableColumn = [
-  //     "Control #",
-  //     "Service Name",
-  //     "Sender",
-  //     "Date",
-  //     "Status",
-  //   ];
+    const tableColumn = [
+      "Control #",
+      "Service Name",
+      "Sender",
+      "Date",
+      "Status",
+    ];
 
-  //   const tableRows = [];
+    const tableRows = [];
 
-  //   // Check for empty data BEFORE creating the worksheet
-  //   if (filteredRequests.length === 0) {
-  //     alert("No data to export!");
-  //     return;
-  //   }
+    // Check for empty data BEFORE creating the worksheet
+    if (filteredRequests.length === 0) {
+      alert("No data to export!");
+      return;
+    }
 
-  //   filteredRequests.forEach((request) => {
-  //     const senderName = `${request.form[0].lastName.value}, ${request.form[0].firstName.value} ${request.form[0].middleName.value}`;
-  //     const rowData = [
-  //       request.req_id,
-  //       request.service_name,
-  //       senderName,
-  //       moment(request.createdAt).format("MMMM DD, YYYY hh:mm A"),
-  //       request.status,
-  //     ];
-  //     tableRows.push(rowData);
-  //   });
+    filteredRequests.forEach((request) => {
+      const senderName = `${request.form[0].lastName.value}, ${request.form[0].firstName.value} ${request.form[0].middleName.value}`;
+      const rowData = [
+        request.req_id,
+        request.service_name,
+        senderName,
+        moment(request.createdAt).format("MMMM DD, YYYY hh:mm A"),
+        request.status,
+      ];
+      tableRows.push(rowData);
+    });
 
-  //   doc.autoTable({
-  //     head: [tableColumn],
-  //     body: tableRows,
-  //     startY: 25,
-  //     styles: { fontSize: 8 },
-  //   });
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 25,
+      styles: { fontSize: 8 },
+    });
 
-  //   doc.save(`Service-Requests-${selectedReqFilter}.pdf`);
-  // };
+    doc.save(`Service-Requests-${selectedReqFilter}.pdf`);
+  };
 
   return (
     <div className="mx-4 ">
@@ -559,7 +559,7 @@ const Requests = () => {
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    // onClick={handleResetFilter}
+                    onClick={handleResetFilter}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -567,35 +567,35 @@ const Requests = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    // onClick={() => handleStatusFilter("For Review")}
+                    onClick={() => handleStatusFilter("For Review")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     FOR REVIEW
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Cancelled")}
+                    onClick={() => handleStatusFilter("Cancelled")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     CANCELLED
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Rejected")}
+                    onClick={() => handleStatusFilter("Rejected")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     REJECTED
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Processing")}
+                    onClick={() => handleStatusFilter("Processing")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     PROCESSING
                   </a>
                   <a
-                    // onClick={() => handleStatusFilter("Transaction Completed")}
+                    onClick={() => handleStatusFilter("Transaction Completed")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -633,7 +633,7 @@ const Requests = () => {
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    // onClick={handleResetFilter}
+                    onClick={handleResetFilter}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -647,8 +647,8 @@ const Requests = () => {
                     <div className="flex gap-2 flex-col">
                       <select
                         className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
-                        // onChange={onSelect}
-                        // defaultValue={selected}
+                        onChange={onSelect}
+                        defaultValue={selected}
                       >
                         <option value="date">Specific Date</option>
                         <option value="week">Week</option>
@@ -670,7 +670,7 @@ const Requests = () => {
                           type="week"
                           id="week"
                           name="week"
-                          // onChange={onChangeWeek}
+                          onChange={onChangeWeek}
                         />
                       )}
                       {selected === "month" && (
@@ -679,7 +679,7 @@ const Requests = () => {
                           type="month"
                           id="month"
                           name="month"
-                          // onChange={onChangeMonth}
+                          onChange={onChangeMonth}
                         />
                       )}
                       {selected === "year" && (
@@ -689,7 +689,7 @@ const Requests = () => {
                           id="year"
                           name="year"
                           placeholder="YEAR"
-                          // onChange={onChangeYear}
+                          onChange={onChangeYear}
                           min={1990}
                           max={new Date().getFullYear() + 10}
                         />
@@ -731,7 +731,7 @@ const Requests = () => {
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    // onClick={handleResetFilter}
+                    onClick={handleResetFilter}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -788,18 +788,18 @@ const Requests = () => {
                     <a
                       className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
-                      // onClick={
-                      //   exportToExcel // Export immediately after selection
-                      // }
+                      onClick={
+                        exportToExcel // Export immediately after selection
+                      }
                     >
                       Export to Excel
                     </a>
                     <a
                       className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
-                      // onClick={
-                      //   exportToPDF // Export immediately after selection
-                      // }
+                      onClick={
+                        exportToPDF // Export immediately after selection
+                      }
                     >
                       Export to PDF
                     </a>
@@ -840,7 +840,7 @@ const Requests = () => {
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
                   value={searchQuery}
-                  // onChange={handleSearchChange}
+                  onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
@@ -1046,7 +1046,7 @@ const Requests = () => {
         <ReactPaginate
           breakLabel="..."
           nextLabel=">>"
-          // onPageChange={handlePageChange}
+          onPageChange={handlePageChange}
           pageRangeDisplayed={3}
           pageCount={pageCount}
           previousLabel="<<"

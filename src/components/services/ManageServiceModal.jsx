@@ -23,196 +23,196 @@ function ManageServiceModal({ service, setService, brgy, socket, id }) {
     setEdit(!edit);
   };
 
-  // useEffect(() => {
-  //   setFiles(service.length === 0 ? [] : service.collections.file);
+  useEffect(() => {
+    setFiles(service.length === 0 ? [] : service.collections.file);
 
-  //   var logoSrc = document.getElementById("edit_logo");
-  //   logoSrc.src = service.length === 0 ? "" : service.collections.logo.link;
+    var logoSrc = document.getElementById("edit_logo");
+    logoSrc.src = service.length === 0 ? "" : service.collections.logo.link;
 
-  //   var bannerSrc = document.getElementById("edit_banner");
-  //   bannerSrc.src = service.length === 0 ? "" : service.collections.banner.link;
-  // }, [service]);
+    var bannerSrc = document.getElementById("edit_banner");
+    bannerSrc.src = service.length === 0 ? "" : service.collections.banner.link;
+  }, [service]);
 
-  // const renameFile = (file, newName) => {
-  //   const newFile = new File([file], newName, { type: file.type });
-  //   return newFile;
-  // };
+  const renameFile = (file, newName) => {
+    const newFile = new File([file], newName, { type: file.type });
+    return newFile;
+  };
 
-  // const handleLogoChange = (e) => {
-  //   const file = e.target.files[0];
-  //   const renamedFile = renameFile(file, "logo");
+  const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+    const renamedFile = renameFile(file, "logo");
 
-  //   setLogo(renamedFile);
+    setLogo(renamedFile);
 
-  //   var output = document.getElementById("edit_logo");
-  //   output.src = URL.createObjectURL(file);
-  //   output.onload = function () {
-  //     URL.revokeObjectURL(output.src); // free memory
-  //   };
-  // };
+    var output = document.getElementById("edit_logo");
+    output.src = URL.createObjectURL(file);
+    output.onload = function () {
+      URL.revokeObjectURL(output.src); // free memory
+    };
+  };
 
-  // const handleBannerChange = (e) => {
-  //   const file = e.target.files[0];
-  //   const renamedFile = renameFile(file, "banner");
+  const handleBannerChange = (e) => {
+    const file = e.target.files[0];
+    const renamedFile = renameFile(file, "banner");
 
-  //   setBanner(renamedFile);
+    setBanner(renamedFile);
 
-  //   var output = document.getElementById("edit_banner");
-  //   output.src = URL.createObjectURL(e.target.files[0]);
-  //   output.onload = function () {
-  //     URL.revokeObjectURL(output.src); // free memory
-  //   };
-  // };
+    var output = document.getElementById("edit_banner");
+    output.src = URL.createObjectURL(e.target.files[0]);
+    output.onload = function () {
+      URL.revokeObjectURL(output.src); // free memory
+    };
+  };
 
-  // const handleChange = (e) => {
-  //   setService((prev) => ({
-  //     ...prev,
-  //     [e.target.name]: e.target.value,
-  //   }));
-  // };
+  const handleChange = (e) => {
+    setService((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
-  // const handleFileChange = (e) => {
-  //   e.preventDefault();
+  const handleFileChange = (e) => {
+    e.preventDefault();
 
-  //   setFiles([...files, ...e.target.files]);
-  // };
+    setFiles([...files, ...e.target.files]);
+  };
 
-  // const getType = (type) => {
-  //   switch (type) {
-  //     case "MUNISIPYO":
-  //       return "Municipality";
-  //     default:
-  //       return "Barangay";
-  //   }
-  // };
+  const getType = (type) => {
+    switch (type) {
+      case "MUNISIPYO":
+        return "Municipality";
+      default:
+        return "Barangay";
+    }
+  };
 
-  // const handleSubmit = async (e) => {
-  //   try {
-  //     e.preventDefault();
-  //     setSubmitClicked(true);
+  const handleSubmit = async (e) => {
+    try {
+      e.preventDefault();
+      setSubmitClicked(true);
 
-  //     var formData = new FormData();
+      var formData = new FormData();
 
-  //     const arr1 = [banner, logo];
-  //     const combined = arr1.concat(files);
+      const arr1 = [banner, logo];
+      const combined = arr1.concat(files);
 
-  //     const savedFiles = combined.filter(function (element) {
-  //       return element !== undefined && element.hasOwnProperty("link");
-  //     });
+      const savedFiles = combined.filter(function (element) {
+        return element !== undefined && element.hasOwnProperty("link");
+      });
 
-  //     const newFiles = combined.filter(function (element) {
-  //       return element !== undefined && element instanceof File;
-  //     });
+      const newFiles = combined.filter(function (element) {
+        return element !== undefined && element instanceof File;
+      });
 
-  //     if (savedFiles.length !== 0) {
-  //       savedFiles.forEach((item) => {
-  //         formData.append(`saved`, JSON.stringify(item));
-  //       });
-  //     }
+      if (savedFiles.length !== 0) {
+        savedFiles.forEach((item) => {
+          formData.append(`saved`, JSON.stringify(item));
+        });
+      }
 
-  //     if (newFiles.length !== 0)
-  //       for (let f = 0; f < newFiles.length; f += 1) {
-  //         formData.append("files", newFiles[f]);
-  //       }
+      if (newFiles.length !== 0)
+        for (let f = 0; f < newFiles.length; f += 1) {
+          formData.append("files", newFiles[f]);
+        }
 
-  //     formData.append("service", JSON.stringify(service));
-  //     setOnSend(true);
-  //     const res_folder = await axios.get(
-  //       `${API_LINK}/folder/specific/?brgy=${brgy}`
-  //     );
+      formData.append("service", JSON.stringify(service));
+      setOnSend(true);
+      const res_folder = await axios.get(
+        `${API_LINK}/folder/specific/?brgy=${brgy}`
+      );
 
 
 
-  //     if (res_folder.status === 200) {
-  //       const response = await axios.patch(
-  //         `${API_LINK}/services/${service._id}`,
-  //         formData
-  //       );
+      if (res_folder.status === 200) {
+        const response = await axios.patch(
+          `${API_LINK}/services/${service._id}`,
+          formData
+        );
 
-  //       if (response.status === 200) {
-  //         // var logoSrc = document.getElementById("logo");
-  //         // logoSrc.src =
-  //         //   "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+        if (response.status === 200) {
+          // var logoSrc = document.getElementById("logo");
+          // logoSrc.src =
+          //   "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
 
-  //         // var bannerSrc = document.getElementById("banner");
-  //         // bannerSrc.src =
-  //         //   "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+          // var bannerSrc = document.getElementById("banner");
+          // bannerSrc.src =
+          //   "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
 
-  //         const notify = {
-  //           category: "Many",
-  //           compose: {
-  //             subject: `SERVICES - ${response.data.name}`,
-  //             message: `Barangay ${brgy} has updated the service: ${response.data.name}.\n\n
+          const notify = {
+            category: "Many",
+            compose: {
+              subject: `SERVICES - ${response.data.name}`,
+              message: `Barangay ${brgy} has updated the service: ${response.data.name}.\n\n
                 
-  //               Service Details:\n 
-  //               ${response.data.details}\n\n
-  //               `,
-  //             go_to: "Services",
-  //           },
-  //           target: {
-  //             user_id: null,
-  //             area: brgy,
-  //           },
-  //           type: "Resident",
-  //           banner: response.data.collections.banner,
-  //           logo: response.data.collections.logo,
-  //         };
+                Service Details:\n 
+                ${response.data.details}\n\n
+                `,
+              go_to: "Services",
+            },
+            target: {
+              user_id: null,
+              area: brgy,
+            },
+            type: "Resident",
+            banner: response.data.collections.banner,
+            logo: response.data.collections.logo,
+          };
 
-  //         const result = await axios.post(`${API_LINK}/notification/`, notify, {
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //         });
+          const result = await axios.post(`${API_LINK}/notification/`, notify, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
 
-  //         if (result.status === 200) {
-  //           const getIP = async () => {
-  //             const response = await fetch(
-  //               "https://api64.ipify.org?format=json"
-  //             );
-  //             const data = await response.json();
-  //             return data.ip;
-  //           };
-  //           ;
-  //           const ip = await getIP(); // Retrieve IP address
-  //           const logsData = {
-  //             action: "Updated",
-  //             details: `Updated the information for the service titled "${service.name}."`,
-  //             ip: ip,
-  //           };
+          if (result.status === 200) {
+            const getIP = async () => {
+              const response = await fetch(
+                "https://api64.ipify.org?format=json"
+              );
+              const data = await response.json();
+              return data.ip;
+            };
+            ;
+            const ip = await getIP(); // Retrieve IP address
+            const logsData = {
+              action: "Updated",
+              details: `Updated the information for the service titled "${service.name}."`,
+              ip: ip,
+            };
 
-  //           const logsResult = await axios.post(
-  //             `${API_LINK}/act_logs/add_logs/?id=${id}`,
-  //             logsData
-  //           );
+            const logsResult = await axios.post(
+              `${API_LINK}/act_logs/add_logs/?id=${id}`,
+              logsData
+            );
 
-  //           if (logsResult.status === 200) {
-  //             socket.emit("send-resident-notif", result.data);
-  //             setEdit(!edit);
-  //             socket.emit("send-updated-service", response.data);
-  //             console.log("ito", response.data)
-  //             setSubmitClicked(false);
-  //             setUpdatingStatus("success");
-  //             setTimeout(() => {
-  //               setSubmitClicked(false);
-  //               setUpdatingStatus("success");
-  //               setTimeout(() => {
-  //                 setUpdatingStatus(null);
-  //                 HSOverlay.close(
-  //                   document.getElementById("hs-modal-editServices")
-  //                 );
-  //               }, 3000);
-  //             }, 1000);
-  //           }
-  //         }
-  //       }
-  //     }
-  //   } catch (err) {
-  //     console.log(err);
-  //     setSubmitClicked(false);
-  //     setUpdatingStatus("error");
-  //     setError("An error occurred while updating the service.");
-  //   }
-  // };
+            if (logsResult.status === 200) {
+              socket.emit("send-resident-notif", result.data);
+              setEdit(!edit);
+              socket.emit("send-updated-service", response.data);
+              console.log("ito", response.data)
+              setSubmitClicked(false);
+              setUpdatingStatus("success");
+              setTimeout(() => {
+                setSubmitClicked(false);
+                setUpdatingStatus("success");
+                setTimeout(() => {
+                  setUpdatingStatus(null);
+                  HSOverlay.close(
+                    document.getElementById("hs-modal-editServices")
+                  );
+                }, 3000);
+              }, 1000);
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      setSubmitClicked(false);
+      setUpdatingStatus("error");
+      setError("An error occurred while updating the service.");
+    }
+  };
 
   return (
     <div>
@@ -259,7 +259,7 @@ function ManageServiceModal({ service, setService, brgy, socket, id }) {
                       <span className="sr-only">Choose profile photo</span>
                       <input
                         type="file"
-                        // onChange={handleLogoChange}
+                        onChange={handleLogoChange}
                         name="logo"
                         accept="image/*"
                         value={!logo ? "" : logo.originalname}
@@ -288,7 +288,7 @@ function ManageServiceModal({ service, setService, brgy, socket, id }) {
                       <span className="sr-only">Choose profile photo</span>
                       <input
                         type="file"
-                        // onChange={handleBannerChange}
+                        onChange={handleBannerChange}
                         name="edit_banner"
                         accept="image/*"
                         value={!banner ? "" : banner.originalname}
@@ -329,7 +329,7 @@ function ManageServiceModal({ service, setService, brgy, socket, id }) {
                   name="name"
                   type="text"
                   value={service && service.name}
-                  // onChange={handleChange}
+                  onChange={handleChange}
                   disabled={!edit}
                   placeholder="Service Name"
                 />
@@ -343,7 +343,7 @@ function ManageServiceModal({ service, setService, brgy, socket, id }) {
                 </label>
                 <select
                   name="type"
-                  // onChange={handleChange}
+                  onChange={handleChange}
                   className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                   disabled={!edit}
                   value={service.type}
@@ -379,7 +379,7 @@ function ManageServiceModal({ service, setService, brgy, socket, id }) {
                   rows={4}
                   name="details"
                   value={service && service.details}
-                  // onChange={handleChange}
+                  onChange={handleChange}
                   disabled={!edit}
                   className="shadow appearance-none border w-full p-2.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                   placeholder="Enter service details..."
@@ -399,7 +399,7 @@ function ManageServiceModal({ service, setService, brgy, socket, id }) {
                   name="fee"
                   type="number"
                   value={service && service.fee}
-                  // onChange={handleChange}
+                  onChange={handleChange}
                   disabled={!edit}
                   placeholder="Service Fee"
                 />
@@ -409,8 +409,8 @@ function ManageServiceModal({ service, setService, brgy, socket, id }) {
                 edit={edit}
                 files={service && files}
                 setFiles={setFiles}
-                // handleFileChange={handleFileChange}
-                // handleSubmit={handleSubmit}
+                handleFileChange={handleFileChange}
+                handleSubmit={handleSubmit}
               />
             </div>
 
@@ -438,7 +438,7 @@ function ManageServiceModal({ service, setService, brgy, socket, id }) {
                   <button
                     type="submit"
                     disabled={onSend}
-                    // onClick={handleSubmit}
+                    onClick={handleSubmit}
                     className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
                   >
                     {onSend ? (

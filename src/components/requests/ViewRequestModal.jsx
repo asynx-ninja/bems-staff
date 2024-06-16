@@ -28,29 +28,29 @@ function ViewRequestModal({ request, brgy, officials }) {
   const [docDetails, setDocDetails] = useState([]);
   const [service_id, setServiceId] = useState(request.service_id);
 
-  // useEffect(() => {
-  //   // function to filter
-  //   const fetch = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `${API_LINK}/document/?brgy=${brgy}&service_id=${service_id}`
-  //       );
+  useEffect(() => {
+    // function to filter
+    const fetch = async () => {
+      try {
+        const response = await axios.get(
+          `${API_LINK}/document/?brgy=${brgy}&service_id=${service_id}`
+        );
 
-  //       // filter
-  //       setDocDetails(response.data);
-  //     } catch (err) {
-  //       console.log(err.message);
-  //     }
-  //   };
+        // filter
+        setDocDetails(response.data);
+      } catch (err) {
+        console.log(err.message);
+      }
+    };
 
-  //   fetch();
-  // }, [brgy, service_id, request]); // Add 'request' as a dependency
+    fetch();
+  }, [brgy, service_id, request]); // Add 'request' as a dependency
 
-  // useEffect(() => {
-  //   // Update 'service_id' and 'detail' whenever 'request' changes
-  //   setServiceId(request.service_id);
-  //   setDetail(request);
-  // }, [request]);
+  useEffect(() => {
+    // Update 'service_id' and 'detail' whenever 'request' changes
+    setServiceId(request.service_id);
+    setDetail(request);
+  }, [request]);
 
  
 
@@ -64,84 +64,84 @@ function ViewRequestModal({ request, brgy, officials }) {
 
 
 
-  // const returnFile = (string) => {
-  //   for (const item of detail.file) {
-  //     if (item.name.includes(string)) {
-  //       return (
-  //         <div className="block p-1 w-full h-24">
-  //           <article
-  //             tabIndex={0}
-  //             className="group w-full h-full rounded-md focus:outline-none focus:shadow-outline elative bg-gray-100 cursor-pointer relative shadow-sm"
-  //           >
-  //             <img
-  //               alt="upload preview"
-  //               className="img-preview hidden w-full h-full sticky object-cover rounded-md bg-fixed"
-  //             />
-  //             <section className="flex flex-col rounded-md text-xs break-words w-full h-full z-20 absolute top-0 py-2 px-3">
-  //               <a
-  //                 href={item.link}
-  //                 target="_blank"
-  //                 className="flex-1 group-hover:text-blue-800 line-clamp-1"
-  //               >
-  //                 {item.name}
-  //               </a>
-  //               <div className="flex">
-  //                 <span className="p-1 text-blue-800">
-  //                   <i>
-  //                     <svg
-  //                       className="fill-current w-4 h-4 ml-auto pt-1"
-  //                       xmlns="http://www.w3.org/2000/svg"
-  //                       width={24}
-  //                       height={24}
-  //                       viewBox="0 0 24 24"
-  //                     >
-  //                       <path d="M15 2v5h5v15h-16v-20h11zm1-2h-14v24h20v-18l-6-6z" />
-  //                     </svg>
-  //                   </i>
-  //                 </span>
-  //               </div>
-  //             </section>
-  //           </article>
-  //         </div>
-  //       );
-  //     }
-  //   }
+  const returnFile = (string) => {
+    for (const item of detail.file) {
+      if (item.name.includes(string)) {
+        return (
+          <div className="block p-1 w-full h-24">
+            <article
+              tabIndex={0}
+              className="group w-full h-full rounded-md focus:outline-none focus:shadow-outline elative bg-gray-100 cursor-pointer relative shadow-sm"
+            >
+              <img
+                alt="upload preview"
+                className="img-preview hidden w-full h-full sticky object-cover rounded-md bg-fixed"
+              />
+              <section className="flex flex-col rounded-md text-xs break-words w-full h-full z-20 absolute top-0 py-2 px-3">
+                <a
+                  href={item.link}
+                  target="_blank"
+                  className="flex-1 group-hover:text-blue-800 line-clamp-1"
+                >
+                  {item.name}
+                </a>
+                <div className="flex">
+                  <span className="p-1 text-blue-800">
+                    <i>
+                      <svg
+                        className="fill-current w-4 h-4 ml-auto pt-1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width={24}
+                        height={24}
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M15 2v5h5v15h-16v-20h11zm1-2h-14v24h20v-18l-6-6z" />
+                      </svg>
+                    </i>
+                  </span>
+                </div>
+              </section>
+            </article>
+          </div>
+        );
+      }
+    }
 
-  //   return null;
-  // };
+    return null;
+  };
 
-  // const DocumentTypeComponent =
-  //   docDetails.length > 0 && getDocumentTypeComponent(docDetails[0].type);
+  const DocumentTypeComponent =
+    docDetails.length > 0 && getDocumentTypeComponent(docDetails[0].type);
 
-  // function getDocumentTypeComponent(type) {
-  //   switch (type) {
-  //     case "Type A":
-  //       return PrintDocumentTypeA;
-  //     case "Type B":
-  //       return PrintDocumentTypeB;
-  //     case "Type C":
-  //       return PrintDocumentTypeC;
-  //     case "Type D":
-  //       return PrintDocumentTypeD;
-  //     case "Type E":
-  //       return PrintDocumentTypeE;
-  //     case "Type F":
-  //       return PrintDocumentTypeF;
-  //     case "Type G":
-  //       return PrintDocumentTypeG;
-  //     case "Type H":
-  //       return PrintDocumentTypeH;
-  //     case "Type I":
-  //       return PrintDocumentTypeI;
-  //     case "Type J":
-  //       return PrintDocumentTypeJ;
-  //     case "Type K":
-  //       return PrintDocumentTypeK;
-  //     // Add cases for other types if needed
-  //     default:
-  //       return null;
-  //   }
-  // }
+  function getDocumentTypeComponent(type) {
+    switch (type) {
+      case "Type A":
+        return PrintDocumentTypeA;
+      case "Type B":
+        return PrintDocumentTypeB;
+      case "Type C":
+        return PrintDocumentTypeC;
+      case "Type D":
+        return PrintDocumentTypeD;
+      case "Type E":
+        return PrintDocumentTypeE;
+      case "Type F":
+        return PrintDocumentTypeF;
+      case "Type G":
+        return PrintDocumentTypeG;
+      case "Type H":
+        return PrintDocumentTypeH;
+      case "Type I":
+        return PrintDocumentTypeI;
+      case "Type J":
+        return PrintDocumentTypeJ;
+      case "Type K":
+        return PrintDocumentTypeK;
+      // Add cases for other types if needed
+      default:
+        return null;
+    }
+  }
 
 
   return (
@@ -180,14 +180,14 @@ function ViewRequestModal({ request, brgy, officials }) {
                   </div>
                 )}
                 <PersonalDetails detail={detail} />
-                {/* <OtherDetails detail={detail} returnFile={returnFile} /> */}
+                <OtherDetails detail={detail} returnFile={returnFile} />
               </form>
             </div>
             {/* END OF BODY */}
             {/* BUTTON BELOW */}
             <div className="flex justify-center items-center gap-x-2 py-3 px-6 dark:border-gray-700">
               <div className="sm:space-x-0 lg:space-x-2 sm:space-y-2 lg:space-y-0 w-full flex sm:flex-col lg:flex-row">
-                {/* {DocumentTypeComponent &&
+                {DocumentTypeComponent &&
                   request.status === "Transaction Completed" && (
                     <PDFDownloadLink
                       document={
@@ -203,15 +203,15 @@ function ViewRequestModal({ request, brgy, officials }) {
                     >
                       GENERATE DOCUMENT REQUEST ({docDetails[0].type})
                     </PDFDownloadLink>
-                  )} */}
+                  )}
 
-                {/* <PDFDownloadLink
+                <PDFDownloadLink
                   document={<PrintPDF detail={detail} brgy={brgy} />}
                   fileName={fileName}
                   className="h-[2.5rem] flex text-center justify-center items-center w-full py-1 px-6 gap-2 rounded-md border text-[9px] xxl:text-xs font-base bg-teal-900 text-white shadow-sm"
                 >
                   GENERATE REQUEST FORM
-                </PDFDownloadLink> */}
+                </PDFDownloadLink>
                 <button
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6  gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"

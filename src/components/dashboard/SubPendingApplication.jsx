@@ -28,9 +28,9 @@ const SubPendingApplication = () => {
         );
 
         if (response.status === 200) {
-          // setApplications(response.data.result);
-          // setPageCount(response.data.pageCount);
-          // setFilteredApplications(response.data.result);
+          setApplications(response.data.result);
+          setPageCount(response.data.pageCount);
+          setFilteredApplications(response.data.result);
         } else setApplications([]);
       } catch (err) {
         console.log(err);
