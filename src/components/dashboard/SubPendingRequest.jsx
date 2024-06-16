@@ -16,6 +16,7 @@ const SubPendingRequest = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const information = GetBrgy(brgy);
+  
   useEffect(() => {
     const fetch = async () => {
       const response = await axios.get(

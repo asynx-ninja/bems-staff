@@ -57,126 +57,126 @@ const Residents = () => {
   const [maxAge, setMaxAge] = useState(100);
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleToggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
-  // console.log("civil status filter: ", civilStatusFilter);
+  // const handleToggleDropdown = () => {
+  //   setIsOpen(!isOpen);
+  // };
+  // // console.log("civil status filter: ", civilStatusFilter);
 
-  const handleSort = (sortBy) => {
-    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
-    setSortOrder(newSortOrder);
-    setSortColumn(sortBy);
+  // const handleSort = (sortBy) => {
+  //   const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+  //   setSortOrder(newSortOrder);
+  //   setSortColumn(sortBy);
 
-    const sortedData = users.slice().sort((a, b) => {
-      if (sortBy === "user_id") {
-        return newSortOrder === "asc"
-          ? a.user_id.localeCompare(b.user_id)
-          : b.user_id.localeCompare(a.user_id);
-      } else if (sortBy === "lastName") {
-        return newSortOrder === "asc"
-          ? a.lastName.localeCompare(b.lastName)
-          : b.lastName.localeCompare(a.lastName);
-      } else if (sortBy === "isApproved") {
-        const order = { Registered: 1, Pending: 2, Denied: 3 };
-        return newSortOrder === "asc"
-          ? order[a.isApproved] - order[b.isApproved]
-          : order[b.isApproved] - order[a.isApproved];
-      }
+  //   const sortedData = users.slice().sort((a, b) => {
+  //     if (sortBy === "user_id") {
+  //       return newSortOrder === "asc"
+  //         ? a.user_id.localeCompare(b.user_id)
+  //         : b.user_id.localeCompare(a.user_id);
+  //     } else if (sortBy === "lastName") {
+  //       return newSortOrder === "asc"
+  //         ? a.lastName.localeCompare(b.lastName)
+  //         : b.lastName.localeCompare(a.lastName);
+  //     } else if (sortBy === "isApproved") {
+  //       const order = { Registered: 1, Pending: 2, Denied: 3 };
+  //       return newSortOrder === "asc"
+  //         ? order[a.isApproved] - order[b.isApproved]
+  //         : order[b.isApproved] - order[a.isApproved];
+  //     }
 
-      return 0;
-    });
+  //     return 0;
+  //   });
 
-    setUsers(sortedData);
-  };
-
-  useEffect(() => {
-    const handleResident = (obj) => {
-      setUsers(obj);
-      setFilteredResidents((curItem) =>
-        curItem.map((item) => (item._id === obj._id ? obj : item))
-      );
-    };
-
-    const handleEventArchive = (obj) => {
-      setUser(obj);
-      setUsers((prev) => prev.filter((item) => item._id !== obj._id));
-      setFilteredResidents((prev) =>
-        prev.filter((item) => item._id !== obj._id)
-      );
-    };
-
-    socket.on("receive-update-status-resident", handleResident);
-    socket.on("receive-archive-staff", handleEventArchive);
-
-    return () => {
-      socket.off("receive-update-status-resident", handleResident);
-      socket.off("receive-archive-staff", handleEventArchive);
-    };
-  }, [socket, setUsers]);
-
-  useEffect(() => {
-    const fetch = async () => {
-      const civilStatusStr = civilStatusFilter.join(",");
-
-      const response = await axios.get(
-        `${API_LINK}/users/?brgy=${brgy}&type=Resident&status=${statusFilter}&civil_status=${civilStatusStr}&isVoter=${isVoterFilter}&isHead=${isHeadFilter}&minAge=${minAge}&maxAge=${maxAge}`
-      );
-      if (response.status === 200) {
-        setUsers(response.data.result);
-        setFilteredResidents(response.data.result.slice(0, 10));
-        setNewUsers(response.data.result);
-        setPageCount(response.data.pageCount);
-      } else {
-        setUsers([]);
-      }
-    };
-
-    fetch();
-  }, [
-    brgy,
-    statusFilter,
-    civilStatusFilter,
-    isVoterFilter,
-    isHeadFilter,
-    minAge,
-    maxAge,
-  ]);
-
-  useEffect(() => {
-    const filteredData = newUsers.filter((item) => {
-      const fullName =
-        item.lastName.toLowerCase() +
-        ", " +
-        item.firstName.toLowerCase() +
-        (item.middleName !== undefined
-          ? " " + item.middleName.toLowerCase()
-          : "");
-
-      return (
-        item.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        fullName.includes(searchQuery.toLowerCase())
-      );
-    });
-
-    const startIndex = currentPage * 10;
-    const endIndex = startIndex + 10;
-    setFilteredResidents(filteredData.slice(startIndex, endIndex));
-    setPageCount(Math.ceil(filteredData.length / 10));
-  }, [newUsers, searchQuery, currentPage]);
-
-  const handlePageChange = ({ selected }) => {
-    setCurrentPage(selected);
-  };
-
-  // const handleStatusFilter = (selectedStatus) => {
-  //   setStatusFilter(selectedStatus);
+  //   setUsers(sortedData);
   // };
 
-  // Handle search input change
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-    setCurrentPage(0); // Reset current page when search query changes
-  };
+  // useEffect(() => {
+  //   const handleResident = (obj) => {
+  //     setUsers(obj);
+  //     setFilteredResidents((curItem) =>
+  //       curItem.map((item) => (item._id === obj._id ? obj : item))
+  //     );
+  //   };
+
+  //   const handleEventArchive = (obj) => {
+  //     setUser(obj);
+  //     setUsers((prev) => prev.filter((item) => item._id !== obj._id));
+  //     setFilteredResidents((prev) =>
+  //       prev.filter((item) => item._id !== obj._id)
+  //     );
+  //   };
+
+  //   socket.on("receive-update-status-resident", handleResident);
+  //   socket.on("receive-archive-staff", handleEventArchive);
+
+  //   return () => {
+  //     socket.off("receive-update-status-resident", handleResident);
+  //     socket.off("receive-archive-staff", handleEventArchive);
+  //   };
+  // }, [socket, setUsers]);
+
+  // useEffect(() => {
+  //   const fetch = async () => {
+  //     const civilStatusStr = civilStatusFilter.join(",");
+
+  //     const response = await axios.get(
+  //       `${API_LINK}/users/?brgy=${brgy}&type=Resident&status=${statusFilter}&civil_status=${civilStatusStr}&isVoter=${isVoterFilter}&isHead=${isHeadFilter}&minAge=${minAge}&maxAge=${maxAge}`
+  //     );
+  //     if (response.status === 200) {
+  //       setUsers(response.data.result);
+  //       setFilteredResidents(response.data.result.slice(0, 10));
+  //       setNewUsers(response.data.result);
+  //       setPageCount(response.data.pageCount);
+  //     } else {
+  //       setUsers([]);
+  //     }
+  //   };
+
+  //   fetch();
+  // }, [
+  //   brgy,
+  //   statusFilter,
+  //   civilStatusFilter,
+  //   isVoterFilter,
+  //   isHeadFilter,
+  //   minAge,
+  //   maxAge,
+  // ]);
+
+  // useEffect(() => {
+  //   const filteredData = newUsers.filter((item) => {
+  //     const fullName =
+  //       item.lastName.toLowerCase() +
+  //       ", " +
+  //       item.firstName.toLowerCase() +
+  //       (item.middleName !== undefined
+  //         ? " " + item.middleName.toLowerCase()
+  //         : "");
+
+  //     return (
+  //       item.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //       fullName.includes(searchQuery.toLowerCase())
+  //     );
+  //   });
+
+  //   const startIndex = currentPage * 10;
+  //   const endIndex = startIndex + 10;
+  //   setFilteredResidents(filteredData.slice(startIndex, endIndex));
+  //   setPageCount(Math.ceil(filteredData.length / 10));
+  // }, [newUsers, searchQuery, currentPage]);
+
+  // const handlePageChange = ({ selected }) => {
+  //   setCurrentPage(selected);
+  // };
+
+  // // const handleStatusFilter = (selectedStatus) => {
+  // //   setStatusFilter(selectedStatus);
+  // // };
+
+  // // Handle search input change
+  // const handleSearchChange = (e) => {
+  //   setSearchQuery(e.target.value);
+  //   setCurrentPage(0); // Reset current page when search query changes
+  // };
 
   // const Users = users.filter((item) => {
   //   const fullName =
@@ -224,235 +224,235 @@ const Residents = () => {
     document.title = "Residents | Barangay E-Services Management";
   }, []);
 
-  const handleView = (item) => {
-    setUser(item);
-  };
+  // const handleView = (item) => {
+  //   setUser(item);
+  // };
 
-  const handleStatus = (status) => {
-    setStatus(status);
-  };
+  // const handleStatus = (status) => {
+  //   setStatus(status);
+  // };
 
-  const handleResetFilter = () => {
-    setStatusFilter("all");
-    setIsVoterFilter("all");
-    setIsHeadFilter("all");
-    setCivilStatusFilter([]);
-    setSearchQuery("");
-    setMinAge(1);
-    setMaxAge(100);
-  };
+  // const handleResetFilter = () => {
+  //   setStatusFilter("all");
+  //   setIsVoterFilter("all");
+  //   setIsHeadFilter("all");
+  //   setCivilStatusFilter([]);
+  //   setSearchQuery("");
+  //   setMinAge(1);
+  //   setMaxAge(100);
+  // };
 
-  const handleCombinedActions = (item) => {
-    handleView({ ...item });
-    handleStatus({
-      id: item._id,
-      status: item.isApproved,
-    });
-  };
+  // const handleCombinedActions = (item) => {
+  //   handleView({ ...item });
+  //   handleStatus({
+  //     id: item._id,
+  //     status: item.isApproved,
+  //   });
+  // };
 
-  const exportToExcel = async () => {
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("Barangay Residents");
+  // const exportToExcel = async () => {
+  //   const workbook = new ExcelJS.Workbook();
+  //   const worksheet = workbook.addWorksheet("Barangay Residents");
 
-    console.log("Filtered Residents", filteredResidents);
+  //   console.log("Filtered Residents", filteredResidents);
 
-    const dataForExcel = filteredResidents.map((item) => ({
-      FULLNAME: item.lastName + ", " + item.firstName + " " + item.middleName,
-      EMAIL: item.email || "N/A",
-      CONTACT: item.contact || "N/A",
-      BIRTHDAY: moment(item.birthday).format("MMMM DD, YYYY") || "N/A",
-      AGE: item.age || 'N/A"',
-      GENDER: item.sex || "N/A",
-      "CIVIL STATUS": item.civil_status || "N/A",
-      RELIGION: item.religion || "N/A",
-      ADDRESS:
-        item.address.street +
-          ", " +
-          item.address.brgy +
-          ", " +
-          item.address.city || "N/A",
-      "REGISTERED VOTER": item.isVoter || "N/A",
-      STATUS: item.isApproved || "N/A",
-    }));
+  //   const dataForExcel = filteredResidents.map((item) => ({
+  //     FULLNAME: item.lastName + ", " + item.firstName + " " + item.middleName,
+  //     EMAIL: item.email || "N/A",
+  //     CONTACT: item.contact || "N/A",
+  //     BIRTHDAY: moment(item.birthday).format("MMMM DD, YYYY") || "N/A",
+  //     AGE: item.age || 'N/A"',
+  //     GENDER: item.sex || "N/A",
+  //     "CIVIL STATUS": item.civil_status || "N/A",
+  //     RELIGION: item.religion || "N/A",
+  //     ADDRESS:
+  //       item.address.street +
+  //         ", " +
+  //         item.address.brgy +
+  //         ", " +
+  //         item.address.city || "N/A",
+  //     "REGISTERED VOTER": item.isVoter || "N/A",
+  //     STATUS: item.isApproved || "N/A",
+  //   }));
 
-    // Check for empty data BEFORE creating the worksheet
-    if (dataForExcel.length === 0) {
-      alert("No data to export!");
-      return;
-    }
+  //   // Check for empty data BEFORE creating the worksheet
+  //   if (dataForExcel.length === 0) {
+  //     alert("No data to export!");
+  //     return;
+  //   }
 
-    // Define a common border style
-    const borderStyle = {
-      top: { style: "thin" },
-      left: { style: "thin" },
-      bottom: { style: "thin" },
-      right: { style: "thin" },
-    };
+  //   // Define a common border style
+  //   const borderStyle = {
+  //     top: { style: "thin" },
+  //     left: { style: "thin" },
+  //     bottom: { style: "thin" },
+  //     right: { style: "thin" },
+  //   };
 
-    // Add Title Row
-    const titleRow = worksheet.addRow([
-      `LIST OF RESIDENTS FOR BARANGAY ${brgy} `,
-    ]);
-    worksheet.mergeCells(
-      `A1:${String.fromCharCode(65 + Object.keys(dataForExcel[0]).length - 1)}1`
-    );
-    titleRow.getCell(1).font = {
-      bold: true,
-      size: 16,
-    };
-    titleRow.getCell(1).alignment = { horizontal: "center" };
-    titleRow.eachCell((cell) => {
-      cell.border = borderStyle;
-    });
+  //   // Add Title Row
+  //   const titleRow = worksheet.addRow([
+  //     `LIST OF RESIDENTS FOR BARANGAY ${brgy} `,
+  //   ]);
+  //   worksheet.mergeCells(
+  //     `A1:${String.fromCharCode(65 + Object.keys(dataForExcel[0]).length - 1)}1`
+  //   );
+  //   titleRow.getCell(1).font = {
+  //     bold: true,
+  //     size: 16,
+  //   };
+  //   titleRow.getCell(1).alignment = { horizontal: "center" };
+  //   titleRow.eachCell((cell) => {
+  //     cell.border = borderStyle;
+  //   });
 
-    // Add Header Row
-    const headerRow = worksheet.addRow(Object.keys(dataForExcel[0]));
-    headerRow.eachCell((cell) => {
-      if (cell.value) {
-        cell.font = { bold: true };
-        cell.alignment = { horizontal: "center" };
-        cell.border = borderStyle;
-      }
-    });
+  //   // Add Header Row
+  //   const headerRow = worksheet.addRow(Object.keys(dataForExcel[0]));
+  //   headerRow.eachCell((cell) => {
+  //     if (cell.value) {
+  //       cell.font = { bold: true };
+  //       cell.alignment = { horizontal: "center" };
+  //       cell.border = borderStyle;
+  //     }
+  //   });
 
-    // Add Data Rows
-    dataForExcel.forEach((item, index) => {
-      const row = worksheet.addRow(Object.values(item));
-      row.eachCell({ includeEmpty: true }, (cell) => {
-        cell.border = borderStyle;
-      });
-    });
+  //   // Add Data Rows
+  //   dataForExcel.forEach((item, index) => {
+  //     const row = worksheet.addRow(Object.values(item));
+  //     row.eachCell({ includeEmpty: true }, (cell) => {
+  //       cell.border = borderStyle;
+  //     });
+  //   });
 
-    // Set Column Widths
-    worksheet.columns.forEach((column) => {
-      column.width = 30; // Adjust the column width as needed
-    });
+  //   // Set Column Widths
+  //   worksheet.columns.forEach((column) => {
+  //     column.width = 30; // Adjust the column width as needed
+  //   });
 
-    // Save the Workbook
-    const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], {
-      type: "residents/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `Residents of Barangay ${brgy}.xlsx`;
-    link.click();
-  };
+  //   // Save the Workbook
+  //   const buffer = await workbook.xlsx.writeBuffer();
+  //   const blob = new Blob([buffer], {
+  //     type: "residents/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  //   });
+  //   const link = document.createElement("a");
+  //   link.href = URL.createObjectURL(blob);
+  //   link.download = `Residents of Barangay ${brgy}.xlsx`;
+  //   link.click();
+  // };
 
-  const exportToPDF = () => {
-    const doc = new jsPDF({ orientation: "landscape" });
-    const titleText = `LIST OF RESIDENTS FOR BARANGAY ${brgy}`;
-    doc.setFontSize(18);
-    doc.setTextColor(41, 81, 65);
-    const textWidth = doc.getTextWidth(titleText);
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const xPosition = (pageWidth - textWidth) / 2;
-    doc.text(titleText, xPosition, 20); // Place the title
+  // const exportToPDF = () => {
+  //   const doc = new jsPDF({ orientation: "landscape" });
+  //   const titleText = `LIST OF RESIDENTS FOR BARANGAY ${brgy}`;
+  //   doc.setFontSize(18);
+  //   doc.setTextColor(41, 81, 65);
+  //   const textWidth = doc.getTextWidth(titleText);
+  //   const pageWidth = doc.internal.pageSize.getWidth();
+  //   const xPosition = (pageWidth - textWidth) / 2;
+  //   doc.text(titleText, xPosition, 20); // Place the title
 
-    const tableColumn = [
-      "FULLNAME",
-      "EMAIL",
-      "CONTACT",
-      "BIRTHDAY",
-      "AGE",
-      "GENDER",
-      "CIVIL STATUS",
-      "RELIGION",
-      "ADDRESS",
-      "REGISTERED VOTER",
-      "STATUS",
-    ];
+  //   const tableColumn = [
+  //     "FULLNAME",
+  //     "EMAIL",
+  //     "CONTACT",
+  //     "BIRTHDAY",
+  //     "AGE",
+  //     "GENDER",
+  //     "CIVIL STATUS",
+  //     "RELIGION",
+  //     "ADDRESS",
+  //     "REGISTERED VOTER",
+  //     "STATUS",
+  //   ];
 
-    const tableRows = [];
+  //   const tableRows = [];
 
-    // Check for empty data BEFORE creating the worksheet
-    if (filteredResidents.length === 0) {
-      alert("No data to export!");
-      return;
-    }
+  //   // Check for empty data BEFORE creating the worksheet
+  //   if (filteredResidents.length === 0) {
+  //     alert("No data to export!");
+  //     return;
+  //   }
 
-    filteredResidents.forEach((resident) => {
-      const FullName = `${resident.lastName}, ${resident.firstName} ${resident.middleName}`;
-      const Address = `${resident.address.street}, ${resident.address.brgy}, ${resident.address.city}`;
-      const rowData = [
-        FullName,
-        resident.email,
-        resident.contact,
-        moment(resident.birthday).format("MMMM DD, YYYY"),
-        resident.age,
-        resident.sex,
-        resident.civil_status,
-        resident.religion,
-        Address,
-        resident.isVoter,
-        resident.isApproved,
-      ];
-      tableRows.push(rowData);
-    });
+  //   filteredResidents.forEach((resident) => {
+  //     const FullName = `${resident.lastName}, ${resident.firstName} ${resident.middleName}`;
+  //     const Address = `${resident.address.street}, ${resident.address.brgy}, ${resident.address.city}`;
+  //     const rowData = [
+  //       FullName,
+  //       resident.email,
+  //       resident.contact,
+  //       moment(resident.birthday).format("MMMM DD, YYYY"),
+  //       resident.age,
+  //       resident.sex,
+  //       resident.civil_status,
+  //       resident.religion,
+  //       Address,
+  //       resident.isVoter,
+  //       resident.isApproved,
+  //     ];
+  //     tableRows.push(rowData);
+  //   });
 
-    doc.autoTable({
-      head: [tableColumn],
-      body: tableRows,
-      startY: 25,
-      styles: { fontSize: 7 },
-      columnStyles: {
-        0: { cellWidth: "wrap" },
-        1: { cellWidth: "wrap" },
-        2: { cellWidth: "wrap" },
-        3: { cellWidth: "wrap" },
-        4: { cellWidth: "wrap" },
-        5: { cellWidth: "wrap" },
-        6: { cellWidth: "wrap" },
-        7: { cellWidth: "wrap" },
-        8: { cellWidth: "wrap" },
-        9: { cellWidth: "wrap" },
-        10: { cellWidth: "wrap" },
-      },
-    });
+  //   doc.autoTable({
+  //     head: [tableColumn],
+  //     body: tableRows,
+  //     startY: 25,
+  //     styles: { fontSize: 7 },
+  //     columnStyles: {
+  //       0: { cellWidth: "wrap" },
+  //       1: { cellWidth: "wrap" },
+  //       2: { cellWidth: "wrap" },
+  //       3: { cellWidth: "wrap" },
+  //       4: { cellWidth: "wrap" },
+  //       5: { cellWidth: "wrap" },
+  //       6: { cellWidth: "wrap" },
+  //       7: { cellWidth: "wrap" },
+  //       8: { cellWidth: "wrap" },
+  //       9: { cellWidth: "wrap" },
+  //       10: { cellWidth: "wrap" },
+  //     },
+  //   });
 
-    doc.save(`Residents of Barangay ${brgy}.pdf`);
-  };
+  //   doc.save(`Residents of Barangay ${brgy}.pdf`);
+  // };
 
-  const handleStatusFilter = (selectedStatus) => {
-    setStatusFilter(selectedStatus);
-    // Pass minAge and maxAge to filterResidents function
-    filterResidents(selectedStatus, minAge, maxAge);
-  };
+  // const handleStatusFilter = (selectedStatus) => {
+  //   setStatusFilter(selectedStatus);
+  //   // Pass minAge and maxAge to filterResidents function
+  //   filterResidents(selectedStatus, minAge, maxAge);
+  // };
 
-  const handleVoterFilter = (status) => {
-    setIsVoterFilter((prev) => (status === "all" ? [] : [status]));
-  };
+  // const handleVoterFilter = (status) => {
+  //   setIsVoterFilter((prev) => (status === "all" ? [] : [status]));
+  // };
 
-  const handleHeadFilter = (status) => {
-    setIsHeadFilter((prev) => (status === "all" ? [] : [status]));
-  };
+  // const handleHeadFilter = (status) => {
+  //   setIsHeadFilter((prev) => (status === "all" ? [] : [status]));
+  // };
 
-  const handleCivilStatusFilter = (status) => {
-    setCivilStatusFilter((prev) => {
-      if (prev.includes(status)) {
-        return prev.filter((s) => s !== status);
-      } else {
-        return [...prev, status];
-      }
-    });
-  };
+  // const handleCivilStatusFilter = (status) => {
+  //   setCivilStatusFilter((prev) => {
+  //     if (prev.includes(status)) {
+  //       return prev.filter((s) => s !== status);
+  //     } else {
+  //       return [...prev, status];
+  //     }
+  //   });
+  // };
 
-  // Create a new function to filter residents based on status and age
-  const filterResidents = (selectedStatus, minAge, maxAge) => {
-    let filteredData = newUsers;
-    // Filter by status
-    filteredData = filteredData.filter((item) =>
-      selectedStatus === "all" ? true : item.isApproved === selectedStatus
-    );
-    // Filter by age range
-    if (minAge && maxAge) {
-      filteredData = filteredData.filter(
-        (item) => item.age >= minAge && item.age <= maxAge
-      );
-    }
-    // Update filtered residents state
-    setFilteredResidents(filteredData);
-  };
+  // // Create a new function to filter residents based on status and age
+  // const filterResidents = (selectedStatus, minAge, maxAge) => {
+  //   let filteredData = newUsers;
+  //   // Filter by status
+  //   filteredData = filteredData.filter((item) =>
+  //     selectedStatus === "all" ? true : item.isApproved === selectedStatus
+  //   );
+  //   // Filter by age range
+  //   if (minAge && maxAge) {
+  //     filteredData = filteredData.filter(
+  //       (item) => item.age >= minAge && item.age <= maxAge
+  //     );
+  //   }
+  //   // Update filtered residents state
+  //   setFilteredResidents(filteredData);
+  // };
 
   return (
     <div className="mx-4 mt-4">
@@ -566,7 +566,7 @@ const Residents = () => {
                   type="button"
                   className=" sm:w-full md:w-full bg-teal-700 sm:mt-2 md:mt-0 text-white hs-dropdown-toggle py-1 px-5 inline-flex justify-center items-center gap-2 rounded-md  font-medium shadow-sm align-middle transition-all text-sm  "
                   style={{ backgroundColor: information?.theme?.primary }}
-                  onClick={handleToggleDropdown}
+                  // onClick={handleToggleDropdown}
                 >
                   FILTERS
                   <svg
@@ -591,7 +591,7 @@ const Residents = () => {
                 {isOpen && (
                  <div className="absolute top-full bg-gray-100 border-2 border-[#ffb13c] hs-dropdown-menu w-72 shadow-xl rounded-xl p-2 overflow-hidden z-10">
                     <a
-                      onClick={handleResetFilter}
+                      // onClick={handleResetFilter}
                       className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                       href="#"
                     >
@@ -603,11 +603,11 @@ const Residents = () => {
                       <div className="flex flex-row gap-1 items-center">
                         <input
                           type="checkbox"
-                          onChange={(e) =>
-                            handleVoterFilter(
-                              e.target.checked ? "true" : "false"
-                            )
-                          }
+                          // onChange={(e) =>
+                          //   handleVoterFilter(
+                          //     e.target.checked ? "true" : "false"
+                          //   )
+                          // }
                           className="form-checkbox h-5 w-5 text-blue-600"
                         />
                         <label> REGISTERED VOTER ({isVoterFilter})</label>
@@ -616,11 +616,11 @@ const Residents = () => {
                       <div className="flex flex-row gap-1 items-center">
                         <input
                           type="checkbox"
-                          onChange={(e) =>
-                            handleHeadFilter(
-                              e.target.checked ? "true" : "false"
-                            )
-                          }
+                          // onChange={(e) =>
+                          //   handleHeadFilter(
+                          //     e.target.checked ? "true" : "false"
+                          //   )
+                          // }
                           className="form-checkbox h-5 w-5 text-blue-600"
                         />
                         HEAD OF THE FAMILY ({isHeadFilter})
@@ -647,7 +647,7 @@ const Residents = () => {
                         >
                           <input
                             type="checkbox"
-                            onChange={() => handleCivilStatusFilter(status)}
+                            // onChange={() => handleCivilStatusFilter(status)}
                             checked={civilStatusFilter.includes(status)}
                             className="form-checkbox h-5 w-5 text-blue-600"
                           />
@@ -693,7 +693,7 @@ const Residents = () => {
                           type="number"
                           id="min-age"
                           value={minAge}
-                          onChange={(e) => setMinAge(e.target.value)}
+                          // onChange={(e) => setMinAge(e.target.value)}
                           className="border rounded-md w-[50%] px-2 py-1 focus:outline-none focus:ring focus:border-blue-300"
                         />
                         <label className="font-medium"> - </label>
@@ -701,7 +701,7 @@ const Residents = () => {
                           type="number"
                           id="max-age"
                           value={maxAge}
-                          onChange={(e) => setMaxAge(e.target.value)}
+                          // onChange={(e) => setMaxAge(e.target.value)}
                           className="border rounded-md w-[50%] px-2 py-1 focus:outline-none focus:ring focus:border-blue-300"
                         />
                       </div>
@@ -742,7 +742,7 @@ const Residents = () => {
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    onClick={handleResetFilter}
+                    // onClick={handleResetFilter}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -750,7 +750,7 @@ const Residents = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <li
-                    onClick={() => handleStatusFilter("For Review")}
+                    // onClick={() => handleStatusFilter("For Review")}
                     className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
                       statusFilter === "For Review" && "bg-[#b3c5cc]"
                     }`}
@@ -758,7 +758,7 @@ const Residents = () => {
                     FOR REVIEW
                   </li>
                   <li
-                    onClick={() => handleStatusFilter("Rejected")}
+                    // onClick={() => handleStatusFilter("Rejected")}
                     className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
                       statusFilter === "Denied" && "bg-[#b3c5cc]"
                     }`}
@@ -766,7 +766,7 @@ const Residents = () => {
                     REJECTED
                   </li>
                   <li
-                    onClick={() => handleStatusFilter("Partially Verified")}
+                    // onClick={() => handleStatusFilter("Partially Verified")}
                     className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
                       statusFilter === "Verified" && "bg-[#b3c5cc]"
                     }`}
@@ -774,7 +774,7 @@ const Residents = () => {
                     PARTIALLY VERIFIED
                   </li>
                   <li
-                    onClick={() => handleStatusFilter("Fully Verified")}
+                    // onClick={() => handleStatusFilter("Fully Verified")}
                     className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
                       statusFilter === "Verified" && "bg-[#b3c5cc]"
                     }`}
@@ -819,18 +819,18 @@ const Residents = () => {
                     <a
                       className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
-                      onClick={
-                        exportToExcel // Export immediately after selection
-                      }
+                      // onClick={
+                      //   exportToExcel // Export immediately after selection
+                      // }
                     >
                       Export to Excel
                     </a>
                     <a
                       className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                       href="#"
-                      onClick={
-                        exportToPDF // Export immediately after selection
-                      }
+                      // onClick={
+                      //   exportToPDF // Export immediately after selection
+                      // }
                     >
                       Export to PDF
                     </a>
@@ -870,8 +870,8 @@ const Residents = () => {
                   id="hs-table-with-pagination-search"
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
+                  // value={searchQuery}
+                  // onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center space-x-2">
@@ -1022,7 +1022,7 @@ const Residents = () => {
                           <button
                             type="button"
                             data-hs-overlay="#hs-modal-statusResident"
-                            onClick={() => handleCombinedActions(item)}
+                            // onClick={() => handleCombinedActions(item)}
                             className="hs-tooltip-toggle text-white bg-yellow-600 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                           >
                             <FiEdit size={24} style={{ color: "#ffffff" }} />
@@ -1038,7 +1038,7 @@ const Residents = () => {
                           <button
                             type="button"
                             data-hs-overlay="#hs-modal-messageResident"
-                            onClick={() => handleCombinedActions(item)}
+                            // onClick={() => handleCombinedActions(item)}
                             className="hs-tooltip-toggle text-white bg-red-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                           >
                             <FiMail size={24} style={{ color: "#ffffff" }} />
@@ -1082,7 +1082,7 @@ const Residents = () => {
           <ReactPaginate
             breakLabel="..."
             nextLabel=">>"
-            onPageChange={handlePageChange}
+            // onPageChange={handlePageChange}
             pageRangeDisplayed={3}
             pageCount={pageCount}
             previousLabel="<<"

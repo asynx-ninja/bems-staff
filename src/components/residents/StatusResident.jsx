@@ -31,146 +31,146 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket, id }) 
     }
   };
 
-  const handleSave = async (e) => {
-    try {
-      e.preventDefault();
-      setSubmitClicked(true);
-      setError(null); // Reset error state
+  // const handleSave = async (e) => {
+  //   try {
+  //     e.preventDefault();
+  //     setSubmitClicked(true);
+  //     setError(null); // Reset error state
 
-      const response = await axios.patch(
-        `${API_LINK}/users/status/${status.id}`,
-        {
-          isApproved: status.status,
-        },
-        { headers: { "Content-Type": "application/json" } }
-      );
+  //     const response = await axios.patch(
+  //       `${API_LINK}/users/status/${status.id}`,
+  //       {
+  //         isApproved: status.status,
+  //       },
+  //       { headers: { "Content-Type": "application/json" } }
+  //     );
 
-      if (response.status === 200) {
-        const getIP = async () => {
-          const response = await fetch(
-            "https://api64.ipify.org?format=json"
-          );
-          const data = await response.json();
-          return data.ip;
-        };
-        ;
-        const ip = await getIP(); // Retrieve IP address
-        const logsData = {
-          action: "Updated",
-          details: `Updated the account status of the resident ${user.firstName} ${user.lastName}`,
-          ip: ip,
-        };
+  //     if (response.status === 200) {
+  //       const getIP = async () => {
+  //         const response = await fetch(
+  //           "https://api64.ipify.org?format=json"
+  //         );
+  //         const data = await response.json();
+  //         return data.ip;
+  //       };
+  //       ;
+  //       const ip = await getIP(); // Retrieve IP address
+  //       const logsData = {
+  //         action: "Updated",
+  //         details: `Updated the account status of the resident ${user.firstName} ${user.lastName}`,
+  //         ip: ip,
+  //       };
 
-        const logsResult = await axios.post(
-          `${API_LINK}/act_logs/add_logs/?id=${id}`,
-          logsData
-        );
-        if (logsResult.status === 200) {
-          socket.emit("send-update-status-resident", response.data);
-          // Check if the status is "Registered" before sending notification
-          if (status.status === "Verified") {
-            const notify = {
-              category: "One",
-              compose: {
-                subject: `ACCOUNT ACTIVATION SUCCESSFUL!`,
-                message: `Welcome! Congratulations on successfully activating your account! We're delighted to welcome you to our community. You may now access the system!\n\n`,
-                go_to: null,
-              },
-              target: {
-                user_id: user.user_id,
-                area: brgy,
-              },
-              type: "Resident",
-              banner: banner,
-              logo: logo,
-            };
+  //       const logsResult = await axios.post(
+  //         `${API_LINK}/act_logs/add_logs/?id=${id}`,
+  //         logsData
+  //       );
+  //       if (logsResult.status === 200) {
+  //         socket.emit("send-update-status-resident", response.data);
+  //         // Check if the status is "Registered" before sending notification
+  //         if (status.status === "Verified") {
+  //           const notify = {
+  //             category: "One",
+  //             compose: {
+  //               subject: `ACCOUNT ACTIVATION SUCCESSFUL!`,
+  //               message: `Welcome! Congratulations on successfully activating your account! We're delighted to welcome you to our community. You may now access the system!\n\n`,
+  //               go_to: null,
+  //             },
+  //             target: {
+  //               user_id: user.user_id,
+  //               area: brgy,
+  //             },
+  //             type: "Resident",
+  //             banner: banner,
+  //             logo: logo,
+  //           };
 
-            const result = await axios.post(`${API_LINK}/notification/`, notify, {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            });
+  //           const result = await axios.post(`${API_LINK}/notification/`, notify, {
+  //             headers: {
+  //               "Content-Type": "application/json",
+  //             },
+  //           });
 
-            if (result.status === 200) {
-              socket.emit("send-resident-notif", result.data);
+  //           if (result.status === 200) {
+  //             socket.emit("send-resident-notif", result.data);
 
-              setTimeout(() => {
-                setSubmitClicked(false);
-                setUpdatingStatus("success");
-                setTimeout(() => {
-                  setSubmitClicked(null);
-                  setUpdatingStatus(null);
-                  HSOverlay.close(
-                    document.getElementById("hs-modal-statusResident")
-                  );
-                }, 3000);
-              }, 1000);
-            }
-          } else if (status.status === "Registered") {
-            const notify = {
-              category: "One",
-              compose: {
-                subject: `ACCOUNT ACTIVATION SUCCESSFUL!`,
-                message: `Welcome! You may now access limited features (Inquiries, Dashboard, and Barangay Information) of the system!\n 
-              You may verify your account to gain access to all available features!
-              \n\n`,
-                go_to: null,
-              },
-              target: {
-                user_id: user.user_id,
-                area: brgy,
-              },
-              type: "Resident",
-              banner: banner,
-              logo: logo,
-            };
+  //             setTimeout(() => {
+  //               setSubmitClicked(false);
+  //               setUpdatingStatus("success");
+  //               setTimeout(() => {
+  //                 setSubmitClicked(null);
+  //                 setUpdatingStatus(null);
+  //                 HSOverlay.close(
+  //                   document.getElementById("hs-modal-statusResident")
+  //                 );
+  //               }, 3000);
+  //             }, 1000);
+  //           }
+  //         } else if (status.status === "Registered") {
+  //           const notify = {
+  //             category: "One",
+  //             compose: {
+  //               subject: `ACCOUNT ACTIVATION SUCCESSFUL!`,
+  //               message: `Welcome! You may now access limited features (Inquiries, Dashboard, and Barangay Information) of the system!\n 
+  //             You may verify your account to gain access to all available features!
+  //             \n\n`,
+  //               go_to: null,
+  //             },
+  //             target: {
+  //               user_id: user.user_id,
+  //               area: brgy,
+  //             },
+  //             type: "Resident",
+  //             banner: banner,
+  //             logo: logo,
+  //           };
 
-            const result = await axios.post(`${API_LINK}/notification/`, notify, {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            });
+  //           const result = await axios.post(`${API_LINK}/notification/`, notify, {
+  //             headers: {
+  //               "Content-Type": "application/json",
+  //             },
+  //           });
 
-            if (result.status === 200) {
+  //           if (result.status === 200) {
 
-              setSubmitClicked(null);
-              setUpdatingStatus(null);
-              setTimeout(() => {
-                HSOverlay.close(
-                  document.getElementById("hs-modal-statusResident")
-                );
-              }, 3000);
-            }
-          } else {
-            // Status is not "Registered", proceed without sending notification
-            setTimeout(() => {
-              setSubmitClicked(null);
-              setUpdatingStatus(null);
-              setTimeout(() => {
-                HSOverlay.close(
-                  document.getElementById("hs-modal-statusResident")
-                );
-              }, 3000);
-            }, 1000);
-          }
-        } else {
-          // Handle other status codes if needed
-        }
-      }
-    } catch (err) {
-      console.log(err);
-      setSubmitClicked(false);
-      setUpdatingStatus("error");
-      setError("An error occurred while updating the inquiry.");
-    }
-  };
+  //             setSubmitClicked(null);
+  //             setUpdatingStatus(null);
+  //             setTimeout(() => {
+  //               HSOverlay.close(
+  //                 document.getElementById("hs-modal-statusResident")
+  //               );
+  //             }, 3000);
+  //           }
+  //         } else {
+  //           // Status is not "Registered", proceed without sending notification
+  //           setTimeout(() => {
+  //             setSubmitClicked(null);
+  //             setUpdatingStatus(null);
+  //             setTimeout(() => {
+  //               HSOverlay.close(
+  //                 document.getElementById("hs-modal-statusResident")
+  //               );
+  //             }, 3000);
+  //           }, 1000);
+  //         }
+  //       } else {
+  //         // Handle other status codes if needed
+  //       }
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //     setSubmitClicked(false);
+  //     setUpdatingStatus("error");
+  //     setError("An error occurred while updating the inquiry.");
+  //   }
+  // };
 
-  const handleOnChange = (e) => {
-    setStatus((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
+  // const handleOnChange = (e) => {
+  //   setStatus((prev) => ({
+  //     ...prev,
+  //     [e.target.name]: e.target.value,
+  //   }));
+  // };
 
   return (
     <div>
@@ -210,7 +210,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket, id }) 
                         </label>
                         <select
                           id="civilStatus"
-                          onChange={handleOnChange}
+                          // onChange={handleOnChange}
                           name="status"
                           className="w-full mt-3 p-2 border border-gray-300 rounded"
                           value={status.status}
@@ -230,7 +230,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket, id }) 
                 <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
                   <button
                     type="button"
-                    onClick={handleSave}
+                    // onClick={handleSave}
                     className="h-[2.5rem] w-full md:w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm align-middle"
                   >
                     SAVE CHANGES

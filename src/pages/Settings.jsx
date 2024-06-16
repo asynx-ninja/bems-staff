@@ -88,407 +88,408 @@ const Settings = () => {
     },
   });
 
-  const handleFileChange = (e) => {
-    e.preventDefault();
+  // const handleFileChange = (e) => {
+  //   e.preventDefault();
 
-    setPfp(e.target.files[0]);
+  //   setPfp(e.target.files[0]);
 
-    var output = document.getElementById("pfp");
-    output.src = URL.createObjectURL(e.target.files[0]);
-    output.onload = function () {
-      URL.revokeObjectURL(output.src); // free memory
-    };
-  };
+  //   var output = document.getElementById("pfp");
+  //   output.src = URL.createObjectURL(e.target.files[0]);
+  //   output.onload = function () {
+  //     URL.revokeObjectURL(output.src); // free memory
+  //   };
+  // };
 
-  useEffect(() => {
-    const fetch = async () => {
-      try {
-        const res = await axios.get(`${API_LINK}/users/specific/${id}`);
-        if (res.status === 200) {
-          setUserData(res.data[0]);
-          setUserAddress({
-            street: res.data[0].address.street,
-            brgy: res.data[0].address.brgy,
-            city: res.data[0].address.city,
-          });
-          setUserCred({
-            username: res.data[0].username,
-            oldPass: "",
-            newPass: "",
-          });
-          setUserSocials({
-            facebook: {
-              name: res.data[0].socials.facebook.name,
-              link: res.data[0].socials.facebook.link,
-            },
-            instagram: {
-              name: res.data[0].socials.instagram.name,
-              link: res.data[0].socials.instagram.link,
-            },
-            twitter: {
-              name: res.data[0].socials.twitter.name,
-              link: res.data[0].socials.twitter.link,
-            },
-          });
-          var pfpSrc = document.getElementById("pfp");
-          pfpSrc.src =
-            res.data[0].profile.link !== ""
-              ? res.data[0].profile.link
-              : defaultPFP;
-        } else {
-          setError("Invalid username or password");
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetch();
-  }, [id]);
+  // useEffect(() => {
+  //   const fetch = async () => {
+  //     try {
+  //       const res = await axios.get(`${API_LINK}/users/specific/${id}`);
+  //       if (res.status === 200) {
+  //         setUserData(res.data[0]);
+  //         setUserAddress({
+  //           street: res.data[0].address.street,
+  //           brgy: res.data[0].address.brgy,
+  //           city: res.data[0].address.city,
+  //         });
+  //         setUserCred({
+  //           username: res.data[0].username,
+  //           oldPass: "",
+  //           newPass: "",
+  //         });
+  //         setUserSocials({
+  //           facebook: {
+  //             name: res.data[0].socials.facebook.name,
+  //             link: res.data[0].socials.facebook.link,
+  //           },
+  //           instagram: {
+  //             name: res.data[0].socials.instagram.name,
+  //             link: res.data[0].socials.instagram.link,
+  //           },
+  //           twitter: {
+  //             name: res.data[0].socials.twitter.name,
+  //             link: res.data[0].socials.twitter.link,
+  //           },
+  //         });
+  //         var pfpSrc = document.getElementById("pfp");
+  //         pfpSrc.src =
+  //           res.data[0].profile.link !== ""
+  //             ? res.data[0].profile.link
+  //             : defaultPFP;
+  //       } else {
+  //         setError("Invalid username or password");
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetch();
+  // }, [id]);
 
-  useEffect(() => {
-    const handleProfile = (get_profile) => {
-      setUserData(get_profile);
-      setUserData((curItem) =>
-        curItem.map((item) =>
-          item._id === get_profile._id ? get_profile : item
-        )
-      );
-    };
+  // useEffect(() => {
+  //   const handleProfile = (get_profile) => {
+  //     setUserData(get_profile);
+  //     setUserData((curItem) =>
+  //       curItem.map((item) =>
+  //         item._id === get_profile._id ? get_profile : item
+  //       )
+  //     );
+  //   };
 
-    socket.on("receive-update-staff", handleProfile);
+  //   socket.on("receive-update-staff", handleProfile);
 
-    return () => {
-      socket.off("receive-update-profile", handleProfile);
-    };
-  }, [socket, setUserData]);
+  //   return () => {
+  //     socket.off("receive-update-profile", handleProfile);
+  //   };
+  // }, [socket, setUserData]);
 
-  useEffect(() => {
-    document.title = "Settings | Barangay E-Services Management";
-  }, []);
+  // useEffect(() => {
+  //   document.title = "Settings | Barangay E-Services Management";
+  // }, []);
 
-  const handleUserDataChange = (field, value) => {
-    setUserData({ ...userData, [field]: value });
-  };
+  // const handleUserDataChange = (field, value) => {
+  //   setUserData({ ...userData, [field]: value });
+  // };
 
-  const handleUserChangeAdd = (field, value) => {
-    setUserAddress((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
+  // const handleUserChangeAdd = (field, value) => {
+  //   setUserAddress((prev) => ({
+  //     ...prev,
+  //     [field]: value,
+  //   }));
+  // };
 
-  const handleUserChangeCred = (field, value) => {
-    setUserCred((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  // const handleUserChangeCred = (field, value) => {
+  //   setUserCred((prev) => ({
+  //     ...prev,
+  //     [field]: value,
+  //   }));
 
-    if (field === "newPass") {
-      const password = value;
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/;
-      const symbolRegex = /[@$!%*?&]/;
+  //   if (field === "newPass") {
+  //     const password = value;
+  //     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/;
+  //     const symbolRegex = /[@$!%*?&]/;
 
-      if (!passwordRegex.test(password) || !symbolRegex.test(password)) {
-        setPasswordStrengthError(true);
-        setPasswordStrengthSuccess(false);
-      } else {
-        setPasswordStrengthError(false);
-        setPasswordStrengthSuccess(true);
-      }
-      // Check if passwords match
+  //     if (!passwordRegex.test(password) || !symbolRegex.test(password)) {
+  //       setPasswordStrengthError(true);
+  //       setPasswordStrengthSuccess(false);
+  //     } else {
+  //       setPasswordStrengthError(false);
+  //       setPasswordStrengthSuccess(true);
+  //     }
+  //     // Check if passwords match
 
-      let strength = 0;
-      if (password.length >= 8) strength++;
-      if (/[A-Z]/.test(password)) strength++;
-      if (/[a-z]/.test(password)) strength++;
-      if (/\d/.test(password)) strength++;
-      setPasswordStrength(strength * 25);
-    }
-  };
+  //     let strength = 0;
+  //     if (password.length >= 8) strength++;
+  //     if (/[A-Z]/.test(password)) strength++;
+  //     if (/[a-z]/.test(password)) strength++;
+  //     if (/\d/.test(password)) strength++;
+  //     setPasswordStrength(strength * 25);
+  //   }
+  // };
 
-  const handleUserSocials = (social, subsocial, value) => {
-    setUserSocials({
-      ...userSocials,
-      [social]: {
-        ...userSocials[social],
-        [subsocial]: value,
-      },
-    });
-  };
+  // const handleUserSocials = (social, subsocial, value) => {
+  //   setUserSocials({
+  //     ...userSocials,
+  //     [social]: {
+  //       ...userSocials[social],
+  //       [subsocial]: value,
+  //     },
+  //   });
+  // };
 
-  const saveChanges = async (e) => {
-    if (
-      !userData.firstName.trim() ||
-      !userData.lastName.trim() ||
-      !userData.firstName.trim() ||
-      !userData.birthday.trim() ||
-      !userData.email.trim() ||
-      !userData.contact.trim() ||
-      !userAddress.street.trim()
-    ) {
-      setError("Please fill out all required fields.");
-      return; // Prevent further execution of handleSubmit
-    }
+  // const saveChanges = async (e) => {
+  //   if (
+  //     !userData.firstName.trim() ||
+  //     !userData.lastName.trim() ||
+  //     !userData.firstName.trim() ||
+  //     !userData.birthday.trim() ||
+  //     !userData.email.trim() ||
+  //     !userData.contact.trim() ||
+  //     !userAddress.street.trim()
+  //   ) {
+  //     setError("Please fill out all required fields.");
+  //     return; // Prevent further execution of handleSubmit
+  //   }
 
-    const obj = {
-      firstName: userData.firstName,
-      middleName: userData.middleName,
-      lastName: userData.lastName,
-      suffix: userData.suffix,
-      religion: userData.religion,
-      email: userData.email,
-      birthday: userData.birthday,
-      age: userData.age,
-      contact: userData.contact,
-      sex: userData.sex,
-      address: {
-        street: userAddress.street,
-        brgy: userAddress.brgy,
-        city: userAddress.city,
-      },
-      occupation: userData.occupation,
-      civil_status: userData.civil_status,
-      type: userData.type,
-      isVoter: userData.isVoter,
-      isHead: userData.isHead,
-      username: userData.username,
-      profile: userData.profile,
-      socials: {
-        facebook: userSocials.facebook,
-        instagram: userSocials.instagram,
-        twitter: userSocials.twitter,
-      },
-    };
+  //   const obj = {
+  //     firstName: userData.firstName,
+  //     middleName: userData.middleName,
+  //     lastName: userData.lastName,
+  //     suffix: userData.suffix,
+  //     religion: userData.religion,
+  //     email: userData.email,
+  //     birthday: userData.birthday,
+  //     age: userData.age,
+  //     contact: userData.contact,
+  //     sex: userData.sex,
+  //     address: {
+  //       street: userAddress.street,
+  //       brgy: userAddress.brgy,
+  //       city: userAddress.city,
+  //     },
+  //     occupation: userData.occupation,
+  //     civil_status: userData.civil_status,
+  //     type: userData.type,
+  //     isVoter: userData.isVoter,
+  //     isHead: userData.isHead,
+  //     username: userData.username,
+  //     profile: userData.profile,
+  //     socials: {
+  //       facebook: userSocials.facebook,
+  //       instagram: userSocials.instagram,
+  //       twitter: userSocials.twitter,
+  //     },
+  //   };
 
-    try {
-      var formData = new FormData();
-      formData.append("users", JSON.stringify(obj));
-      formData.append("file", pfp);
-      const res_folder = await axios.get(
-        `${API_LINK}/folder/specific/?brgy=${brgy}`
-      );
+  //   try {
+  //     var formData = new FormData();
+  //     formData.append("users", JSON.stringify(obj));
+  //     formData.append("file", pfp);
+  //     const res_folder = await axios.get(
+  //       `${API_LINK}/folder/specific/?brgy=${brgy}`
+  //     );
 
-      if (res_folder.status === 200) {
-        const response = await axios.patch(
-          `${API_LINK}/users/?doc_id=${id}&folder_id=${res_folder.data[0].pfp}`,
-          formData
-        );
+  //     if (res_folder.status === 200) {
+  //       const response = await axios.patch(
+  //         `${API_LINK}/users/?doc_id=${id}&folder_id=${res_folder.data[0].pfp}`,
+  //         formData
+  //       );
 
-        // CHANGE USERNAME
-        if (activeButton.credential === true) {
-          if (
-            userData.username &&
-            userCred.username &&
-            userData.username !== userCred.username
-          ) {
-            if (!userCred.username || !userCred.oldPass) {
-              setMessage({
-                display: false,
-              });
-              setError("Please provide both the new username and password.");
-              return; // Prevent further execution
-            }
-            changeCredentials(
-              userData.username,
-              userCred.username,
-              userCred.oldPass,
-              userCred.newPass
-            );
-          }
-        } else if (activeButton.pass === true) {
-          if (userCred.newPass !== "" || userCred.oldPass !== "") {
-            if (!userCred.newPass || !userCred.oldPass) {
-              setMessage({
-                display: false,
-              });
-              setError("Please provide both the new username and password.");
-              return; // Prevent further execution
-            }
-            changeCredentials(
-              userData.username,
-              userCred.username,
-              userCred.oldPass,
-              userCred.newPass
-            );
-          }
-        } else if (response.status === 200) {
-          setSubmitClicked(true);
-          setError(null);
-          setUserData(response.data);
-          setUserAddress({
-            street: response.data.address.street,
-            brgy: response.data.address.brgy,
-            city: response.data.address.city,
-          });
-          setUserSocials({
-            facebook: response.data.socials.facebook,
-            instagram: response.data.socials.instagram,
-            twitter: response.data.socials.twitter,
-          });
-          setEditButton(true);
-          const getIP = async () => {
-            const response = await fetch("https://api64.ipify.org?format=json");
-            const data = await response.json();
-            return data.ip;
-          };
+  //       // CHANGE USERNAME
+  //       if (activeButton.credential === true) {
+  //         if (
+  //           userData.username &&
+  //           userCred.username &&
+  //           userData.username !== userCred.username
+  //         ) {
+  //           if (!userCred.username || !userCred.oldPass) {
+  //             setMessage({
+  //               display: false,
+  //             });
+  //             setError("Please provide both the new username and password.");
+  //             return; // Prevent further execution
+  //           }
+  //           changeCredentials(
+  //             userData.username,
+  //             userCred.username,
+  //             userCred.oldPass,
+  //             userCred.newPass
+  //           );
+  //         }
+  //       } else if (activeButton.pass === true) {
+  //         if (userCred.newPass !== "" || userCred.oldPass !== "") {
+  //           if (!userCred.newPass || !userCred.oldPass) {
+  //             setMessage({
+  //               display: false,
+  //             });
+  //             setError("Please provide both the new username and password.");
+  //             return; // Prevent further execution
+  //           }
+  //           changeCredentials(
+  //             userData.username,
+  //             userCred.username,
+  //             userCred.oldPass,
+  //             userCred.newPass
+  //           );
+  //         }
+  //       } else if (response.status === 200) {
+  //         setSubmitClicked(true);
+  //         setError(null);
+  //         setUserData(response.data);
+  //         setUserAddress({
+  //           street: response.data.address.street,
+  //           brgy: response.data.address.brgy,
+  //           city: response.data.address.city,
+  //         });
+  //         setUserSocials({
+  //           facebook: response.data.socials.facebook,
+  //           instagram: response.data.socials.instagram,
+  //           twitter: response.data.socials.twitter,
+  //         });
+  //         setEditButton(true);
+  //         const getIP = async () => {
+  //           const response = await fetch("https://api64.ipify.org?format=json");
+  //           const data = await response.json();
+  //           return data.ip;
+  //         };
 
-          const ip = await getIP(); // Retrieve IP address
+  //         const ip = await getIP(); // Retrieve IP address
 
-          const logsData = {
-            action: "Updated",
-            details: `The barangay user ${userData.firstName} ${userData.lastName} updated their account information.`,
-            ip: ip,
-          };
+  //         const logsData = {
+  //           action: "Updated",
+  //           details: `The barangay user ${userData.firstName} ${userData.lastName} updated their account information.`,
+  //           ip: ip,
+  //         };
 
-          const logsResult = await axios.post(
-            `${API_LINK}/act_logs/add_logs/?id=${id}`,
-            logsData
-          );
-          if (logsResult.status === 200) {
-            socket.emit("send-update-profile", response.data);
+  //         const logsResult = await axios.post(
+  //           `${API_LINK}/act_logs/add_logs/?id=${id}`,
+  //           logsData
+  //         );
+  //         if (logsResult.status === 200) {
+  //           socket.emit("send-update-profile", response.data);
 
-            setSubmitClicked(false);
-            setUpdatingStatus("success");
-            setTimeout(() => {
-              setUpdatingStatus(null);
-              // window.location.reload();
-            }, 3000);
-          }
-        } else {
-          console.error("Update failed. Status:", response.status);
-        }
-      }
-    } catch (error) {
-      console.error("Error saving changes:", error);
-      setSubmitClicked(false);
-      setUpdatingStatus(null);
-      setError(
-        error.response
-          ? error.response.data.message
-          : "An unknown error occurred"
-      );
-    }
-  };
+  //           setSubmitClicked(false);
+  //           setUpdatingStatus("success");
+  //           setTimeout(() => {
+  //             setUpdatingStatus(null);
+  //             // window.location.reload();
+  //           }, 3000);
+  //         }
+  //       } else {
+  //         console.error("Update failed. Status:", response.status);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Error saving changes:", error);
+  //     setSubmitClicked(false);
+  //     setUpdatingStatus(null);
+  //     setError(
+  //       error.response
+  //         ? error.response.data.message
+  //         : "An unknown error occurred"
+  //     );
+  //   }
+  // };
 
-  const changeCredentials = async (
-    oldUsername,
-    newUsername,
-    oldPassword,
-    newPassword
-  ) => {
-    try {
-      const user = {
-        username: newUsername !== oldUsername ? newUsername : oldUsername,
-        password: newPassword !== "" ? newPassword : oldPassword,
-      };
+  // const changeCredentials = async (
+  //   oldUsername,
+  //   newUsername,
+  //   oldPassword,
+  //   newPassword
+  // ) => {
+  //   try {
+  //     const user = {
+  //       username: newUsername !== oldUsername ? newUsername : oldUsername,
+  //       password: newPassword !== "" ? newPassword : oldPassword,
+  //     };
 
-      const response = await axios.get(
-        `${API_LINK}/auth/${oldUsername}/${oldPassword}`
-      );
+  //     const response = await axios.get(
+  //       `${API_LINK}/auth/${oldUsername}/${oldPassword}`
+  //     );
 
-      if (response.status === 200) {
-        setSubmitClicked(true);
-        setError(null);
-        await axios.patch(`${API_LINK}/auth/${id}`, user);
-        setMessage({
-          display: true,
-          success: true,
-          error: false,
-          message: "Success!",
-        });
-        setTimeout(() => {
-          setSubmitClicked(false);
-          setUpdatingStatus("success");
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
-        }, 1000);
-      }
-    } catch (err) {
-      setError(null);
-      setMessage({
-        display: true,
-        success: false,
-        error: true,
-        message: "The password you entered is incorrect",
-      });
-      setSubmitClicked(false);
-      setUpdatingStatus(null);
-      // setError("The password you entered is incorrect");
-    }
-  };
+  //     if (response.status === 200) {
+  //       setSubmitClicked(true);
+  //       setError(null);
+  //       await axios.patch(`${API_LINK}/auth/${id}`, user);
+  //       setMessage({
+  //         display: true,
+  //         success: true,
+  //         error: false,
+  //         message: "Success!",
+  //       });
+  //       setTimeout(() => {
+  //         setSubmitClicked(false);
+  //         setUpdatingStatus("success");
+  //         setTimeout(() => {
+  //           window.location.reload();
+  //         }, 3000);
+  //       }, 1000);
+  //     }
+  //   } catch (err) {
+  //     setError(null);
+  //     setMessage({
+  //       display: true,
+  //       success: false,
+  //       error: true,
+  //       message: "The password you entered is incorrect",
+  //     });
+  //     setSubmitClicked(false);
+  //     setUpdatingStatus(null);
+  //     // setError("The password you entered is incorrect");
+  //   }
+  // };
 
-  const birthdayFormat = (date) => {
-    const birthdate = date === undefined ? "" : date.substr(0, 10);
-    return birthdate;
-  };
+  // const birthdayFormat = (date) => {
+  //   const birthdate = date === undefined ? "" : date.substr(0, 10);
+  //   return birthdate;
+  // };
 
-  const calculateAge = (birthDate) => {
-    const today = new Date();
-    const birthDateObj = new Date(birthDate);
-    let age = today.getFullYear() - birthDateObj.getFullYear();
-    const monthDiff = today.getMonth() - birthDateObj.getMonth();
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birthDateObj.getDate())
-    ) {
-      age--;
-    }
+  // const calculateAge = (birthDate) => {
+  //   const today = new Date();
+  //   const birthDateObj = new Date(birthDate);
+  //   let age = today.getFullYear() - birthDateObj.getFullYear();
+  //   const monthDiff = today.getMonth() - birthDateObj.getMonth();
+  //   if (
+  //     monthDiff < 0 ||
+  //     (monthDiff === 0 && today.getDate() < birthDateObj.getDate())
+  //   ) {
+  //     age--;
+  //   }
 
-    return age;
-  };
+  //   return age;
+  // };
 
-  const handleOnActive = (e) => {
-    if (e.target.name === "personal") {
-      setActiveButton({
-        personal: true,
-        credential: false,
-        pass: false,
-      });
-    }
+  // const handleOnActive = (e) => {
+  //   if (e.target.name === "personal") {
+  //     setActiveButton({
+  //       personal: true,
+  //       credential: false,
+  //       pass: false,
+  //     });
+  //   }
 
-    if (e.target.name === "credential") {
-      setActiveButton({
-        personal: false,
-        credential: true,
-        pass: false,
-      });
-    }
+  //   if (e.target.name === "credential") {
+  //     setActiveButton({
+  //       personal: false,
+  //       credential: true,
+  //       pass: false,
+  //     });
+  //   }
 
-    if (e.target.name === "pass") {
-      setActiveButton({
-        personal: false,
-        credential: false,
-        pass: true,
-      });
-    }
-  };
+  //   if (e.target.name === "pass") {
+  //     setActiveButton({
+  //       personal: false,
+  //       credential: false,
+  //       pass: true,
+  //     });
+  //   }
+  // };
 
-  const handleOnEdit = (e) => {
-    if (e.target.name === "edit") {
-      setEditButton(false);
-    } else {
-      setEditButton(true);
-    }
-  };
-  const resetForm = (e) => {
-    setError(null);
-  };
-  const [hoverStates, setHoverStates] = useState({});
+  // const handleOnEdit = (e) => {
+  //   if (e.target.name === "edit") {
+  //     setEditButton(false);
+  //   } else {
+  //     setEditButton(true);
+  //   }
+  // };
+  // const resetForm = (e) => {
+  //   setError(null);
+  // };
+  // const [hoverStates, setHoverStates] = useState({});
 
-  const handleMouseEnter = (id) => {
-    setHoverStates((prevStates) => ({
-      ...prevStates,
-      [id]: true,
-    }));
-  };
+  // const handleMouseEnter = (id) => {
+  //   setHoverStates((prevStates) => ({
+  //     ...prevStates,
+  //     [id]: true,
+  //   }));
+  // };
 
-  const handleMouseLeave = (id) => {
-    setHoverStates((prevStates) => ({
-      ...prevStates,
-      [id]: false,
-    }));
-  };
+  // const handleMouseLeave = (id) => {
+  //   setHoverStates((prevStates) => ({
+  //     ...prevStates,
+  //     [id]: false,
+  //   }));
+  // };
+
   return (
     <div>
       <div className="mx-4 overflow-y-auto lg:mt-[1rem] mt-0 scrollbarWidth scrollbarTrack scrollbarHover scrollbarThumb h-[calc(100vh_-_100px)] lg:h-[calc(100vh_-_100px)]">
@@ -510,14 +511,14 @@ const Settings = () => {
                     onClick={handleAdd}
                     className={`absolute bg-teal-700 inset-0 flex items-center justify-center rounded-full cursor-pointer opacity-0 ${editButton ? "hidden" : ""
                       } `}
-                    style={{
-                      backgroundColor:
-                        editButton || hoverStates["pic"]
-                          ? "hidden"
-                          : information?.theme?.primary,
-                      opacity: hoverStates["pic"] ? 0.6 : 0,
-                      transition: "opacity 0.3s",
-                    }}
+                    // style={{
+                    //   backgroundColor:
+                    //     editButton || hoverStates["pic"]
+                    //       ? "hidden"
+                    //       : information?.theme?.primary,
+                    //   opacity: hoverStates["pic"] ? 0.6 : 0,
+                    //   transition: "opacity 0.3s",
+                    // }}
                     onMouseEnter={() => handleMouseEnter("pic")}
                     onMouseLeave={() => handleMouseLeave("pic")}
                   >
@@ -527,7 +528,7 @@ const Settings = () => {
                     disabled={editButton}
                     type="file"
                     name="file"
-                    onChange={handleFileChange}
+                    // onChange={handleFileChange}
                     ref={fileInputRef}
                     accept="image/*"
                     multiple="multiple"
@@ -565,11 +566,11 @@ const Settings = () => {
                     className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
                     onMouseEnter={() => handleMouseEnter("facebook")}
                     onMouseLeave={() => handleMouseLeave("facebook")}
-                    style={{
-                      backgroundColor: hoverStates["facebook"]
-                        ? information?.theme?.secondary
-                        : null,
-                    }}
+                    // style={{
+                    //   backgroundColor: hoverStates["facebook"]
+                    //     ? information?.theme?.secondary
+                    //     : null,
+                    // }}
                   >
                     <FaFacebook />
                     <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
@@ -582,11 +583,11 @@ const Settings = () => {
                     className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
                     onMouseEnter={() => handleMouseEnter("twitter")}
                     onMouseLeave={() => handleMouseLeave("twitter")}
-                    style={{
-                      backgroundColor: hoverStates["twitter"]
-                        ? information?.theme?.secondary
-                        : null,
-                    }}
+                    // style={{
+                    //   backgroundColor: hoverStates["twitter"]
+                    //     ? information?.theme?.secondary
+                    //     : null,
+                    // }}
                   >
                     <FaTwitter />
                     <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
@@ -599,11 +600,11 @@ const Settings = () => {
                     className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
                     onMouseEnter={() => handleMouseEnter("ig")}
                     onMouseLeave={() => handleMouseLeave("ig")}
-                    style={{
-                      backgroundColor: hoverStates["ig"]
-                        ? information?.theme?.secondary
-                        : null,
-                    }}
+                    // style={{
+                    //   backgroundColor: hoverStates["ig"]
+                    //     ? information?.theme?.secondary
+                    //     : null,
+                    // }}
                   >
                     <FaInstagram />
                     <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
@@ -616,11 +617,11 @@ const Settings = () => {
                     className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
                     onMouseEnter={() => handleMouseEnter("phone")}
                     onMouseLeave={() => handleMouseLeave("phone")}
-                    style={{
-                      backgroundColor: hoverStates["phone"]
-                        ? information?.theme?.secondary
-                        : null,
-                    }}
+                    // style={{
+                    //   backgroundColor: hoverStates["phone"]
+                    //     ? information?.theme?.secondary
+                    //     : null,
+                    // }}
                   >
                     <FaPhone />
                     <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
@@ -633,11 +634,11 @@ const Settings = () => {
                     className="flex justify-center bg-teal-700 gap-2 items-center bg-white rounded-md p-2  hover:text-white  transition-all ease-in-out duration-300"
                     onMouseEnter={() => handleMouseEnter("email")}
                     onMouseLeave={() => handleMouseLeave("email")}
-                    style={{
-                      backgroundColor: hoverStates["email"]
-                        ? information?.theme?.secondary
-                        : null,
-                    }}
+                    // style={{
+                    //   backgroundColor: hoverStates["email"]
+                    //     ? information?.theme?.secondary
+                    //     : null,
+                    // }}
                   >
                     <FaEnvelope />
                     <p className="text-left ml-2 truncate lg:text-[14px] text-[12px]">
@@ -654,7 +655,7 @@ const Settings = () => {
               <div className="flex gap-[10px] my-5 pb-[10px] border-b-[2px] border-b-gray-200 px-[10px]">
                 <button
                   name="personal"
-                  onClick={handleOnActive}
+                  // onClick={handleOnActive}
                   className={
                     activeButton.personal
                       ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md text-white font-medium bg-teal-700"
@@ -662,18 +663,18 @@ const Settings = () => {
                   }
                   onMouseEnter={() => handleMouseEnter("personal")}
                   onMouseLeave={() => handleMouseLeave("personal")}
-                  style={{
-                    backgroundColor:
-                      activeButton.personal || hoverStates["personal"]
-                        ? information?.theme?.primary
-                        : null,
-                  }}
+                  // style={{
+                  //   backgroundColor:
+                  //     activeButton.personal || hoverStates["personal"]
+                  //       ? information?.theme?.primary
+                  //       : null,
+                  // }}
                 >
                   Personal Info
                 </button>
                 <button
                   name="credential"
-                  onClick={handleOnActive}
+                  // onClick={handleOnActive}
                   className={
                     activeButton.credential
                       ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md text-white font-medium bg-teal-700"
@@ -681,19 +682,19 @@ const Settings = () => {
                   }
                   onMouseEnter={() => handleMouseEnter("credential")}
                   onMouseLeave={() => handleMouseLeave("credential")}
-                  style={{
-                    backgroundColor:
-                      activeButton.credential || hoverStates["credential"]
-                        ? information?.theme?.primary
-                        : null,
-                  }}
+                  // style={{
+                  //   backgroundColor:
+                  //     activeButton.credential || hoverStates["credential"]
+                  //       ? information?.theme?.primary
+                  //       : null,
+                  // }}
                 >
                   Account Info
                 </button>
 
                 <button
                   name="pass"
-                  onClick={handleOnActive}
+                  // onClick={handleOnActive}
                   className={
                     activeButton.pass
                       ? "sm:text-[14px] md:text-[18px] h-[50px] px-[20px] rounded-md text-white font-medium bg-teal-700"
@@ -701,12 +702,12 @@ const Settings = () => {
                   }
                   onMouseEnter={() => handleMouseEnter("pass")}
                   onMouseLeave={() => handleMouseLeave("pass")}
-                  style={{
-                    backgroundColor:
-                      activeButton.pass || hoverStates["pass"]
-                        ? information?.theme?.primary
-                        : null,
-                  }}
+                  // style={{
+                  //   backgroundColor:
+                  //     activeButton.pass || hoverStates["pass"]
+                  //       ? information?.theme?.primary
+                  //       : null,
+                  // }}
                 >
                   Change Password
                 </button>
@@ -875,10 +876,10 @@ const Settings = () => {
                           className="py-3 px-4 block w-full border-gray-200 border text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                           placeholder="Birthday"
                           aria-describedby="hs-input-helper-text"
-                          value={birthdayFormat(userData.birthday) || ""}
-                          onChange={(e) =>
-                            handleUserDataChange("birthday", e.target.value)
-                          }
+                          // value={birthdayFormat(userData.birthday) || ""}
+                          // onChange={(e) =>
+                          //   handleUserDataChange("birthday", e.target.value)
+                          // }
                         />
                       </div>
                       <div>
@@ -896,7 +897,7 @@ const Settings = () => {
                           className="py-3 px-4 block w-full border-gray-200 border text-black rounded-md text-sm focus:border-green-500 focus:ring-green-500 bg-white"
                           placeholder="Suffix"
                           aria-describedby="hs-input-helper-text"
-                          value={calculateAge(userData.birthday) || ""}
+                          // value={calculateAge(userData.birthday) || ""}
                         />
                       </div>
                       <div>
@@ -914,9 +915,9 @@ const Settings = () => {
                           placeholder="#"
                           aria-describedby="hs-input-helper-text"
                           value={userData.contact || ""}
-                          onChange={(e) =>
-                            handleUserDataChange("contact", e.target.value)
-                          }
+                          // onChange={(e) =>
+                          //   handleUserDataChange("contact", e.target.value)
+                          // }
                         />
                       </div>
                       <div>
@@ -935,9 +936,9 @@ const Settings = () => {
                           placeholder="you@example.com"
                           aria-describedby="hs-input-helper-text"
                           value={userData.email || ""}
-                          onChange={(e) =>
-                            handleUserDataChange("email", e.target.value)
-                          }
+                          // onChange={(e) =>
+                          //   handleUserDataChange("email", e.target.value)
+                          // }
                         />
                         {error && !userData.email && (
                           <p className="text-red-500 text-xs italic">
@@ -1052,7 +1053,7 @@ const Settings = () => {
                         </label>
                         <div className="relative z-0 w-full mb-3 group">
                           <OccupationList
-                            handleUserDataChange={handleUserDataChange}
+                            // handleUserDataChange={handleUserDataChange}
                             occupation={userData.occupation}
                             editButton={editButton}
                           />
@@ -1071,9 +1072,9 @@ const Settings = () => {
                             type="radio"
                             value={1}
                             checked={userData.isHead}
-                            onChange={(e) =>
-                              handleUserDataChange("isHead", true)
-                            }
+                            // onChange={(e) =>
+                            //   handleUserDataChange("isHead", true)
+                            // }
                           />
                           <label htmlFor="male" className="ml-2">
                             Yes
@@ -1086,9 +1087,9 @@ const Settings = () => {
                             type="radio"
                             value={0}
                             checked={!userData.isHead}
-                            onChange={(e) =>
-                              handleUserDataChange("isHead", false)
-                            }
+                            // onChange={(e) =>
+                            //   handleUserDataChange("isHead", false)
+                            // }
                           />
                           <label className="ml-2">No</label>
                         </div>
@@ -1106,9 +1107,9 @@ const Settings = () => {
                             type="radio"
                             value={1}
                             checked={userData.isVoter}
-                            onChange={(e) =>
-                              handleUserDataChange("isVoter", true)
-                            }
+                            // onChange={(e) =>
+                            //   handleUserDataChange("isVoter", true)
+                            // }
                           />
                           <label htmlFor="male" className="ml-2">
                             Yes
@@ -1121,9 +1122,9 @@ const Settings = () => {
                             type="radio"
                             value={0}
                             checked={!userData.isVoter}
-                            onChange={(e) =>
-                              handleUserDataChange("isVoter", false)
-                            }
+                            // onChange={(e) =>
+                            //   handleUserDataChange("isVoter", false)
+                            // }
                           />
                           <label className="ml-2">No</label>
                         </div>
@@ -1613,7 +1614,7 @@ const Settings = () => {
           {editButton ? (
             <button
               name="edit"
-              onClick={handleOnEdit}
+              // onClick={handleOnEdit}
               className="bg-teal-700 text-white font-medium px-20 py-2 rounded-md"
               style={{ backgroundColor: information?.theme?.primary }}
             >
@@ -1629,10 +1630,10 @@ const Settings = () => {
                 Save
               </button>
               <button
-                onClick={() => {
-                  handleOnEdit({ target: { name: "cancel" } });
-                  resetForm();
-                }}
+                // onClick={() => {
+                //   handleOnEdit({ target: { name: "cancel" } });
+                //   resetForm();
+                // }}
                 name="cancel"
                 className="bg-custom-red-button text-white font-medium px-14 py-2 rounded-md"
               >

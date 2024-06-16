@@ -48,6 +48,7 @@ const Services = () => {
   const [update, setUpdate] = useState(false);
   const [editupdate, setEditUpdate] = useState(false);
   const information = GetBrgy(brgy);
+  
   const handleSort = (sortBy) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
     setSortOrder(newSortOrder);
@@ -75,85 +76,85 @@ const Services = () => {
     setServices(sortedData);
   };
 
-  useEffect(() => {
-    const handleService = (obj) => {
-      // setAnnouncement((prevApplication) => ({
-      //   ...prevApplication
-      // }));
-      console.log("wew", filteredServices);
-      console.log("wew", obj);
-      setServices(obj);
-      setNewServices((prev) => [obj, ...prev]);
-      setFilteredServices((prev) => [obj, ...prev]);
-    };
+  // useEffect(() => {
+  //   const handleService = (obj) => {
+  //     // setAnnouncement((prevApplication) => ({
+  //     //   ...prevApplication
+  //     // }));
+  //     console.log("wew", filteredServices);
+  //     console.log("wew", obj);
+  //     setServices(obj);
+  //     setNewServices((prev) => [obj, ...prev]);
+  //     setFilteredServices((prev) => [obj, ...prev]);
+  //   };
 
-    const handleServiceForm = (obj) => {
-      setServiceForm((curItem) =>
-        curItem.map((item) => (item._id === obj._id ? obj : item))
-      );
-    };
-    const handleServiceDocumentForm = (obj) => {
-      setDocumentForm((curItem) =>
-        curItem.map((item) => (item._id === obj._id ? obj : item))
-      );
-    };
-    const handleServiceUpdate = (obj) => {
-      setFilteredServices((curItem) =>
-        curItem.map((item) => (item._id === obj._id ? obj : item))
-      );
-    };
+  //   const handleServiceForm = (obj) => {
+  //     setServiceForm((curItem) =>
+  //       curItem.map((item) => (item._id === obj._id ? obj : item))
+  //     );
+  //   };
+  //   const handleServiceDocumentForm = (obj) => {
+  //     setDocumentForm((curItem) =>
+  //       curItem.map((item) => (item._id === obj._id ? obj : item))
+  //     );
+  //   };
+  //   const handleServiceUpdate = (obj) => {
+  //     setFilteredServices((curItem) =>
+  //       curItem.map((item) => (item._id === obj._id ? obj : item))
+  //     );
+  //   };
 
-    const handleServiceArchive = (obj) => {
-      setService(obj);
-      setServices((prev) => prev.filter((item) => item._id !== obj._id));
-      setFilteredServices((prev) =>
-        prev.filter((item) => item._id !== obj._id)
-      );
-    };
+  //   const handleServiceArchive = (obj) => {
+  //     setService(obj);
+  //     setServices((prev) => prev.filter((item) => item._id !== obj._id));
+  //     setFilteredServices((prev) =>
+  //       prev.filter((item) => item._id !== obj._id)
+  //     );
+  //   };
 
-    socket.on("receive-get-service", handleService);
-    socket.on("receive-service-form", handleServiceForm);
-    socket.on("receive-updated-service", handleServiceUpdate);
-    socket.on("receive-edit-service-doc", handleServiceDocumentForm);
-    socket.on("receive-archive-staff", handleServiceArchive);
+  //   socket.on("receive-get-service", handleService);
+  //   socket.on("receive-service-form", handleServiceForm);
+  //   socket.on("receive-updated-service", handleServiceUpdate);
+  //   socket.on("receive-edit-service-doc", handleServiceDocumentForm);
+  //   socket.on("receive-archive-staff", handleServiceArchive);
 
-    return () => {
-      socket.off("receive-get-service", handleService);
-      socket.off("receive-service-form", handleServiceForm);
-      socket.off("receive-updated-service", handleServiceUpdate);
-      socket.off("receive-edit-service-doc", handleServiceDocumentForm);
-      socket.off("receive-archive-staff", handleServiceArchive);
-    };
-  }, [socket, setServices, setService]);
+  //   return () => {
+  //     socket.off("receive-get-service", handleService);
+  //     socket.off("receive-service-form", handleServiceForm);
+  //     socket.off("receive-updated-service", handleServiceUpdate);
+  //     socket.off("receive-edit-service-doc", handleServiceDocumentForm);
+  //     socket.off("receive-archive-staff", handleServiceArchive);
+  //   };
+  // }, [socket, setServices, setService]);
 
-  useEffect(() => {
-    const fetch = async () => {
-      const response = await axios.get(
-        `${API_LINK}/services/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${serviceFilter}`
-      );
-      if (response.status === 200) {
-        console.log(response.data);
-        setServices(response.data.result);
-        setFilteredServices(response.data.result.slice(0, 10));
-        setPageCount(response.data.pageCount);
-        setNewServices(response.data.result);
-      } else setServices([]);
-    };
+  // useEffect(() => {
+  //   const fetch = async () => {
+  //     const response = await axios.get(
+  //       `${API_LINK}/services/?brgy=${brgy}&archived=false&status=${statusFilter}&type=${serviceFilter}`
+  //     );
+  //     if (response.status === 200) {
+  //       console.log(response.data);
+  //       setServices(response.data.result);
+  //       setFilteredServices(response.data.result.slice(0, 10));
+  //       setPageCount(response.data.pageCount);
+  //       setNewServices(response.data.result);
+  //     } else setServices([]);
+  //   };
 
-    fetch();
-  }, [brgy, statusFilter, serviceFilter]);
+  //   fetch();
+  // }, [brgy, statusFilter, serviceFilter]);
 
-  useEffect(() => {
-    const filteredData = newServices.filter(
-      (item) =>
-        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.service_id.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    const startIndex = currentPage * 10;
-    const endIndex = startIndex + 10;
-    setFilteredServices(filteredData.slice(startIndex, endIndex));
-    setPageCount(Math.ceil(filteredData.length / 10));
-  }, [newServices, searchQuery, currentPage]);
+  // useEffect(() => {
+  //   const filteredData = newServices.filter(
+  //     (item) =>
+  //       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //       item.service_id.toLowerCase().includes(searchQuery.toLowerCase())
+  //   );
+  //   const startIndex = currentPage * 10;
+  //   const endIndex = startIndex + 10;
+  //   setFilteredServices(filteredData.slice(startIndex, endIndex));
+  //   setPageCount(Math.ceil(filteredData.length / 10));
+  // }, [newServices, searchQuery, currentPage]);
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
@@ -213,53 +214,53 @@ const Services = () => {
     "ACTIONS",
   ];
 
-  useEffect(() => {
-    document.title = "Services | Barangay E-Services Management";
-  }, []);
+  // useEffect(() => {
+  //   document.title = "Services | Barangay E-Services Management";
+  // }, []);
 
-  const handleView = async (item) => {
-    try {
-      setService(item);
-      const response = await axios.get(
-        `${API_LINK}/forms/?brgy=${brgy}&service_id=${item.service_id}`
-      );
-      const response1 = await axios.get(
-        `${API_LINK}/document/?brgy=${brgy}&service_id=${item.service_id}`
-      );
-      setServiceForm(response.data);
-      setDocumentForm(response1.data);
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
+  // const handleView = async (item) => {
+  //   try {
+  //     setService(item);
+  //     const response = await axios.get(
+  //       `${API_LINK}/forms/?brgy=${brgy}&service_id=${item.service_id}`
+  //     );
+  //     const response1 = await axios.get(
+  //       `${API_LINK}/document/?brgy=${brgy}&service_id=${item.service_id}`
+  //     );
+  //     setServiceForm(response.data);
+  //     setDocumentForm(response1.data);
+  //   } catch (err) {
+  //     console.log(err.message);
+  //   }
+  // };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
-        );
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
+  //       );
 
-        if (response.status === 200) {
-          const officialsData = response.data.result || [];
+  //       if (response.status === 200) {
+  //         const officialsData = response.data.result || [];
 
-          if (officialsData.length > 0) {
-            setOfficials(officialsData);
-          } else {
-            setOfficials([]);
-          }
-        } else {
-          setOfficials([]);
-          console.error("Failed to fetch officials:", response.status);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setOfficials([]);
-      }
-    };
+  //         if (officialsData.length > 0) {
+  //           setOfficials(officialsData);
+  //         } else {
+  //           setOfficials([]);
+  //         }
+  //       } else {
+  //         setOfficials([]);
+  //         console.error("Failed to fetch officials:", response.status);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //       setOfficials([]);
+  //     }
+  //   };
 
-    fetchData();
-  }, [currentPage, brgy]); // Add positionFilter dependency
+  //   fetchData();
+  // }, [currentPage, brgy]); // Add positionFilter dependency
 
   return (
     <div className="mx-4">

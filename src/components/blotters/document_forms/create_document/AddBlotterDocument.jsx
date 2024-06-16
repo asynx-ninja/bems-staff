@@ -33,89 +33,89 @@ const AddBlotterDocument = ({ request, brgy, socket, setUpdate, id }) => {
 
   // console.log("Document: ", document);
 
-  const handleChange = (e) => {
-    setDocument((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
+  // const handleChange = (e) => {
+  //   setDocument((prev) => ({
+  //     ...prev,
+  //     [e.target.name]: e.target.value,
+  //   }));
+  // };
 
-  const handleSubmit = async (e) => {
-    try {
-      setSubmitClicked(true);
-      setError(null); // Reset error state
+  // const handleSubmit = async (e) => {
+  //   try {
+  //     setSubmitClicked(true);
+  //     setError(null); // Reset error state
 
-      const response = await axios.post(
-        `${API_LINK}/blotter_documents/?brgy=${brgy}`,
-        {
-          req_id: request.req_id,
-          doc_title: document.doc_title,
-          date: document.date,
-          usapin_blg: document.usapin_blg,
-          reason: document.reason,
-          patawag: document.patawag,
-          complainant: document.complainant,
-          complainant_address: document.complainant_address,
-          accused: document.accused,
-          accused_address: document.accused_address,
-          message: document.message,
-          bcpc_vawc: document.bcpc_vawc,
-          email: document.email,
-          contact: document.contact,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.status === 200) {
-        const getIP = async () => {
-          const response = await fetch(
-            "https://api64.ipify.org?format=json"
-          );
-          const data = await response.json();
-          return data.ip;
-        };
+  //     const response = await axios.post(
+  //       `${API_LINK}/blotter_documents/?brgy=${brgy}`,
+  //       {
+  //         req_id: request.req_id,
+  //         doc_title: document.doc_title,
+  //         date: document.date,
+  //         usapin_blg: document.usapin_blg,
+  //         reason: document.reason,
+  //         patawag: document.patawag,
+  //         complainant: document.complainant,
+  //         complainant_address: document.complainant_address,
+  //         accused: document.accused,
+  //         accused_address: document.accused_address,
+  //         message: document.message,
+  //         bcpc_vawc: document.bcpc_vawc,
+  //         email: document.email,
+  //         contact: document.contact,
+  //       },
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+  //     if (response.status === 200) {
+  //       const getIP = async () => {
+  //         const response = await fetch(
+  //           "https://api64.ipify.org?format=json"
+  //         );
+  //         const data = await response.json();
+  //         return data.ip;
+  //       };
 
-        const ip = await getIP(); // Retrieve IP address
+  //       const ip = await getIP(); // Retrieve IP address
 
-        const logsData = {
-          action: "Created",
-          details: `Created a new blotter document for the patawag with the control number: (${request.req_id}).`,
-          ip: ip,
-        };
+  //       const logsData = {
+  //         action: "Created",
+  //         details: `Created a new blotter document for the patawag with the control number: (${request.req_id}).`,
+  //         ip: ip,
+  //       };
 
-        const logsResult = await axios.post(
-          `${API_LINK}/act_logs/add_logs/?id=${id}`,
-          logsData
-        );
-        if (logsResult.status === 200) {
-          socket.emit("send-create-patawag-doc", response.data);
+  //       const logsResult = await axios.post(
+  //         `${API_LINK}/act_logs/add_logs/?id=${id}`,
+  //         logsData
+  //       );
+  //       if (logsResult.status === 200) {
+  //         socket.emit("send-create-patawag-doc", response.data);
 
-          setSubmitClicked(false);
-          setCreationStatus("success");
-          setTimeout(() => {
-            setCreationStatus(null);
-            handleResetModal();
-            HSOverlay.close(
-              document.getElementById("hs-create-serviceDocument-modal")
-            );
-          }, 3000);
-          setUpdate(true);
-        }
-      }
-    } catch (err) {
-      console.log(err.message);
-      setSubmitClicked(false);
-      setCreationStatus("error");
-      setError(err.message);
-    }
-  };
+  //         setSubmitClicked(false);
+  //         setCreationStatus("success");
+  //         setTimeout(() => {
+  //           setCreationStatus(null);
+  //           handleResetModal();
+  //           HSOverlay.close(
+  //             document.getElementById("hs-create-serviceDocument-modal")
+  //           );
+  //         }, 3000);
+  //         setUpdate(true);
+  //       }
+  //     }
+  //   } catch (err) {
+  //     console.log(err.message);
+  //     setSubmitClicked(false);
+  //     setCreationStatus("error");
+  //     setError(err.message);
+  //   }
+  // };
 
-  const handleResetModal = () => {
-    setDocument({});
-  };
+  // const handleResetModal = () => {
+  //   setDocument({});
+  // };
 
   return (
     <div>
@@ -160,8 +160,8 @@ const AddBlotterDocument = ({ request, brgy, socket, setUpdate, id }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="doc_title"
                         type="text"
-                        value={document.doc_title || ""}
-                        onChange={handleChange}
+                        // value={document.doc_title || ""}
+                        // onChange={handleChange}
                         placeholder="Document Name"
                       />
                     </div>
@@ -178,8 +178,8 @@ const AddBlotterDocument = ({ request, brgy, socket, setUpdate, id }) => {
                         id="date"
                         name="date"
                         type="date"
-                        value={document.date || ""}
-                        onChange={handleChange}
+                        // value={document.date || ""}
+                        // onChange={handleChange}
                         required
                       />
                     </div>
@@ -196,8 +196,8 @@ const AddBlotterDocument = ({ request, brgy, socket, setUpdate, id }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="usapin_blg"
                         type="text"
-                        value={document.usapin_blg || ""}
-                        onChange={handleChange}
+                        // value={document.usapin_blg || ""}
+                        // onChange={handleChange}
                         placeholder="XXXX-XXXX"
                       />
                     </div>
@@ -214,8 +214,8 @@ const AddBlotterDocument = ({ request, brgy, socket, setUpdate, id }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="reason"
                         type="text"
-                        value={document.reason || ""}
-                        onChange={handleChange}
+                        // value={document.reason || ""}
+                        // onChange={handleChange}
                         placeholder="Reason"
                       />
                     </div>
@@ -232,8 +232,8 @@ const AddBlotterDocument = ({ request, brgy, socket, setUpdate, id }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="patawag"
                         type="text"
-                        value={document.patawag || ""}
-                        onChange={handleChange}
+                        // value={document.patawag || ""}
+                        // onChange={handleChange}
                         placeholder="Pang ilang patawag..."
                       />
                     </div>
@@ -250,8 +250,8 @@ const AddBlotterDocument = ({ request, brgy, socket, setUpdate, id }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="complainant"
                         type="text"
-                        value={document.complainant || ""}
-                        onChange={handleChange}
+                        // value={document.complainant || ""}
+                        // onChange={handleChange}
                         placeholder="Name of Complainant"
                       />
                     </div>
@@ -268,8 +268,8 @@ const AddBlotterDocument = ({ request, brgy, socket, setUpdate, id }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="complainant_address"
                         type="text"
-                        value={document.complainant_address || ""}
-                        onChange={handleChange}
+                        // value={document.complainant_address || ""}
+                        // onChange={handleChange}
                         placeholder="Complainant Address"
                       />
                     </div>
@@ -286,8 +286,8 @@ const AddBlotterDocument = ({ request, brgy, socket, setUpdate, id }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="accused"
                         type="text"
-                        value={document.accused || ""}
-                        onChange={handleChange}
+                        // value={document.accused || ""}
+                        // onChange={handleChange}
                         placeholder="Name of Accused"
                       />
                     </div>
@@ -304,8 +304,8 @@ const AddBlotterDocument = ({ request, brgy, socket, setUpdate, id }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="accused_address"
                         type="text"
-                        value={document.accused_address || ""}
-                        onChange={handleChange}
+                        // value={document.accused_address || ""}
+                        // onChange={handleChange}
                         placeholder="Accused Address"
                       />
                     </div>
@@ -321,8 +321,8 @@ const AddBlotterDocument = ({ request, brgy, socket, setUpdate, id }) => {
                         id="message"
                         rows={7}
                         name="message"
-                        value={document.message || ""}
-                        onChange={handleChange}
+                        // value={document.message || ""}
+                        // onChange={handleChange}
                         className="shadow appearance-none border w-full p-2.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         placeholder="Enter service details..."
                       />
@@ -340,8 +340,8 @@ const AddBlotterDocument = ({ request, brgy, socket, setUpdate, id }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="bcpc_vawc"
                         type="text"
-                        value={document.bcpc_vawc || ""}
-                        onChange={handleChange}
+                        // value={document.bcpc_vawc || ""}
+                        // onChange={handleChange}
                         placeholder="Pangalan ng Bcpc / Vawc"
                       />
                     </div>
@@ -358,8 +358,8 @@ const AddBlotterDocument = ({ request, brgy, socket, setUpdate, id }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="email"
                         type="text"
-                        value={document.email || ""}
-                        onChange={handleChange}
+                        // value={document.email || ""}
+                        // onChange={handleChange}
                         placeholder="E-mail Address"
                       />
                     </div>
@@ -376,8 +376,8 @@ const AddBlotterDocument = ({ request, brgy, socket, setUpdate, id }) => {
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="contact"
                         type="text"
-                        value={document.contact || ""}
-                        onChange={handleChange}
+                        // value={document.contact || ""}
+                        // onChange={handleChange}
                         placeholder="Telephone / Mobile Number"
                       />
                     </div>
@@ -392,7 +392,7 @@ const AddBlotterDocument = ({ request, brgy, socket, setUpdate, id }) => {
                 <button
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                  onClick={handleSubmit}
+                  // onClick={handleSubmit}
                 >
                   CREATE
                 </button>
@@ -400,7 +400,7 @@ const AddBlotterDocument = ({ request, brgy, socket, setUpdate, id }) => {
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                   data-hs-overlay="#hs-create-serviceDocument-modal"
-                  onClick={handleResetModal}
+                  // onClick={handleResetModal}
                 >
                   CLOSE
                 </button>

@@ -43,199 +43,199 @@ function CreateServiceModal({ brgy, socket, id }) {
   const [banner, setBanner] = useState();
   const [files, setFiles] = useState([]);
 
-  const handleLogoChange = (e) => {
-    const selectedFile = e.target.files[0];
-    setLogo(selectedFile);
+  // const handleLogoChange = (e) => {
+  //   const selectedFile = e.target.files[0];
+  //   setLogo(selectedFile);
 
-    var output = document.getElementById("add_logo");
-    output.src = URL.createObjectURL(selectedFile);
-    output.onload = function () {
-      URL.revokeObjectURL(output.src); // free memory
-    };
-  };
+  //   var output = document.getElementById("add_logo");
+  //   output.src = URL.createObjectURL(selectedFile);
+  //   output.onload = function () {
+  //     URL.revokeObjectURL(output.src); // free memory
+  //   };
+  // };
 
-  const handleBannerChange = (e) => {
-    setBanner(e.target.files[0]);
+  // const handleBannerChange = (e) => {
+  //   setBanner(e.target.files[0]);
 
-    var output = document.getElementById("add_banner");
-    output.src = URL.createObjectURL(e.target.files[0]);
-    output.onload = function () {
-      URL.revokeObjectURL(output.src); // free memory
-    };
-  };
+  //   var output = document.getElementById("add_banner");
+  //   output.src = URL.createObjectURL(e.target.files[0]);
+  //   output.onload = function () {
+  //     URL.revokeObjectURL(output.src); // free memory
+  //   };
+  // };
 
-  const handleChange = (e) => {
-    setService((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
+  // const handleChange = (e) => {
+  //   setService((prev) => ({
+  //     ...prev,
+  //     [e.target.name]: e.target.value,
+  //   }));
+  // };
 
-  const handleFileChange = (e) => {
-    e.preventDefault();
+  // const handleFileChange = (e) => {
+  //   e.preventDefault();
 
-    setFiles([...files, ...e.target.files]);
-  };
+  //   setFiles([...files, ...e.target.files]);
+  // };
 
-  const getType = (type) => {
-    switch (type) {
-      case "MUNISIPYO":
-        return "Municipality";
-      default:
-        return "Barangay";
-    }
-  };
+  // const getType = (type) => {
+  //   switch (type) {
+  //     case "MUNISIPYO":
+  //       return "Municipality";
+  //     default:
+  //       return "Barangay";
+  //   }
+  // };
 
-  const handleSubmit = async (e) => {
-    try {
-      e.preventDefault();
-      setError(null); // Reset error state
-      setCreationStatus("success");
-      // setSubmitClicked(true);
-      const emptyFieldsArr = checkEmptyFieldsForService();
+  // const handleSubmit = async (e) => {
+  //   try {
+  //     e.preventDefault();
+  //     setError(null); // Reset error state
+  //     setCreationStatus("success");
+  //     // setSubmitClicked(true);
+  //     const emptyFieldsArr = checkEmptyFieldsForService();
 
-      if (emptyFieldsArr.length > 0) {
-        setEmpty(true);
-        setSubmitClicked(false);
-        return;
-      }
+  //     if (emptyFieldsArr.length > 0) {
+  //       setEmpty(true);
+  //       setSubmitClicked(false);
+  //       return;
+  //     }
 
-      var formData = new FormData();
+  //     var formData = new FormData();
 
-      const arr1 = [banner, logo];
-      const newFiles = arr1.concat(files);
+  //     const arr1 = [banner, logo];
+  //     const newFiles = arr1.concat(files);
 
-      for (let f = 0; f < newFiles.length; f += 1) {
-        formData.append("files", newFiles[f]);
-      }
+  //     for (let f = 0; f < newFiles.length; f += 1) {
+  //       formData.append("files", newFiles[f]);
+  //     }
 
-      const obj = {
-        name: service.name,
-        type: service.type === "" ? "Healthcare" : service.type,
-        details: service.details,
-        fee: service.fee,
-        brgy: service.brgy,
-      };
+  //     const obj = {
+  //       name: service.name,
+  //       type: service.type === "" ? "Healthcare" : service.type,
+  //       details: service.details,
+  //       fee: service.fee,
+  //       brgy: service.brgy,
+  //     };
 
-      formData.append("service", JSON.stringify(obj));
+  //     formData.append("service", JSON.stringify(obj));
 
-      const res_folder = await axios.get(
-        `${API_LINK}/folder/specific/?brgy=${brgy}`
-      );
-
-
-      if (res_folder.status === 200) {
-        const response = await axios.post(
-          `${API_LINK}/services/?service_folder_id=${res_folder.data[0].service}`,
-          formData
-        );
+  //     const res_folder = await axios.get(
+  //       `${API_LINK}/folder/specific/?brgy=${brgy}`
+  //     );
 
 
+  //     if (res_folder.status === 200) {
+  //       const response = await axios.post(
+  //         `${API_LINK}/services/?service_folder_id=${res_folder.data[0].service}`,
+  //         formData
+  //       );
 
-        if (response.status === 200) {
-          socket.emit("send-get-service", response.data);
-          // var logoSrc = document.getElementById("logo");
-          // logoSrc.src =
-          //   "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
 
-          // var bannerSrc = document.getElementById("banner");
-          // bannerSrc.src =
-          //   "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
 
-          setService({
-            name: "",
-            type: "",
-            details: "",
-            fee: "",
-            brgy: "",
-          });
+  //       if (response.status === 200) {
+  //         socket.emit("send-get-service", response.data);
+  //         // var logoSrc = document.getElementById("logo");
+  //         // logoSrc.src =
+  //         //   "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
 
-          const notify = {
-            category: "Many",
-            compose: {
-              subject: `SERVICES - ${service.name}`,
-              message: `Barangay ${brgy} is trying to publish a new service named: ${service.name}.\n\n
+  //         // var bannerSrc = document.getElementById("banner");
+  //         // bannerSrc.src =
+  //         //   "https://thenounproject.com/api/private/icons/4322871/edit/?backgroundShape=SQUARE&backgroundShapeColor=%23000000&backgroundShapeOpacity=0&exportSize=752&flipX=false&flipY=false&foregroundColor=%23000000&foregroundOpacity=1&imageFormat=png&rotation=0";
+
+  //         setService({
+  //           name: "",
+  //           type: "",
+  //           details: "",
+  //           fee: "",
+  //           brgy: "",
+  //         });
+
+  //         const notify = {
+  //           category: "Many",
+  //           compose: {
+  //             subject: `SERVICES - ${service.name}`,
+  //             message: `Barangay ${brgy} is trying to publish a new service named: ${service.name}.\n\n
             
-            Please review the new service!\n
+  //           Please review the new service!\n
 
-            Service Details:\n 
-            ${service.details}\n\n
-            `,
-              go_to: "Services",
-            },
-            target: {
-              user_id: null,
-              area: "MUNISIPYO",
-            },
-            type: "Municipality",
-            banner: response.data.collections.banner,
-            logo: response.data.collections.logo,
-          };
+  //           Service Details:\n 
+  //           ${service.details}\n\n
+  //           `,
+  //             go_to: "Services",
+  //           },
+  //           target: {
+  //             user_id: null,
+  //             area: "MUNISIPYO",
+  //           },
+  //           type: "Municipality",
+  //           banner: response.data.collections.banner,
+  //           logo: response.data.collections.logo,
+  //         };
 
-          const result = await axios.post(`${API_LINK}/notification/`, notify, {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
+  //         const result = await axios.post(`${API_LINK}/notification/`, notify, {
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //         });
 
 
-          if (result.status === 200) {
-            const getIP = async () => {
-              const response = await fetch("https://api64.ipify.org?format=json");
-              const data = await response.json();
-              return data.ip;
-            };
+  //         if (result.status === 200) {
+  //           const getIP = async () => {
+  //             const response = await fetch("https://api64.ipify.org?format=json");
+  //             const data = await response.json();
+  //             return data.ip;
+  //           };
 
-            const ip = await getIP(); // Retrieve IP address
+  //           const ip = await getIP(); // Retrieve IP address
 
-            const logsData = {
-              action: "Created",
-              details: `Published a new service titled "${service.name}."`,
-              ip: ip,
-            };
+  //           const logsData = {
+  //             action: "Created",
+  //             details: `Published a new service titled "${service.name}."`,
+  //             ip: ip,
+  //           };
 
-            const logsResult = await axios.post(
-              `${API_LINK}/act_logs/add_logs/?id=${id}`,
-              logsData
-            );
-            if (logsResult.status === 200) {
-              socket.emit("send-resident-notif", result.data);
-              handleResetModal();
-              setLogo();
-              setBanner();
-              setFiles([]);
-              setSubmitClicked(false);
-              setCreationStatus(null);
-              setTimeout(() => {
-                setSubmitClicked(null);
-                HSOverlay.close(document.getElementById("hs-create-service-modal"));
-              }, 3000);
-            }
-          }
-        }
-      }
-    } catch (err) {
-      console.log(err);
-      setSubmitClicked(false);
-      setError("An error occurred while creating the service.");
-    }
-  };
+  //           const logsResult = await axios.post(
+  //             `${API_LINK}/act_logs/add_logs/?id=${id}`,
+  //             logsData
+  //           );
+  //           if (logsResult.status === 200) {
+  //             socket.emit("send-resident-notif", result.data);
+  //             handleResetModal();
+  //             setLogo();
+  //             setBanner();
+  //             setFiles([]);
+  //             setSubmitClicked(false);
+  //             setCreationStatus(null);
+  //             setTimeout(() => {
+  //               setSubmitClicked(null);
+  //               HSOverlay.close(document.getElementById("hs-create-service-modal"));
+  //             }, 3000);
+  //           }
+  //         }
+  //       }
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //     setSubmitClicked(false);
+  //     setError("An error occurred while creating the service.");
+  //   }
+  // };
 
-  const checkEmptyFieldsForService = () => {
-    let arr = [];
-    const keysToCheck = ["name", "details", "date", "logo", "banner", "fee"]; // Add "logo" and "banner" to the list of keys
-    for (const key of keysToCheck) {
-      if (key === "logo" && !logo) {
-        arr.push(key);
-      } else if (key === "banner" && !banner) {
-        arr.push(key);
-      } else if (service[key] === "") {
-        arr.push(key);
-      }
-    }
-    setEmptyFields(arr);
-    return arr;
-  };
+  // const checkEmptyFieldsForService = () => {
+  //   let arr = [];
+  //   const keysToCheck = ["name", "details", "date", "logo", "banner", "fee"]; // Add "logo" and "banner" to the list of keys
+  //   for (const key of keysToCheck) {
+  //     if (key === "logo" && !logo) {
+  //       arr.push(key);
+  //     } else if (key === "banner" && !banner) {
+  //       arr.push(key);
+  //     } else if (service[key] === "") {
+  //       arr.push(key);
+  //     }
+  //   }
+  //   setEmptyFields(arr);
+  //   return arr;
+  // };
 
   return (
     <div>
@@ -295,7 +295,7 @@ function CreateServiceModal({ brgy, socket, id }) {
                       <span className="sr-only">Choose logo photo</span>
                       <input
                         type="file"
-                        onChange={handleLogoChange}
+                        // onChange={handleLogoChange}
                         name="logo"
                         accept="image/*"
                         value={!logo ? "" : logo.originalname}
@@ -333,7 +333,7 @@ function CreateServiceModal({ brgy, socket, id }) {
                       <span className="sr-only">Choose banner photo</span>
                       <input
                         type="file"
-                        onChange={handleBannerChange}
+                        // onChange={handleBannerChange}
                         name="banner"
                         accept="image/*"
                         value={!banner ? "" : banner.originalname}
@@ -357,7 +357,7 @@ function CreateServiceModal({ brgy, socket, id }) {
                   name="name"
                   type="text"
                   value={service.name}
-                  onChange={handleChange}
+                  // onChange={handleChange}
                   placeholder="Service Name"
                 />
               </div>
@@ -370,7 +370,7 @@ function CreateServiceModal({ brgy, socket, id }) {
                 </label>
                 <select
                   name="type"
-                  onChange={handleChange}
+                  // onChange={handleChange}
                   className={`shadow  border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("type") && "border-red-500"
                     }`}
                 >
@@ -404,7 +404,7 @@ function CreateServiceModal({ brgy, socket, id }) {
                   rows={4}
                   name="details"
                   value={service.details}
-                  onChange={handleChange}
+                  // onChange={handleChange}
                   className={`shadow appearance-none border w-full p-2.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("details") && "border-red-500"
                     }`}
                   placeholder="Enter service details..."
@@ -424,15 +424,15 @@ function CreateServiceModal({ brgy, socket, id }) {
                   name="fee"
                   type="number"
                   value={service.fee}
-                  onChange={handleChange}
+                  // onChange={handleChange}
                   placeholder="Service Fee"
                 />
               </div>
               <Dropbox
                 files={files}
                 setFiles={setFiles}
-                handleFileChange={handleFileChange}
-                handleSubmit={handleSubmit}
+                // handleFileChange={handleFileChange}
+                // handleSubmit={handleSubmit}
               />
             </div>
 
@@ -442,7 +442,7 @@ function CreateServiceModal({ brgy, socket, id }) {
                 <button
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                  onClick={handleSubmit}
+                  // onClick={handleSubmit}
                 >
                   CREATE
                 </button>

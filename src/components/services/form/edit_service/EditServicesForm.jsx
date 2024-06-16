@@ -14,111 +14,111 @@ const EditServicesForm = ({ service_id, service_title, brgy, serviceForm, socket
   const [error, setError] = useState(null);
   const [selectedFormIndex, setSelectedFormIndex] = useState("");
 
-  useEffect(() => {
-    setDetails(serviceForm)
-  }, [serviceForm]);
+  // useEffect(() => {
+  //   setDetails(serviceForm)
+  // }, [serviceForm]);
 
-  useEffect(() => {
-    const fetch = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/forms/?brgy=${brgy}&service_id=${service_id}`
-        );
-        setDetails(response.data);
-      } catch (err) {
-        console.log(err.message);
-      }
-    };
-    fetch();
-  }, [brgy, service_id]);
+  // useEffect(() => {
+  //   const fetch = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${API_LINK}/forms/?brgy=${brgy}&service_id=${service_id}`
+  //       );
+  //       setDetails(response.data);
+  //     } catch (err) {
+  //       console.log(err.message);
+  //     }
+  //   };
+  //   fetch();
+  // }, [brgy, service_id]);
 
-  const handleFormChange = (e, key) => {
-    const newState = detail.form[0];
-    newState[key].checked = e.target.checked;
+  // const handleFormChange = (e, key) => {
+  //   const newState = detail.form[0];
+  //   newState[key].checked = e.target.checked;
 
-    setDetail((prev) => ({
-      ...prev,
-      form: [newState, detail.form[1]],
-    }));
-  };
+  //   setDetail((prev) => ({
+  //     ...prev,
+  //     form: [newState, detail.form[1]],
+  //   }));
+  // };
 
-  const handleSubmit = async () => {
-    try {
-      setSubmitClicked(true);
-      setError(null); // Reset error state
+  // const handleSubmit = async () => {
+  //   try {
+  //     setSubmitClicked(true);
+  //     setError(null); // Reset error state
 
-      const response = await axios.patch(
-        `${API_LINK}/forms/`,
-        {
-          detail: detail,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+  //     const response = await axios.patch(
+  //       `${API_LINK}/forms/`,
+  //       {
+  //         detail: detail,
+  //       },
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
 
-      if (response.status === 200) {
-        const getIP = async () => {
-          const response = await fetch(
-            "https://api64.ipify.org?format=json"
-          );
-          const data = await response.json();
-          return data.ip;
-        };
-        const ip = await getIP(); // Retrieve IP address
+  //     if (response.status === 200) {
+  //       const getIP = async () => {
+  //         const response = await fetch(
+  //           "https://api64.ipify.org?format=json"
+  //         );
+  //         const data = await response.json();
+  //         return data.ip;
+  //       };
+  //       const ip = await getIP(); // Retrieve IP address
 
-        const logsData = {
-          action: "Updated",
-          details: `A service form for the service titled "${service_title}" was updated.`,
-          ip: ip,
-        };
+  //       const logsData = {
+  //         action: "Updated",
+  //         details: `A service form for the service titled "${service_title}" was updated.`,
+  //         ip: ip,
+  //       };
 
-        console.log(detail)
+  //       console.log(detail)
 
-        const logsResult = await axios.post(
-          `${API_LINK}/act_logs/add_logs/?id=${id}`,
-          logsData
-        );
-        if (logsResult.status === 200) {
-          socket.emit("send-edit-service-form", response.data);
+  //       const logsResult = await axios.post(
+  //         `${API_LINK}/act_logs/add_logs/?id=${id}`,
+  //         logsData
+  //       );
+  //       if (logsResult.status === 200) {
+  //         socket.emit("send-edit-service-form", response.data);
 
-          setSubmitClicked(false);
-          setUpdatingStatus("success");
-          setTimeout(() => {
-            setUpdatingStatus(null);
-            setDetail({});
-            setSelectedFormIndex("");
-            setDetail({ title: "" });
-            document.querySelector('select[name="form"]').value = "";
-            HSOverlay.close(document.getElementById("hs-edit-serviceForm-modal"));
-          }, 3000);
-        }
-      }
-    } catch (err) {
-      setSubmitClicked(false);
-      setUpdatingStatus("error");
-      setError(err.message);
-    }
-  };
+  //         setSubmitClicked(false);
+  //         setUpdatingStatus("success");
+  //         setTimeout(() => {
+  //           setUpdatingStatus(null);
+  //           setDetail({});
+  //           setSelectedFormIndex("");
+  //           setDetail({ title: "" });
+  //           document.querySelector('select[name="form"]').value = "";
+  //           HSOverlay.close(document.getElementById("hs-edit-serviceForm-modal"));
+  //         }, 3000);
+  //       }
+  //     }
+  //   } catch (err) {
+  //     setSubmitClicked(false);
+  //     setUpdatingStatus("error");
+  //     setError(err.message);
+  //   }
+  // };
 
-  const handleSelectChange = (e) => {
-    setSelectedFormIndex(e.target.value);
-    setDetail(details[e.target.value]);
-  };
+  // const handleSelectChange = (e) => {
+  //   setSelectedFormIndex(e.target.value);
+  //   setDetail(details[e.target.value]);
+  // };
 
-  const handleChange = (e) => {
-    setDetail((prev) => ({
-      ...prev,
-      form_name: e.target.value,
-    }));
-  };
+  // const handleChange = (e) => {
+  //   setDetail((prev) => ({
+  //     ...prev,
+  //     form_name: e.target.value,
+  //   }));
+  // };
 
-  const handleResetServiceId = () => {
-    setDetail({});
-    setSelectedFormIndex("");
-  };
+  // const handleResetServiceId = () => {
+  //   setDetail({});
+  //   setSelectedFormIndex("");
+  // };
 
   return (
     <div>
@@ -149,18 +149,18 @@ const EditServicesForm = ({ service_id, service_title, brgy, serviceForm, socket
                 <select
                   name="form"
                   className="border border-1 border-gray-300 shadow bg-white w-full md:w-6/12 mt-2 md:mt-0 border p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                  onChange={handleSelectChange}
-                  value={selectedFormIndex}
+                  // onChange={handleSelectChange}
+                  // value={selectedFormIndex}
                 >
                   <option value="" disabled>
                     Select Form
                   </option>
-                  {details &&
+                  {/* {details &&
                     details.map((item, idx) => (
                       <option key={idx} value={idx}>
                         {item.form_name}
                       </option>
-                    ))}
+                    ))} */}
                 </select>
               </div>
               <div className="px-4 py-3">
@@ -172,12 +172,12 @@ const EditServicesForm = ({ service_id, service_title, brgy, serviceForm, socket
                     <input
                       type="checkbox"
                       name="isOpen"
-                      onChange={(e) =>
-                        setDetail((prev) => ({
-                          ...prev,
-                          isActive: e.target.checked,
-                        }))
-                      }
+                      // onChange={(e) =>
+                      //   setDetail((prev) => ({
+                      //     ...prev,
+                      //     isActive: e.target.checked,
+                      //   }))
+                      // }
                       checked={detail.isActive}
                       disabled={detail.isArchived}
                       className="sr-only peer"
@@ -197,8 +197,8 @@ const EditServicesForm = ({ service_id, service_title, brgy, serviceForm, socket
                     className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                     name="title"
                     type="form_name"
-                    value={detail.form_name || ""} // Use the updated form_name state here
-                    onChange={handleChange}
+                    // value={detail.form_name || ""} // Use the updated form_name state here
+                    // onChange={handleChange}
                     placeholder="Event Form Title"
                   />
                 </div>
@@ -212,7 +212,7 @@ const EditServicesForm = ({ service_id, service_title, brgy, serviceForm, socket
                       form details:
                     </h1>
                     <div className="grid md:grid-cols-3 mt-3">
-                      {detail.form &&
+                      {/* {detail.form &&
                         Object.entries(detail.form[0]).map(
                           ([key, value], idx) => {
                             return (
@@ -227,7 +227,7 @@ const EditServicesForm = ({ service_id, service_title, brgy, serviceForm, socket
                               </label>
                             );
                           }
-                        )}
+                        )} */}
                     </div>
                   </div>
                 </fieldset>
@@ -237,7 +237,7 @@ const EditServicesForm = ({ service_id, service_title, brgy, serviceForm, socket
                   <legend className="ml-2 px-2 text-lg font-bold">
                     CUSTOMIZE FORM
                   </legend>
-                  <EditSectionForm detail={detail} setDetail={setDetail} />
+                  {/* <EditSectionForm detail={detail} setDetail={setDetail} /> */}
                 </fieldset>
               </div>
             </div>
@@ -246,7 +246,7 @@ const EditServicesForm = ({ service_id, service_title, brgy, serviceForm, socket
                 <button
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                  onClick={handleSubmit}
+                  // onClick={handleSubmit}
                 >
                   SAVE
                 </button>
@@ -254,7 +254,7 @@ const EditServicesForm = ({ service_id, service_title, brgy, serviceForm, socket
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                   data-hs-overlay="#hs-edit-serviceForm-modal"
-                  onClick={handleResetServiceId}
+                  // onClick={handleResetServiceId}
                 >
                   CLOSE
                 </button>

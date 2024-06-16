@@ -33,100 +33,100 @@ const EditBlotterDocument = ({ request, brgy, setEditUpdate, editupdate, id, soc
     contact: "",
   });
 
-  useEffect(() => {
-    // function to filter
-    const fetch = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/blotter_documents/?brgy=${brgy}&req_id=${request.req_id}`
-        );
+  // useEffect(() => {
+  //   // function to filter
+  //   const fetch = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${API_LINK}/blotter_documents/?brgy=${brgy}&req_id=${request.req_id}`
+  //       );
 
-        // filter
-        setDocDetails(response.data);
-        setEditUpdate((prevState) => !prevState);
-      } catch (err) {
-        console.log(err.message);
-      }
-    };
+  //       // filter
+  //       setDocDetails(response.data);
+  //       setEditUpdate((prevState) => !prevState);
+  //     } catch (err) {
+  //       console.log(err.message);
+  //     }
+  //   };
 
-    fetch();
-  }, [brgy, request, editupdate]);
+  //   fetch();
+  // }, [brgy, request, editupdate]);
 
-  const handleSelectChange = (e) => {
-    setDocDetail(docDetails[e.target.value]);
-  };
+  // const handleSelectChange = (e) => {
+  //   setDocDetail(docDetails[e.target.value]);
+  // };
 
-  const handleChange = (e) => {
-    setDocDetail((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
+  // const handleChange = (e) => {
+  //   setDocDetail((prev) => ({
+  //     ...prev,
+  //     [e.target.name]: e.target.value,
+  //   }));
+  // };
 
-  const handleSubmit = async (e) => {
-    try {
-      setSubmitClicked(true);
-      setError(null); // Reset error state
+  // const handleSubmit = async (e) => {
+  //   try {
+  //     setSubmitClicked(true);
+  //     setError(null); // Reset error state
 
-      const response = await axios.patch(
-        `${API_LINK}/blotter_documents/`,
-        {
-          document: docDetail,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.status === 200) {
-        const getIP = async () => {
-          const response = await fetch(
-            "https://api64.ipify.org?format=json"
-          );
-          const data = await response.json();
-          return data.ip;
-        };
+  //     const response = await axios.patch(
+  //       `${API_LINK}/blotter_documents/`,
+  //       {
+  //         document: docDetail,
+  //       },
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+  //     if (response.status === 200) {
+  //       const getIP = async () => {
+  //         const response = await fetch(
+  //           "https://api64.ipify.org?format=json"
+  //         );
+  //         const data = await response.json();
+  //         return data.ip;
+  //       };
 
-        const ip = await getIP(); // Retrieve IP address
+  //       const ip = await getIP(); // Retrieve IP address
 
-        const logsData = {
-          action: "Updated",
-          details: `Updated a blotter document for the patawag with the control number: (${request.req_id}).`,
-          ip: ip,
-        };
+  //       const logsData = {
+  //         action: "Updated",
+  //         details: `Updated a blotter document for the patawag with the control number: (${request.req_id}).`,
+  //         ip: ip,
+  //       };
 
-        const logsResult = await axios.post(
-          `${API_LINK}/act_logs/add_logs/?id=${id}`,
-          logsData
-        );
-        if (logsResult.status === 200) {
-          socket.emit("send-edit-patawag-doc", response.data);
-          setTimeout(() => {
-            setSubmitClicked(false);
-            setUpdatingStatus("success");
-            setTimeout(() => {
-              setSubmitClicked(null);
-              setUpdatingStatus(null);
-              handleResetServiceId();
-              HSOverlay.close(
-                document.getElementById("hs-edit-serviceDocument-modal")
-              );
-            }, 3000);
-          }, 1000);
-        }
-      }
-    } catch (err) {
-      setSubmitClicked(false);
-      setUpdatingStatus("error");
-      setError(err.message);
-    }
-  };
+  //       const logsResult = await axios.post(
+  //         `${API_LINK}/act_logs/add_logs/?id=${id}`,
+  //         logsData
+  //       );
+  //       if (logsResult.status === 200) {
+  //         socket.emit("send-edit-patawag-doc", response.data);
+  //         setTimeout(() => {
+  //           setSubmitClicked(false);
+  //           setUpdatingStatus("success");
+  //           setTimeout(() => {
+  //             setSubmitClicked(null);
+  //             setUpdatingStatus(null);
+  //             handleResetServiceId();
+  //             HSOverlay.close(
+  //               document.getElementById("hs-edit-serviceDocument-modal")
+  //             );
+  //           }, 3000);
+  //         }, 1000);
+  //       }
+  //     }
+  //   } catch (err) {
+  //     setSubmitClicked(false);
+  //     setUpdatingStatus("error");
+  //     setError(err.message);
+  //   }
+  // };
 
-  const handleResetServiceId = () => {
-    setDocDetail({});
-    setSelectedFormIndex("");
-  };
+  // const handleResetServiceId = () => {
+  //   setDocDetail({});
+  //   setSelectedFormIndex("");
+  // };
 
   return (
     <div>
@@ -159,18 +159,18 @@ const EditBlotterDocument = ({ request, brgy, setEditUpdate, editupdate, id, soc
                 <select
                   name="form"
                   className="border border-1 border-gray-300 shadow bg-white w-full md:w-6/12 mt-2 md:mt-0 border p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                  onChange={handleSelectChange}
-                  value={selectedFormIndex}
+                  // onChange={handleSelectChange}
+                  // value={selectedFormIndex}
                 >
                   <option value="" disabled>
                     Select Document
                   </option>
-                  {docDetails &&
+                  {/* {docDetails &&
                     docDetails.map((item, idx) => (
                       <option key={idx} value={idx}>
                         {item.doc_title}
                       </option>
-                    ))}
+                    ))} */}
                 </select>
               </div>
               <div className="px-4 pb-4">
@@ -192,8 +192,8 @@ const EditBlotterDocument = ({ request, brgy, setEditUpdate, editupdate, id, soc
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="doc_title"
                         type="text"
-                        value={docDetail.doc_title || ""}
-                        onChange={handleChange}
+                        // value={docDetail.doc_title || ""}
+                        // onChange={handleChange}
                         placeholder="Document Name"
                       />
                     </div>
@@ -210,8 +210,8 @@ const EditBlotterDocument = ({ request, brgy, setEditUpdate, editupdate, id, soc
                         id="date"
                         name="date"
                         type="date"
-                        value={docDetail.date || ""}
-                        onChange={handleChange}
+                        // value={docDetail.date || ""}
+                        // onChange={handleChange}
                         required
                       />
                     </div>
@@ -228,8 +228,8 @@ const EditBlotterDocument = ({ request, brgy, setEditUpdate, editupdate, id, soc
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="usapin_blg"
                         type="text"
-                        value={docDetail.usapin_blg || ""}
-                        onChange={handleChange}
+                        // value={docDetail.usapin_blg || ""}
+                        // onChange={handleChange}
                         placeholder="XXXX-XXXX"
                       />
                     </div>
@@ -246,8 +246,8 @@ const EditBlotterDocument = ({ request, brgy, setEditUpdate, editupdate, id, soc
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="reason"
                         type="text"
-                        value={docDetail.reason || ""}
-                        onChange={handleChange}
+                        // value={docDetail.reason || ""}
+                        // onChange={handleChange}
                         placeholder="Reason"
                       />
                     </div>
@@ -264,8 +264,8 @@ const EditBlotterDocument = ({ request, brgy, setEditUpdate, editupdate, id, soc
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="patawag"
                         type="text"
-                        value={docDetail.patawag || ""}
-                        onChange={handleChange}
+                        // value={docDetail.patawag || ""}
+                        // onChange={handleChange}
                         placeholder="Pang ilang patawag..."
                       />
                     </div>
@@ -282,8 +282,8 @@ const EditBlotterDocument = ({ request, brgy, setEditUpdate, editupdate, id, soc
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="complainant"
                         type="text"
-                        value={docDetail.complainant || ""}
-                        onChange={handleChange}
+                        // value={docDetail.complainant || ""}
+                        // onChange={handleChange}
                         placeholder="Name of Complainant"
                       />
                     </div>
@@ -300,8 +300,8 @@ const EditBlotterDocument = ({ request, brgy, setEditUpdate, editupdate, id, soc
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="complainant_address"
                         type="text"
-                        value={docDetail.complainant_address || ""}
-                        onChange={handleChange}
+                        // value={docDetail.complainant_address || ""}
+                        // onChange={handleChange}
                         placeholder="Complainant Address"
                       />
                     </div>
@@ -318,8 +318,8 @@ const EditBlotterDocument = ({ request, brgy, setEditUpdate, editupdate, id, soc
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="accused"
                         type="text"
-                        value={docDetail.accused || ""}
-                        onChange={handleChange}
+                        // value={docDetail.accused || ""}
+                        // onChange={handleChange}
                         placeholder="Name of Accused"
                       />
                     </div>
@@ -336,8 +336,8 @@ const EditBlotterDocument = ({ request, brgy, setEditUpdate, editupdate, id, soc
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="accused_address"
                         type="text"
-                        value={docDetail.accused_address || ""}
-                        onChange={handleChange}
+                        // value={docDetail.accused_address || ""}
+                        // onChange={handleChange}
                         placeholder="Accused Address"
                       />
                     </div>
@@ -353,8 +353,8 @@ const EditBlotterDocument = ({ request, brgy, setEditUpdate, editupdate, id, soc
                         id="message"
                         rows={7}
                         name="message"
-                        value={docDetail.message || ""}
-                        onChange={handleChange}
+                        // value={docDetail.message || ""}
+                        // onChange={handleChange}
                         className="shadow appearance-none border w-full p-2.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         placeholder="Enter service details..."
                       />
@@ -372,8 +372,8 @@ const EditBlotterDocument = ({ request, brgy, setEditUpdate, editupdate, id, soc
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="bcpc_vawc"
                         type="text"
-                        value={docDetail.bcpc_vawc || ""}
-                        onChange={handleChange}
+                        // value={docDetail.bcpc_vawc || ""}
+                        // onChange={handleChange}
                         placeholder="Pangalan ng Bcpc / Vawc"
                       />
                     </div>
@@ -390,8 +390,8 @@ const EditBlotterDocument = ({ request, brgy, setEditUpdate, editupdate, id, soc
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="email"
                         type="text"
-                        value={docDetail.email || ""}
-                        onChange={handleChange}
+                        // value={docDetail.email || ""}
+                        // onChange={handleChange}
                         placeholder="E-mail Address"
                       />
                     </div>
@@ -408,8 +408,8 @@ const EditBlotterDocument = ({ request, brgy, setEditUpdate, editupdate, id, soc
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="contact"
                         type="text"
-                        value={docDetail.contact || ""}
-                        onChange={handleChange}
+                        // value={docDetail.contact || ""}
+                        // onChange={handleChange}
                         placeholder="Telephone / Mobile Number"
                       />
                     </div>
@@ -424,7 +424,7 @@ const EditBlotterDocument = ({ request, brgy, setEditUpdate, editupdate, id, soc
                 <button
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                  onClick={handleSubmit}
+                  // onClick={handleSubmit}
                 >
                   UPDATE
                 </button>
@@ -432,7 +432,7 @@ const EditBlotterDocument = ({ request, brgy, setEditUpdate, editupdate, id, soc
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                   data-hs-overlay="#hs-edit-serviceDocument-modal"
-                  onClick={handleResetServiceId}
+                  // onClick={handleResetServiceId}
                 >
                   CLOSE
                 </button>

@@ -23,67 +23,67 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket }) {
 
   const [subject, setSubject] = useState(""); // State variable for subject
 
-  const handleSave = async (e) => {
-    setError(null); // Reset error state
+  // const handleSave = async (e) => {
+  //   setError(null); // Reset error state
     
-    try {
-      const messageContent = document.getElementById("message").value;
+  //   try {
+  //     const messageContent = document.getElementById("message").value;
   
-      // Check if subject or message is empty
-      if (subject.trim() === "" || messageContent.trim() === "") {
-        setError("Subject and message cannot be empty.");
-        setUpdatingStatus("errorFields");
-        return; // Exit the function if either subject or message is empty
-      }
+  //     // Check if subject or message is empty
+  //     if (subject.trim() === "" || messageContent.trim() === "") {
+  //       setError("Subject and message cannot be empty.");
+  //       setUpdatingStatus("errorFields");
+  //       return; // Exit the function if either subject or message is empty
+  //     }
   
-      const notificationData = {
-        category: "One",
-        compose: {
-          subject: subject,
-          message: messageContent,
-          go_to: null,
-        },
-        target: {
-          user_id: user.user_id,
-          area: brgy,
-        },
-        type: "Resident",
-        banner: banner,
-        logo: logo,
-      };
+  //     const notificationData = {
+  //       category: "One",
+  //       compose: {
+  //         subject: subject,
+  //         message: messageContent,
+  //         go_to: null,
+  //       },
+  //       target: {
+  //         user_id: user.user_id,
+  //         area: brgy,
+  //       },
+  //       type: "Resident",
+  //       banner: banner,
+  //       logo: logo,
+  //     };
   
-      const response = await axios.post(`${API_LINK}/notification/`, notificationData);
+  //     const response = await axios.post(`${API_LINK}/notification/`, notificationData);
 
-      socket.emit("send-resident-notif", response.data);
-      setUpdatingStatus("success");
-      setTimeout(() => {
-        setUpdatingStatus(null);
-        handleResetModal();
-        HSOverlay.close(
-          document.getElementById("hs-modal-messageResident")
-        );
-      }, 3000);
-      document.getElementById("message").value = "";
-    } catch (err) {
-      console.error(err);
-      setUpdatingStatus("error");
-      setError("An error occurred while sending the message.");
-    } finally {
-      setSubmitClicked(false);
-    }
-  };
+  //     socket.emit("send-resident-notif", response.data);
+  //     setUpdatingStatus("success");
+  //     setTimeout(() => {
+  //       setUpdatingStatus(null);
+  //       handleResetModal();
+  //       HSOverlay.close(
+  //         document.getElementById("hs-modal-messageResident")
+  //       );
+  //     }, 3000);
+  //     document.getElementById("message").value = "";
+  //   } catch (err) {
+  //     console.error(err);
+  //     setUpdatingStatus("error");
+  //     setError("An error occurred while sending the message.");
+  //   } finally {
+  //     setSubmitClicked(false);
+  //   }
+  // };
 
-  const handleOnChange = (e) => {
-    setStatus((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
+  // const handleOnChange = (e) => {
+  //   setStatus((prev) => ({
+  //     ...prev,
+  //     [e.target.name]: e.target.value,
+  //   }));
+  // };
 
-  const handleResetModal = () => {
-    setSubject("");
-    document.getElementById("message").value = "";
-  };
+  // const handleResetModal = () => {
+  //   setSubject("");
+  //   document.getElementById("message").value = "";
+  // };
 
   return (
     <div>
@@ -121,7 +121,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket }) {
                         type="text"
                         placeholder="Enter subject"
                         value={subject}
-                        onChange={(e) => setSubject(e.target.value)}
+                        // onChange={(e) => setSubject(e.target.value)}
                         className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline mb-2"
                       />
                       <textarea
@@ -141,7 +141,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket }) {
                 <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
                   <button
                     type="button"
-                    onClick={handleSave}
+                    // onClick={handleSave}
                     className="h-[2.5rem] w-full md:w-[11.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm align-middle"
                   >
                     SEND NOTIFICATION
@@ -150,7 +150,7 @@ function StatusResident({ user, setUser, brgy, status, setStatus, socket }) {
                     type="button"
                     className="h-[2.5rem] w-full md:w-[9.5rem] py-1 px-6 inline-flex justify-center items-center gap-2 rounded-md border text-sm font-base bg-pink-800 text-white shadow-sm align-middle"
                     data-hs-overlay="#hs-modal-messageResident"
-                    onClick={handleResetModal}
+                    // onClick={handleResetModal}
                   >
                     CLOSE
                   </button>

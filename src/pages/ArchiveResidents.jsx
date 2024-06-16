@@ -33,132 +33,133 @@ const Residents = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const information = GetBrgy(brgy);
-  const handleSort = (sortBy) => {
-    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
-    setSortOrder(newSortOrder);
-    setSortColumn(sortBy);
 
-    const sortedData = users.slice().sort((a, b) => {
-      if (sortBy === "user_id") {
-        return newSortOrder === "asc"
-          ? a.user_id.localeCompare(b.user_id)
-          : b.user_id.localeCompare(a.user_id);
-      } else if (sortBy === "lastName") {
-        return newSortOrder === "asc"
-          ? a.lastName.localeCompare(b.lastName)
-          : b.lastName.localeCompare(a.lastName);
-      } else if (sortBy === "isApproved") {
-        const order = { Registered: 1, Pending: 2, Denied: 3 };
-        return newSortOrder === "asc"
-          ? order[a.isApproved] - order[b.isApproved]
-          : order[b.isApproved] - order[a.isApproved];
-      }
+  // const handleSort = (sortBy) => {
+  //   const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+  //   setSortOrder(newSortOrder);
+  //   setSortColumn(sortBy);
 
-      return 0;
-    });
+  //   const sortedData = users.slice().sort((a, b) => {
+  //     if (sortBy === "user_id") {
+  //       return newSortOrder === "asc"
+  //         ? a.user_id.localeCompare(b.user_id)
+  //         : b.user_id.localeCompare(a.user_id);
+  //     } else if (sortBy === "lastName") {
+  //       return newSortOrder === "asc"
+  //         ? a.lastName.localeCompare(b.lastName)
+  //         : b.lastName.localeCompare(a.lastName);
+  //     } else if (sortBy === "isApproved") {
+  //       const order = { Registered: 1, Pending: 2, Denied: 3 };
+  //       return newSortOrder === "asc"
+  //         ? order[a.isApproved] - order[b.isApproved]
+  //         : order[b.isApproved] - order[a.isApproved];
+  //     }
 
-    setUsers(sortedData);
-  };
+  //     return 0;
+  //   });
 
-  useEffect(() => {
-    const fetch = async () => {
-      const response = await axios.get(
-        `${API_LINK}/users/showArchived/?brgy=${brgy}&type=Resident&status=${statusFilter}`
-      );
+  //   setUsers(sortedData);
+  // };
 
-      if (response.status === 200) {
-        setUsers(response.data.result);
-        setFilteredResidents(response.data.result.slice(0, 10));
-        setPageCount(response.data.pageCount);
-      } else {
-        setUsers([]);
-      }
-    };
+  // useEffect(() => {
+  //   const fetch = async () => {
+  //     const response = await axios.get(
+  //       `${API_LINK}/users/showArchived/?brgy=${brgy}&type=Resident&status=${statusFilter}`
+  //     );
 
-    fetch();
-  }, [brgy, statusFilter]);
+  //     if (response.status === 200) {
+  //       setUsers(response.data.result);
+  //       setFilteredResidents(response.data.result.slice(0, 10));
+  //       setPageCount(response.data.pageCount);
+  //     } else {
+  //       setUsers([]);
+  //     }
+  //   };
 
-  useEffect(() => {
-    const filteredData = users.filter((item) => {
-      const fullName =
-        item.lastName.toLowerCase() +
-        ", " +
-        item.firstName.toLowerCase() +
-        (item.middleName !== undefined
-          ? " " + item.middleName.toLowerCase()
-          : "");
+  //   fetch();
+  // }, [brgy, statusFilter]);
 
-      return (
-        item.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        fullName.includes(searchQuery.toLowerCase())
-      );
-    });
+  // useEffect(() => {
+  //   const filteredData = users.filter((item) => {
+  //     const fullName =
+  //       item.lastName.toLowerCase() +
+  //       ", " +
+  //       item.firstName.toLowerCase() +
+  //       (item.middleName !== undefined
+  //         ? " " + item.middleName.toLowerCase()
+  //         : "");
 
-    const startIndex = currentPage * 10;
-    const endIndex = startIndex + 10;
-    setFilteredResidents(filteredData.slice(startIndex, endIndex));
-    setPageCount(Math.ceil(filteredData.length / 10));
-  }, [users, searchQuery, currentPage]);
+  //     return (
+  //       item.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //       fullName.includes(searchQuery.toLowerCase())
+  //     );
+  //   });
 
-  const handlePageChange = ({ selected }) => {
-    setCurrentPage(selected);
-  };
+  //   const startIndex = currentPage * 10;
+  //   const endIndex = startIndex + 10;
+  //   setFilteredResidents(filteredData.slice(startIndex, endIndex));
+  //   setPageCount(Math.ceil(filteredData.length / 10));
+  // }, [users, searchQuery, currentPage]);
 
-  // Handle search input change
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-    setCurrentPage(0); // Reset current page when search query changes
-  };
+  // const handlePageChange = ({ selected }) => {
+  //   setCurrentPage(selected);
+  // };
 
-  const Users = users.filter((item) => {
-    const fullName =
-      `${item.lastName} ${item.firstName} ${item.middleName}`.toLowerCase();
-    const userIdMatches = item.user_id
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const nameMatches = fullName.includes(searchQuery.toLowerCase());
+  // // Handle search input change
+  // const handleSearchChange = (e) => {
+  //   setSearchQuery(e.target.value);
+  //   setCurrentPage(0); // Reset current page when search query changes
+  // };
 
-    return userIdMatches || nameMatches;
-  });
+  // const Users = users.filter((item) => {
+  //   const fullName =
+  //     `${item.lastName} ${item.firstName} ${item.middleName}`.toLowerCase();
+  //   const userIdMatches = item.user_id
+  //     .toLowerCase()
+  //     .includes(searchQuery.toLowerCase());
+  //   const nameMatches = fullName.includes(searchQuery.toLowerCase());
 
-  const handleResetFilter = () => {
-    setStatusFilter("all");
-    setDateFilter(null);
-    setSearchQuery("");
-  };
+  //   return userIdMatches || nameMatches;
+  // });
 
-  const handleStatusFilter = (selectedStatus) => {
-    setStatusFilter(selectedStatus);
-  };
+  // const handleResetFilter = () => {
+  //   setStatusFilter("all");
+  //   setDateFilter(null);
+  //   setSearchQuery("");
+  // };
 
-  const checkboxHandler = (e) => {
-    let isSelected = e.target.checked;
-    let value = e.target.value;
+  // const handleStatusFilter = (selectedStatus) => {
+  //   setStatusFilter(selectedStatus);
+  // };
 
-    if (isSelected) {
-      setSelectedItems([...selectedItems, value]);
-    } else {
-      setSelectedItems((prevData) => {
-        return prevData.filter((id) => {
-          return id !== value;
-        });
-      });
-    }
-  };
+  // const checkboxHandler = (e) => {
+  //   let isSelected = e.target.checked;
+  //   let value = e.target.value;
 
-  const checkAllHandler = () => {
-    const usersToCheck = Users.length > 0 ? Users : users;
+  //   if (isSelected) {
+  //     setSelectedItems([...selectedItems, value]);
+  //   } else {
+  //     setSelectedItems((prevData) => {
+  //       return prevData.filter((id) => {
+  //         return id !== value;
+  //       });
+  //     });
+  //   }
+  // };
 
-    if (usersToCheck.length === selectedItems.length) {
-      setSelectedItems([]);
-    } else {
-      const postIds = usersToCheck.map((item) => {
-        return item._id;
-      });
+  // const checkAllHandler = () => {
+  //   const usersToCheck = Users.length > 0 ? Users : users;
 
-      setSelectedItems(postIds);
-    }
-  };
+  //   if (usersToCheck.length === selectedItems.length) {
+  //     setSelectedItems([]);
+  //   } else {
+  //     const postIds = usersToCheck.map((item) => {
+  //       return item._id;
+  //     });
+
+  //     setSelectedItems(postIds);
+  //   }
+  // };
 
   const tableHeader = ["NAME", "EMAIL", "AGE", "CONTACT", "STATUS", "ACTIONS"];
 
@@ -166,25 +167,26 @@ const Residents = () => {
     document.title = "Archived Residents | Barangay E-Services Management";
   }, []);
 
-  const handleView = (item) => {
-    setUser(item);
-  };
+  // const handleView = (item) => {
+  //   setUser(item);
+  // };
 
-  useEffect(() => {
-    const handleEventArchive = (obj) => {
-      setUser(obj);
-      setUsers((prev) => prev.filter((item) => item._id !== obj._id));
-      setFilteredResidents((prev) =>
-        prev.filter((item) => item._id !== obj._id)
-      );
-    };
+  // useEffect(() => {
+  //   const handleEventArchive = (obj) => {
+  //     setUser(obj);
+  //     setUsers((prev) => prev.filter((item) => item._id !== obj._id));
+  //     setFilteredResidents((prev) =>
+  //       prev.filter((item) => item._id !== obj._id)
+  //     );
+  //   };
 
-    socket.on("receive-restore-staff", handleEventArchive);
+  //   socket.on("receive-restore-staff", handleEventArchive);
 
-    return () => {
-      socket.off("receive-restore-staff", handleEventArchive);
-    };
-  }, [socket, setUsers]);
+  //   return () => {
+  //     socket.off("receive-restore-staff", handleEventArchive);
+  //   };
+  // }, [socket, setUsers]);
+
   return (
     <div className="mx-4 mt-8">
       {/* Body */}
@@ -242,7 +244,7 @@ const Residents = () => {
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    onClick={handleResetFilter}
+                    // onClick={handleResetFilter}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -250,7 +252,7 @@ const Residents = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <li
-                    onClick={() => handleStatusFilter("For Review")}
+                    // onClick={() => handleStatusFilter("For Review")}
                     className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
                       statusFilter === "For Review" && "bg-[#b3c5cc]"
                     }`}
@@ -258,7 +260,7 @@ const Residents = () => {
                     FOR REVIEW
                   </li>
                   <li
-                    onClick={() => handleStatusFilter("Rejected")}
+                    // onClick={() => handleStatusFilter("Rejected")}
                     className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
                       statusFilter === "Denied" && "bg-[#b3c5cc]"
                     }`}
@@ -266,7 +268,7 @@ const Residents = () => {
                     REJECTED
                   </li>
                   <li
-                    onClick={() => handleStatusFilter("Partially Verified")}
+                    // onClick={() => handleStatusFilter("Partially Verified")}
                     className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
                       statusFilter === "Verified" && "bg-[#b3c5cc]"
                     }`}
@@ -274,7 +276,7 @@ const Residents = () => {
                     PARTIALLY VERIFIED
                   </li>
                   <li
-                    onClick={() => handleStatusFilter("Verified")}
+                    // onClick={() => handleStatusFilter("Verified")}
                     className={`flex items-center font-medium uppercase my-1 gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500 ${
                       statusFilter === "Verified" && "bg-[#b3c5cc]"
                     }`}
@@ -318,8 +320,8 @@ const Residents = () => {
                   id="hs-table-with-pagination-search"
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
+                  // value={searchQuery}
+                  // onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center space-x-2">
@@ -356,7 +358,7 @@ const Residents = () => {
                     <input
                       type="checkbox"
                       name=""
-                      onClick={checkAllHandler}
+                      // onClick={checkAllHandler}
                       id=""
                     />
                   </div>
@@ -382,7 +384,7 @@ const Residents = () => {
                           type="checkbox"
                           checked={selectedItems.includes(item._id)}
                           value={item._id}
-                          onChange={checkboxHandler}
+                          // onChange={checkboxHandler}
                           id=""
                         />
                       </div>
@@ -500,7 +502,7 @@ const Residents = () => {
         <ReactPaginate
           breakLabel="..."
           nextLabel=">>"
-          onPageChange={handlePageChange}
+          // onPageChange={handlePageChange}
           pageRangeDisplayed={3}
           pageCount={pageCount}
           previousLabel="<<"

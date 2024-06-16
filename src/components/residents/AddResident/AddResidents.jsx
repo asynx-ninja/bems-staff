@@ -61,404 +61,404 @@ const AddResidents = () => {
   });
 
 
-  const checkEmptyFields = () => {
-    let arr = [];
-    const keysToCheck = [
-      "firstName",
-      "lastName",
-      "age",
-      "email",
-      "birthday",
-      "contact",
-      "username",
-      "password",
-      "street",
-    ];
-    for (const key of keysToCheck) {
-      if (user[key] === "") {
-        arr.push(key);
-      }
-    }
-    setEmptyFields(arr);
-    return arr;
-  };
+  // const checkEmptyFields = () => {
+  //   let arr = [];
+  //   const keysToCheck = [
+  //     "firstName",
+  //     "lastName",
+  //     "age",
+  //     "email",
+  //     "birthday",
+  //     "contact",
+  //     "username",
+  //     "password",
+  //     "street",
+  //   ];
+  //   for (const key of keysToCheck) {
+  //     if (user[key] === "") {
+  //       arr.push(key);
+  //     }
+  //   }
+  //   setEmptyFields(arr);
+  //   return arr;
+  // };
 
-  const handleButtonClick = (e) => {
-    e.preventDefault();
-    setUser((prev) => ({
-      ...prev,
-      password: "User12345",
-    }));
-  };
+  // const handleButtonClick = (e) => {
+  //   e.preventDefault();
+  //   setUser((prev) => ({
+  //     ...prev,
+  //     password: "User12345",
+  //   }));
+  // };
 
-  const handleChange = (e) => {
-    setUser((prev) => {
-      const createUser = { ...prev, [e.target.name]: e.target.value };
+  // const handleChange = (e) => {
+  //   setUser((prev) => {
+  //     const createUser = { ...prev, [e.target.name]: e.target.value };
 
-      if (e.target.name === "birthday") {
-        createUser.age = calculateAge(createUser.birthday);
-      }
+  //     if (e.target.name === "birthday") {
+  //       createUser.age = calculateAge(createUser.birthday);
+  //     }
 
-      return createUser;
-    });
-  };
+  //     return createUser;
+  //   });
+  // };
 
-  const handleChange2 = (field, value) => {
-    setUser((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
+  // const handleChange2 = (field, value) => {
+  //   setUser((prev) => ({
+  //     ...prev,
+  //     [field]: value,
+  //   }));
+  // };
 
-  const handleVerification = (name, value) => {
-    setUser((prev) => ({
-      ...prev,
-      verification: {
-        ...prev.verification,
-        [name]: value,
-      },
-    }));
-  };
+  // const handleVerification = (name, value) => {
+  //   setUser((prev) => ({
+  //     ...prev,
+  //     verification: {
+  //       ...prev.verification,
+  //       [name]: value,
+  //     },
+  //   }));
+  // };
 
-  const handleFileVerification = (name, files) => {
-    setUser((prev) => ({
-      ...prev,
-      verification: {
-        ...prev.verification,
-        [name]: Array.isArray(prev.verification[name])
-          ? [...prev.verification[name], ...files]
-          : [...files],
-      },
-    }));
-  };
+  // const handleFileVerification = (name, files) => {
+  //   setUser((prev) => ({
+  //     ...prev,
+  //     verification: {
+  //       ...prev.verification,
+  //       [name]: Array.isArray(prev.verification[name])
+  //         ? [...prev.verification[name], ...files]
+  //         : [...files],
+  //     },
+  //   }));
+  // };
 
-  const handleDelete = (name, idx, e) => {
-    e.preventDefault();
-    e.stopPropagation(); // Stop the event from propagating to the parent container
+  // const handleDelete = (name, idx, e) => {
+  //   e.preventDefault();
+  //   e.stopPropagation(); // Stop the event from propagating to the parent container
 
-    const newArray = user.verification[name].filter(
-      (item, index) => index !== idx
-    );
+  //   const newArray = user.verification[name].filter(
+  //     (item, index) => index !== idx
+  //   );
 
-    setUser((prev) => ({
-      ...prev,
-      verification: {
-        ...prev.verification,
-        [name]: newArray,
-      },
-    }));
-  };
+  //   setUser((prev) => ({
+  //     ...prev,
+  //     verification: {
+  //       ...prev.verification,
+  //       [name]: newArray,
+  //     },
+  //   }));
+  // };
 
-  const handleOnCapture = () => {
-    setCapture(!capture);
-  };
+  // const handleOnCapture = () => {
+  //   setCapture(!capture);
+  // };
 
-  const handleImageClick = (image) => {
-    setSelectedImage(image);
-    setViewerVisible(true);
-  };
+  // const handleImageClick = (image) => {
+  //   setSelectedImage(image);
+  //   setViewerVisible(true);
+  // };
 
-  // WEBCAM
-  const videoConstraints = {
-    width: 1280,
-    height: 720,
-    facingMode: "user",
-  };
+  // // WEBCAM
+  // const videoConstraints = {
+  //   width: 1280,
+  //   height: 720,
+  //   facingMode: "user",
+  // };
 
-  function WebcamCapture() {
-    const webcamRef = React.useRef(null);
-    const [capturedImage, setCapturedImage] = useState(null);
+  // function WebcamCapture() {
+  //   const webcamRef = React.useRef(null);
+  //   const [capturedImage, setCapturedImage] = useState(null);
 
-    const capture = React.useCallback(
-      async (e) => {
-        e.preventDefault(); // Prevent the default behavior
-        const imageSrc = webcamRef.current.getScreenshot();
-        setCapturedImage(imageSrc);
+  //   const capture = React.useCallback(
+  //     async (e) => {
+  //       e.preventDefault(); // Prevent the default behavior
+  //       const imageSrc = webcamRef.current.getScreenshot();
+  //       setCapturedImage(imageSrc);
 
-        try {
-          const response = await fetch(imageSrc);
-          const file = await response.blob();
+  //       try {
+  //         const response = await fetch(imageSrc);
+  //         const file = await response.blob();
 
-          // Use the existing Blob for selfie with data:image/jpeg;base64 format
-          let selfieFile = new File(
-            [file],
-            `${user.lastName}, ${user.firstName} - SELFIE`,
-            {
-              type: "image/jpeg",
-              size: file.size,
-              uri: `data:image/jpeg;base64,${imageSrc.split(",")[1]}`,
-            }
-          );
-
-
-          setUser((prev) => ({
-            ...prev,
-            verification: {
-              ...prev.verification,
-              selfie: [selfieFile], // Only keep the new selfie, replacing the existing one
-            },
-          }));
-        } catch (error) {
-          console.error("Error fetching image:", error);
-        }
-      },
-      [webcamRef, user]
-    );
-
-    return (
-      <>
-        <div className="relative">
-          <Webcam
-            audio={false}
-            height={720}
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            width={1280}
-            className="rounded-xl w-full h-full p-2"
-          />
-          <div className="flex items-center justify-center absolute bottom-4 left-1/2 transform -translate-x-1/2 gap-5">
-            <button
-              onClick={capture}
-              className="h-12 w-12 py-1 px-2 rounded-full border text-sm font-base bg-teal-900 text-white shadow-sm "
-            >
-              <div className="flex items-center justify-center">
-                <FaCameraRetro size={20} />
-              </div>
-            </button>
-            <button
-              onClick={handleOnCapture}
-              className="h-12 w-12 py-1 px-2 rounded-full border text-sm font-base bg-pink-900 text-white shadow-sm"
-            >
-              <div className="flex items-center justify-center">
-                <MdOutlineCancel size={27} />
-              </div>
-            </button>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  const handleSubmit = async (e) => {
-    try {
-      e.preventDefault();
-      setSubmitClicked(true);
-      setError(null); // Reset error state
-      setCreationStatus(null);
-
-      const emptyFieldsArr = checkEmptyFields();
-
-      if (emptyFieldsArr.length > 0) {
-
-        setEmpty(true);
-        setSubmitClicked(false);
-      } else {
-        const calculatedAge = calculateAge(user.birthday);
-
-        if (calculatedAge < 16) {
-          // Set an error message if the age is less than 17
-          setCreationStatus("ageError");
-          setSubmitClicked(false);
-          return;
-        } else {
-          const obj = {
-            firstName: user.firstName,
-            middleName: user.middleName,
-            lastName: user.lastName,
-            suffix: user.suffix,
-            religion: user.religion,
-            email: user.email,
-            birthday: user.birthday,
-            age: calculatedAge,
-            contact: user.contact,
-            sex: user.sex,
-            address: { street: user.street, brgy: user.brgy, city: user.city },
-            occupation: user.occupation,
-            civil_status: user.civil_status,
-            type: user.type === "" ? "Resident" : user.type,
-            isVoter: user.isVoter,
-            isHead: user.isHead,
-            isArchived: user.isArchived,
-            isApproved: user.isApproved,
-            username: user.username,
-            password: user.password,
-            verification: user.verification,
-            primary_id: user.verification.primary_id,
-            secondary_id: user.verification.secondary_id,
-          };
-
-          const folderResponse = await axios.get(
-            `${API_LINK}/folder/specific/?brgy=${brgy}`
-          );
-
-          if (folderResponse.status === 200) {
-            var formData = new FormData();
-
-            formData.append("user", JSON.stringify(obj));
-
-            if (user.verification && user.verification.selfie) {
-              let selfieFile = new File(
-                [user.verification.selfie[0]],
-                `${user.lastName}, ${user.firstName} - SELFIE`,
-                {
-                  type: "image/jpeg",
-                  size: user.verification.selfie[0].size,
-                  uri: user.verification.selfie[0].uri,
-                }
-              );
-
-              formData.append("files", selfieFile);
-            }
-
-            if (user.verification && user.verification.primary_file) {
-              for (let i = 0; i < user.verification.primary_file.length; i++) {
-                let file = {
-                  name: `${user.lastName}, ${user.firstName
-                    } - PRIMARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
-                  size: user.verification.primary_file[i].size,
-                  type: user.verification.primary_file[i].type,
-                  uri: user.verification.primary_file[i].uri,
-                };
+  //         // Use the existing Blob for selfie with data:image/jpeg;base64 format
+  //         let selfieFile = new File(
+  //           [file],
+  //           `${user.lastName}, ${user.firstName} - SELFIE`,
+  //           {
+  //             type: "image/jpeg",
+  //             size: file.size,
+  //             uri: `data:image/jpeg;base64,${imageSrc.split(",")[1]}`,
+  //           }
+  //         );
 
 
+  //         setUser((prev) => ({
+  //           ...prev,
+  //           verification: {
+  //             ...prev.verification,
+  //             selfie: [selfieFile], // Only keep the new selfie, replacing the existing one
+  //           },
+  //         }));
+  //       } catch (error) {
+  //         console.error("Error fetching image:", error);
+  //       }
+  //     },
+  //     [webcamRef, user]
+  //   );
 
-                formData.append(
-                  "files",
-                  new File([user.verification.primary_file[i]], file.name, {
-                    type: file.type,
-                  })
-                );
-              }
-            }
+  //   return (
+  //     <>
+  //       <div className="relative">
+  //         <Webcam
+  //           audio={false}
+  //           height={720}
+  //           ref={webcamRef}
+  //           screenshotFormat="image/jpeg"
+  //           width={1280}
+  //           className="rounded-xl w-full h-full p-2"
+  //         />
+  //         <div className="flex items-center justify-center absolute bottom-4 left-1/2 transform -translate-x-1/2 gap-5">
+  //           <button
+  //             onClick={capture}
+  //             className="h-12 w-12 py-1 px-2 rounded-full border text-sm font-base bg-teal-900 text-white shadow-sm "
+  //           >
+  //             <div className="flex items-center justify-center">
+  //               <FaCameraRetro size={20} />
+  //             </div>
+  //           </button>
+  //           <button
+  //             onClick={handleOnCapture}
+  //             className="h-12 w-12 py-1 px-2 rounded-full border text-sm font-base bg-pink-900 text-white shadow-sm"
+  //           >
+  //             <div className="flex items-center justify-center">
+  //               <MdOutlineCancel size={27} />
+  //             </div>
+  //           </button>
+  //         </div>
+  //       </div>
+  //     </>
+  //   );
+  // }
 
-            if (user.verification && user.verification.secondary_file) {
-              for (let i = 0; i < user.verification.secondary_file.length; i++) {
-                let file = {
-                  name: `${user.lastName}, ${user.firstName
-                    } - SECONDARY ID ${moment(new Date()).format(
-                      "MMDDYYYYHHmmss"
-                    )}`,
-                  uri: user.verification.secondary_file[i].uri,
-                  type: user.verification.secondary_file[i].type,
-                  size: user.verification.secondary_file[i].size,
-                };
+  // const handleSubmit = async (e) => {
+  //   try {
+  //     e.preventDefault();
+  //     setSubmitClicked(true);
+  //     setError(null); // Reset error state
+  //     setCreationStatus(null);
 
-                formData.append(
-                  "files",
-                  new File([user.verification.secondary_file[i]], file.name, {
-                    type: file.type,
-                  })
-                );
-              }
-            }
+  //     const emptyFieldsArr = checkEmptyFields();
 
-            const response = await axios.post(
-              `${API_LINK}/users/?folder_id=${folderResponse.data[0].verification}`,
-              formData,
-              {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                },
-              }
-            );
+  //     if (emptyFieldsArr.length > 0) {
 
-            if (response.status === 200) {
-              const getIP = async () => {
-                const response = await fetch("https://api64.ipify.org?format=json");
-                const data = await response.json();
-                return data.ip;
-              };
+  //       setEmpty(true);
+  //       setSubmitClicked(false);
+  //     } else {
+  //       const calculatedAge = calculateAge(user.birthday);
 
-              const ip = await getIP(); // Retrieve IP address
+  //       if (calculatedAge < 16) {
+  //         // Set an error message if the age is less than 17
+  //         setCreationStatus("ageError");
+  //         setSubmitClicked(false);
+  //         return;
+  //       } else {
+  //         const obj = {
+  //           firstName: user.firstName,
+  //           middleName: user.middleName,
+  //           lastName: user.lastName,
+  //           suffix: user.suffix,
+  //           religion: user.religion,
+  //           email: user.email,
+  //           birthday: user.birthday,
+  //           age: calculatedAge,
+  //           contact: user.contact,
+  //           sex: user.sex,
+  //           address: { street: user.street, brgy: user.brgy, city: user.city },
+  //           occupation: user.occupation,
+  //           civil_status: user.civil_status,
+  //           type: user.type === "" ? "Resident" : user.type,
+  //           isVoter: user.isVoter,
+  //           isHead: user.isHead,
+  //           isArchived: user.isArchived,
+  //           isApproved: user.isApproved,
+  //           username: user.username,
+  //           password: user.password,
+  //           verification: user.verification,
+  //           primary_id: user.verification.primary_id,
+  //           secondary_id: user.verification.secondary_id,
+  //         };
 
-              const logsData = {
-                action: "Created",
-                details: "A new resident was registered in the system.",
-                ip: ip,
-              };
+  //         const folderResponse = await axios.get(
+  //           `${API_LINK}/folder/specific/?brgy=${brgy}`
+  //         );
 
-              const logsResult = await axios.post(
-                `${API_LINK}/act_logs/add_logs/?id=${id}`,
-                logsData
-              );
-              if (logsResult.status === 200) {
-                setUser({
-                  user_id: "",
-                  firstName: "",
-                  lastName: "",
-                  email: "",
-                  birthday: "",
-                  age: "",
-                  contact: "",
-                  address: "",
-                  type: "",
-                  username: "",
-                  password: "",
-                  isArchived: false,
-                  isApproved: "Fully Verified",
-                  city: "Rodriguez, Rizal",
-                  brgy: brgy,
-                  verification: {
-                    primary_id: "",
-                    primary_file: [],
-                    secondary_id: "",
-                    secondary_file: [],
-                    selfie: [],
-                  },
-                });
+  //         if (folderResponse.status === 200) {
+  //           var formData = new FormData();
 
-                setSubmitClicked(false);
-                setCreationStatus("success");
-                setTimeout(() => {
-                  window.location.reload();
-                }, 3000);
-              }
-            }
-          }
-        }
-      }
-    } catch (err) {
-      console.log(err);
-      setSubmitClicked(false);
-      setCreationStatus("error");
-      setError("An error occurred while creating resident.");
-    }
-  };
+  //           formData.append("user", JSON.stringify(obj));
 
-  const religions = [
-    "Roman Catholic",
-    "Islam",
-    "Iglesia ni Cristo",
-    "Philippine Independent Church (Aglipayan)",
-    "Seventh-day Adventist",
-    "Bible Baptist Church",
-    "United Church of Christ in the Philippines",
-    "Jehovah Witnesses",
-    "Church of Christ",
-    "Born Again",
-    "Other Religous Affiliation",
-    // Add more religions here...
-  ];
+  //           if (user.verification && user.verification.selfie) {
+  //             let selfieFile = new File(
+  //               [user.verification.selfie[0]],
+  //               `${user.lastName}, ${user.firstName} - SELFIE`,
+  //               {
+  //                 type: "image/jpeg",
+  //                 size: user.verification.selfie[0].size,
+  //                 uri: user.verification.selfie[0].uri,
+  //               }
+  //             );
 
-  const birthdayFormat = (date) => {
-    const birthdate = date === undefined ? "" : date.substr(0, 10);
-    return birthdate;
-  };
+  //             formData.append("files", selfieFile);
+  //           }
 
-  const calculateAge = (birthDate) => {
-    const today = new Date();
-    const birthDateObj = new Date(birthDate);
-    let age = today.getFullYear() - birthDateObj.getFullYear();
-    const monthDiff = today.getMonth() - birthDateObj.getMonth();
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birthDateObj.getDate())
-    ) {
-      age--;
-    }
+  //           if (user.verification && user.verification.primary_file) {
+  //             for (let i = 0; i < user.verification.primary_file.length; i++) {
+  //               let file = {
+  //                 name: `${user.lastName}, ${user.firstName
+  //                   } - PRIMARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
+  //                 size: user.verification.primary_file[i].size,
+  //                 type: user.verification.primary_file[i].type,
+  //                 uri: user.verification.primary_file[i].uri,
+  //               };
 
-    return age;
-  };
+
+
+  //               formData.append(
+  //                 "files",
+  //                 new File([user.verification.primary_file[i]], file.name, {
+  //                   type: file.type,
+  //                 })
+  //               );
+  //             }
+  //           }
+
+  //           if (user.verification && user.verification.secondary_file) {
+  //             for (let i = 0; i < user.verification.secondary_file.length; i++) {
+  //               let file = {
+  //                 name: `${user.lastName}, ${user.firstName
+  //                   } - SECONDARY ID ${moment(new Date()).format(
+  //                     "MMDDYYYYHHmmss"
+  //                   )}`,
+  //                 uri: user.verification.secondary_file[i].uri,
+  //                 type: user.verification.secondary_file[i].type,
+  //                 size: user.verification.secondary_file[i].size,
+  //               };
+
+  //               formData.append(
+  //                 "files",
+  //                 new File([user.verification.secondary_file[i]], file.name, {
+  //                   type: file.type,
+  //                 })
+  //               );
+  //             }
+  //           }
+
+  //           const response = await axios.post(
+  //             `${API_LINK}/users/?folder_id=${folderResponse.data[0].verification}`,
+  //             formData,
+  //             {
+  //               headers: {
+  //                 "Content-Type": "multipart/form-data",
+  //               },
+  //             }
+  //           );
+
+  //           if (response.status === 200) {
+  //             const getIP = async () => {
+  //               const response = await fetch("https://api64.ipify.org?format=json");
+  //               const data = await response.json();
+  //               return data.ip;
+  //             };
+
+  //             const ip = await getIP(); // Retrieve IP address
+
+  //             const logsData = {
+  //               action: "Created",
+  //               details: "A new resident was registered in the system.",
+  //               ip: ip,
+  //             };
+
+  //             const logsResult = await axios.post(
+  //               `${API_LINK}/act_logs/add_logs/?id=${id}`,
+  //               logsData
+  //             );
+  //             if (logsResult.status === 200) {
+  //               setUser({
+  //                 user_id: "",
+  //                 firstName: "",
+  //                 lastName: "",
+  //                 email: "",
+  //                 birthday: "",
+  //                 age: "",
+  //                 contact: "",
+  //                 address: "",
+  //                 type: "",
+  //                 username: "",
+  //                 password: "",
+  //                 isArchived: false,
+  //                 isApproved: "Fully Verified",
+  //                 city: "Rodriguez, Rizal",
+  //                 brgy: brgy,
+  //                 verification: {
+  //                   primary_id: "",
+  //                   primary_file: [],
+  //                   secondary_id: "",
+  //                   secondary_file: [],
+  //                   selfie: [],
+  //                 },
+  //               });
+
+  //               setSubmitClicked(false);
+  //               setCreationStatus("success");
+  //               setTimeout(() => {
+  //                 window.location.reload();
+  //               }, 3000);
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //     setSubmitClicked(false);
+  //     setCreationStatus("error");
+  //     setError("An error occurred while creating resident.");
+  //   }
+  // };
+
+  // const religions = [
+  //   "Roman Catholic",
+  //   "Islam",
+  //   "Iglesia ni Cristo",
+  //   "Philippine Independent Church (Aglipayan)",
+  //   "Seventh-day Adventist",
+  //   "Bible Baptist Church",
+  //   "United Church of Christ in the Philippines",
+  //   "Jehovah Witnesses",
+  //   "Church of Christ",
+  //   "Born Again",
+  //   "Other Religous Affiliation",
+  //   // Add more religions here...
+  // ];
+
+  // const birthdayFormat = (date) => {
+  //   const birthdate = date === undefined ? "" : date.substr(0, 10);
+  //   return birthdate;
+  // };
+
+  // const calculateAge = (birthDate) => {
+  //   const today = new Date();
+  //   const birthDateObj = new Date(birthDate);
+  //   let age = today.getFullYear() - birthDateObj.getFullYear();
+  //   const monthDiff = today.getMonth() - birthDateObj.getMonth();
+  //   if (
+  //     monthDiff < 0 ||
+  //     (monthDiff === 0 && today.getDate() < birthDateObj.getDate())
+  //   ) {
+  //     age--;
+  //   }
+
+  //   return age;
+  // };
 
   return (
     <div className="mx-4 mt-8">
@@ -488,7 +488,7 @@ const AddResidents = () => {
                           type="text"
                           id="firstName"
                           name="firstName"
-                          onChange={handleChange}
+                          // onChange={handleChange}
                           className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("firstName") &&
                             "border-red-500"
                             }`}
@@ -507,7 +507,7 @@ const AddResidents = () => {
                           type="text"
                           id="middleName"
                           name="middleName"
-                          onChange={handleChange}
+                          // onChange={handleChange}
                           className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                           placeholder=""
                         />
@@ -524,7 +524,7 @@ const AddResidents = () => {
                           type="text"
                           id="lastName"
                           name="lastName"
-                          onChange={handleChange}
+                          // onChange={handleChange}
                           className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("lastName") && "border-red-500"
                             }`}
                           placeholder=""
@@ -544,7 +544,7 @@ const AddResidents = () => {
                           type="text"
                           id="suffix"
                           name="suffix"
-                          onChange={handleChange}
+                          // onChange={handleChange}
                           className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                           placeholder="--Optional--"
                         />
@@ -561,11 +561,11 @@ const AddResidents = () => {
                           type="date"
                           id="birthday"
                           name="birthday"
-                          onChange={handleChange}
+                          // onChange={handleChange}
                           className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("birthday") && "border-red-500"
                             }`}
                           placeholder="mm/dd/yyyy"
-                          value={birthdayFormat(user.birthday) || ""}
+                          // value={birthdayFormat(user.birthday) || ""}
                         />
                       </div>
 
@@ -580,10 +580,10 @@ const AddResidents = () => {
                           type="text"
                           id="age"
                           name="age"
-                          onChange={handleChange}
+                          // onChange={handleChange}
                           className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                           placeholder=""
-                          value={calculateAge(user.birthday) || ""}
+                          // value={calculateAge(user.birthday) || ""}
                         />
                       </div>
                     </div>
@@ -599,7 +599,7 @@ const AddResidents = () => {
                           type="text"
                           id="email"
                           name="email"
-                          onChange={handleChange}
+                          // onChange={handleChange}
                           className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("email") && "border-red-500"
                             }`}
                           placeholder=""
@@ -617,7 +617,7 @@ const AddResidents = () => {
                           type="number"
                           id="contact"
                           name="contact"
-                          onChange={handleChange}
+                          // onChange={handleChange}
                           className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("contact") && "border-red-500"
                             }`}
                           placeholder=""
@@ -638,7 +638,7 @@ const AddResidents = () => {
                             name="sex"
                             value="Male"
                             className="text-green-500 focus:border-green-500 focus:ring-green-500"
-                            onChange={handleChange}
+                            // onChange={handleChange}
                           />
                           <label htmlFor="Male" className="ml-2">
                             Male
@@ -648,7 +648,7 @@ const AddResidents = () => {
                             id="Female"
                             name="sex"
                             value="Female"
-                            onChange={handleChange}
+                            // onChange={handleChange}
                             className="ml-4 md:ml-2 lg:ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
                           />
                           <label htmlFor="Female" className="ml-2">
@@ -675,7 +675,7 @@ const AddResidents = () => {
                         <select
                           id="civil_status"
                           name="civil_status"
-                          onChange={handleChange}
+                          // onChange={handleChange}
                           className="shadow border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         >
                           <option>-- Select Status --</option>
@@ -697,15 +697,15 @@ const AddResidents = () => {
                         </label>
                         <select
                           name="religion"
-                          onChange={handleChange}
+                          // onChange={handleChange}
                           className="shadow border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         >
                           <option value="">-- Select Religion --</option>
-                          {religions.map((religion, index) => (
+                          {/* {religions.map((religion, index) => (
                             <option key={index} value={religion}>
                               {religion}
                             </option>
-                          ))}
+                          ))} */}
                         </select>
                       </div>
                     </div>
@@ -718,7 +718,7 @@ const AddResidents = () => {
                         >
                           OCCUPATION
                         </label>
-                        <CreateOccupationList handleChange={handleChange} />
+                        {/* <CreateOccupationList handleChange={handleChange} /> */}
                       </div>
 
                       <div className="flex flex-col w-full mt-2 md:mt-0 md:ml-3">
@@ -732,7 +732,7 @@ const AddResidents = () => {
                           type="text"
                           id="street"
                           name="street"
-                          onChange={handleChange}
+                          // onChange={handleChange}
                           className={`shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("street") && "border-red-500"
                             }`}
                           placeholder=""
@@ -749,7 +749,7 @@ const AddResidents = () => {
                         <select
                           id="brgy"
                           name="brgy"
-                          onChange={handleChange}
+                          // onChange={handleChange}
                           defaultValue={brgy}
                           disabled
                           className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
@@ -778,7 +778,7 @@ const AddResidents = () => {
                         <select
                           id="city"
                           name="city"
-                          onChange={handleChange}
+                          // onChange={handleChange}
                           className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                           disabled
                         >
@@ -802,7 +802,7 @@ const AddResidents = () => {
                             type="radio"
                             id="true"
                             name="isVoter"
-                            onChange={handleChange}
+                            // onChange={handleChange}
                             value="true"
                             className="text-green-500 focus:border-green-500 focus:ring-green-500"
                           />
@@ -813,7 +813,7 @@ const AddResidents = () => {
                             type="radio"
                             id="false"
                             name="isVoter"
-                            onChange={handleChange}
+                            // onChange={handleChange}
                             value="false"
                             className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
                           />
@@ -835,7 +835,7 @@ const AddResidents = () => {
                             type="radio"
                             id="true"
                             name="isHead"
-                            onChange={handleChange}
+                            // onChange={handleChange}
                             value="true"
                             className="text-green-500 focus:border-green-500 focus:ring-green-500"
                           />
@@ -846,7 +846,7 @@ const AddResidents = () => {
                             type="radio"
                             id="false"
                             name="isHead"
-                            onChange={handleChange}
+                            // onChange={handleChange}
                             value="false"
                             className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
                           />
@@ -868,7 +868,7 @@ const AddResidents = () => {
                             type="radio"
                             id="false"
                             name="isArchived"
-                            onChange={() => handleChange2("isArchived", false)}
+                            // onChange={() => handleChange2("isArchived", false)}
                             value="false"
                             className="text-green-500 focus:border-green-500 focus:ring-green-500"
                           />
@@ -879,7 +879,7 @@ const AddResidents = () => {
                             type="radio"
                             id="true"
                             name="isArchived"
-                            onChange={() => handleChange2("isArchived", true)}
+                            // onChange={() => handleChange2("isArchived", true)}
                             value="true"
                             className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
                           />
@@ -907,7 +907,7 @@ const AddResidents = () => {
                         type="text"
                         id="username"
                         name="username"
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         className={`shadow appearance-none border w-full p-1.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("username") && "border-red-500"
                           }`}
                         placeholder=""
@@ -924,7 +924,7 @@ const AddResidents = () => {
                       <div className="flex flex-row w-full md:mr-2">
                         <button
                           className="bg-[#295141] p-2.5 rounded-l-md"
-                          onClick={handleButtonClick}
+                          // onClick={handleButtonClick}
                         >
                           <div className="w-full overflow-hidden">
                             <LiaRandomSolid
@@ -941,7 +941,7 @@ const AddResidents = () => {
                           type="text"
                           id="password"
                           name="password"
-                          onChange={handleChange}
+                          // onChange={handleChange}
                           className={`shadow appearance-none border w-full p-1 text-sm text-black rounded-r-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline ${emptyFields.includes("password") && "border-red-500"
                             }`}
                           value={user.password}
@@ -965,12 +965,12 @@ const AddResidents = () => {
                           </label>
                           <select
                             name="primary_id"
-                            onChange={(event) => {
-                              handleVerification(
-                                "primary_id",
-                                event.target.value
-                              );
-                            }}
+                            // onChange={(event) => {
+                            //   handleVerification(
+                            //     "primary_id",
+                            //     event.target.value
+                            //   );
+                            // }}
                             className="shadow border w-full py-1.5 px-4 mb-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                           >
                             <option>-- Select Primary ID --</option>
@@ -1019,12 +1019,12 @@ const AddResidents = () => {
                               type="file"
                               name="primary"
                               accept="image/*"
-                              onChange={(e) =>
-                                handleFileVerification(
-                                  "primary_file",
-                                  e.target.files
-                                )
-                              }
+                              // onChange={(e) =>
+                              //   handleFileVerification(
+                              //     "primary_file",
+                              //     e.target.files
+                              //   )
+                              // }
                               multiple
                               className="block w-full text-sm border rounded-md text-slate-500 file:mr-4 file:py-2 file:px-4  file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
                             />
@@ -1051,9 +1051,9 @@ const AddResidents = () => {
                                       </label>
 
                                       <button
-                                        onClick={(e) =>
-                                          handleDelete("primary_file", idx, e)
-                                        }
+                                        // onClick={(e) =>
+                                        //   handleDelete("primary_file", idx, e)
+                                        // }
                                         className="border-black bg-red-500 hover:bg-white rounded-full justify-center items-center self-center mr-2"
                                       >
                                         <TiDelete
@@ -1079,12 +1079,12 @@ const AddResidents = () => {
                           </label>
                           <select
                             name="secondary_id"
-                            onChange={(event) => {
-                              handleVerification(
-                                "secondary_id",
-                                event.target.value
-                              );
-                            }}
+                            // onChange={(event) => {
+                            //   handleVerification(
+                            //     "secondary_id",
+                            //     event.target.value
+                            //   );
+                            // }}
                             className="shadow border w-full py-1.5 px-4 mb-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                           >
                             <option>-- Select Secondary ID --</option>
@@ -1140,12 +1140,12 @@ const AddResidents = () => {
                               type="file"
                               name="secondary"
                               accept="image/*"
-                              onChange={(e) =>
-                                handleFileVerification(
-                                  "secondary_file",
-                                  e.target.files
-                                )
-                              }
+                              // onChange={(e) =>
+                              //   handleFileVerification(
+                              //     "secondary_file",
+                              //     e.target.files
+                              //   )
+                              // }
                               multiple
                               className="block w-full text-sm border rounded-md text-slate-500 file:mr-4 file:py-2 file:px-4  file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
                             />
@@ -1213,7 +1213,7 @@ const AddResidents = () => {
                                   <button
                                     type="button"
                                     className="h-[2.5rem] w-1/2 justify-center py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm mb-2"
-                                    onClick={handleOnCapture}
+                                    // onClick={handleOnCapture}
                                   >
                                     OPEN CAMERA
                                   </button>
@@ -1290,7 +1290,7 @@ const AddResidents = () => {
               <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full flex sm:flex-col md:flex-row">
                 <button
                   type="button"
-                  onClick={handleSubmit}
+                  // onClick={handleSubmit}
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
                 >
                   ADD
