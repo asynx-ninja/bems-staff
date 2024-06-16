@@ -62,155 +62,155 @@ const Blotters = () => {
   // blotter related
   const [blotterDetails, setBlotterDetails] = useState([]);
 
-  useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/requests/getdoneblotters?brgy=${brgy}&archived=false`
-        );
-        if (response.status === 200) {
-          let { result } = response.data;
+  // useEffect(() => {
+  //   const fetchRequests = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${API_LINK}/requests/getdoneblotters?brgy=${brgy}&archived=false`
+  //       );
+  //       if (response.status === 200) {
+  //         let { result } = response.data;
 
-          // Convert status of fetched requests to "IN PROGRESS"
-          result = result.map((request) => {
-            return {
-              ...request,
-              status: "In Progress",
-            };
-          });
+  //         // Convert status of fetched requests to "IN PROGRESS"
+  //         result = result.map((request) => {
+  //           return {
+  //             ...request,
+  //             status: "In Progress",
+  //           };
+  //         });
 
-          setRequests(result);
-          setFilteredRequests(response.data.result.slice(0, 10));
-        } else {
-          setRequests([]);
-          setFilteredRequests([]);
-        }
-      } catch (error) {
-        console.error(error);
-        setRequests([]);
-        setFilteredRequests([]);
-      }
-    };
+  //         setRequests(result);
+  //         setFilteredRequests(response.data.result.slice(0, 10));
+  //       } else {
+  //         setRequests([]);
+  //         setFilteredRequests([]);
+  //       }
+  //     } catch (error) {
+  //       console.error(error);
+  //       setRequests([]);
+  //       setFilteredRequests([]);
+  //     }
+  //   };
 
-    fetchRequests();
-  }, [brgy]);
+  //   fetchRequests();
+  // }, [brgy]);
 
-  useEffect(() => {
-    const filteredData = requests.filter((item) =>
-      item.req_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    const startIndex = currentPage * 10;
-    const endIndex = startIndex + 10;
-    setFilteredRequests(filteredData.slice(startIndex, endIndex));
-    setPageCount(Math.ceil(filteredData.length / 10));
-  }, [requests, searchQuery, currentPage]);
+  // useEffect(() => {
+  //   const filteredData = requests.filter((item) =>
+  //     item.req_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
+  //   );
+  //   const startIndex = currentPage * 10;
+  //   const endIndex = startIndex + 10;
+  //   setFilteredRequests(filteredData.slice(startIndex, endIndex));
+  //   setPageCount(Math.ceil(filteredData.length / 10));
+  // }, [requests, searchQuery, currentPage]);
 
-  const handlePageChange = ({ selected }) => {
-    setCurrentPage(selected);
-  };
+  // const handlePageChange = ({ selected }) => {
+  //   setCurrentPage(selected);
+  // };
 
-  // Handle search input change
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-    setCurrentPage(0); // Reset current page when search query changes
-  };
+  // // Handle search input change
+  // const handleSearchChange = (e) => {
+  //   setSearchQuery(e.target.value);
+  //   setCurrentPage(0); // Reset current page when search query changes
+  // };
 
-  useEffect(() => {
-    // function to filter
-    const fetch = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/blotter/all_patawag/?brgy=${brgy}&archived=false`
-        );
+  // useEffect(() => {
+  //   // function to filter
+  //   const fetch = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${API_LINK}/blotter/all_patawag/?brgy=${brgy}&archived=false`
+  //       );
 
-        // filter
-        setBlotterDetails(response.data);
-        setUpdate(false);
+  //       // filter
+  //       setBlotterDetails(response.data);
+  //       setUpdate(false);
 
-        // const container = chatContainerRef.current;
-        // container.scrollTop = container.scrollHeight;
-      } catch (err) {
-        console.log(err.message);
-        setBlotterDetails([]);
-      }
-    };
+  //       // const container = chatContainerRef.current;
+  //       // container.scrollTop = container.scrollHeight;
+  //     } catch (err) {
+  //       console.log(err.message);
+  //       setBlotterDetails([]);
+  //     }
+  //   };
 
-    fetch();
-  }, [brgy, update]);
+  //   fetch();
+  // }, [brgy, update]);
 
 
-  useEffect(() => {
-    const handlePatawag = (patawag_blotter) => {
-      setRequest(patawag_blotter);
-      setBlotterDetails((curItem) =>
-        curItem.map((item) =>
-          item._id === patawag_blotter._id ? patawag_blotter : item
-        )
-      );
-    };
+  // useEffect(() => {
+  //   const handlePatawag = (patawag_blotter) => {
+  //     setRequest(patawag_blotter);
+  //     setBlotterDetails((curItem) =>
+  //       curItem.map((item) =>
+  //         item._id === patawag_blotter._id ? patawag_blotter : item
+  //       )
+  //     );
+  //   };
 
-    const handleEventArchive = (obj) => {
-      setRequest(obj);
-      setRequests((prev) => prev.filter(item => item._id !== obj._id));
-      setFilteredRequests((prev) => prev.filter(item => item._id !== obj._id));
-    };
+  //   const handleEventArchive = (obj) => {
+  //     setRequest(obj);
+  //     setRequests((prev) => prev.filter(item => item._id !== obj._id));
+  //     setFilteredRequests((prev) => prev.filter(item => item._id !== obj._id));
+  //   };
 
-    socket.on("receive-reply-patawag", handlePatawag);
-    socket.on("receive-archive-staff", handleEventArchive);
+  //   socket.on("receive-reply-patawag", handlePatawag);
+  //   socket.on("receive-archive-staff", handleEventArchive);
 
-    return () => {
-      socket.off("receive-reply-patawag", handlePatawag);
-      socket.off("receive-archive-staff", handleEventArchive);
-    };
-  }, [socket, setRequest, setRequests]);
+  //   return () => {
+  //     socket.off("receive-reply-patawag", handlePatawag);
+  //     socket.off("receive-archive-staff", handleEventArchive);
+  //   };
+  // }, [socket, setRequest, setRequests]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
-        );
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
+  //       );
 
-        if (response.status === 200) {
-          const officialsData = response.data.result || [];
+  //       if (response.status === 200) {
+  //         const officialsData = response.data.result || [];
 
-          if (officialsData.length > 0) {
-            setOfficials(officialsData);
-          } else {
-            setOfficials([]);
-          }
-        } else {
-          setOfficials([]);
-          console.error("Failed to fetch officials:", response.status);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setOfficials([]);
-      }
-    };
+  //         if (officialsData.length > 0) {
+  //           setOfficials(officialsData);
+  //         } else {
+  //           setOfficials([]);
+  //         }
+  //       } else {
+  //         setOfficials([]);
+  //         console.error("Failed to fetch officials:", response.status);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //       setOfficials([]);
+  //     }
+  //   };
 
-    fetchData();
-  }, [currentPage, brgy]); // Add positionFilter dependency
+  //   fetchData();
+  // }, [currentPage, brgy]); // Add positionFilter dependency
 
-  const handleStatusFilter = (selectedStatus) => {
-    setStatusFilter(selectedStatus);
-  };
+  // const handleStatusFilter = (selectedStatus) => {
+  //   setStatusFilter(selectedStatus);
+  // };
 
-  const handleRequestFilter = (selectedType) => {
-    setSelectedReqFilter(selectedType);
-  };
+  // const handleRequestFilter = (selectedType) => {
+  //   setSelectedReqFilter(selectedType);
+  // };
 
-  const handleResetFilter = () => {
-    setStatusFilter("all");
-    setRequestFilter("all");
-    setRequest();
-    setSearchQuery("");
-  };
+  // const handleResetFilter = () => {
+  //   setStatusFilter("all");
+  //   setRequestFilter("all");
+  //   setRequest();
+  //   setSearchQuery("");
+  // };
 
-  const Requests = requests.filter((item) =>
-    item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // const Requests = requests.filter((item) =>
+  //   item.service_name.toLowerCase().includes(searchQuery.toLowerCase())
+  // );
 
   useEffect(() => {
     document.title = "Patawag (Blotters) | Barangay E-Services Management";
@@ -254,93 +254,93 @@ const Blotters = () => {
     "ACTIONS",
   ];
 
-  const handleView = (item) => {
-    setRequest(item);
-  };
+  // const handleView = (item) => {
+  //   setRequest(item);
+  // };
 
-  const DateFormat = (date) => {
-    const dateFormat = date === undefined ? "" : date.substr(0, 10);
-    return dateFormat;
-  };
+  // const DateFormat = (date) => {
+  //   const dateFormat = date === undefined ? "" : date.substr(0, 10);
+  //   return dateFormat;
+  // };
 
-  const TimeFormat = (date) => {
-    if (!date) return "";
+  // const TimeFormat = (date) => {
+  //   if (!date) return "";
 
-    const formattedTime = moment(date).format("hh:mm A");
-    return formattedTime;
-  };
+  //   const formattedTime = moment(date).format("hh:mm A");
+  //   return formattedTime;
+  // };
 
-  const filters = (choice, selectedDate) => {
-    switch (choice) {
-      case "date":
-        return requests.filter((item) => {
-          return (
-            new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
-            new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
-            new Date(item.createdAt).getDate() === selectedDate.getDate()
-          );
-        });
-      case "week":
-        const startDate = selectedDate;
-        const endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + 6);
+  // const filters = (choice, selectedDate) => {
+  //   switch (choice) {
+  //     case "date":
+  //       return requests.filter((item) => {
+  //         return (
+  //           new Date(item.createdAt).getFullYear() ===
+  //             selectedDate.getFullYear() &&
+  //           new Date(item.createdAt).getMonth() === selectedDate.getMonth() &&
+  //           new Date(item.createdAt).getDate() === selectedDate.getDate()
+  //         );
+  //       });
+  //     case "week":
+  //       const startDate = selectedDate;
+  //       const endDate = new Date(startDate);
+  //       endDate.setDate(startDate.getDate() + 6);
 
-        return requests.filter(
-          (item) =>
-            new Date(item.createdAt).getFullYear() ===
-              startDate.getFullYear() &&
-            new Date(item.createdAt).getMonth() === startDate.getMonth() &&
-            new Date(item.createdAt).getDate() >= startDate.getDate() &&
-            new Date(item.createdAt).getDate() <= endDate.getDate()
-        );
-      case "month":
-        return requests.filter(
-          (item) =>
-            new Date(item.createdAt).getFullYear() ===
-              selectedDate.getFullYear() &&
-            new Date(item.createdAt).getMonth() === selectedDate.getMonth()
-        );
-      case "year":
-        return requests.filter(
-          (item) =>
-            new Date(item.createdAt).getFullYear() ===
-            selectedDate.getFullYear()
-        );
-    }
-  };
+  //       return requests.filter(
+  //         (item) =>
+  //           new Date(item.createdAt).getFullYear() ===
+  //             startDate.getFullYear() &&
+  //           new Date(item.createdAt).getMonth() === startDate.getMonth() &&
+  //           new Date(item.createdAt).getDate() >= startDate.getDate() &&
+  //           new Date(item.createdAt).getDate() <= endDate.getDate()
+  //       );
+  //     case "month":
+  //       return requests.filter(
+  //         (item) =>
+  //           new Date(item.createdAt).getFullYear() ===
+  //             selectedDate.getFullYear() &&
+  //           new Date(item.createdAt).getMonth() === selectedDate.getMonth()
+  //       );
+  //     case "year":
+  //       return requests.filter(
+  //         (item) =>
+  //           new Date(item.createdAt).getFullYear() ===
+  //           selectedDate.getFullYear()
+  //       );
+  //   }
+  // };
 
-  const onSelect = (e) => {
-    setSelected(e.target.value);
-  };
+  // const onSelect = (e) => {
+  //   setSelected(e.target.value);
+  // };
 
-  const onChangeDate = (e) => {
-    const date = new Date(e.target.value);
-    setSpecifiedDate(date);
-    setFilteredRequests(filters(selected, date));
-  };
+  // const onChangeDate = (e) => {
+  //   const date = new Date(e.target.value);
+  //   setSpecifiedDate(date);
+  //   setFilteredRequests(filters(selected, date));
+  // };
 
-  const onChangeWeek = (e) => {
-    const date = moment(e.target.value).toDate();
-    setSpecifiedDate(date);
-    setFilteredRequests(filters(selected, date));
-  };
+  // const onChangeWeek = (e) => {
+  //   const date = moment(e.target.value).toDate();
+  //   setSpecifiedDate(date);
+  //   setFilteredRequests(filters(selected, date));
+  // };
 
-  const onChangeMonth = (e) => {
-    const date = moment(e.target.value).toDate();
-    setSpecifiedDate(date);
-    setFilteredRequests(filters(selected, date));
-  };
+  // const onChangeMonth = (e) => {
+  //   const date = moment(e.target.value).toDate();
+  //   setSpecifiedDate(date);
+  //   setFilteredRequests(filters(selected, date));
+  // };
 
-  const onChangeYear = (e) => {
-    if (e.target.value === "") {
-      setFilteredRequests(requests);
-    } else {
-      const date = new Date(e.target.value, 0, 1);
-      setSpecifiedDate(date);
-      setFilteredRequests(filters(selected, date));
-    }
-  };
+  // const onChangeYear = (e) => {
+  //   if (e.target.value === "") {
+  //     setFilteredRequests(requests);
+  //   } else {
+  //     const date = new Date(e.target.value, 0, 1);
+  //     setSpecifiedDate(date);
+  //     setFilteredRequests(filters(selected, date));
+  //   }
+  // };
 
   return (
     <div className="mx-4 ">
@@ -427,7 +427,7 @@ const Blotters = () => {
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    onClick={handleResetFilter}
+                    // onClick={handleResetFilter}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -435,21 +435,21 @@ const Blotters = () => {
                   </a>
                   <hr className="border-[#4e4e4e] my-1" />
                   <a
-                    onClick={() => handleStatusFilter("In Progress")}
+                    // onClick={() => handleStatusFilter("In Progress")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     IN PROGRESS
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("Completed")}
+                    // onClick={() => handleStatusFilter("Completed")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
                     COMPLETED
                   </a>
                   <a
-                    onClick={() => handleStatusFilter("NEW")}
+                    // onClick={() => handleStatusFilter("NEW")}
                     class="flex items-center font-medium uppercase gap-x-3.5 py-2 px-3 rounded-xl text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -487,7 +487,7 @@ const Blotters = () => {
                   aria-labelledby="hs-dropdown"
                 >
                   <a
-                    onClick={handleResetFilter}
+                    // onClick={handleResetFilter}
                     className="flex items-center font-medium uppercase gap-x-3.5 py-2 px-2 text-sm text-black hover:bg-[#b3c5cc] hover:text-gray-800 hover:rounded-[12px] focus:ring-2 focus:ring-blue-500"
                     href="#"
                   >
@@ -501,8 +501,8 @@ const Blotters = () => {
                     <div className="flex gap-2 flex-col">
                       <select
                         className="bg-[#f8f8f8] text-gray-400 py-1 px-3 rounded-md font-medium shadow-sm text-sm border border-black"
-                        onChange={onSelect}
-                        defaultValue={selected}
+                        // onChange={onSelect}
+                        // defaultValue={selected}
                       >
                         <option value="date">Specific Date</option>
                         <option value="week">Week</option>
@@ -515,7 +515,7 @@ const Blotters = () => {
                           type="date"
                           id="date"
                           name="date"
-                          onChange={onChangeDate}
+                          // onChange={onChangeDate}
                         />
                       )}
                       {selected === "week" && (
@@ -524,7 +524,7 @@ const Blotters = () => {
                           type="week"
                           id="week"
                           name="week"
-                          onChange={onChangeWeek}
+                          // onChange={onChangeWeek}
                         />
                       )}
                       {selected === "month" && (
@@ -533,7 +533,7 @@ const Blotters = () => {
                           type="month"
                           id="month"
                           name="month"
-                          onChange={onChangeMonth}
+                          // onChange={onChangeMonth}
                         />
                       )}
                       {selected === "year" && (
@@ -543,7 +543,7 @@ const Blotters = () => {
                           id="year"
                           name="year"
                           placeholder="YEAR"
-                          onChange={onChangeYear}
+                          // onChange={onChangeYear}
                           min={1990}
                           max={new Date().getFullYear() + 10}
                         />
@@ -585,8 +585,8 @@ const Blotters = () => {
                   id="hs-table-with-pagination-search"
                   className="sm:px-3 sm:py-1 md:px-3 md:py-1 block w-full text-black border-gray-200 rounded-r-md text-sm focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Search for items"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
+                  // value={searchQuery}
+                  // onChange={handleSearchChange}
                 />
               </div>
               <div className="sm:mt-2 md:mt-0 flex w-full lg:w-64 items-center justify-center">
@@ -739,7 +739,7 @@ const Blotters = () => {
                             <button
                               type="button"
                               data-hs-overlay="#hs-view-request-modal"
-                              onClick={() => handleView({ ...item })}
+                              // onClick={() => handleView({ ...item })}
                               className="hs-tooltip-toggle text-white bg-teal-800 font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                             >
                               <AiOutlineEye
@@ -759,7 +759,7 @@ const Blotters = () => {
                             <button
                               type="button"
                               data-hs-overlay="#hs-reply-modal"
-                              onClick={() => handleView({ ...item })}
+                              // onClick={() => handleView({ ...item })}
                               className="hs-tooltip-toggle text-white bg-custom-red-button font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                             >
                               <AiOutlineSend
@@ -779,7 +779,7 @@ const Blotters = () => {
                             <button
                               type="button"
                               data-hs-overlay="#hs-create-serviceDocument-modal"
-                              onClick={() => handleView({ ...item })}
+                              // onClick={() => handleView({ ...item })}
                               className="hs-tooltip-toggle text-white bg-[#8b1814] font-medium text-xs px-2 py-2 inline-flex items-center rounded-lg"
                             >
                               <HiDocumentAdd
@@ -847,7 +847,7 @@ const Blotters = () => {
         <ReactPaginate
           breakLabel="..."
           nextLabel=">>"
-          onPageChange={handlePageChange}
+          // onPageChange={handlePageChange}
           pageRangeDisplayed={3}
           pageCount={pageCount}
           previousLabel="<<"

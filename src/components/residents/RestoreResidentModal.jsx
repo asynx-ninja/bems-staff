@@ -11,65 +11,65 @@ function RestoreResidentModal({ selectedItems, socket, id, user }) {
   const [updatingStatus, setUpdatingStatus] = useState(null);
   const [error, setError] = useState(null);
 
-  const handleSave = async (e) => {
-    try {
-      e.preventDefault();
-      if (selectedItems.length === 0) {
-        setUpdatingStatus("error");
-        setError("Unable to restore, Please select first to restore.");
-        setTimeout(() => {
-          setUpdatingStatus(null);
-          HSOverlay.close(document.getElementById("hs-modal-restoreResident"));
-        }, 3000);
+  // const handleSave = async (e) => {
+  //   try {
+  //     e.preventDefault();
+  //     if (selectedItems.length === 0) {
+  //       setUpdatingStatus("error");
+  //       setError("Unable to restore, Please select first to restore.");
+  //       setTimeout(() => {
+  //         setUpdatingStatus(null);
+  //         HSOverlay.close(document.getElementById("hs-modal-restoreResident"));
+  //       }, 3000);
 
-        console.log("error", selectedItems);
-        return;
-      }
-      setSubmitClicked(true);
+  //       console.log("error", selectedItems);
+  //       return;
+  //     }
+  //     setSubmitClicked(true);
 
-      for (let i = 0; i < selectedItems.length; i++) {
-        const response = await axios.patch(
-          `${API_LINK}/users/archived/${selectedItems[i]}/false`
-        );
+  //     for (let i = 0; i < selectedItems.length; i++) {
+  //       const response = await axios.patch(
+  //         `${API_LINK}/users/archived/${selectedItems[i]}/false`
+  //       );
 
-        if (response.status === 200) {
-          const getIP = async () => {
-            const response = await fetch(
-              "https://api64.ipify.org?format=json"
-            );
-            const data = await response.json();
-            return data.ip;
-          };
+  //       if (response.status === 200) {
+  //         const getIP = async () => {
+  //           const response = await fetch(
+  //             "https://api64.ipify.org?format=json"
+  //           );
+  //           const data = await response.json();
+  //           return data.ip;
+  //         };
 
-          const ip = await getIP(); // Retrieve IP address
-          const logsData = {
-            action: "Restored",
-            details: `Restored a resident (ID: ${selectedItems[i]}).`,
-            ip: ip,
-          };
+  //         const ip = await getIP(); // Retrieve IP address
+  //         const logsData = {
+  //           action: "Restored",
+  //           details: `Restored a resident (ID: ${selectedItems[i]}).`,
+  //           ip: ip,
+  //         };
 
-          const logsResult = await axios.post(
-            `${API_LINK}/act_logs/add_logs/?id=${id}`,
-            logsData
-          );
-          if (logsResult.status === 200) {
-            socket.emit("send-restore-staff", response.data);
+  //         const logsResult = await axios.post(
+  //           `${API_LINK}/act_logs/add_logs/?id=${id}`,
+  //           logsData
+  //         );
+  //         if (logsResult.status === 200) {
+  //           socket.emit("send-restore-staff", response.data);
 
-            setSubmitClicked(false);
-            setError(null);
-            setUpdatingStatus("success");
-            setTimeout(() => {
-              setUpdatingStatus(null);
-              HSOverlay.close(document.getElementById("hs-modal-restoreResident"));
-            }, 3000);
-          }
-        }
-      }
+  //           setSubmitClicked(false);
+  //           setError(null);
+  //           setUpdatingStatus("success");
+  //           setTimeout(() => {
+  //             setUpdatingStatus(null);
+  //             HSOverlay.close(document.getElementById("hs-modal-restoreResident"));
+  //           }, 3000);
+  //         }
+  //       }
+  //     }
 
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
   return (
     <div
@@ -88,7 +88,7 @@ function RestoreResidentModal({ selectedItems, socket, id, user }) {
             <div className="flex space-x-4 justify-center">
               <button
                 type="button"
-                onClick={handleSave}
+                // onClick={handleSave}
                 className="inline-flex items-center px-8 py-2 bg-[#369987] text-white font-semibold rounded-lg hover:bg-[#48b6a2] focus:ring-4 focus:ring-[#48b6a2] focus:outline-none transition ease-in-out duration-150"
               >
                 Restore

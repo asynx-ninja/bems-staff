@@ -33,168 +33,168 @@ const StatisticsDashboard = () => {
 
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        try {
-          const announcementsResponse = await axios.get(
-            `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
-          );
-          setAnnouncements(
-            announcementsResponse.status === 200
-              ? announcementsResponse.data.total
-              : 0
-          );
-        } catch (err) {
-          console.log("err", err.message);
-        }
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       try {
+  //         const announcementsResponse = await axios.get(
+  //           `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
+  //         );
+  //         setAnnouncements(
+  //           announcementsResponse.status === 200
+  //             ? announcementsResponse.data.total
+  //             : 0
+  //         );
+  //       } catch (err) {
+  //         console.log("err", err.message);
+  //       }
 
-        try {
-          const usersResponse = await axios.get(
-            `${API_LINK}/users/?brgy=${brgy}&type=Resident`
-          );
-          setUsers(usersResponse.status === 200 ? usersResponse.data.total : []);
-        } catch (err) {
-          console.log("err", err.message);
-        }
+  //       try {
+  //         const usersResponse = await axios.get(
+  //           `${API_LINK}/users/?brgy=${brgy}&type=Resident`
+  //         );
+  //         setUsers(usersResponse.status === 200 ? usersResponse.data.total : []);
+  //       } catch (err) {
+  //         console.log("err", err.message);
+  //       }
 
-        try {
-          const archivedUsersResponse = await axios.get(
-            `${API_LINK}/users/showArchived/?brgy=${brgy}&type=Resident`
-          );
-          setArchivedUsers(
-            archivedUsersResponse.status === 200
-              ? archivedUsersResponse.data.total
-              : 0
-          );
-        } catch (err) {
-          console.log("err", err.message);
-        }
+  //       try {
+  //         const archivedUsersResponse = await axios.get(
+  //           `${API_LINK}/users/showArchived/?brgy=${brgy}&type=Resident`
+  //         );
+  //         setArchivedUsers(
+  //           archivedUsersResponse.status === 200
+  //             ? archivedUsersResponse.data.total
+  //             : 0
+  //         );
+  //       } catch (err) {
+  //         console.log("err", err.message);
+  //       }
 
-        try {
-          const servicesResponse = await axios.get(
-            `${API_LINK}/services/?brgy=${brgy}&archived=false`
-          );
-          setServices(
-            servicesResponse.status === 200 ? servicesResponse.data.total : 0
-          );
-        } catch (err) {
-          console.log("err", err.message);
-        }
+  //       try {
+  //         const servicesResponse = await axios.get(
+  //           `${API_LINK}/services/?brgy=${brgy}&archived=false`
+  //         );
+  //         setServices(
+  //           servicesResponse.status === 200 ? servicesResponse.data.total : 0
+  //         );
+  //       } catch (err) {
+  //         console.log("err", err.message);
+  //       }
 
-        try {
-          const officialsResponse = await axios.get(
-            `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
-          );
-          setOfficials(
-            officialsResponse.status === 200 ? officialsResponse.data.total : 0
-          );
-        } catch (err) {
-          console.log("err", err.message);
-        }
+  //       try {
+  //         const officialsResponse = await axios.get(
+  //           `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=false`
+  //         );
+  //         setOfficials(
+  //           officialsResponse.status === 200 ? officialsResponse.data.total : 0
+  //         );
+  //       } catch (err) {
+  //         console.log("err", err.message);
+  //       }
 
-        try {
-          const requestsResponse = await axios.get(
-            `${API_LINK}/requests/?brgy=${brgy}&archived=false`
-          );
-          setRequests(
-            requestsResponse.status === 200 ? requestsResponse.data.total : 0
-          );
-        } catch (err) {
-          console.log("err", err.message);
-        }
+  //       try {
+  //         const requestsResponse = await axios.get(
+  //           `${API_LINK}/requests/?brgy=${brgy}&archived=false`
+  //         );
+  //         setRequests(
+  //           requestsResponse.status === 200 ? requestsResponse.data.total : 0
+  //         );
+  //       } catch (err) {
+  //         console.log("err", err.message);
+  //       }
 
-        try {
-          const archivedRequestsResponse = await axios.get(
-            `${API_LINK}/requests/?brgy=${brgy}&archived=true`
-          );
-          setArchivedRequests(
-            archivedRequestsResponse.status === 200
-              ? archivedRequestsResponse.data.total
-              : 0
-          );
-        } catch (err) {
-          console.log("err", err.message);
-        }
+  //       try {
+  //         const archivedRequestsResponse = await axios.get(
+  //           `${API_LINK}/requests/?brgy=${brgy}&archived=true`
+  //         );
+  //         setArchivedRequests(
+  //           archivedRequestsResponse.status === 200
+  //             ? archivedRequestsResponse.data.total
+  //             : 0
+  //         );
+  //       } catch (err) {
+  //         console.log("err", err.message);
+  //       }
 
-        try {
-          const archivedServicesResponse = await axios.get(
-            `${API_LINK}/services/?brgy=${brgy}&archived=true`
-          );
-          setArchivedServices(
-            archivedServicesResponse.status === 200
-              ? archivedServicesResponse.data.total
-              : 0
-          );
-        } catch (err) {
-          console.log("err", err.message);
-        }
+  //       try {
+  //         const archivedServicesResponse = await axios.get(
+  //           `${API_LINK}/services/?brgy=${brgy}&archived=true`
+  //         );
+  //         setArchivedServices(
+  //           archivedServicesResponse.status === 200
+  //             ? archivedServicesResponse.data.total
+  //             : 0
+  //         );
+  //       } catch (err) {
+  //         console.log("err", err.message);
+  //       }
 
-        try {
-          const archivedAnnouncementsResponse = await axios.get(
-            `${API_LINK}/announcement/?brgy=${brgy}&archived=true`
-          );
-          setArchivedAnnouncements(
-            archivedAnnouncementsResponse.status === 200
-              ? archivedAnnouncementsResponse.data.total
-              : 0
-          );
-        } catch (err) {
-          console.log("err", err.message);
-        }
+  //       try {
+  //         const archivedAnnouncementsResponse = await axios.get(
+  //           `${API_LINK}/announcement/?brgy=${brgy}&archived=true`
+  //         );
+  //         setArchivedAnnouncements(
+  //           archivedAnnouncementsResponse.status === 200
+  //             ? archivedAnnouncementsResponse.data.total
+  //             : 0
+  //         );
+  //       } catch (err) {
+  //         console.log("err", err.message);
+  //       }
 
-        try {
-          const archivedOfficialsResponse = await axios.get(
-            `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=true`
-          );
-          setArchivedOfficials(
-            archivedOfficialsResponse.status === 200
-              ? archivedOfficialsResponse.data.total
-              : 0
-          );
-        } catch (err) {
-          console.log("err", err.message);
-        }
+  //       try {
+  //         const archivedOfficialsResponse = await axios.get(
+  //           `${API_LINK}/brgyofficial/?brgy=${brgy}&archived=true`
+  //         );
+  //         setArchivedOfficials(
+  //           archivedOfficialsResponse.status === 200
+  //             ? archivedOfficialsResponse.data.total
+  //             : 0
+  //         );
+  //       } catch (err) {
+  //         console.log("err", err.message);
+  //       }
 
-        try {
-          const InquiriesResponse = await axios.get(
-            `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=false&label=Staff`
-          );
-          setInquiries(
-            InquiriesResponse.status === 200
-              ? InquiriesResponse.data.total
-              : 0
-          );
-        } catch (err) {
-          console.log("err", err.message);
-        }
+  //       try {
+  //         const InquiriesResponse = await axios.get(
+  //           `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=false&label=Staff`
+  //         );
+  //         setInquiries(
+  //           InquiriesResponse.status === 200
+  //             ? InquiriesResponse.data.total
+  //             : 0
+  //         );
+  //       } catch (err) {
+  //         console.log("err", err.message);
+  //       }
 
-        try {
-          const archivedInquiriesResponse = await axios.get(
-            `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=true&label=Staff`
-          );
-          setArchivedInquiries(
-            archivedInquiriesResponse.status === 200
-              ? archivedInquiriesResponse.data.total
-              : 0
-          );
-        } catch (err) {
-          console.log("err", err.message);
-        }
+  //       try {
+  //         const archivedInquiriesResponse = await axios.get(
+  //           `${API_LINK}/inquiries/staffinquiries/?id=${id}&brgy=${brgy}&archived=true&label=Staff`
+  //         );
+  //         setArchivedInquiries(
+  //           archivedInquiriesResponse.status === 200
+  //             ? archivedInquiriesResponse.data.total
+  //             : 0
+  //         );
+  //       } catch (err) {
+  //         console.log("err", err.message);
+  //       }
 
-        try {
-          const getUser = await axios.get(`${API_LINK}/staffs/specific/${id}`);
-          setUserData(getUser.status === 200 ? getUser.data[0] : []);
-        } catch (err) {
-          console.log("err", err.message);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+  //       try {
+  //         const getUser = await axios.get(`${API_LINK}/staffs/specific/${id}`);
+  //         setUserData(getUser.status === 200 ? getUser.data[0] : []);
+  //       } catch (err) {
+  //         console.log("err", err.message);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
 
-    fetchData();
-  }, [brgy]);
+  //   fetchData();
+  // }, [brgy]);
 
   const gradients = [
     { gradient1: "from-[#2E3192]", gradient2: "to-[#2CAFFF]" },

@@ -90,675 +90,675 @@ function ReplyServiceModal({
 
   // console.log("blotterDetails: ", blotterDetails);
 
-  const handleAddComplainant = () => {
-    if (
-      complainantInfo.firstName &&
-      complainantInfo.middleName &&
-      complainantInfo.lastName
-    ) {
-      setComplainantData([...ComplainantData, complainantInfo]);
-      setComplainantInfo({
-        firstName: "",
-        middleName: "",
-        lastName: "",
-      });
-    }
-  };
-
-  const handleComplainantChange = (e) => {
-    const selectedUserId = e.target.value;
-
-    // Check if the selected user is already in the ComplainantData array
-    const isUserAlreadyAdded = ComplainantData.some(
-      (complainant) => complainant.user_id === selectedUserId
-    );
-
-    // If the user is already added, do not add it again
-    if (isUserAlreadyAdded) {
-      return;
-    }
-
-    setSelectedComplainant(selectedUserId);
-
-    const selectedUser = users.find((user) => user._id === selectedUserId);
-    const newComplainant = {
-      firstName: selectedUser.firstName,
-      middleName: selectedUser.middleName || "",
-      lastName: selectedUser.lastName,
-      user_id: selectedUser.user_id,
-      type: "Complainant",
-    };
-
-    setComplainantData((prevComplainants) => [
-      ...prevComplainants,
-      newComplainant,
-    ]);
-  };
-
-  const removeComplainant = (e, index) => {
-    e.preventDefault();
-    setComplainantData(ComplainantData.filter((_, i) => i !== index));
-  };
-
-  const handleAddDefendant = () => {
-    if (
-      defendantInfo.firstName &&
-      defendantInfo.middleName &&
-      defendantInfo.lastName
-    ) {
-      setDefendantData([...DefendantData, defendantInfo]);
-      setDefendantInfo({
-        firstName: "",
-        middleName: "",
-        lastName: "",
-      });
-    }
-  };
-
-  const handleDefendantChange = (e) => {
-    const selectedUserId = e.target.value;
-
-    // Check if the selected user is already in the DefendantData array
-    const isUserAlreadyAdded = DefendantData.some(
-      (defendant) => defendant.user_id === selectedUserId
-    );
-
-    // If the user is already added, do not add it again
-    if (isUserAlreadyAdded) {
-      return;
-    }
-
-    setSelectedDefendant(selectedUserId);
-
-    const selectedUser = users.find((user) => user._id === selectedUserId);
-    const newDefendant = {
-      firstName: selectedUser.firstName,
-      middleName: selectedUser.middleName || "",
-      lastName: selectedUser.lastName,
-      user_id: selectedUser.user_id,
-      type: "Defendant",
-    };
-
-    setDefendantData((prevDefendants) => [...prevDefendants, newDefendant]);
-  };
-
-  const removeDefendant = (e, index) => {
-    e.preventDefault();
-    setDefendantData(DefendantData.filter((_, i) => i !== index));
-  };
-
-  useEffect(() => {
-    setDetail(request);
-  }, [request]);
-
-  useEffect(() => {
-    setFiles(request.length === 0 ? [] : request.file);
-  }, [request]);
-
-  useEffect(() => {
-    const fetch = async () => {
-      try {
-        const res = await axios.get(`${API_LINK}/users/specific/${id}`);
-
-        if (res.status === 200) {
-          setUserData(res.data[0]);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetch();
-  }, [id]);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      let page = null;
-      let hasMoreResults = true;
-
-      while (hasMoreResults) {
-        try {
-          const response = await axios.get(
-            `${API_LINK}/users/?brgy=${brgy}&type=Resident&page=${page}`
-          );
-
-          if (response.status === 200 && response.data.result.length > 0) {
-            setUsers((prevUsers) => [...prevUsers, ...response.data.result]);
-            page++;
-          } else {
-            hasMoreResults = false;
-          }
-        } catch (error) {
-          console.error("Error fetching users:", error);
-          hasMoreResults = false;
-        }
-      }
-    };
-
-    fetchUsers();
-  }, [brgy]);
-
-  useEffect(() => {
-    // function to filter
-    const fetch = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/blotter/?brgy=${brgy}&req_id=${detail.req_id}`
-        );
-
-        // filter
-        setBlotterDetails(response.data);
-      } catch (err) {
-        console.log(err.message);
-        setBlotterDetails([]);
-      }
-    };
-
-    fetch();
-  }, [brgy, request, detail]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (!request.service_id) {
-          // If there is no event_id in the application, do not fetch events
-          return;
-        }
-        const serviceResponse = await axios.get(
-          `${API_LINK}/services/?brgy=${brgy}&service_id=${request.service_id}&archived=false`
-        );
-
-        if (serviceResponse.status === 200) {
-          setService(serviceResponse.data.result[0]);
-        } else {
-          // setEventWithCounts([]);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        console.error("Error response data:", error.response?.data);
-        console.error("Error response status:", error.response?.status);
-      }
-    };
-
-    fetchData();
-  }, [brgy, request.service_id]);
-
-  useEffect(() => {
-    if (blotterDetails && blotterDetails.status) {
-      // If blotterDetails has status, set it as the default status for ResponseData
-      setResponseData((prev) => ({
-        ...prev,
-        status: blotterDetails.status,
-      }));
-    }
-  }, [blotterDetails]);
-
-  useEffect(() => {
-    if (
-      blotterDetails &&
-      blotterDetails.responses &&
-      blotterDetails.responses.length !== 0
-    ) {
-      const lastResponse =
-        blotterDetails.responses[blotterDetails.responses.length - 1];
-
-      if (lastResponse && lastResponse.file && lastResponse.file.length > 0) {
-        setViewFiles(lastResponse.file);
-      } else {
-        setViewFiles([]);
-      }
-    } else {
-      setViewFiles([]);
-    }
-  }, [blotterDetails]);
-
-  // Initialize with the last index expanded
-  useEffect(() => {
-    const lastIndex = blotterDetails.responses
-      ? blotterDetails.responses.length - 1
-      : 0;
-    setExpandedIndexes([lastIndex]);
-  }, [blotterDetails.responses]);
-
-  const fileInputRef = useRef();
-
-  const handleToggleClick = (index) => {
-    if (expandedIndexes.includes(index)) {
-      // Collapse the clicked div
-      setExpandedIndexes((prev) => prev.filter((i) => i !== index));
-    } else {
-      // Expand the clicked div
-      setExpandedIndexes((prev) => [...prev, index]);
-    }
-  };
-
-  useEffect(() => {
-    if (
-      blotterDetails &&
-      blotterDetails.responses &&
-      blotterDetails.responses.length > 0
-    ) {
-      // Sort the responses based on date in ascending order
-      blotterDetails.responses.sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-      );
-
-      // Initialize with the last index expanded
-      const lastIndex = blotterDetails.responses.length - 1;
-      setExpandedIndexes([lastIndex]);
-    }
-  }, [blotterDetails]);
-
-  const handleChange = (e) => {
-    const inputValue = e.target.value;
-
-    if (e.target.name === "isRepliable") {
-      // If isRepliable checkbox is changed, update isRepliable accordingly
-      setResponseData((prev) => ({
-        ...prev,
-        [e.target.name]: e.target.checked,
-      }));
-    } else if (
-      statusChanger &&
-      (!ResponseData.message || ResponseData.message.trim() === "")
-    ) {
-      // If statusChanger is true and message is not set, update message with status
-      setResponseData((prev) => ({
-        ...prev,
-        message: `The status of your event application is ${inputValue}`,
-        [e.target.name]: inputValue,
-      }));
-    } else {
-      // Otherwise, update the input value normally
-      setResponseData((prev) => ({
-        ...prev,
-        [e.target.name]: inputValue,
-      }));
-    }
-  };
-
-  const DateFormat = (date) => {
-    if (!date) return "";
-
-    const options = {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    };
-    return new Intl.DateTimeFormat("en-US", options).format(new Date(date));
-  };
-
-  const handleFileChange = (e) => {
-    e.preventDefault();
-
-    setCreateFiles([...createFiles, ...e.target.files]);
-  };
-
-  const handleAdd = (e) => {
-    e.preventDefault();
-
-    fileInputRef.current.click();
-  };
-
-  const handleOnReply = () => {
-    setReply(!reply);
-  };
-
-  const handleOnUpload = () => {
-    setUpload(!upload);
-  };
-
-  const handleOnStatusChanger = () => {
-    setStatusChanger(!statusChanger);
-  };
-
-  const handlePatawagTitleChange = (e) => {
-    const title = e.target.value;
-    setPatawagData((prev) => ({
-      ...prev,
-      name: title,
-    }));
-  };
-
-  const handleOnCustomComplainant = () => {
-    setCustomComplainant(!customComplainant);
-  };
-
-  const handleOnCustomDefendant = () => {
-    setCustomDefendant(!customDefendant);
-  };
-
-  const resetComplainantData = () => {
-    setComplainantData({
-      firstName: "",
-      middleName: "",
-      lastName: "",
-      user_id: "",
-      type: "Complainant",
-    });
-  };
-
-  const resetDefendantData = () => {
-    setDefendantData({
-      firstName: "",
-      middleName: "",
-      lastName: "",
-      user_id: "",
-      type: "Defendant",
-    });
-  };
-
-  useEffect(() => {
-    // Update patawagData whenever ComplainantData or DefendantData changes
-    setPatawagData((prev) => ({
-      ...prev,
-      to: [ComplainantData, DefendantData],
-    }));
-  }, [ComplainantData, DefendantData]);
-
-  const getType = (type) => {
-    switch (type) {
-      case "MUNISIPYO":
-        return "Municipality";
-      default:
-        return "Barangay";
-    }
-  };
-
-  const [searchTermComplainant, setSearchTermComplainant] = useState("");
-  const [searchTermDefendant, setSearchTermDefendant] = useState("");
-
-  const filteredUsersComplainant = users.filter((user) =>
-    `${user.firstName} ${user.middleName} ${user.lastName}`
-      .toLowerCase()
-      .includes(searchTermComplainant.toLowerCase())
-  );
-
-  const filteredUsersDefendant = users.filter((user) =>
-    `${user.firstName} ${user.middleName} ${user.lastName}`
-      .toLowerCase()
-      .includes(searchTermDefendant.toLowerCase())
-  );
-
-  const handleOnSend = async (e) => {
-    try {
-      e.preventDefault();
-      setSubmitClicked(true);
-      setOnSend(true);
-      setErrMsg(false);
-      setError(null); // Reset error state
-
-      if (ResponseData.message.trim() === "" && createFiles.length === 0) {
-        setSubmitClicked(false);
-        setErrMsg(true);
-        setOnSend(false);
-        return;
-      }
-
-      const targetUserIds = [
-        ...ComplainantData.map((complainant) => complainant.user_id),
-        ...DefendantData.map((defendant) => defendant.user_id),
-      ];
-
-      // console.log("targetUserIds: ", targetUserIds);
-
-      const obj = {
-        name: patawagData.name,
-        to: { complainant: ComplainantData, defendant: DefendantData },
-        brgy: detail.brgy,
-        responses: [
-          {
-            sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
-            type: "Staff",
-            message: `${ResponseData.message}`,
-            date: `${ResponseData.date}`,
-          },
-        ],
-        req_id: detail.req_id,
-        status: `${ResponseData.status}`,
-      };
-
-      var formData = new FormData();
-      formData.append("patawag", JSON.stringify(obj));
-
-      const res_folder = await axios.get(
-        `${API_LINK}/folder/specific/?brgy=${brgy}`
-      );
-
-      if (res_folder.status === 200) {
-        for (let i = 0; i < createFiles.length; i++) {
-          formData.append("files", createFiles[i]);
-        }
-
-        const response = await axios.post(
-          `${API_LINK}/blotter/?patawag_folder_id=${res_folder.data[0].blotters}`,
-          formData
-        );
-
-        if (response.status === 200) {
-          socket.emit("send-reply-patawag", response.data);
-
-          const notify = {
-            category: "One",
-            compose: {
-              subject: `PATAWAG - ${request.service_name}`,
-              message: `A barangay staff has started your blotter request.\n\n
-
-              Please update this service request as you've seen this notification!\n\n
-              Thank you!!,`,
-              go_to: "Patawag",
-            },
-            target: {
-              user_id: targetUserIds,
-              area: request.brgy,
-            },
-            type: "Resident",
-            banner: service.collections.banner,
-            logo: service.collections.logo,
-          };
-
-          const result = await axios.post(`${API_LINK}/notification/`, notify, {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-
-          // console.log("notify: ", notify);
-
-          // console.log("notif result: ", result.data)
-
-          if (result.status === 200) {
-            socket.emit("send-resident-notif", result.data);
-
-            setCreateFiles([]);
-            setResponseData({
-              sender: "",
-              type: "Staff",
-              message: "",
-              date: new Date().toISOString(),
-              status: "",
-            });
-            setReplyingStatus(null);
-            setReply(false);
-            setStatusChanger(false);
-
-            setSubmitClicked(false);
-            // socket.emit("send-reply-patawag", response.data);
-            setOnSend(false);
-            setUpdate(true);
-          }
-        }
-      }
-    } catch (error) {
-      console.log(error.message);
-      setSubmitClicked(false);
-      setReplyingStatus("error");
-      setError("An error occurred while replying to the service request.");
-    }
-  };
-
-  // console.log("blotterDetails: ", blotterDetails);
-
-  const handleSendReply = async (e) => {
-    try {
-      e.preventDefault();
-      setOnSend(true);
-      setErrMsg(false);
-
-      if (ResponseData.message.trim() === "" && createFiles.length === 0) {
-        setErrMsg(true);
-        setOnSend(false);
-        return;
-      }
-
-      const targetUserIds = [
-        ...blotterDetails?.to?.complainant?.map(
-          (complainant) => complainant.user_id
-        ),
-        ...blotterDetails?.to?.defendant?.map((defendant) => defendant.user_id),
-      ];
-
-      console.log("targetUserIds: ", targetUserIds);
-
-      const obj = {
-        sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
-        type: "Staff",
-        message: `${ResponseData.message}`,
-        date: `${ResponseData.date}`,
-        folder_id: blotterDetails.folder_id,
-        status: `${ResponseData.status}`,
-      };
-
-      var formData = new FormData();
-      formData.append("response", JSON.stringify(obj));
-
-      const res_folder = await axios.get(
-        `${API_LINK}/folder/specific/?brgy=${brgy}`
-      );
-
-      if (res_folder.status === 200) {
-        for (let i = 0; i < createFiles.length; i++) {
-          formData.append("files", createFiles[i]);
-        }
-
-        const response = await axios.patch(
-          `${API_LINK}/blotter/?patawag_id=${blotterDetails._id}&patawag_folder_id=${res_folder.data[0].blotters}`,
-          formData
-        );
-
-        if (response.status === 200) {
-          socket.emit("send-reply-patawag", response.data);
-          setOnSend(false);
-
-          const notify = {
-            category: "One",
-            compose: {
-              subject: `PATAWAG - NEW MESSAGE`,
-              message: `A barangay staff has replied to your patawag conversation.\n\n
-
-              Please view and respond as you've seen this notification!\n\n
-              Thank you!`,
-              go_to: "Patawag",
-            },
-            target: {
-              user_id: targetUserIds,
-              area: request.brgy,
-            },
-            type: "Resident",
-            banner: service.collections.banner,
-            logo: service.collections.logo,
-          };
-
-          const result = await axios.post(`${API_LINK}/notification/`, notify, {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-
-          if (result.status === 200) {
-            const getIP = async () => {
-              const response = await fetch(
-                "https://api64.ipify.org?format=json"
-              );
-              const data = await response.json();
-              return data.ip;
-            };
-            ;
-            const ip = await getIP(); // Retrieve IP address
-            const logsData = {
-              action: "Updated",
-              details: "An status of blotter service request",
-              ip: ip,
-            };
-
-            const logsResult = await axios.post(
-              `${API_LINK}/act_logs/add_logs/?id=${id}`,
-              logsData
-            );
-            if (logsResult.status === 200) {
-              socket.emit("send-resident-notif", result.data);
-
-              setCreateFiles([]);
-              setResponseData({
-                sender: "",
-                type: "Staff",
-                message: "",
-                date: new Date().toISOString(),
-                status: "",
-              });
-              setReply(false);
-              setStatusChanger(false);
-            }
-          }
-        }
-      }
-    } catch (error) {
-      console.log(error);
-      setSubmitClicked(false);
-      setReplyingStatus("error");
-      setError("An error occurred while replying to the service request.");
-    }
-  };
-
-  const handleResetServiceId = () => {
-    setDetail({});
-    setSelectedFormIndex("");
-  };
-
-  const handleResetModal = () => {
-    setStatusChanger(false);
-    setCreateFiles([]);
-    setResponseData([
-      {
-        sender: "",
-        type: "Staff",
-        message: "",
-        date: new Date().toISOString(),
-        status: "",
-      },
-    ]);
-    setComplainantData([]);
-    setDefendantData([]);
-    setPatawagData({
-      name: "",
-      to: [ComplainantData, DefendantData],
-      response: [ResponseData],
-      brgy: "",
-      req_id: "",
-    });
-    setSelectedComplainant("");
-    setSelectedDefendant("");
-  };
-
-  const handleOnViewTime = (item) => {
-    console.log(item);
-    setViewTime({
-      state: !viewTime.state,
-      timeKey: item,
-    });
-  };
+  // const handleAddComplainant = () => {
+  //   if (
+  //     complainantInfo.firstName &&
+  //     complainantInfo.middleName &&
+  //     complainantInfo.lastName
+  //   ) {
+  //     setComplainantData([...ComplainantData, complainantInfo]);
+  //     setComplainantInfo({
+  //       firstName: "",
+  //       middleName: "",
+  //       lastName: "",
+  //     });
+  //   }
+  // };
+
+  // const handleComplainantChange = (e) => {
+  //   const selectedUserId = e.target.value;
+
+  //   // Check if the selected user is already in the ComplainantData array
+  //   const isUserAlreadyAdded = ComplainantData.some(
+  //     (complainant) => complainant.user_id === selectedUserId
+  //   );
+
+  //   // If the user is already added, do not add it again
+  //   if (isUserAlreadyAdded) {
+  //     return;
+  //   }
+
+  //   setSelectedComplainant(selectedUserId);
+
+  //   const selectedUser = users.find((user) => user._id === selectedUserId);
+  //   const newComplainant = {
+  //     firstName: selectedUser.firstName,
+  //     middleName: selectedUser.middleName || "",
+  //     lastName: selectedUser.lastName,
+  //     user_id: selectedUser.user_id,
+  //     type: "Complainant",
+  //   };
+
+  //   setComplainantData((prevComplainants) => [
+  //     ...prevComplainants,
+  //     newComplainant,
+  //   ]);
+  // };
+
+  // const removeComplainant = (e, index) => {
+  //   e.preventDefault();
+  //   setComplainantData(ComplainantData.filter((_, i) => i !== index));
+  // };
+
+  // const handleAddDefendant = () => {
+  //   if (
+  //     defendantInfo.firstName &&
+  //     defendantInfo.middleName &&
+  //     defendantInfo.lastName
+  //   ) {
+  //     setDefendantData([...DefendantData, defendantInfo]);
+  //     setDefendantInfo({
+  //       firstName: "",
+  //       middleName: "",
+  //       lastName: "",
+  //     });
+  //   }
+  // };
+
+  // const handleDefendantChange = (e) => {
+  //   const selectedUserId = e.target.value;
+
+  //   // Check if the selected user is already in the DefendantData array
+  //   const isUserAlreadyAdded = DefendantData.some(
+  //     (defendant) => defendant.user_id === selectedUserId
+  //   );
+
+  //   // If the user is already added, do not add it again
+  //   if (isUserAlreadyAdded) {
+  //     return;
+  //   }
+
+  //   setSelectedDefendant(selectedUserId);
+
+  //   const selectedUser = users.find((user) => user._id === selectedUserId);
+  //   const newDefendant = {
+  //     firstName: selectedUser.firstName,
+  //     middleName: selectedUser.middleName || "",
+  //     lastName: selectedUser.lastName,
+  //     user_id: selectedUser.user_id,
+  //     type: "Defendant",
+  //   };
+
+  //   setDefendantData((prevDefendants) => [...prevDefendants, newDefendant]);
+  // };
+
+  // const removeDefendant = (e, index) => {
+  //   e.preventDefault();
+  //   setDefendantData(DefendantData.filter((_, i) => i !== index));
+  // };
+
+  // useEffect(() => {
+  //   setDetail(request);
+  // }, [request]);
+
+  // useEffect(() => {
+  //   setFiles(request.length === 0 ? [] : request.file);
+  // }, [request]);
+
+  // useEffect(() => {
+  //   const fetch = async () => {
+  //     try {
+  //       const res = await axios.get(`${API_LINK}/users/specific/${id}`);
+
+  //       if (res.status === 200) {
+  //         setUserData(res.data[0]);
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetch();
+  // }, [id]);
+
+  // useEffect(() => {
+  //   const fetchUsers = async () => {
+  //     let page = null;
+  //     let hasMoreResults = true;
+
+  //     while (hasMoreResults) {
+  //       try {
+  //         const response = await axios.get(
+  //           `${API_LINK}/users/?brgy=${brgy}&type=Resident&page=${page}`
+  //         );
+
+  //         if (response.status === 200 && response.data.result.length > 0) {
+  //           setUsers((prevUsers) => [...prevUsers, ...response.data.result]);
+  //           page++;
+  //         } else {
+  //           hasMoreResults = false;
+  //         }
+  //       } catch (error) {
+  //         console.error("Error fetching users:", error);
+  //         hasMoreResults = false;
+  //       }
+  //     }
+  //   };
+
+  //   fetchUsers();
+  // }, [brgy]);
+
+  // useEffect(() => {
+  //   // function to filter
+  //   const fetch = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${API_LINK}/blotter/?brgy=${brgy}&req_id=${detail.req_id}`
+  //       );
+
+  //       // filter
+  //       setBlotterDetails(response.data);
+  //     } catch (err) {
+  //       console.log(err.message);
+  //       setBlotterDetails([]);
+  //     }
+  //   };
+
+  //   fetch();
+  // }, [brgy, request, detail]);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       if (!request.service_id) {
+  //         // If there is no event_id in the application, do not fetch events
+  //         return;
+  //       }
+  //       const serviceResponse = await axios.get(
+  //         `${API_LINK}/services/?brgy=${brgy}&service_id=${request.service_id}&archived=false`
+  //       );
+
+  //       if (serviceResponse.status === 200) {
+  //         setService(serviceResponse.data.result[0]);
+  //       } else {
+  //         // setEventWithCounts([]);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //       console.error("Error response data:", error.response?.data);
+  //       console.error("Error response status:", error.response?.status);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, [brgy, request.service_id]);
+
+  // useEffect(() => {
+  //   if (blotterDetails && blotterDetails.status) {
+  //     // If blotterDetails has status, set it as the default status for ResponseData
+  //     setResponseData((prev) => ({
+  //       ...prev,
+  //       status: blotterDetails.status,
+  //     }));
+  //   }
+  // }, [blotterDetails]);
+
+  // useEffect(() => {
+  //   if (
+  //     blotterDetails &&
+  //     blotterDetails.responses &&
+  //     blotterDetails.responses.length !== 0
+  //   ) {
+  //     const lastResponse =
+  //       blotterDetails.responses[blotterDetails.responses.length - 1];
+
+  //     if (lastResponse && lastResponse.file && lastResponse.file.length > 0) {
+  //       setViewFiles(lastResponse.file);
+  //     } else {
+  //       setViewFiles([]);
+  //     }
+  //   } else {
+  //     setViewFiles([]);
+  //   }
+  // }, [blotterDetails]);
+
+  // // Initialize with the last index expanded
+  // useEffect(() => {
+  //   const lastIndex = blotterDetails.responses
+  //     ? blotterDetails.responses.length - 1
+  //     : 0;
+  //   setExpandedIndexes([lastIndex]);
+  // }, [blotterDetails.responses]);
+
+  // const fileInputRef = useRef();
+
+  // const handleToggleClick = (index) => {
+  //   if (expandedIndexes.includes(index)) {
+  //     // Collapse the clicked div
+  //     setExpandedIndexes((prev) => prev.filter((i) => i !== index));
+  //   } else {
+  //     // Expand the clicked div
+  //     setExpandedIndexes((prev) => [...prev, index]);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   if (
+  //     blotterDetails &&
+  //     blotterDetails.responses &&
+  //     blotterDetails.responses.length > 0
+  //   ) {
+  //     // Sort the responses based on date in ascending order
+  //     blotterDetails.responses.sort(
+  //       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  //     );
+
+  //     // Initialize with the last index expanded
+  //     const lastIndex = blotterDetails.responses.length - 1;
+  //     setExpandedIndexes([lastIndex]);
+  //   }
+  // }, [blotterDetails]);
+
+  // const handleChange = (e) => {
+  //   const inputValue = e.target.value;
+
+  //   if (e.target.name === "isRepliable") {
+  //     // If isRepliable checkbox is changed, update isRepliable accordingly
+  //     setResponseData((prev) => ({
+  //       ...prev,
+  //       [e.target.name]: e.target.checked,
+  //     }));
+  //   } else if (
+  //     statusChanger &&
+  //     (!ResponseData.message || ResponseData.message.trim() === "")
+  //   ) {
+  //     // If statusChanger is true and message is not set, update message with status
+  //     setResponseData((prev) => ({
+  //       ...prev,
+  //       message: `The status of your event application is ${inputValue}`,
+  //       [e.target.name]: inputValue,
+  //     }));
+  //   } else {
+  //     // Otherwise, update the input value normally
+  //     setResponseData((prev) => ({
+  //       ...prev,
+  //       [e.target.name]: inputValue,
+  //     }));
+  //   }
+  // };
+
+  // const DateFormat = (date) => {
+  //   if (!date) return "";
+
+  //   const options = {
+  //     year: "numeric",
+  //     month: "short",
+  //     day: "numeric",
+  //     hour: "numeric",
+  //     minute: "numeric",
+  //     hour12: true,
+  //   };
+  //   return new Intl.DateTimeFormat("en-US", options).format(new Date(date));
+  // };
+
+  // const handleFileChange = (e) => {
+  //   e.preventDefault();
+
+  //   setCreateFiles([...createFiles, ...e.target.files]);
+  // };
+
+  // const handleAdd = (e) => {
+  //   e.preventDefault();
+
+  //   fileInputRef.current.click();
+  // };
+
+  // const handleOnReply = () => {
+  //   setReply(!reply);
+  // };
+
+  // const handleOnUpload = () => {
+  //   setUpload(!upload);
+  // };
+
+  // const handleOnStatusChanger = () => {
+  //   setStatusChanger(!statusChanger);
+  // };
+
+  // const handlePatawagTitleChange = (e) => {
+  //   const title = e.target.value;
+  //   setPatawagData((prev) => ({
+  //     ...prev,
+  //     name: title,
+  //   }));
+  // };
+
+  // const handleOnCustomComplainant = () => {
+  //   setCustomComplainant(!customComplainant);
+  // };
+
+  // const handleOnCustomDefendant = () => {
+  //   setCustomDefendant(!customDefendant);
+  // };
+
+  // const resetComplainantData = () => {
+  //   setComplainantData({
+  //     firstName: "",
+  //     middleName: "",
+  //     lastName: "",
+  //     user_id: "",
+  //     type: "Complainant",
+  //   });
+  // };
+
+  // const resetDefendantData = () => {
+  //   setDefendantData({
+  //     firstName: "",
+  //     middleName: "",
+  //     lastName: "",
+  //     user_id: "",
+  //     type: "Defendant",
+  //   });
+  // };
+
+  // useEffect(() => {
+  //   // Update patawagData whenever ComplainantData or DefendantData changes
+  //   setPatawagData((prev) => ({
+  //     ...prev,
+  //     to: [ComplainantData, DefendantData],
+  //   }));
+  // }, [ComplainantData, DefendantData]);
+
+  // const getType = (type) => {
+  //   switch (type) {
+  //     case "MUNISIPYO":
+  //       return "Municipality";
+  //     default:
+  //       return "Barangay";
+  //   }
+  // };
+
+  // const [searchTermComplainant, setSearchTermComplainant] = useState("");
+  // const [searchTermDefendant, setSearchTermDefendant] = useState("");
+
+  // const filteredUsersComplainant = users.filter((user) =>
+  //   `${user.firstName} ${user.middleName} ${user.lastName}`
+  //     .toLowerCase()
+  //     .includes(searchTermComplainant.toLowerCase())
+  // );
+
+  // const filteredUsersDefendant = users.filter((user) =>
+  //   `${user.firstName} ${user.middleName} ${user.lastName}`
+  //     .toLowerCase()
+  //     .includes(searchTermDefendant.toLowerCase())
+  // );
+
+  // const handleOnSend = async (e) => {
+  //   try {
+  //     e.preventDefault();
+  //     setSubmitClicked(true);
+  //     setOnSend(true);
+  //     setErrMsg(false);
+  //     setError(null); // Reset error state
+
+  //     if (ResponseData.message.trim() === "" && createFiles.length === 0) {
+  //       setSubmitClicked(false);
+  //       setErrMsg(true);
+  //       setOnSend(false);
+  //       return;
+  //     }
+
+  //     const targetUserIds = [
+  //       ...ComplainantData.map((complainant) => complainant.user_id),
+  //       ...DefendantData.map((defendant) => defendant.user_id),
+  //     ];
+
+  //     // console.log("targetUserIds: ", targetUserIds);
+
+  //     const obj = {
+  //       name: patawagData.name,
+  //       to: { complainant: ComplainantData, defendant: DefendantData },
+  //       brgy: detail.brgy,
+  //       responses: [
+  //         {
+  //           sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
+  //           type: "Staff",
+  //           message: `${ResponseData.message}`,
+  //           date: `${ResponseData.date}`,
+  //         },
+  //       ],
+  //       req_id: detail.req_id,
+  //       status: `${ResponseData.status}`,
+  //     };
+
+  //     var formData = new FormData();
+  //     formData.append("patawag", JSON.stringify(obj));
+
+  //     const res_folder = await axios.get(
+  //       `${API_LINK}/folder/specific/?brgy=${brgy}`
+  //     );
+
+  //     if (res_folder.status === 200) {
+  //       for (let i = 0; i < createFiles.length; i++) {
+  //         formData.append("files", createFiles[i]);
+  //       }
+
+  //       const response = await axios.post(
+  //         `${API_LINK}/blotter/?patawag_folder_id=${res_folder.data[0].blotters}`,
+  //         formData
+  //       );
+
+  //       if (response.status === 200) {
+  //         socket.emit("send-reply-patawag", response.data);
+
+  //         const notify = {
+  //           category: "One",
+  //           compose: {
+  //             subject: `PATAWAG - ${request.service_name}`,
+  //             message: `A barangay staff has started your blotter request.\n\n
+
+  //             Please update this service request as you've seen this notification!\n\n
+  //             Thank you!!,`,
+  //             go_to: "Patawag",
+  //           },
+  //           target: {
+  //             user_id: targetUserIds,
+  //             area: request.brgy,
+  //           },
+  //           type: "Resident",
+  //           banner: service.collections.banner,
+  //           logo: service.collections.logo,
+  //         };
+
+  //         const result = await axios.post(`${API_LINK}/notification/`, notify, {
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //         });
+
+  //         // console.log("notify: ", notify);
+
+  //         // console.log("notif result: ", result.data)
+
+  //         if (result.status === 200) {
+  //           socket.emit("send-resident-notif", result.data);
+
+  //           setCreateFiles([]);
+  //           setResponseData({
+  //             sender: "",
+  //             type: "Staff",
+  //             message: "",
+  //             date: new Date().toISOString(),
+  //             status: "",
+  //           });
+  //           setReplyingStatus(null);
+  //           setReply(false);
+  //           setStatusChanger(false);
+
+  //           setSubmitClicked(false);
+  //           // socket.emit("send-reply-patawag", response.data);
+  //           setOnSend(false);
+  //           setUpdate(true);
+  //         }
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.log(error.message);
+  //     setSubmitClicked(false);
+  //     setReplyingStatus("error");
+  //     setError("An error occurred while replying to the service request.");
+  //   }
+  // };
+
+  // // console.log("blotterDetails: ", blotterDetails);
+
+  // const handleSendReply = async (e) => {
+  //   try {
+  //     e.preventDefault();
+  //     setOnSend(true);
+  //     setErrMsg(false);
+
+  //     if (ResponseData.message.trim() === "" && createFiles.length === 0) {
+  //       setErrMsg(true);
+  //       setOnSend(false);
+  //       return;
+  //     }
+
+  //     const targetUserIds = [
+  //       ...blotterDetails?.to?.complainant?.map(
+  //         (complainant) => complainant.user_id
+  //       ),
+  //       ...blotterDetails?.to?.defendant?.map((defendant) => defendant.user_id),
+  //     ];
+
+  //     console.log("targetUserIds: ", targetUserIds);
+
+  //     const obj = {
+  //       sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
+  //       type: "Staff",
+  //       message: `${ResponseData.message}`,
+  //       date: `${ResponseData.date}`,
+  //       folder_id: blotterDetails.folder_id,
+  //       status: `${ResponseData.status}`,
+  //     };
+
+  //     var formData = new FormData();
+  //     formData.append("response", JSON.stringify(obj));
+
+  //     const res_folder = await axios.get(
+  //       `${API_LINK}/folder/specific/?brgy=${brgy}`
+  //     );
+
+  //     if (res_folder.status === 200) {
+  //       for (let i = 0; i < createFiles.length; i++) {
+  //         formData.append("files", createFiles[i]);
+  //       }
+
+  //       const response = await axios.patch(
+  //         `${API_LINK}/blotter/?patawag_id=${blotterDetails._id}&patawag_folder_id=${res_folder.data[0].blotters}`,
+  //         formData
+  //       );
+
+  //       if (response.status === 200) {
+  //         socket.emit("send-reply-patawag", response.data);
+  //         setOnSend(false);
+
+  //         const notify = {
+  //           category: "One",
+  //           compose: {
+  //             subject: `PATAWAG - NEW MESSAGE`,
+  //             message: `A barangay staff has replied to your patawag conversation.\n\n
+
+  //             Please view and respond as you've seen this notification!\n\n
+  //             Thank you!`,
+  //             go_to: "Patawag",
+  //           },
+  //           target: {
+  //             user_id: targetUserIds,
+  //             area: request.brgy,
+  //           },
+  //           type: "Resident",
+  //           banner: service.collections.banner,
+  //           logo: service.collections.logo,
+  //         };
+
+  //         const result = await axios.post(`${API_LINK}/notification/`, notify, {
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //         });
+
+  //         if (result.status === 200) {
+  //           const getIP = async () => {
+  //             const response = await fetch(
+  //               "https://api64.ipify.org?format=json"
+  //             );
+  //             const data = await response.json();
+  //             return data.ip;
+  //           };
+  //           ;
+  //           const ip = await getIP(); // Retrieve IP address
+  //           const logsData = {
+  //             action: "Updated",
+  //             details: "An status of blotter service request",
+  //             ip: ip,
+  //           };
+
+  //           const logsResult = await axios.post(
+  //             `${API_LINK}/act_logs/add_logs/?id=${id}`,
+  //             logsData
+  //           );
+  //           if (logsResult.status === 200) {
+  //             socket.emit("send-resident-notif", result.data);
+
+  //             setCreateFiles([]);
+  //             setResponseData({
+  //               sender: "",
+  //               type: "Staff",
+  //               message: "",
+  //               date: new Date().toISOString(),
+  //               status: "",
+  //             });
+  //             setReply(false);
+  //             setStatusChanger(false);
+  //           }
+  //         }
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     setSubmitClicked(false);
+  //     setReplyingStatus("error");
+  //     setError("An error occurred while replying to the service request.");
+  //   }
+  // };
+
+  // const handleResetServiceId = () => {
+  //   setDetail({});
+  //   setSelectedFormIndex("");
+  // };
+
+  // const handleResetModal = () => {
+  //   setStatusChanger(false);
+  //   setCreateFiles([]);
+  //   setResponseData([
+  //     {
+  //       sender: "",
+  //       type: "Staff",
+  //       message: "",
+  //       date: new Date().toISOString(),
+  //       status: "",
+  //     },
+  //   ]);
+  //   setComplainantData([]);
+  //   setDefendantData([]);
+  //   setPatawagData({
+  //     name: "",
+  //     to: [ComplainantData, DefendantData],
+  //     response: [ResponseData],
+  //     brgy: "",
+  //     req_id: "",
+  //   });
+  //   setSelectedComplainant("");
+  //   setSelectedDefendant("");
+  // };
+
+  // const handleOnViewTime = (item) => {
+  //   console.log(item);
+  //   setViewTime({
+  //     state: !viewTime.state,
+  //     timeKey: item,
+  //   });
+  // };
 
   return (
     <div>
@@ -812,8 +812,8 @@ function ReplyServiceModal({
                               <input
                                 type="text"
                                 placeholder="Enter the name for the patawag..."
-                                value={patawagData.name}
-                                onChange={handlePatawagTitleChange}
+                                // value={patawagData.name}
+                                // onChange={handlePatawagTitleChange}
                                 className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
                               />
                             </div>
@@ -956,10 +956,10 @@ function ReplyServiceModal({
                                 <input
                                   type="text"
                                   placeholder="Search complainant..."
-                                  value={searchTermComplainant}
-                                  onChange={(e) =>
-                                    setSearchTermComplainant(e.target.value)
-                                  }
+                                  // value={searchTermComplainant}
+                                  // onChange={(e) =>
+                                  //   setSearchTermComplainant(e.target.value)
+                                  // }
                                   className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
                                 />
 
@@ -967,14 +967,14 @@ function ReplyServiceModal({
                                 <select
                                   id="complainant"
                                   name="complainant"
-                                  value={selectedComplainant}
-                                  onChange={handleComplainantChange}
+                                  // value={selectedComplainant}
+                                  // onChange={handleComplainantChange}
                                   className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
                                 >
                                   <option>
                                     -- Select An Existing Resident --
                                   </option>
-                                  {filteredUsersComplainant
+                                  {/* {filteredUsersComplainant
                                     .filter(
                                       (user, index, self) =>
                                         index ===
@@ -989,7 +989,7 @@ function ReplyServiceModal({
                                           : ""
                                           } ${user.lastName}`}
                                       </option>
-                                    ))}
+                                    ))} */}
                                 </select>
 
                                 {ComplainantData.map((complainant, index) => (
@@ -1148,7 +1148,7 @@ function ReplyServiceModal({
                                     <button
                                       type="button"
                                       className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                                      onClick={handleAddDefendant}
+                                      // onClick={handleAddDefendant}
                                     >
                                       ADD
                                     </button>
@@ -1161,10 +1161,10 @@ function ReplyServiceModal({
                                 <input
                                   type="text"
                                   placeholder="Search defendant..."
-                                  value={searchTermDefendant}
-                                  onChange={(e) =>
-                                    setSearchTermDefendant(e.target.value)
-                                  }
+                                  // value={searchTermDefendant}
+                                  // onChange={(e) =>
+                                  //   setSearchTermDefendant(e.target.value)
+                                  // }
                                   className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
                                 />
 
@@ -1172,14 +1172,14 @@ function ReplyServiceModal({
                                 <select
                                   id="defendant"
                                   name="defendant"
-                                  value={selectedDefendant}
-                                  onChange={handleDefendantChange}
+                                  // value={selectedDefendant}
+                                  // onChange={handleDefendantChange}
                                   className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-blue-500 focus:ring-blue-500 focus:outline-none focus:shadow-outline mt-2"
                                 >
                                   <option>
                                     -- Select An Existing Resident --
                                   </option>
-                                  {filteredUsersDefendant
+                                  {/* {filteredUsersDefendant
                                     .filter(
                                       (user, index, self) =>
                                         index ===
@@ -1194,7 +1194,7 @@ function ReplyServiceModal({
                                           : ""
                                           } ${user.lastName}`}
                                       </option>
-                                    ))}
+                                    ))} */}
                                 </select>
 
                                 {DefendantData.map((defendant, index) => (
@@ -1238,7 +1238,7 @@ function ReplyServiceModal({
                           <textarea
                             id="message"
                             name="message"
-                            onChange={handleChange}
+                            // onChange={handleChange}
                             rows={7}
                             value={
                               ResponseData.message
@@ -1257,15 +1257,15 @@ function ReplyServiceModal({
                                 <input
                                   type="file"
                                   name="file"
-                                  onChange={(e) => handleFileChange(e)}
-                                  ref={fileInputRef}
+                                  // onChange={(e) => handleFileChange(e)}
+                                  // ref={fileInputRef}
                                   accept=".xlsx,.xls,.doc,.docx,.ppt,.pptx,.txt,.pdf"
                                   multiple="multiple"
                                   className="hidden"
                                 />
                                 <button
                                   id="button"
-                                  onClick={handleAdd || handleOnUpload}
+                                  // onClick={handleAdd || handleOnUpload}
                                   className="p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
                                 >
                                   <IoIosAttach
@@ -1379,7 +1379,7 @@ function ReplyServiceModal({
                               <div className="flex justify-center items-center gap-x-2">
                                 <button
                                   type="submit"
-                                  onClick={handleOnSend}
+                                  // onClick={handleOnSend}
                                   className="inline-flex flex-shrink-0 justify-center items-center rounded-lg p-2 gap-2 text-[#2d6a4f] hover:bg-white hover:rounded-full  "
                                 >
                                   {onSend ? (
@@ -1513,7 +1513,7 @@ function ReplyServiceModal({
                                   <textarea
                                     id="message"
                                     name="message"
-                                    onChange={handleChange}
+                                    // onChange={handleChange}
                                     rows={7}
                                     value={
                                       ResponseData.message
@@ -1532,15 +1532,15 @@ function ReplyServiceModal({
                                         <input
                                           type="file"
                                           name="file"
-                                          onChange={(e) => handleFileChange(e)}
-                                          ref={fileInputRef}
+                                          // onChange={(e) => handleFileChange(e)}
+                                          // ref={fileInputRef}
                                           accept=".xlsx,.xls,.doc,.docx,.ppt,.pptx,.txt,.pdf"
                                           multiple="multiple"
                                           className="hidden"
                                         />
                                         <button
                                           id="button"
-                                          onClick={handleAdd || handleOnUpload}
+                                          // onClick={handleAdd || handleOnUpload}
                                           className="p-2 hover:rounded-full hover:bg-white focus:shadow-outline focus:outline-none"
                                         >
                                           <IoIosAttach
@@ -1711,7 +1711,7 @@ function ReplyServiceModal({
                 type="button"
                 className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-900 text-white shadow-sm"
                 data-hs-overlay="#hs-reply-modal"
-                onClick={handleResetServiceId && handleResetModal}
+                // onClick={handleResetServiceId && handleResetModal}
               >
                 CLOSE
               </button>

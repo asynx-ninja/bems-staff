@@ -25,160 +25,160 @@ const Reports = () => {
   const [forReviewCount, setForReviewCount] = useState(0);
   const information = GetBrgy(brgy);
 
-  useEffect(() => {
-    document.title = "Reports | Barangay E-Services Management";
-    const fetchData = async () => {
-      try {
-        // Fetch services and requests
-        const servicesResponse = await axios.get(
-          `${API_LINK}/services/?brgy=${brgy}&archived=false`
-        );
-        const requestsResponse = await axios.get(
-          `${API_LINK}/requests/?brgy=${brgy}&archived=false`
-        );
+  // useEffect(() => {
+  //   document.title = "Reports | Barangay E-Services Management";
+  //   const fetchData = async () => {
+  //     try {
+  //       // Fetch services and requests
+  //       const servicesResponse = await axios.get(
+  //         `${API_LINK}/services/?brgy=${brgy}&archived=false`
+  //       );
+  //       const requestsResponse = await axios.get(
+  //         `${API_LINK}/requests/?brgy=${brgy}&archived=false`
+  //       );
 
-        if (servicesResponse.status === 200)
-          setServices(servicesResponse.data.result);
-        else setServices([]);
+  //       if (servicesResponse.status === 200)
+  //         setServices(servicesResponse.data.result);
+  //       else setServices([]);
 
-        if (requestsResponse.status === 200)
-          setRequests(requestsResponse.data.result);
+  //       if (requestsResponse.status === 200)
+  //         setRequests(requestsResponse.data.result);
 
-        // Fetch archived requests
-        const archivedRequestsResponse = await axios.get(
-          `${API_LINK}/requests/?brgy=${brgy}&archived=true`
-        );
-        if (archivedRequestsResponse.status === 200)
-          setArchivedRequests(archivedRequestsResponse.data.result);
+  //       // Fetch archived requests
+  //       const archivedRequestsResponse = await axios.get(
+  //         `${API_LINK}/requests/?brgy=${brgy}&archived=true`
+  //       );
+  //       if (archivedRequestsResponse.status === 200)
+  //         setArchivedRequests(archivedRequestsResponse.data.result);
 
-        // Fetch archived services
-        const archivedServicesResponse = await axios.get(
-          `${API_LINK}/services/?brgy=${brgy}&archived=true`
-        );
-        if (archivedServicesResponse.status === 200)
-          setArchivedServices(archivedServicesResponse.data.result);
+  //       // Fetch archived services
+  //       const archivedServicesResponse = await axios.get(
+  //         `${API_LINK}/services/?brgy=${brgy}&archived=true`
+  //       );
+  //       if (archivedServicesResponse.status === 200)
+  //         setArchivedServices(archivedServicesResponse.data.result);
 
-        // Fetch users
-        const activeUsersResponse = await axios.get(
-          `${API_LINK}/users/?brgy=${brgy}&type=Resident`
-        );
-        if (activeUsersResponse.status === 200) {
-          setUsers(activeUsersResponse.data.result);
-        } else {
-          setUsers([]);
-        }
+  //       // Fetch users
+  //       const activeUsersResponse = await axios.get(
+  //         `${API_LINK}/users/?brgy=${brgy}&type=Resident`
+  //       );
+  //       if (activeUsersResponse.status === 200) {
+  //         setUsers(activeUsersResponse.data.result);
+  //       } else {
+  //         setUsers([]);
+  //       }
 
-        // Fetch archived users
-        const announcementsResponse = await axios.get(
-          `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
-        );
+  //       // Fetch archived users
+  //       const announcementsResponse = await axios.get(
+  //         `${API_LINK}/announcement/?brgy=${brgy}&archived=false`
+  //       );
 
-        if (announcementsResponse.status === 200) {
-          setAnnouncements(announcementsResponse.data.result);
+  //       if (announcementsResponse.status === 200) {
+  //         setAnnouncements(announcementsResponse.data.result);
 
-          // Fetch completed counts for each announcement
-          const announcementsData = await Promise.all(
-            announcementsResponse.data.result.map(async (announcement) => {
-              const completedResponse = await axios.get(
-                `${API_LINK}/application/completed?brgy=${brgy}&event_id=${announcement.event_id}`
-              );
+  //         // Fetch completed counts for each announcement
+  //         const announcementsData = await Promise.all(
+  //           announcementsResponse.data.result.map(async (announcement) => {
+  //             const completedResponse = await axios.get(
+  //               `${API_LINK}/application/completed?brgy=${brgy}&event_id=${announcement.event_id}`
+  //             );
 
-              if (completedResponse.status === 200) {
-                const completedCount = completedResponse.data.completedCount;
-                return { ...announcement, completedCount };
-              }
-            })
-          );
+  //             if (completedResponse.status === 200) {
+  //               const completedCount = completedResponse.data.completedCount;
+  //               return { ...announcement, completedCount };
+  //             }
+  //           })
+  //         );
 
-          // Use the updated announcementsData with completed counts
-          setAnnouncements(announcementsData);
-        } else {
-          setAnnouncements([]);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    };
+  //         // Use the updated announcementsData with completed counts
+  //         setAnnouncements(announcementsData);
+  //       } else {
+  //         setAnnouncements([]);
+  //       }
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
 
-    fetchData();
+  //   fetchData();
 
-    const intervalId = setInterval(() => {
-      fetchData();
-    }, 10000);
+  //   const intervalId = setInterval(() => {
+  //     fetchData();
+  //   }, 10000);
 
-    return () => clearInterval(intervalId);
-  }, [brgy]);
+  //   return () => clearInterval(intervalId);
+  // }, [brgy]);
 
-  useEffect(() => {
-    // Fetch counts for each status
-    const getStatusCounts = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/users/all_brgy_resident`,
-          {
-            params: {
-              brgy: brgy,
-            },
-          }
-        );
+  // useEffect(() => {
+  //   // Fetch counts for each status
+  //   const getStatusCounts = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${API_LINK}/users/all_brgy_resident`,
+  //         {
+  //           params: {
+  //             brgy: brgy,
+  //           },
+  //         }
+  //       );
 
-        if (response.status === 200) {
-          const data = response.data[0];
+  //       if (response.status === 200) {
+  //         const data = response.data[0];
 
-          console.log("total residents: ", data);
+  //         console.log("total residents: ", data);
 
-          const { residents } = data;
-          const registeredCount = residents.filter(
-            (resident) => resident.status === "Registered"
-          ).length;
-          const pendingCount = residents.filter(
-            (resident) => resident.status === "Pending"
-          ).length;
-          const deniedCount = residents.filter(
-            (resident) => resident.status === "Denied"
-          ).length;
-          const verifiedCount = residents.filter(
-            (resident) => resident.status === "Verified"
-          ).length;
-          const verificationApprovalCount = residents.filter(
-            (resident) => resident.status === "Verification Approval"
-          ).length;
-          const forReviewCount = residents.filter(
-            (resident) => resident.status === "Unknown"
-          ).length;
+  //         const { residents } = data;
+  //         const registeredCount = residents.filter(
+  //           (resident) => resident.status === "Registered"
+  //         ).length;
+  //         const pendingCount = residents.filter(
+  //           (resident) => resident.status === "Pending"
+  //         ).length;
+  //         const deniedCount = residents.filter(
+  //           (resident) => resident.status === "Denied"
+  //         ).length;
+  //         const verifiedCount = residents.filter(
+  //           (resident) => resident.status === "Verified"
+  //         ).length;
+  //         const verificationApprovalCount = residents.filter(
+  //           (resident) => resident.status === "Verification Approval"
+  //         ).length;
+  //         const forReviewCount = residents.filter(
+  //           (resident) => resident.status === "Unknown"
+  //         ).length;
 
-          setRegisteredCount(registeredCount);
-          setPendingCount(pendingCount);
-          setDeniedCount(deniedCount);
-          setVerifiedCount(verifiedCount);
-          setVerificationApprovalCount(verificationApprovalCount);
-          setForReviewCount(forReviewCount);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+  //         setRegisteredCount(registeredCount);
+  //         setPendingCount(pendingCount);
+  //         setDeniedCount(deniedCount);
+  //         setVerifiedCount(verifiedCount);
+  //         setVerificationApprovalCount(verificationApprovalCount);
+  //         setForReviewCount(forReviewCount);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
 
-    // Initial fetch
-    getStatusCounts();
+  //   // Initial fetch
+  //   getStatusCounts();
 
-    // Fetch data every 10 seconds
-    const intervalId = setInterval(() => {
-      getStatusCounts();
-    }, 10000);
+  //   // Fetch data every 10 seconds
+  //   const intervalId = setInterval(() => {
+  //     getStatusCounts();
+  //   }, 10000);
 
-    // Clear the interval when the component is unmounted or when brgy changes
-    return () => clearInterval(intervalId);
-  }, [brgy]); // Dependency on brgy to update counts when barangay changes
+  //   // Clear the interval when the component is unmounted or when brgy changes
+  //   return () => clearInterval(intervalId);
+  // }, [brgy]); // Dependency on brgy to update counts when barangay changes
 
   const chartDataResidentStatus = {
     series: [
-      registeredCount,
-      pendingCount,
-      deniedCount,
-      verifiedCount,
-      verificationApprovalCount,
-      forReviewCount,
+      // registeredCount,
+      // pendingCount,
+      // deniedCount,
+      // verifiedCount,
+      // verificationApprovalCount,
+      // forReviewCount,
     ],
     options: {
       colors: [
@@ -206,55 +206,55 @@ const Reports = () => {
   const [activeResidentCount, setActiveResidentCount] = useState(0);
   const [archivedResidentCount, setArchivedResidentCount] = useState(0);
 
-  useEffect(() => {
-    // Fetch data for both isArchived: "true" and isArchived: "false"
-    const getResidentIsArchivedData = async () => {
-      try {
-        const responseTrue = await axios.get(
-          `${API_LINK}/users/brgy_resident_isArchived`,
-          {
-            params: {
-              brgy: brgy,
-              isArchived: "true",
-            },
-          }
-        );
+  // useEffect(() => {
+  //   // Fetch data for both isArchived: "true" and isArchived: "false"
+  //   const getResidentIsArchivedData = async () => {
+  //     try {
+  //       const responseTrue = await axios.get(
+  //         `${API_LINK}/users/brgy_resident_isArchived`,
+  //         {
+  //           params: {
+  //             brgy: brgy,
+  //             isArchived: "true",
+  //           },
+  //         }
+  //       );
 
-        const responseFalse = await axios.get(
-          `${API_LINK}/users/brgy_resident_isArchived`,
-          {
-            params: {
-              brgy: brgy,
-              isArchived: "false",
-            },
-          }
-        );
+  //       const responseFalse = await axios.get(
+  //         `${API_LINK}/users/brgy_resident_isArchived`,
+  //         {
+  //           params: {
+  //             brgy: brgy,
+  //             isArchived: "false",
+  //           },
+  //         }
+  //       );
 
-        const dataTrue = responseTrue.data[0];
-        const dataFalse = responseFalse.data[0];
+  //       const dataTrue = responseTrue.data[0];
+  //       const dataFalse = responseFalse.data[0];
 
-        const activeResidentCount = dataFalse ? dataFalse.residents.length : 0;
-        const archivedResidentCount = dataTrue ? dataTrue.residents.length : 0;
+  //       const activeResidentCount = dataFalse ? dataFalse.residents.length : 0;
+  //       const archivedResidentCount = dataTrue ? dataTrue.residents.length : 0;
 
-        // Update state variables
-        setActiveResidentCount(activeResidentCount);
-        setArchivedResidentCount(archivedResidentCount);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+  //       // Update state variables
+  //       setActiveResidentCount(activeResidentCount);
+  //       setArchivedResidentCount(archivedResidentCount);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
 
-    // Initial fetch
-    getResidentIsArchivedData();
+  //   // Initial fetch
+  //   getResidentIsArchivedData();
 
-    // Fetch data every 10 seconds
-    const intervalId = setInterval(() => {
-      getResidentIsArchivedData();
-    }, 10000);
+  //   // Fetch data every 10 seconds
+  //   const intervalId = setInterval(() => {
+  //     getResidentIsArchivedData();
+  //   }, 10000);
 
-    // Clear the interval when the component is unmounted or when brgy changes
-    return () => clearInterval(intervalId);
-  }, [brgy]);
+  //   // Clear the interval when the component is unmounted or when brgy changes
+  //   return () => clearInterval(intervalId);
+  // }, [brgy]);
 
   const chartDataResidentIsArchived = {
     series: [activeResidentCount, archivedResidentCount],
@@ -273,38 +273,38 @@ const Reports = () => {
 
   const [statusPercentages, setStatusPercentages] = useState([]);
 
-  useEffect(() => {
-    const fetchTotalStatusRequests = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/requests/all_status_requests`,
-          {
-            params: {
-              brgy: brgy,
-            },
-          }
-        );
+  // useEffect(() => {
+  //   const fetchTotalStatusRequests = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${API_LINK}/requests/all_status_requests`,
+  //         {
+  //           params: {
+  //             brgy: brgy,
+  //           },
+  //         }
+  //       );
 
-        const data = response.data;
+  //       const data = response.data;
 
-        // Assuming the API response has the structure similar to statusPercentages
-        setStatusPercentages(data);
-      } catch (error) {
-        console.error("Error fetching total status requests:", error);
-      }
-    };
+  //       // Assuming the API response has the structure similar to statusPercentages
+  //       setStatusPercentages(data);
+  //     } catch (error) {
+  //       console.error("Error fetching total status requests:", error);
+  //     }
+  //   };
 
-    // Initial fetch
-    fetchTotalStatusRequests();
+  //   // Initial fetch
+  //   fetchTotalStatusRequests();
 
-    // Fetch data every 10 seconds
-    const intervalId = setInterval(() => {
-      fetchTotalStatusRequests();
-    }, 10000);
+  //   // Fetch data every 10 seconds
+  //   const intervalId = setInterval(() => {
+  //     fetchTotalStatusRequests();
+  //   }, 10000);
 
-    // Clear the interval when the component is unmounted or when brgy changes
-    return () => clearInterval(intervalId);
-  }, [brgy]);
+  //   // Clear the interval when the component is unmounted or when brgy changes
+  //   return () => clearInterval(intervalId);
+  // }, [brgy]);
 
   const chartDataStatusPercentage = {
     series: statusPercentages.map((percentage) => percentage.totalRequests),
@@ -363,38 +363,38 @@ const Reports = () => {
     },
   };
 
-  useEffect(() => {
-    const fetchTotalStatusInquiries = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/inquiries/all_status_inquiries`,
-          {
-            params: {
-              brgy: brgy,
-            },
-          }
-        );
+  // useEffect(() => {
+  //   const fetchTotalStatusInquiries = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${API_LINK}/inquiries/all_status_inquiries`,
+  //         {
+  //           params: {
+  //             brgy: brgy,
+  //           },
+  //         }
+  //       );
 
-        const data = response.data;
+  //       const data = response.data;
 
-        // Assuming the API response has the structure similar to serviceSummary
-        setStatusPercentagesInquiries(data);
-      } catch (error) {
-        console.error("Error fetching total status inquiries:", error);
-      }
-    };
+  //       // Assuming the API response has the structure similar to serviceSummary
+  //       setStatusPercentagesInquiries(data);
+  //     } catch (error) {
+  //       console.error("Error fetching total status inquiries:", error);
+  //     }
+  //   };
 
-    // Initial fetch
-    fetchTotalStatusInquiries();
+  //   // Initial fetch
+  //   fetchTotalStatusInquiries();
 
-    // // Fetch data every 10 seconds
-    const intervalId = setInterval(() => {
-      fetchTotalStatusInquiries();
-    }, 10000);
+  //   // // Fetch data every 10 seconds
+  //   const intervalId = setInterval(() => {
+  //     fetchTotalStatusInquiries();
+  //   }, 10000);
 
-    // Clear the interval when the component is unmounted or when brgy changes
-    return () => clearInterval(intervalId);
-  }, [brgy]);
+  //   // Clear the interval when the component is unmounted or when brgy changes
+  //   return () => clearInterval(intervalId);
+  // }, [brgy]);
 
   const getPopulationGrowthData = () => {
     const currentDate = new Date();
@@ -567,8 +567,8 @@ const Reports = () => {
 
   // Use completedCount instead of attendees.length
   const totalAttendees = announcements.map((announcement) => ({
-    announcement_title: announcement.title,
-    attendees: announcement.completedCount || 0, // Use completedCount, default to 0 if undefined
+    // announcement_title: announcement.title,
+    // attendees: announcement.completedCount || 0, // Use completedCount, default to 0 if undefined
   }));
 
   // Sort the total attendees array in descending order
@@ -667,73 +667,73 @@ const Reports = () => {
 
   const [totalMonthlyRevenue, setTotalMonthlyRevenue] = useState(0);
 
-  useEffect(() => {
-    const fetchFeeSummary = async () => {
-      try {
-        const params = { timeRange: timeRange };
+  // useEffect(() => {
+  //   const fetchFeeSummary = async () => {
+  //     try {
+  //       const params = { timeRange: timeRange };
 
-        if (timeRange === "specific") {
-          params.specificDate = specificDate;
-        }
+  //       if (timeRange === "specific") {
+  //         params.specificDate = specificDate;
+  //       }
 
-        if (timeRange === "weekly" && specificWeek) {
-          const [year, weekNumber] = specificWeek.split("-W");
-          const weekStart = moment()
-            .isoWeekYear(year)
-            .isoWeek(weekNumber)
-            .startOf("isoWeek")
-            .toISOString();
-          params.week = weekStart;
-        }
+  //       if (timeRange === "weekly" && specificWeek) {
+  //         const [year, weekNumber] = specificWeek.split("-W");
+  //         const weekStart = moment()
+  //           .isoWeekYear(year)
+  //           .isoWeek(weekNumber)
+  //           .startOf("isoWeek")
+  //           .toISOString();
+  //         params.week = weekStart;
+  //       }
 
-        if (timeRange === "monthly" && specificMonth) {
-          const [year, month] = specificMonth.split("-");
-          params.year = parseInt(year);
-          params.month = parseInt(month);
-        }
+  //       if (timeRange === "monthly" && specificMonth) {
+  //         const [year, month] = specificMonth.split("-");
+  //         params.year = parseInt(year);
+  //         params.month = parseInt(month);
+  //       }
 
-        if (timeRange === "annual") {
-          params.year = specificYear;
-        }
+  //       if (timeRange === "annual") {
+  //         params.year = specificYear;
+  //       }
 
-        // Make the API request using the GetMonthlyRevenueBrgy function
-        const response = await axios.get(
-          `${API_LINK}/requests/get_monthly_revenue_brgy`,
-          {
-            params: {
-              ...params,
-              brgy: brgy,
-            },
-          }
-        );
+  //       // Make the API request using the GetMonthlyRevenueBrgy function
+  //       const response = await axios.get(
+  //         `${API_LINK}/requests/get_monthly_revenue_brgy`,
+  //         {
+  //           params: {
+  //             ...params,
+  //             brgy: brgy,
+  //           },
+  //         }
+  //       );
 
-        const data = response.data;
+  //       const data = response.data;
 
-        // Assuming your data structure is an array of objects
-        if (data.length > 0) {
-          // Assuming the totalFee property is present in each object
-          const totalMonthlyRevenue = data.reduce(
-            (total, item) => total + item.totalFee,
-            0
-          );
-          setTotalMonthlyRevenue(totalMonthlyRevenue);
-        } else {
-          setTotalMonthlyRevenue(0);
-        }
-      } catch (error) {
-        console.error("Error fetching monthly fee summary:", error);
-      }
-    };
+  //       // Assuming your data structure is an array of objects
+  //       if (data.length > 0) {
+  //         // Assuming the totalFee property is present in each object
+  //         const totalMonthlyRevenue = data.reduce(
+  //           (total, item) => total + item.totalFee,
+  //           0
+  //         );
+  //         setTotalMonthlyRevenue(totalMonthlyRevenue);
+  //       } else {
+  //         setTotalMonthlyRevenue(0);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching monthly fee summary:", error);
+  //     }
+  //   };
 
-    fetchFeeSummary();
-  }, [
-    timeRange,
-    specificDate,
-    specificWeek,
-    specificMonth,
-    specificYear,
-    brgy,
-  ]);
+  //   fetchFeeSummary();
+  // }, [
+  //   timeRange,
+  //   specificDate,
+  //   specificWeek,
+  //   specificMonth,
+  //   specificYear,
+  //   brgy,
+  // ]);
 
   // Monthly Revenue Data Calculation
   // const currentDate = new Date();
@@ -806,127 +806,127 @@ const Reports = () => {
 
   const [estimatedRevenuess, setEstimatedRevenuess] = useState(0);
 
-  useEffect(() => {
-    const fetchFeeSummary = async () => {
-      try {
-        const params = { timeRange: timeRange };
+  // useEffect(() => {
+  //   const fetchFeeSummary = async () => {
+  //     try {
+  //       const params = { timeRange: timeRange };
 
-        if (timeRange === "specific") {
-          // specificDate is already in ISO format (YYYY-MM-DD)
-          params.specificDate = specificDate;
-        }
+  //       if (timeRange === "specific") {
+  //         // specificDate is already in ISO format (YYYY-MM-DD)
+  //         params.specificDate = specificDate;
+  //       }
 
-        if (timeRange === "weekly" && specificWeek) {
-          // Send only the start of the week to the backend
-          const [year, weekNumber] = specificWeek.split("-W");
-          const weekStart = moment()
-            .isoWeekYear(year)
-            .isoWeek(weekNumber)
-            .startOf("isoWeek")
-            .toISOString();
-          params.week = weekStart;
-        }
+  //       if (timeRange === "weekly" && specificWeek) {
+  //         // Send only the start of the week to the backend
+  //         const [year, weekNumber] = specificWeek.split("-W");
+  //         const weekStart = moment()
+  //           .isoWeekYear(year)
+  //           .isoWeek(weekNumber)
+  //           .startOf("isoWeek")
+  //           .toISOString();
+  //         params.week = weekStart;
+  //       }
 
-        if (timeRange === "monthly" && specificMonth) {
-          const [year, month] = specificMonth.split("-");
-          params.year = parseInt(year);
-          params.month = parseInt(month);
-        }
+  //       if (timeRange === "monthly" && specificMonth) {
+  //         const [year, month] = specificMonth.split("-");
+  //         params.year = parseInt(year);
+  //         params.month = parseInt(month);
+  //       }
 
-        if (timeRange === "annual") {
-          params.year = specificYear;
-        }
+  //       if (timeRange === "annual") {
+  //         params.year = specificYear;
+  //       }
 
-        // Make the API request
-        const response = await axios.get(
-          `${API_LINK}/requests/est_brgy_revenue/`,
-          {
-            params: {
-              ...params,
-              brgy: brgy,
-            },
-          }
-        );
+  //       // Make the API request
+  //       const response = await axios.get(
+  //         `${API_LINK}/requests/est_brgy_revenue/`,
+  //         {
+  //           params: {
+  //             ...params,
+  //             brgy: brgy,
+  //           },
+  //         }
+  //       );
 
-        const data = response.data;
+  //       const data = response.data;
 
-        // Assuming your data structure is an array with a single object
-        if (data.length > 0) {
-          const { totalFee } = data[0]; // Assuming the totalFee property is present
-          setEstimatedRevenuess(totalFee);
-        } else {
-          // If there is no data, set estimatedRevenuess to 0
-          setEstimatedRevenuess(0);
-        }
-      } catch (error) {
-        console.error("Error fetching fee summary:", error);
-      }
-    };
+  //       // Assuming your data structure is an array with a single object
+  //       if (data.length > 0) {
+  //         const { totalFee } = data[0]; // Assuming the totalFee property is present
+  //         setEstimatedRevenuess(totalFee);
+  //       } else {
+  //         // If there is no data, set estimatedRevenuess to 0
+  //         setEstimatedRevenuess(0);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching fee summary:", error);
+  //     }
+  //   };
 
-    fetchFeeSummary();
-  }, [timeRange, specificDate, specificWeek, specificMonth, specificYear]);
+  //   fetchFeeSummary();
+  // }, [timeRange, specificDate, specificWeek, specificMonth, specificYear]);
 
   const [totalFees, setTotalFees] = useState(0);
 
-  useEffect(() => {
-    const fetchFeeSummary = async () => {
-      try {
-        const params = { timeRange: timeRange };
+  // useEffect(() => {
+  //   const fetchFeeSummary = async () => {
+  //     try {
+  //       const params = { timeRange: timeRange };
 
-        if (timeRange === "specific") {
-          // specificDate is already in ISO format (YYYY-MM-DD)
-          params.specificDate = specificDate;
-        }
+  //       if (timeRange === "specific") {
+  //         // specificDate is already in ISO format (YYYY-MM-DD)
+  //         params.specificDate = specificDate;
+  //       }
 
-        if (timeRange === "weekly" && specificWeek) {
-          // Send only the start of the week to the backend
-          const [year, weekNumber] = specificWeek.split("-W");
-          const weekStart = moment()
-            .isoWeekYear(year)
-            .isoWeek(weekNumber)
-            .startOf("isoWeek")
-            .toISOString();
-          params.week = weekStart;
-        }
+  //       if (timeRange === "weekly" && specificWeek) {
+  //         // Send only the start of the week to the backend
+  //         const [year, weekNumber] = specificWeek.split("-W");
+  //         const weekStart = moment()
+  //           .isoWeekYear(year)
+  //           .isoWeek(weekNumber)
+  //           .startOf("isoWeek")
+  //           .toISOString();
+  //         params.week = weekStart;
+  //       }
 
-        if (timeRange === "monthly" && specificMonth) {
-          const [year, month] = specificMonth.split("-");
-          params.year = parseInt(year);
-          params.month = parseInt(month);
-        }
+  //       if (timeRange === "monthly" && specificMonth) {
+  //         const [year, month] = specificMonth.split("-");
+  //         params.year = parseInt(year);
+  //         params.month = parseInt(month);
+  //       }
 
-        if (timeRange === "annual") {
-          params.year = specificYear;
-        }
+  //       if (timeRange === "annual") {
+  //         params.year = specificYear;
+  //       }
 
-        // Make the API request using the GetRevenue function
-        const response = await axios.get(
-          `${API_LINK}/requests/get_brgy_revenue`,
-          {
-            params: {
-              ...params,
-              brgy: brgy, // Add your barangay value here
-            },
-          }
-        );
+  //       // Make the API request using the GetRevenue function
+  //       const response = await axios.get(
+  //         `${API_LINK}/requests/get_brgy_revenue`,
+  //         {
+  //           params: {
+  //             ...params,
+  //             brgy: brgy, // Add your barangay value here
+  //           },
+  //         }
+  //       );
 
-        const data = response.data;
+  //       const data = response.data;
 
-        // Assuming your data structure is an array with a single object
-        if (data.length > 0) {
-          const { totalFee } = data[0]; // Assuming the totalFee property is present
-          setTotalFees(totalFee);
-        } else {
-          // If there is no data, set totalFees to 0
-          setTotalFees(0);
-        }
-      } catch (error) {
-        console.error("Error fetching fee summary:", error);
-      }
-    };
+  //       // Assuming your data structure is an array with a single object
+  //       if (data.length > 0) {
+  //         const { totalFee } = data[0]; // Assuming the totalFee property is present
+  //         setTotalFees(totalFee);
+  //       } else {
+  //         // If there is no data, set totalFees to 0
+  //         setTotalFees(0);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching fee summary:", error);
+  //     }
+  //   };
 
-    fetchFeeSummary();
-  }, [timeRange, specificDate, specificWeek, specificMonth, specificYear]);
+  //   fetchFeeSummary();
+  // }, [timeRange, specificDate, specificWeek, specificMonth, specificYear]);
 
   const [chartDataOverallRevenue, setChartDataOverallRevenue] = useState({
     series: [
@@ -962,126 +962,126 @@ const Reports = () => {
     },
   });
 
-  useEffect(() => {
-    const fetchRevenueData = async () => {
-      try {
-        const params = { timeRange: timeRange };
+  // useEffect(() => {
+  //   const fetchRevenueData = async () => {
+  //     try {
+  //       const params = { timeRange: timeRange };
 
-        if (timeRange === "specific") {
-          params.specificDate = specificDate;
-        }
+  //       if (timeRange === "specific") {
+  //         params.specificDate = specificDate;
+  //       }
 
-        if (timeRange === "weekly" && specificWeek) {
-          const [year, weekNumber] = specificWeek.split("-W");
-          const weekStart = moment()
-            .isoWeekYear(year)
-            .isoWeek(weekNumber)
-            .startOf("isoWeek")
-            .toISOString();
-          params.week = weekStart;
-        }
+  //       if (timeRange === "weekly" && specificWeek) {
+  //         const [year, weekNumber] = specificWeek.split("-W");
+  //         const weekStart = moment()
+  //           .isoWeekYear(year)
+  //           .isoWeek(weekNumber)
+  //           .startOf("isoWeek")
+  //           .toISOString();
+  //         params.week = weekStart;
+  //       }
 
-        if (timeRange === "monthly" && specificMonth) {
-          const [year, month] = specificMonth.split("-");
-          params.year = parseInt(year);
-          params.month = parseInt(month);
-        }
+  //       if (timeRange === "monthly" && specificMonth) {
+  //         const [year, month] = specificMonth.split("-");
+  //         params.year = parseInt(year);
+  //         params.month = parseInt(month);
+  //       }
 
-        if (timeRange === "annual") {
-          params.year = specificYear;
-        }
+  //       if (timeRange === "annual") {
+  //         params.year = specificYear;
+  //       }
 
-        const response = await axios.get(
-          `${API_LINK}/requests/get_revenue_brgy_requests`,
-          {
-            params: {
-              ...params,
-              brgy: brgy,
-            },
-          }
-        );
+  //       const response = await axios.get(
+  //         `${API_LINK}/requests/get_revenue_brgy_requests`,
+  //         {
+  //           params: {
+  //             ...params,
+  //             brgy: brgy,
+  //           },
+  //         }
+  //       );
 
-        const data = response.data;
+  //       const data = response.data;
 
-        if (data.length > 0) {
-          const categories = data.map((item) => item._id.service_name);
-          const transactionCompletedData = data.map(
-            (item) => item.TransactionCompleted
-          );
-          const paidData = data.map((item) => item.Paid);
+  //       if (data.length > 0) {
+  //         const categories = data.map((item) => item._id.service_name);
+  //         const transactionCompletedData = data.map(
+  //           (item) => item.TransactionCompleted
+  //         );
+  //         const paidData = data.map((item) => item.Paid);
 
-          setChartDataOverallRevenue({
-            series: [
-              {
-                name: "Transaction Completed",
-                data: transactionCompletedData,
-              },
-              {
-                name: "Paid",
-                data: paidData,
-              },
-            ],
-            options: {
-              ...chartDataOverallRevenue.options,
-              xaxis: {
-                categories: categories,
-                labels: {
-                  style: {
-                    fontSize: "9px",
-                  },
-                },
-              },
-            },
-          });
-        } else {
-          // If there is no data, set chartDataOverallRevenue to initial state or handle as needed
-          setChartDataOverallRevenue({
-            series: [
-              {
-                name: "Transaction Completed",
-                data: [],
-              },
-              {
-                name: "Paid",
-                data: [],
-              },
-            ],
-            options: {
-              colors: ["#4b7c80", "#ffa500"],
-              chart: {
-                background: "transparent",
-              },
-              xaxis: {
-                categories: [],
-                labels: {
-                  style: {
-                    fontSize: "9px",
-                  },
-                },
-              },
-            },
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching revenue data:", error);
-      }
-    };
+  //         setChartDataOverallRevenue({
+  //           series: [
+  //             {
+  //               name: "Transaction Completed",
+  //               data: transactionCompletedData,
+  //             },
+  //             {
+  //               name: "Paid",
+  //               data: paidData,
+  //             },
+  //           ],
+  //           options: {
+  //             ...chartDataOverallRevenue.options,
+  //             xaxis: {
+  //               categories: categories,
+  //               labels: {
+  //                 style: {
+  //                   fontSize: "9px",
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         });
+  //       } else {
+  //         // If there is no data, set chartDataOverallRevenue to initial state or handle as needed
+  //         setChartDataOverallRevenue({
+  //           series: [
+  //             {
+  //               name: "Transaction Completed",
+  //               data: [],
+  //             },
+  //             {
+  //               name: "Paid",
+  //               data: [],
+  //             },
+  //           ],
+  //           options: {
+  //             colors: ["#4b7c80", "#ffa500"],
+  //             chart: {
+  //               background: "transparent",
+  //             },
+  //             xaxis: {
+  //               categories: [],
+  //               labels: {
+  //                 style: {
+  //                   fontSize: "9px",
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         });
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching revenue data:", error);
+  //     }
+  //   };
 
-    fetchRevenueData();
+  //   fetchRevenueData();
 
-    const intervalId = setInterval(() => {
-      fetchRevenueData();
-    }, 10000);
+  //   const intervalId = setInterval(() => {
+  //     fetchRevenueData();
+  //   }, 10000);
 
-    return () => clearInterval(intervalId);
-  }, [
-    timeRange,
-    specificDate,
-    specificWeek,
-    specificMonth,
-    specificYear,
-    brgy,
-  ]);
+  //   return () => clearInterval(intervalId);
+  // }, [
+  //   timeRange,
+  //   specificDate,
+  //   specificWeek,
+  //   specificMonth,
+  //   specificYear,
+  //   brgy,
+  // ]);
 
   const [totalServicess, setTotalServicess] = useState(0);
   const [chartDataOverallAvailed, setChartDataOverallAvailed] = useState({
@@ -1107,201 +1107,202 @@ const Reports = () => {
     },
   });
 
-  useEffect(() => {
-    const fetchFeeSummary = async () => {
-      try {
-        const params = { timeRange: timeRange };
+  // useEffect(() => {
+  //   const fetchFeeSummary = async () => {
+  //     try {
+  //       const params = { timeRange: timeRange };
 
-        if (timeRange === "specific") {
-          // specificDate is already in ISO format (YYYY-MM-DD)
-          params.specificDate = specificDate;
-        }
+  //       if (timeRange === "specific") {
+  //         // specificDate is already in ISO format (YYYY-MM-DD)
+  //         params.specificDate = specificDate;
+  //       }
 
-        if (timeRange === "weekly" && specificWeek) {
-          // Send only the start of the week to the backend
-          const [year, weekNumber] = specificWeek.split("-W");
-          const weekStart = moment()
-            .isoWeekYear(year)
-            .isoWeek(weekNumber)
-            .startOf("isoWeek")
-            .toISOString();
-          params.week = weekStart;
-        }
+  //       if (timeRange === "weekly" && specificWeek) {
+  //         // Send only the start of the week to the backend
+  //         const [year, weekNumber] = specificWeek.split("-W");
+  //         const weekStart = moment()
+  //           .isoWeekYear(year)
+  //           .isoWeek(weekNumber)
+  //           .startOf("isoWeek")
+  //           .toISOString();
+  //         params.week = weekStart;
+  //       }
 
-        if (timeRange === "monthly" && specificMonth) {
-          const [year, month] = specificMonth.split("-");
-          params.year = parseInt(year);
-          params.month = parseInt(month);
-        }
+  //       if (timeRange === "monthly" && specificMonth) {
+  //         const [year, month] = specificMonth.split("-");
+  //         params.year = parseInt(year);
+  //         params.month = parseInt(month);
+  //       }
 
-        if (timeRange === "annual") {
-          params.year = specificYear;
-        }
+  //       if (timeRange === "annual") {
+  //         params.year = specificYear;
+  //       }
 
-        // Make the API request using the GetRevenue function
-        const response = await axios.get(
-          `${API_LINK}/requests/availed_services`,
-          {
-            params: {
-              ...params,
-              brgy: brgy, // Add your barangay value here
-            },
-          }
-        );
+  //       // Make the API request using the GetRevenue function
+  //       const response = await axios.get(
+  //         `${API_LINK}/requests/availed_services`,
+  //         {
+  //           params: {
+  //             ...params,
+  //             brgy: brgy, // Add your barangay value here
+  //           },
+  //         }
+  //       );
 
-        const data = response.data;
+  //       const data = response.data;
 
-        // Assuming your data structure is an array with multiple objects
-        if (data.length > 0) {
-          // Calculate totalServices by summing up totalRequests for all statuses
-          const totalServices = data.reduce(
-            (acc, statusObj) => acc + statusObj.totalRequests,
-            0
-          );
-          setTotalServicess(totalServices);
+  //       // Assuming your data structure is an array with multiple objects
+  //       if (data.length > 0) {
+  //         // Calculate totalServices by summing up totalRequests for all statuses
+  //         const totalServices = data.reduce(
+  //           (acc, statusObj) => acc + statusObj.totalRequests,
+  //           0
+  //         );
+  //         setTotalServicess(totalServices);
 
-          // Create chart data based on the fetched data
-          const chartData = {
-            series: [
-              {
-                name: "Total Availed",
-                data: data.map((item) => item.totalRequests),
-              },
-            ],
-            options: {
-              colors: ["#4b7c80"],
-              chart: {
-                background: "transparent",
-              },
-              xaxis: {
-                categories: data.map((item) => item._id), // Assuming service_name is in _id field
-                labels: {
-                  style: {
-                    fontSize: "9px",
-                  },
-                },
-              },
-            },
-          };
+  //         // Create chart data based on the fetched data
+  //         const chartData = {
+  //           series: [
+  //             {
+  //               name: "Total Availed",
+  //               data: data.map((item) => item.totalRequests),
+  //             },
+  //           ],
+  //           options: {
+  //             colors: ["#4b7c80"],
+  //             chart: {
+  //               background: "transparent",
+  //             },
+  //             xaxis: {
+  //               categories: data.map((item) => item._id), // Assuming service_name is in _id field
+  //               labels: {
+  //                 style: {
+  //                   fontSize: "9px",
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         };
 
-          setChartDataOverallAvailed(chartData);
-        } else {
-          // If there is no data, set totalServices to 0 and display the message
-          setTotalServicess(0);
-          // You can customize the message as needed
-          setChartDataOverallAvailed({
-            series: [
-              {
-                name: "Total Availed",
-                data: [0],
-              },
-            ],
-            options: {
-              colors: ["#4b7c80"],
-              chart: {
-                background: "transparent",
-              },
-              xaxis: {
-                categories: ["No Availed Service for Specific Date"],
-                labels: {
-                  style: {
-                    fontSize: "9px",
-                  },
-                },
-              },
-            },
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching fee summary:", error);
-      }
-    };
+  //         setChartDataOverallAvailed(chartData);
+  //       } else {
+  //         // If there is no data, set totalServices to 0 and display the message
+  //         setTotalServicess(0);
+  //         // You can customize the message as needed
+  //         setChartDataOverallAvailed({
+  //           series: [
+  //             {
+  //               name: "Total Availed",
+  //               data: [0],
+  //             },
+  //           ],
+  //           options: {
+  //             colors: ["#4b7c80"],
+  //             chart: {
+  //               background: "transparent",
+  //             },
+  //             xaxis: {
+  //               categories: ["No Availed Service for Specific Date"],
+  //               labels: {
+  //                 style: {
+  //                   fontSize: "9px",
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         });
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching fee summary:", error);
+  //     }
+  //   };
 
-    fetchFeeSummary();
-  }, [
-    timeRange,
-    specificDate,
-    specificWeek,
-    specificMonth,
-    specificYear,
-    brgy,
-  ]);
+  //   fetchFeeSummary();
+  // }, [
+  //   timeRange,
+  //   specificDate,
+  //   specificWeek,
+  //   specificMonth,
+  //   specificYear,
+  //   brgy,
+  // ]);
 
   const [completedRequests, setCompletedRequests] = useState(0);
-  useEffect(() => {
-    const fetchCompletedRequests = async () => {
-      try {
-        const params = { timeRange: timeRange };
 
-        if (timeRange === "specific") {
-          // specificDate is already in ISO format (YYYY-MM-DD)
-          params.specificDate = specificDate;
-        }
+  // useEffect(() => {
+  //   const fetchCompletedRequests = async () => {
+  //     try {
+  //       const params = { timeRange: timeRange };
 
-        if (timeRange === "weekly" && specificWeek) {
-          // Send only the start of the week to the backend
-          const [year, weekNumber] = specificWeek.split("-W");
-          const weekStart = moment()
-            .isoWeekYear(year)
-            .isoWeek(weekNumber)
-            .startOf("isoWeek")
-            .toISOString();
-          params.week = weekStart;
-        }
+  //       if (timeRange === "specific") {
+  //         // specificDate is already in ISO format (YYYY-MM-DD)
+  //         params.specificDate = specificDate;
+  //       }
 
-        if (timeRange === "monthly" && specificMonth) {
-          const [year, month] = specificMonth.split("-");
-          params.year = parseInt(year);
-          params.month = parseInt(month);
-        }
+  //       if (timeRange === "weekly" && specificWeek) {
+  //         // Send only the start of the week to the backend
+  //         const [year, weekNumber] = specificWeek.split("-W");
+  //         const weekStart = moment()
+  //           .isoWeekYear(year)
+  //           .isoWeek(weekNumber)
+  //           .startOf("isoWeek")
+  //           .toISOString();
+  //         params.week = weekStart;
+  //       }
 
-        if (timeRange === "annual") {
-          params.year = specificYear;
-        }
+  //       if (timeRange === "monthly" && specificMonth) {
+  //         const [year, month] = specificMonth.split("-");
+  //         params.year = parseInt(year);
+  //         params.month = parseInt(month);
+  //       }
 
-        // Make the API request using the GetRevenue function
-        const response = await axios.get(
-          `${API_LINK}/requests/completed_requests`,
-          {
-            params: {
-              ...params,
-              brgy: brgy, // Add your barangay value here
-            },
-          }
-        );
+  //       if (timeRange === "annual") {
+  //         params.year = specificYear;
+  //       }
 
-        const data = response.data;
+  //       // Make the API request using the GetRevenue function
+  //       const response = await axios.get(
+  //         `${API_LINK}/requests/completed_requests`,
+  //         {
+  //           params: {
+  //             ...params,
+  //             brgy: brgy, // Add your barangay value here
+  //           },
+  //         }
+  //       );
 
-        // Assuming your data structure is an array with multiple objects
-        if (data.length > 0) {
-          // Calculate totalCompletedRequests by summing up totalRequests for "Transaction Completed" status
-          const totalCompletedRequests = data.reduce(
-            (acc, statusObj) =>
-              acc +
-              (statusObj._id === "Transaction Completed"
-                ? statusObj.totalRequests
-                : 0),
-            0
-          );
-          setCompletedRequests(totalCompletedRequests);
-        } else {
-          // If there is no data, set completedRequests to 0
-          setCompletedRequests(0);
-        }
-      } catch (error) {
-        console.error("Error fetching completed requests:", error);
-      }
-    };
+  //       const data = response.data;
 
-    fetchCompletedRequests();
-  }, [
-    timeRange,
-    specificDate,
-    specificWeek,
-    specificMonth,
-    specificYear,
-    brgy,
-  ]);
+  //       // Assuming your data structure is an array with multiple objects
+  //       if (data.length > 0) {
+  //         // Calculate totalCompletedRequests by summing up totalRequests for "Transaction Completed" status
+  //         const totalCompletedRequests = data.reduce(
+  //           (acc, statusObj) =>
+  //             acc +
+  //             (statusObj._id === "Transaction Completed"
+  //               ? statusObj.totalRequests
+  //               : 0),
+  //           0
+  //         );
+  //         setCompletedRequests(totalCompletedRequests);
+  //       } else {
+  //         // If there is no data, set completedRequests to 0
+  //         setCompletedRequests(0);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching completed requests:", error);
+  //     }
+  //   };
+
+  //   fetchCompletedRequests();
+  // }, [
+  //   timeRange,
+  //   specificDate,
+  //   specificWeek,
+  //   specificMonth,
+  //   specificYear,
+  //   brgy,
+  // ]);
 
   const handleTimeRangeChange = (newTimeRange) => {
     setTimeRange(newTimeRange);

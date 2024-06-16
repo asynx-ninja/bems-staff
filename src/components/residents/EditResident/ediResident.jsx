@@ -66,401 +66,401 @@ const EditResidents = ({ props }) => {
 
   // USER INFO
 
-  const handleChange2 = (e) => {
-    const { name, value, type } = e.target;
+  // const handleChange2 = (e) => {
+  //   const { name, value, type } = e.target;
 
-    setUser((prev) => ({
-      ...prev,
-      [name]: type === "radio" ? value === "true" : value,
-    }));
-  };
+  //   setUser((prev) => ({
+  //     ...prev,
+  //     [name]: type === "radio" ? value === "true" : value,
+  //   }));
+  // };
 
-  const handleChange = (e) => {
-    const { name, value, type } = e.target;
+  // const handleChange = (e) => {
+  //   const { name, value, type } = e.target;
 
-    setUser((prev) => ({
-      ...prev,
-      [name]: type === "radio" ? value : value,
-      age: name === "birthday" ? calculateAge(value) : prev.age,
-    }));
-  };
+  //   setUser((prev) => ({
+  //     ...prev,
+  //     [name]: type === "radio" ? value : value,
+  //     age: name === "birthday" ? calculateAge(value) : prev.age,
+  //   }));
+  // };
 
-  const handleButtonClick = (e) => {
-    e.preventDefault();
-    setUser((prev) => ({
-      ...prev,
-      password: "User12345",
-    }));
-  };
+  // const handleButtonClick = (e) => {
+  //   e.preventDefault();
+  //   setUser((prev) => ({
+  //     ...prev,
+  //     password: "User12345",
+  //   }));
+  // };
 
-  const birthdayFormat = (date) => {
-    const birthdate = date === undefined ? "" : date.substr(0, 10);
-    return birthdate;
-  };
+  // const birthdayFormat = (date) => {
+  //   const birthdate = date === undefined ? "" : date.substr(0, 10);
+  //   return birthdate;
+  // };
 
-  const calculateAge = (birthDate) => {
-    const today = new Date();
-    const birthDateObj = new Date(birthDate);
-    let age = today.getFullYear() - birthDateObj.getFullYear();
-    const monthDiff = today.getMonth() - birthDateObj.getMonth();
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birthDateObj.getDate())
-    ) {
-      age--;
-    }
+  // const calculateAge = (birthDate) => {
+  //   const today = new Date();
+  //   const birthDateObj = new Date(birthDate);
+  //   let age = today.getFullYear() - birthDateObj.getFullYear();
+  //   const monthDiff = today.getMonth() - birthDateObj.getMonth();
+  //   if (
+  //     monthDiff < 0 ||
+  //     (monthDiff === 0 && today.getDate() < birthDateObj.getDate())
+  //   ) {
+  //     age--;
+  //   }
 
-    return age;
-  };
+  //   return age;
+  // };
 
-  const handleOnEdit = () => {
-    setEdit(!edit);
-  };
-  const handleClose = () => {
-    setEdit(edit);
-  };
-  const handleOnCapture = () => {
-    setCapture(!capture);
-  };
+  // const handleOnEdit = () => {
+  //   setEdit(!edit);
+  // };
+  // const handleClose = () => {
+  //   setEdit(edit);
+  // };
+  // const handleOnCapture = () => {
+  //   setCapture(!capture);
+  // };
 
-  // WEBCAM
-  const videoConstraints = {
-    width: 1280,
-    height: 720,
-    facingMode: "user",
-  };
+  // // WEBCAM
+  // const videoConstraints = {
+  //   width: 1280,
+  //   height: 720,
+  //   facingMode: "user",
+  // };
 
-  function WebcamCapture() {
-    const webcamRef = React.useRef(null);
-    const [capturedImage, setCapturedImage] = useState(null);
+  // function WebcamCapture() {
+  //   const webcamRef = React.useRef(null);
+  //   const [capturedImage, setCapturedImage] = useState(null);
 
-    const capture = React.useCallback(
-      async (e) => {
-        e.preventDefault(); // Prevent the default behavior
-        const imageSrc = webcamRef.current.getScreenshot();
-        setCapturedImage(imageSrc);
+  //   const capture = React.useCallback(
+  //     async (e) => {
+  //       e.preventDefault(); // Prevent the default behavior
+  //       const imageSrc = webcamRef.current.getScreenshot();
+  //       setCapturedImage(imageSrc);
 
-        try {
-          const response = await fetch(imageSrc);
-          const file = await response.blob();
+  //       try {
+  //         const response = await fetch(imageSrc);
+  //         const file = await response.blob();
 
-          // Use the existing Blob for selfie with data:image/jpeg;base64 format
-          let selfieFile = new File(
-            [file],
-            `${user.lastName}, ${user.firstName} - SELFIE`,
-            {
-              type: "image/jpeg",
-              size: file.size,
-              uri: `data:image/jpeg;base64,${imageSrc.split(",")[1]}`,
-            }
-          );
-
-
-
-          setVerification((prev) => ({
-            ...prev,
-            selfie: selfieFile,
-          }));
-        } catch (error) {
-          console.error("Error fetching image:", error);
-        }
-      },
-      [webcamRef]
-    );
-
-    return (
-      <>
-        <div className="relative">
-          <Webcam
-            audio={false}
-            height={720}
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            width={1280}
-            className="rounded-xl w-full h-full p-2"
-          />
-          <div className="flex items-center justify-center absolute bottom-4 left-1/2 transform -translate-x-1/2 gap-5">
-            <button
-              onClick={capture}
-              className="h-12 w-12 py-1 px-2 rounded-full border text-sm font-base bg-teal-900 text-white shadow-sm "
-            >
-              <div className="flex items-center justify-center">
-                <FaCameraRetro size={20} />
-              </div>
-            </button>
-            <button
-              onClick={handleOnCapture}
-              className="h-12 w-12 py-1 px-2 rounded-full border text-sm font-base bg-pink-900 text-white shadow-sm"
-            >
-              <div className="flex items-center justify-center">
-                <MdOutlineCancel size={27} />
-              </div>
-            </button>
-          </div>
-        </div>
-        {capturedImage && (
-          <img
-            src={capturedImage}
-            alt="Captured Photo"
-            className="w-full h-full px-2 py-2 object-cover rounded-xl mt-2"
-          />
-        )}
-      </>
-    );
-  }
-
-  // VIEW IMAGE
-
-  const handleImageClick = (image) => {
-    setSelectedImage(image);
-    setViewerVisible(true);
-  };
-
-  const ImageViewer = () => {
-    if (!viewerVisible || !selectedImage) {
-      return null;
-    }
-
-    return (
-      <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center z-[60] bg-black bg-opacity-75">
-        <div className="max-w-3xl w-full max-h-3/4 h-full overflow-hidden">
-          <img
-            src={selectedImage.link || selectedImage.uri}
-            alt="Full Image"
-            className="w-full h-full p-10 object-contain"
-          />
-          <button
-            onClick={() => setViewerVisible(false)}
-            className="absolute top-4 right-4 text-white cursor-pointer"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    );
-  };
-
-  // VERIFICATION
-
-  const handleVerification = (name, value) => {
-    setVerification((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleFileVerification = (name, files) => {
-    setVerification((prev) => ({
-      ...prev,
-      [name]: [...prev[name], ...files],
-    }));
-  };
-
-  const handleDelete = (name, idx, e) => {
-    e.preventDefault();
-    e.stopPropagation(); // Stop the event from propagating to the parent container
-
-    const newArray = verification[name].filter((item, index) => index !== idx);
+  //         // Use the existing Blob for selfie with data:image/jpeg;base64 format
+  //         let selfieFile = new File(
+  //           [file],
+  //           `${user.lastName}, ${user.firstName} - SELFIE`,
+  //           {
+  //             type: "image/jpeg",
+  //             size: file.size,
+  //             uri: `data:image/jpeg;base64,${imageSrc.split(",")[1]}`,
+  //           }
+  //         );
 
 
 
-    setVerification((prev) => ({
-      ...prev,
-      [name]: newArray,
-    }));
-  };
+  //         setVerification((prev) => ({
+  //           ...prev,
+  //           selfie: selfieFile,
+  //         }));
+  //       } catch (error) {
+  //         console.error("Error fetching image:", error);
+  //       }
+  //     },
+  //     [webcamRef]
+  //   );
 
-  const checkEmptyVerification = () => {
-    const fieldsToCheck = [
-      "primary_id",
-      "primary_file",
-      "secondary_id",
-      "secondary_file",
-      "selfie",
-    ];
+  //   return (
+  //     <>
+  //       <div className="relative">
+  //         <Webcam
+  //           audio={false}
+  //           height={720}
+  //           ref={webcamRef}
+  //           screenshotFormat="image/jpeg"
+  //           width={1280}
+  //           className="rounded-xl w-full h-full p-2"
+  //         />
+  //         <div className="flex items-center justify-center absolute bottom-4 left-1/2 transform -translate-x-1/2 gap-5">
+  //           <button
+  //             onClick={capture}
+  //             className="h-12 w-12 py-1 px-2 rounded-full border text-sm font-base bg-teal-900 text-white shadow-sm "
+  //           >
+  //             <div className="flex items-center justify-center">
+  //               <FaCameraRetro size={20} />
+  //             </div>
+  //           </button>
+  //           <button
+  //             onClick={handleOnCapture}
+  //             className="h-12 w-12 py-1 px-2 rounded-full border text-sm font-base bg-pink-900 text-white shadow-sm"
+  //           >
+  //             <div className="flex items-center justify-center">
+  //               <MdOutlineCancel size={27} />
+  //             </div>
+  //           </button>
+  //         </div>
+  //       </div>
+  //       {capturedImage && (
+  //         <img
+  //           src={capturedImage}
+  //           alt="Captured Photo"
+  //           className="w-full h-full px-2 py-2 object-cover rounded-xl mt-2"
+  //         />
+  //       )}
+  //     </>
+  //   );
+  // }
 
-    return fieldsToCheck.filter((field) => {
-      const value = field
-        .split(".")
-        .reduce((obj, key) => obj[key], verification);
-      return value === null || value === "" || value.length === 0;
-    });
-  };
+  // // VIEW IMAGE
 
-  const handleImageTab = (item) => {
-    if (item.link) {
-      // If the item has a direct link, open it in a new tab
-      window.open(item.link, "_blank");
-    } else {
-      // Handle the case when the item doesn't have a direct link (e.g., show a message)
-      console.warn("Image link not available");
-    }
-  };
+  // const handleImageClick = (image) => {
+  //   setSelectedImage(image);
+  //   setViewerVisible(true);
+  // };
 
-  const handleSave = async (e) => {
-    try {
-      e.preventDefault();
-      setSubmitClicked(true);
-      setError(null); // Reset error state
+  // const ImageViewer = () => {
+  //   if (!viewerVisible || !selectedImage) {
+  //     return null;
+  //   }
 
-      // Common logic from handleSubmit
-      const arr = checkEmptyVerification();
+  //   return (
+  //     <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center z-[60] bg-black bg-opacity-75">
+  //       <div className="max-w-3xl w-full max-h-3/4 h-full overflow-hidden">
+  //         <img
+  //           src={selectedImage.link || selectedImage.uri}
+  //           alt="Full Image"
+  //           className="w-full h-full p-10 object-contain"
+  //         />
+  //         <button
+  //           onClick={() => setViewerVisible(false)}
+  //           className="absolute top-4 right-4 text-white cursor-pointer"
+  //         >
+  //           Close
+  //         </button>
+  //       </div>
+  //     </div>
+  //   );
+  // };
 
-      if (arr.length === 0) {
-        setEmptyFields([]);
+  // // VERIFICATION
 
-        const folderResponse = await axios.get(
-          `${API_LINK}/folder/specific/?brgy=${user.address.brgy}`
-        );
+  // const handleVerification = (name, value) => {
+  //   setVerification((prev) => ({
+  //     ...prev,
+  //     [name]: value,
+  //   }));
+  // };
 
-        if (folderResponse.status === 200) {
-          var formData = new FormData();
+  // const handleFileVerification = (name, files) => {
+  //   setVerification((prev) => ({
+  //     ...prev,
+  //     [name]: [...prev[name], ...files],
+  //   }));
+  // };
 
-          const [primarySaved, primaryUpload] =
-            verification.primary_file.reduce(
-              ([a, b], elem) => {
-                return elem.hasOwnProperty("link")
-                  ? [[...a, elem], b]
-                  : [a, [...b, elem]];
-              },
-              [[], []]
-            );
+  // const handleDelete = (name, idx, e) => {
+  //   e.preventDefault();
+  //   e.stopPropagation(); // Stop the event from propagating to the parent container
 
-          const [secondarySaved, secondaryUpload] =
-            verification.secondary_file.reduce(
-              ([a, b], elem) => {
-                return elem.hasOwnProperty("link")
-                  ? [[...a, elem], b]
-                  : [a, [...b, elem]];
-              },
-              [[], []]
-            );
-
-          formData.append("primarySaved", JSON.stringify(primarySaved));
-          formData.append("secondarySaved", JSON.stringify(secondarySaved));
-          formData.append("oldVerification", JSON.stringify(user.verification));
-          formData.append("newVerification", JSON.stringify(verification));
-
-
-
-          if (!verification.selfie.hasOwnProperty("link")) {
-            // Use the existing Blob for selfie
-            let selfieFile = new File(
-              [verification.selfie],
-              `${user.lastName}, ${user.firstName} - SELFIE`,
-              {
-                type: "image/jpeg",
-                size: verification.selfie.size,
-                uri: verification.selfie.uri,
-              }
-            );
-
-            formData.append("files", selfieFile);
-          }
-
-          if (primaryUpload.length > 0) {
-            for (let i = 0; i < primaryUpload.length; i += 1) {
-              let file = {
-                name: `${user.lastName}, ${user.firstName
-                  } - PRIMARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
-                size: primaryUpload[i].size,
-                type: primaryUpload[i].type,
-                uri: primaryUpload[i].uri,
-              };
-
-
-
-              formData.append(
-                "files",
-                new File([primaryUpload[i]], file.name, { type: file.type })
-              );
-            }
-          }
-
-          if (secondaryUpload.length > 0)
-            for (let i = 0; i < secondaryUpload.length; i += 1) {
-              let file = {
-                name: `${user.lastName}, ${user.firstName
-                  } - SECONDARY ID ${moment(new Date()).format(
-                    "MMDDYYYYHHmmss"
-                  )}`,
-                uri: secondaryUpload[i].uri,
-                type: secondaryUpload[i].type,
-                size: secondaryUpload[i].size,
-              };
-
-              formData.append(
-                "files",
-                new File([secondaryUpload[i]], file.name, { type: file.type })
-              );
-            }
-
-          const response = await axios.patch(
-            `${API_LINK}/users/verification/?doc_id=${user._id}&user_id=${user.user_id}&root_folder=${folderResponse.data[0].verification}`,
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
-          );
+  //   const newArray = verification[name].filter((item, index) => index !== idx);
 
 
 
-          if (response.status === 200) {
-            setVerification(response.data?.verification || {});
-          }
-        }
-      } else {
-        setEmptyFields(arr);
-      }
+  //   setVerification((prev) => ({
+  //     ...prev,
+  //     [name]: newArray,
+  //   }));
+  // };
 
-      // Common logic for updating user data
-      var userFormData = new FormData();
-      userFormData.append("users", JSON.stringify(user));
+  // const checkEmptyVerification = () => {
+  //   const fieldsToCheck = [
+  //     "primary_id",
+  //     "primary_file",
+  //     "secondary_id",
+  //     "secondary_file",
+  //     "selfie",
+  //   ];
 
-      const userResponse = await axios.patch(
-        `${API_LINK}/users/?doc_id=${user._id}`,
-        userFormData
-      );
+  //   return fieldsToCheck.filter((field) => {
+  //     const value = field
+  //       .split(".")
+  //       .reduce((obj, key) => obj[key], verification);
+  //     return value === null || value === "" || value.length === 0;
+  //   });
+  // };
 
-      if (userResponse.status === 200) {
-        const getIP = async () => {
-          const response = await fetch("https://api64.ipify.org?format=json");
-          const data = await response.json();
-          return data.ip;
-        };
+  // const handleImageTab = (item) => {
+  //   if (item.link) {
+  //     // If the item has a direct link, open it in a new tab
+  //     window.open(item.link, "_blank");
+  //   } else {
+  //     // Handle the case when the item doesn't have a direct link (e.g., show a message)
+  //     console.warn("Image link not available");
+  //   }
+  // };
 
-        const ip = await getIP(); // Retrieve IP address
+  // const handleSave = async (e) => {
+  //   try {
+  //     e.preventDefault();
+  //     setSubmitClicked(true);
+  //     setError(null); // Reset error state
 
-        const logsData = {
-          action: "Updated",
-          details: "Updated a resident's account information.",
-          ip: ip,
-        };
+  //     // Common logic from handleSubmit
+  //     const arr = checkEmptyVerification();
 
-        const logsResult = await axios.post(
-          `${API_LINK}/act_logs/add_logs/?id=${id}`,
-          logsData
-        );
-        if (logsResult.status === 200) {
+  //     if (arr.length === 0) {
+  //       setEmptyFields([]);
 
-          setSubmitClicked(false);
-          setUpdatingStatus("success");
-          setTimeout(() => {
-            window.location.href = `/residents/?id=${id}&brgy=${brgy}`;
-          }, 3000);
-        }
-      } else {
-        console.error("User update failed. Status:", userResponse.status);
-      }
-    } catch (err) {
-      console.log(err);
-      setSubmitClicked(false);
-      setUpdatingStatus("error");
-      setError("An error occurred while updating data.");
-    }
-  };
+  //       const folderResponse = await axios.get(
+  //         `${API_LINK}/folder/specific/?brgy=${user.address.brgy}`
+  //       );
+
+  //       if (folderResponse.status === 200) {
+  //         var formData = new FormData();
+
+  //         const [primarySaved, primaryUpload] =
+  //           verification.primary_file.reduce(
+  //             ([a, b], elem) => {
+  //               return elem.hasOwnProperty("link")
+  //                 ? [[...a, elem], b]
+  //                 : [a, [...b, elem]];
+  //             },
+  //             [[], []]
+  //           );
+
+  //         const [secondarySaved, secondaryUpload] =
+  //           verification.secondary_file.reduce(
+  //             ([a, b], elem) => {
+  //               return elem.hasOwnProperty("link")
+  //                 ? [[...a, elem], b]
+  //                 : [a, [...b, elem]];
+  //             },
+  //             [[], []]
+  //           );
+
+  //         formData.append("primarySaved", JSON.stringify(primarySaved));
+  //         formData.append("secondarySaved", JSON.stringify(secondarySaved));
+  //         formData.append("oldVerification", JSON.stringify(user.verification));
+  //         formData.append("newVerification", JSON.stringify(verification));
+
+
+
+  //         if (!verification.selfie.hasOwnProperty("link")) {
+  //           // Use the existing Blob for selfie
+  //           let selfieFile = new File(
+  //             [verification.selfie],
+  //             `${user.lastName}, ${user.firstName} - SELFIE`,
+  //             {
+  //               type: "image/jpeg",
+  //               size: verification.selfie.size,
+  //               uri: verification.selfie.uri,
+  //             }
+  //           );
+
+  //           formData.append("files", selfieFile);
+  //         }
+
+  //         if (primaryUpload.length > 0) {
+  //           for (let i = 0; i < primaryUpload.length; i += 1) {
+  //             let file = {
+  //               name: `${user.lastName}, ${user.firstName
+  //                 } - PRIMARY ID ${moment(new Date()).format("MMDDYYYYHHmmss")}`,
+  //               size: primaryUpload[i].size,
+  //               type: primaryUpload[i].type,
+  //               uri: primaryUpload[i].uri,
+  //             };
+
+
+
+  //             formData.append(
+  //               "files",
+  //               new File([primaryUpload[i]], file.name, { type: file.type })
+  //             );
+  //           }
+  //         }
+
+  //         if (secondaryUpload.length > 0)
+  //           for (let i = 0; i < secondaryUpload.length; i += 1) {
+  //             let file = {
+  //               name: `${user.lastName}, ${user.firstName
+  //                 } - SECONDARY ID ${moment(new Date()).format(
+  //                   "MMDDYYYYHHmmss"
+  //                 )}`,
+  //               uri: secondaryUpload[i].uri,
+  //               type: secondaryUpload[i].type,
+  //               size: secondaryUpload[i].size,
+  //             };
+
+  //             formData.append(
+  //               "files",
+  //               new File([secondaryUpload[i]], file.name, { type: file.type })
+  //             );
+  //           }
+
+  //         const response = await axios.patch(
+  //           `${API_LINK}/users/verification/?doc_id=${user._id}&user_id=${user.user_id}&root_folder=${folderResponse.data[0].verification}`,
+  //           formData,
+  //           {
+  //             headers: {
+  //               "Content-Type": "multipart/form-data",
+  //             },
+  //           }
+  //         );
+
+
+
+  //         if (response.status === 200) {
+  //           setVerification(response.data?.verification || {});
+  //         }
+  //       }
+  //     } else {
+  //       setEmptyFields(arr);
+  //     }
+
+  //     // Common logic for updating user data
+  //     var userFormData = new FormData();
+  //     userFormData.append("users", JSON.stringify(user));
+
+  //     const userResponse = await axios.patch(
+  //       `${API_LINK}/users/?doc_id=${user._id}`,
+  //       userFormData
+  //     );
+
+  //     if (userResponse.status === 200) {
+  //       const getIP = async () => {
+  //         const response = await fetch("https://api64.ipify.org?format=json");
+  //         const data = await response.json();
+  //         return data.ip;
+  //       };
+
+  //       const ip = await getIP(); // Retrieve IP address
+
+  //       const logsData = {
+  //         action: "Updated",
+  //         details: "Updated a resident's account information.",
+  //         ip: ip,
+  //       };
+
+  //       const logsResult = await axios.post(
+  //         `${API_LINK}/act_logs/add_logs/?id=${id}`,
+  //         logsData
+  //       );
+  //       if (logsResult.status === 200) {
+
+  //         setSubmitClicked(false);
+  //         setUpdatingStatus("success");
+  //         setTimeout(() => {
+  //           window.location.href = `/residents/?id=${id}&brgy=${brgy}`;
+  //         }, 3000);
+  //       }
+  //     } else {
+  //       console.error("User update failed. Status:", userResponse.status);
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //     setSubmitClicked(false);
+  //     setUpdatingStatus("error");
+  //     setError("An error occurred while updating data.");
+  //   }
+  // };
 
   return (
     <div className="mx-4 mt-8">
@@ -488,7 +488,7 @@ const EditResidents = ({ props }) => {
                         type="text"
                         id="firstName"
                         name="firstName"
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         placeholder=""
                         value={user.firstName}
@@ -507,7 +507,7 @@ const EditResidents = ({ props }) => {
                         type="text"
                         id="middleName"
                         name="middleName"
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         placeholder=""
                         value={user.middleName}
@@ -526,7 +526,7 @@ const EditResidents = ({ props }) => {
                         type="text"
                         id="lastName"
                         name="lastName"
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         placeholder=""
                         value={user.lastName}
@@ -547,7 +547,7 @@ const EditResidents = ({ props }) => {
                         type="text"
                         id="suffix"
                         name="suffix"
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         placeholder=""
                         value={user.suffix}
@@ -566,9 +566,9 @@ const EditResidents = ({ props }) => {
                         type="date"
                         id="birthday"
                         name="birthday"
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                        value={birthdayFormat(user.birthday) || ""}
+                        // value={birthdayFormat(user.birthday) || ""}
                         disabled={!edit}
                       />
                     </div>
@@ -584,7 +584,7 @@ const EditResidents = ({ props }) => {
                         type="text"
                         id="age"
                         name="age"
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         placeholder=""
                         value={user.age}
@@ -604,7 +604,7 @@ const EditResidents = ({ props }) => {
                         type="text"
                         id="email"
                         name="email"
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         placeholder=""
                         value={user.email}
@@ -623,7 +623,7 @@ const EditResidents = ({ props }) => {
                         type="text"
                         id="contact"
                         name="contact"
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         className="shadow appearance-none border w-full p-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         placeholder=""
                         value={user.contact}
@@ -644,7 +644,7 @@ const EditResidents = ({ props }) => {
                           id="Male"
                           name="sex"
                           value="Male"
-                          onChange={handleChange}
+                          // onChange={handleChange}
                           checked={user.sex === "Male"}
                           className="text-green-500 focus:border-green-500 focus:ring-green-500"
                           disabled={!edit}
@@ -657,7 +657,7 @@ const EditResidents = ({ props }) => {
                           id="Female"
                           name="sex"
                           value="Female"
-                          onChange={handleChange}
+                          // onChange={handleChange}
                           checked={user.sex === "Female"}
                           className="ml-4 md:ml-2 lg:ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
                           disabled={!edit}
@@ -686,7 +686,7 @@ const EditResidents = ({ props }) => {
                       <select
                         id="civil_status"
                         name="civil_status"
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         className="shadow border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         disabled={!edit}
                         value={user.civil_status}
@@ -710,17 +710,17 @@ const EditResidents = ({ props }) => {
                       </label>
                       <select
                         name="religion"
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         className="shadow border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         disabled={!edit}
                         value={user.religion}
                       >
                         <option value="">-- Select Religion --</option>
-                        {religions.map((religion, index) => (
+                        {/* {religions.map((religion, index) => (
                           <option key={index} value={religion}>
                             {religion}
                           </option>
-                        ))}
+                        ))} */}
                       </select>
                     </div>
                   </div>
@@ -733,12 +733,12 @@ const EditResidents = ({ props }) => {
                       >
                         OCCUPATION
                       </label>
-                      <OccupationList
+                      {/* <OccupationList
                         edit={edit}
                         handleChange={handleChange}
                         user={user}
                         setUser={setUser}
-                      />
+                      /> */}
                     </div>
 
                     <div className="flex flex-col w-full mt-2 md:mt-0 md:ml-3">
@@ -752,7 +752,7 @@ const EditResidents = ({ props }) => {
                         type="text"
                         id="street"
                         name="street"
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         placeholder=""
                         value={user.address?.street}
@@ -770,7 +770,7 @@ const EditResidents = ({ props }) => {
                       <select
                         id="brgy"
                         name="brgy"
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         disabled={!edit}
                         value={user.address?.brgy}
@@ -800,7 +800,7 @@ const EditResidents = ({ props }) => {
                       <select
                         id="city"
                         name="city"
-                        onChange={handleChange2}
+                        // onChange={handleChange2}
                         className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         disabled
                       >
@@ -824,7 +824,7 @@ const EditResidents = ({ props }) => {
                           type="radio"
                           id="true"
                           name="isVoter"
-                          onChange={handleChange2}
+                          // onChange={handleChange2}
                           checked={user.isVoter === true}
                           value="true"
                           className="text-green-500 focus:border-green-500 focus:ring-green-500"
@@ -837,7 +837,7 @@ const EditResidents = ({ props }) => {
                           type="radio"
                           id="false"
                           name="isVoter"
-                          onChange={handleChange2}
+                          // onChange={handleChange2}
                           value="false"
                           checked={user.isVoter === false}
                           className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
@@ -861,7 +861,7 @@ const EditResidents = ({ props }) => {
                           type="radio"
                           id="true"
                           name="isHead"
-                          onChange={handleChange2}
+                          // onChange={handleChange2}
                           checked={user.isHead === true}
                           value="true"
                           className="text-green-500 focus:border-green-500 focus:ring-green-500"
@@ -874,7 +874,7 @@ const EditResidents = ({ props }) => {
                           type="radio"
                           id="false"
                           name="isHead"
-                          onChange={handleChange2}
+                          // onChange={handleChange2}
                           value="false"
                           checked={user.isHead === false}
                           className="ml-4 text-green-500 focus:border-green-500 focus:ring-green-500"
@@ -898,7 +898,7 @@ const EditResidents = ({ props }) => {
                       <select
                         id="type"
                         name="type"
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         className="shadow border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         value={user.type}
                         disabled
@@ -925,7 +925,7 @@ const EditResidents = ({ props }) => {
                       type="text"
                       id="username"
                       name="username"
-                      onChange={handleChange}
+                      // onChange={handleChange}
                       className="shadow appearance-none border w-full p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       value={user.username}
                       placeholder=""
@@ -943,7 +943,7 @@ const EditResidents = ({ props }) => {
                     <div className="flex flex-row w-full md:mr-2">
                       <button
                         className="bg-[#295141] p-2.5 rounded-l-md"
-                        onClick={handleButtonClick}
+                        // onClick={handleButtonClick}
                         disabled={!edit}
                       >
                         <div className="w-full overflow-hidden">
@@ -960,7 +960,7 @@ const EditResidents = ({ props }) => {
                         type="password"
                         name="password"
                         id="password"
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         className="shadow appearance-none border w-full p-2 text-sm text-black rounded-r-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         value={user.password?.substring(0, 8)}
                         disabled={!edit}
@@ -1135,12 +1135,12 @@ const EditResidents = ({ props }) => {
                         </label>
                         <select
                           name="type"
-                          onChange={(event) => {
-                            handleVerification(
-                              "primary_id",
-                              event.target.value
-                            );
-                          }}
+                          // onChange={(event) => {
+                          //   handleVerification(
+                          //     "primary_id",
+                          //     event.target.value
+                          //   );
+                          // }}
                           className="shadow border w-full py-1.5 px-4 mb-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                           disabled={!edit}
                           value={verification.primary_id}
@@ -1189,12 +1189,12 @@ const EditResidents = ({ props }) => {
                             type="file"
                             name="primary"
                             accept="image/*"
-                            onChange={(e) =>
-                              handleFileVerification(
-                                "primary_file",
-                                e.target.files
-                              )
-                            }
+                            // onChange={(e) =>
+                            //   handleFileVerification(
+                            //     "primary_file",
+                            //     e.target.files
+                            //   )
+                            // }
                             multiple
                             disabled={!edit}
                             className="block w-full text-sm border rounded-md text-slate-500 file:mr-4 file:py-2 file:px-4  file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
@@ -1231,9 +1231,9 @@ const EditResidents = ({ props }) => {
                                   </label>
                                   {edit && (
                                     <button
-                                      onClick={(e) =>
-                                        handleDelete("primary_file", idx, e)
-                                      }
+                                      // onClick={(e) =>
+                                      //   handleDelete("primary_file", idx, e)
+                                      // }
                                       className="border-black bg-red-500 hover:bg-white rounded-full justify-center items-center self-center mr-2"
                                     >
                                       <TiDelete
@@ -1259,12 +1259,12 @@ const EditResidents = ({ props }) => {
                         </label>
                         <select
                           name="type"
-                          onChange={(event) => {
-                            handleVerification(
-                              "secondary_id",
-                              event.target.value
-                            );
-                          }}
+                          // onChange={(event) => {
+                          //   handleVerification(
+                          //     "secondary_id",
+                          //     event.target.value
+                          //   );
+                          // }}
                           className="shadow border w-full py-1.5 px-4 mb-1 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                           disabled={!edit}
                           value={verification.secondary_id}
@@ -1320,12 +1320,12 @@ const EditResidents = ({ props }) => {
                             type="file"
                             name="secondary"
                             accept="image/*"
-                            onChange={(e) =>
-                              handleFileVerification(
-                                "secondary_file",
-                                e.target.files
-                              )
-                            }
+                            // onChange={(e) =>
+                            //   handleFileVerification(
+                            //     "secondary_file",
+                            //     e.target.files
+                            //   )
+                            // }
                             multiple
                             disabled={!edit}
                             className="block w-full text-sm border rounded-md text-slate-500 file:mr-4 file:py-2 file:px-4  file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
@@ -1352,7 +1352,7 @@ const EditResidents = ({ props }) => {
                                     src={URL.createObjectURL(item)}
                                     alt={`Secondary File ${idx + 1}`}
                                     className="w-[250px] h-[250px] px-2 pt-2 object-cover rounded-xl"
-                                    onClick={() => handleImageTab(item)}
+                                    // onClick={() => handleImageTab(item)}
                                   />
                                 )}
                                 {/* You can customize the following section based on your needs */}
@@ -1362,9 +1362,9 @@ const EditResidents = ({ props }) => {
                                   </label>
                                   {edit && (
                                     <button
-                                      onClick={(e) =>
-                                        handleDelete("secondary_file", idx, e)
-                                      }
+                                      // onClick={(e) =>
+                                      //   handleDelete("secondary_file", idx, e)
+                                      // }
                                       className="border-black bg-red-500 hover:bg-white rounded-full justify-center items-center self-center mr-2"
                                     >
                                       <TiDelete
@@ -1410,9 +1410,9 @@ const EditResidents = ({ props }) => {
                                 <div className="w-1/2">
                                   <div
                                     className="w-full border border-gray-300 rounded-xl bg-gray-300 cursor-pointer"
-                                    onClick={() =>
-                                      handleImageClick(verification.selfie)
-                                    }
+                                    // onClick={() =>
+                                    //   handleImageClick(verification.selfie)
+                                    // }
                                   >
                                     <img
                                       src={
@@ -1453,7 +1453,7 @@ const EditResidents = ({ props }) => {
                                 <button
                                   type="button"
                                   className="h-[2.5rem] w-1/2 justify-center py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm mb-2"
-                                  onClick={handleOnCapture}
+                                  // onClick={handleOnCapture}
                                   disabled={!edit}
                                 >
                                   OPEN CAMERA
@@ -1463,9 +1463,9 @@ const EditResidents = ({ props }) => {
                             <div className="w-1/2 h-[410px]">
                               <div
                                 className="w-full border border-gray-300 rounded-xl bg-gray-300 cursor-pointer"
-                                onClick={() =>
-                                  handleImageClick(verification.selfie)
-                                }
+                                // onClick={() =>
+                                //   handleImageClick(verification.selfie)
+                                // }
                               >
                                 <img
                                   src={
@@ -1506,7 +1506,7 @@ const EditResidents = ({ props }) => {
               <button
                 type="button"
                 className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                onClick={handleOnEdit}
+                // onClick={handleOnEdit}
               >
                 EDIT
               </button>
@@ -1515,7 +1515,7 @@ const EditResidents = ({ props }) => {
             <div className="sm:space-x-0 md:space-x-2 sm:space-y-2 md:space-y-0 w-full lg:w-1/2 flex sm:flex-col md:flex-row">
               <Link
                 type="submit"
-                onClick={handleSave}
+                // onClick={handleSave}
                 to={`/residents/?id=${id}&brgy=${brgy}`}
                 className="flex justify-center items-center h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
               >
@@ -1524,7 +1524,7 @@ const EditResidents = ({ props }) => {
               <button
                 type="button"
                 className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
-                onClick={handleOnEdit}
+                // onClick={handleOnEdit}
               >
                 BACK
               </button>
@@ -1536,7 +1536,7 @@ const EditResidents = ({ props }) => {
       {updatingStatus && (
         <EditLoader updatingStatus={updatingStatus} error={error} />
       )}
-      <ImageViewer />
+      {/* <ImageViewer /> */}
     </div>
   );
 };

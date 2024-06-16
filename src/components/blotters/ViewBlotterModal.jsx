@@ -22,101 +22,101 @@ function ViewBlotterModal({ request, brgy, officials }) {
   const [request_id, setRequestId] = useState(request.req_id);
   const [blotterDetails, setBlotterDetails] = useState([]);
 
-  useEffect(() => {
-    // function to filter
-    const fetch = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/document/?brgy=${brgy}&service_id=${service_id}`
-        );
+  // useEffect(() => {
+  //   // function to filter
+  //   const fetch = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${API_LINK}/document/?brgy=${brgy}&service_id=${service_id}`
+  //       );
 
-        // filter
-        setDocDetails(response.data);
-      } catch (err) {
-        console.log(err.message);
-      }
-    };
+  //       // filter
+  //       setDocDetails(response.data);
+  //     } catch (err) {
+  //       console.log(err.message);
+  //     }
+  //   };
 
-    fetch();
-  }, [brgy, service_id, request]); // Add 'request' as a dependency
+  //   fetch();
+  // }, [brgy, service_id, request]); // Add 'request' as a dependency
 
-  useEffect(() => {
-    // function to filter
-    const fetch = async () => {
-      try {
-        const response = await axios.get(
-          `${API_LINK}/blotter_documents/?brgy=${brgy}&req_id=${request_id}`
-        );
+  // useEffect(() => {
+  //   // function to filter
+  //   const fetch = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${API_LINK}/blotter_documents/?brgy=${brgy}&req_id=${request_id}`
+  //       );
 
-        // filter
-        setBlotterDetails(response.data);
-      } catch (err) {
-        console.log(err.message);
-      }
-    };
+  //       // filter
+  //       setBlotterDetails(response.data);
+  //     } catch (err) {
+  //       console.log(err.message);
+  //     }
+  //   };
 
-    fetch();
-  }, [brgy, request]);
+  //   fetch();
+  // }, [brgy, request]);
 
-  useEffect(() => {
-    // Update 'service_id' and 'detail' whenever 'request' changes
-    setRequestId(request.req_id);
-    setServiceId(request.service_id);
-    setDetail(request);
-  }, [request]);
+  // useEffect(() => {
+  //   // Update 'service_id' and 'detail' whenever 'request' changes
+  //   setRequestId(request.req_id);
+  //   setServiceId(request.service_id);
+  //   setDetail(request);
+  // }, [request]);
 
-  const fileName =
-    detail.form[0] && detail.form[0].lastName
-      ? `${detail.form[0].lastName.value.toUpperCase()}, ${detail.form[0].firstName.value.toUpperCase()} ${detail.form[0].middleName.value.toUpperCase()}-${detail.type.toUpperCase()}-${
-          detail.req_id
-        }.pdf`
-      : "SAMPLE.pdf";
+  // const fileName =
+  //   detail.form[0] && detail.form[0].lastName
+  //     ? `${detail.form[0].lastName.value.toUpperCase()}, ${detail.form[0].firstName.value.toUpperCase()} ${detail.form[0].middleName.value.toUpperCase()}-${detail.type.toUpperCase()}-${
+  //         detail.req_id
+  //       }.pdf`
+  //     : "SAMPLE.pdf";
 
-  const returnFile = (string) => {
-    for (const item of detail.file) {
-      if (item.name.includes(string)) {
-        return (
-          <div className="block p-1 w-full h-24">
-            <article
-              tabIndex={0}
-              className="group w-full h-full rounded-md focus:outline-none focus:shadow-outline elative bg-gray-100 cursor-pointer relative shadow-sm"
-            >
-              <img
-                alt="upload preview"
-                className="img-preview hidden w-full h-full sticky object-cover rounded-md bg-fixed"
-              />
-              <section className="flex flex-col rounded-md text-xs break-words w-full h-full z-20 absolute top-0 py-2 px-3">
-                <a
-                  href={item.link}
-                  target="_blank"
-                  className="flex-1 group-hover:text-blue-800 line-clamp-1"
-                >
-                  {item.name}
-                </a>
-                <div className="flex">
-                  <span className="p-1 text-blue-800">
-                    <i>
-                      <svg
-                        className="fill-current w-4 h-4 ml-auto pt-1"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width={24}
-                        height={24}
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M15 2v5h5v15h-16v-20h11zm1-2h-14v24h20v-18l-6-6z" />
-                      </svg>
-                    </i>
-                  </span>
-                </div>
-              </section>
-            </article>
-          </div>
-        );
-      }
-    }
+  // const returnFile = (string) => {
+  //   for (const item of detail.file) {
+  //     if (item.name.includes(string)) {
+  //       return (
+  //         <div className="block p-1 w-full h-24">
+  //           <article
+  //             tabIndex={0}
+  //             className="group w-full h-full rounded-md focus:outline-none focus:shadow-outline elative bg-gray-100 cursor-pointer relative shadow-sm"
+  //           >
+  //             <img
+  //               alt="upload preview"
+  //               className="img-preview hidden w-full h-full sticky object-cover rounded-md bg-fixed"
+  //             />
+  //             <section className="flex flex-col rounded-md text-xs break-words w-full h-full z-20 absolute top-0 py-2 px-3">
+  //               <a
+  //                 href={item.link}
+  //                 target="_blank"
+  //                 className="flex-1 group-hover:text-blue-800 line-clamp-1"
+  //               >
+  //                 {item.name}
+  //               </a>
+  //               <div className="flex">
+  //                 <span className="p-1 text-blue-800">
+  //                   <i>
+  //                     <svg
+  //                       className="fill-current w-4 h-4 ml-auto pt-1"
+  //                       xmlns="http://www.w3.org/2000/svg"
+  //                       width={24}
+  //                       height={24}
+  //                       viewBox="0 0 24 24"
+  //                     >
+  //                       <path d="M15 2v5h5v15h-16v-20h11zm1-2h-14v24h20v-18l-6-6z" />
+  //                     </svg>
+  //                   </i>
+  //                 </span>
+  //               </div>
+  //             </section>
+  //           </article>
+  //         </div>
+  //       );
+  //     }
+  //   }
 
-    return null;
-  };
+  //   return null;
+  // };
 
   return (
     <div>
@@ -154,7 +154,7 @@ function ViewBlotterModal({ request, brgy, officials }) {
                   </div>
                 )}
                 <PersonalDetails detail={detail} />
-                <OtherDetails detail={detail} returnFile={returnFile} />
+                {/* <OtherDetails detail={detail} returnFile={returnFile} /> */}
               </form>
 
               <div className="mt-5">
@@ -185,7 +185,7 @@ function ViewBlotterModal({ request, brgy, officials }) {
                     </tr>
                   </thead>
                   <tbody className="odd:bg-slate-100">
-                    {blotterDetails.map((blotterItem, index) => (
+                    {/* {blotterDetails.map((blotterItem, index) => (
                       <tr key={index} className="border">
                         <td className="px-6 py-3">
                           <span className="text-xs justify-center text-center text-black line-clamp-4">
@@ -215,7 +215,7 @@ function ViewBlotterModal({ request, brgy, officials }) {
                           </PDFDownloadLink>
                         </td>
                       </tr>
-                    ))}
+                    ))} */}
                   </tbody>
                 </table>
               </div>

@@ -44,10 +44,10 @@ const EditServicesDocument = ({ service_id, service_title, brgy, officials, docu
   //   fetchForms();
   // }, [brgy, service_id]);
 
-  useEffect(() => {
-    setDocDetails(documentForm)
-    setDetails(serviceForm)
-  }, [documentForm, serviceForm]);
+  // useEffect(() => {
+  //   setDocDetails(documentForm)
+  //   setDetails(serviceForm)
+  // }, [documentForm, serviceForm]);
 
   // useEffect(() => {
   //   const fetchDocuments = async () => {
@@ -64,90 +64,90 @@ const EditServicesDocument = ({ service_id, service_title, brgy, officials, docu
   //   fetchDocuments();
   // }, [brgy, service_id]);
 
-  const handleFormChange = (e, key) => {
-    const newState = docDetail.form[0];
-    newState[key].checked = e.target.checked;
+  // const handleFormChange = (e, key) => {
+  //   const newState = docDetail.form[0];
+  //   newState[key].checked = e.target.checked;
 
-    setDocDetail((prev) => ({
-      ...prev,
-      form: [newState, docDetail.form[1]],
-    }));
-  };
+  //   setDocDetail((prev) => ({
+  //     ...prev,
+  //     form: [newState, docDetail.form[1]],
+  //   }));
+  // };
 
-  const handleSubmit = async () => {
-    try {
-      // setSubmitClicked(true);
-      setError(null); // Reset error state
+  // const handleSubmit = async () => {
+  //   try {
+  //     // setSubmitClicked(true);
+  //     setError(null); // Reset error state
 
-      const response = await axios.patch(
-        `${API_LINK}/document/`,
-        {
-          document: docDetail,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.status === 200) {
-        const getIP = async () => {
-          const response = await fetch(
-            "https://api64.ipify.org?format=json"
-          );
-          const data = await response.json();
-          return data.ip;
-        };
+  //     const response = await axios.patch(
+  //       `${API_LINK}/document/`,
+  //       {
+  //         document: docDetail,
+  //       },
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+  //     if (response.status === 200) {
+  //       const getIP = async () => {
+  //         const response = await fetch(
+  //           "https://api64.ipify.org?format=json"
+  //         );
+  //         const data = await response.json();
+  //         return data.ip;
+  //       };
 
-        const ip = await getIP(); // Retrieve IP address
+  //       const ip = await getIP(); // Retrieve IP address
 
-        const logsData = {
-          action: "Updated",
-          details: `A document form`,
-          ip: ip,
-        };
+  //       const logsData = {
+  //         action: "Updated",
+  //         details: `A document form`,
+  //         ip: ip,
+  //       };
 
-        const logsResult = await axios.post(
-          `${API_LINK}/act_logs/add_logs/?id=${id}`,
-          logsData
-        );
-        if (logsResult.status === 200) {
-          socket.emit("send-edit-service-form", response.data);
-          setSubmitClicked(false);
-          setUpdatingStatus("success");
-          setTimeout(() => {
-            setUpdatingStatus(null);
+  //       const logsResult = await axios.post(
+  //         `${API_LINK}/act_logs/add_logs/?id=${id}`,
+  //         logsData
+  //       );
+  //       if (logsResult.status === 200) {
+  //         socket.emit("send-edit-service-form", response.data);
+  //         setSubmitClicked(false);
+  //         setUpdatingStatus("success");
+  //         setTimeout(() => {
+  //           setUpdatingStatus(null);
 
-            HSOverlay.close(
-              modal.current
-            );
-          }, 3000);
-        }
-      }
-    } catch (err) {
-      // setSubmitClicked(false);
-      setUpdatingStatus("error");
-      setError(err.message);
-      setSubmitClicked(false);
-    }
-  };
+  //           HSOverlay.close(
+  //             modal.current
+  //           );
+  //         }, 3000);
+  //       }
+  //     }
+  //   } catch (err) {
+  //     // setSubmitClicked(false);
+  //     setUpdatingStatus("error");
+  //     setError(err.message);
+  //     setSubmitClicked(false);
+  //   }
+  // };
 
-  const handleSelectChange = (e) => {
-    setSelectedDocIndex(e.target.value);
-    setDocDetail(docDetails[e.target.value]);
-  };
+  // const handleSelectChange = (e) => {
+  //   setSelectedDocIndex(e.target.value);
+  //   setDocDetail(docDetails[e.target.value]);
+  // };
 
-  const handleChange = (e) => {
-    setDocDetail((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
+  // const handleChange = (e) => {
+  //   setDocDetail((prev) => ({
+  //     ...prev,
+  //     [e.target.name]: e.target.value,
+  //   }));
+  // };
 
-  const handleResetDocDetail = () => {
-    setDocDetail({});
-    setSelectedDocIndex("");
-  };
+  // const handleResetDocDetail = () => {
+  //   setDocDetail({});
+  //   setSelectedDocIndex("");
+  // };
 
   return (
     <div>
@@ -176,18 +176,18 @@ const EditServicesDocument = ({ service_id, service_title, brgy, officials, docu
                 <select
                   name="form"
                   className="border border-1 border-gray-300 shadow bg-white w-full md:w-6/12 mt-2 md:mt-0 border p-2 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
-                  onChange={handleSelectChange}
-                  value={selectedDocIndex}
+                  // onChange={handleSelectChange}
+                  // value={selectedDocIndex}
                 >
                   <option value="" disabled>
                     Select Document
                   </option>
-                  {docDetails &&
+                  {/* {docDetails &&
                     docDetails.map((item, idx) => (
                       <option key={idx} value={idx}>
                         {item.doc_title}
                       </option>
-                    ))}
+                    ))} */}
                 </select>
               </div>
               <div className="px-4 pb-4">
@@ -199,12 +199,12 @@ const EditServicesDocument = ({ service_id, service_title, brgy, officials, docu
                     <input
                       type="checkbox"
                       name="isOpen"
-                      onChange={(e) =>
-                        setDocDetail((prev) => ({
-                          ...prev,
-                          isActive: e.target.checked,
-                        }))
-                      }
+                      // onChange={(e) =>
+                      //   setDocDetail((prev) => ({
+                      //     ...prev,
+                      //     isActive: e.target.checked,
+                      //   }))
+                      // }
                       checked={docDetail.isActive}
                       disabled={docDetail.isArchived}
                       className="sr-only peer"
@@ -230,8 +230,8 @@ const EditServicesDocument = ({ service_id, service_title, brgy, officials, docu
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="doc_title"
                         type="text"
-                        value={docDetail.doc_title || ""}
-                        onChange={handleChange}
+                        // value={docDetail.doc_title || ""}
+                        // onChange={handleChange}
                         placeholder="Service Name"
                       />
                     </div>
@@ -247,8 +247,8 @@ const EditServicesDocument = ({ service_id, service_title, brgy, officials, docu
                         id="details"
                         rows={7}
                         name="details"
-                        value={docDetail.details || ""}
-                        onChange={handleChange}
+                        // value={docDetail.details || ""}
+                        // onChange={handleChange}
                         className="shadow appearance-none border w-full p-2.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         placeholder="Enter service details..."
                       />
@@ -263,8 +263,8 @@ const EditServicesDocument = ({ service_id, service_title, brgy, officials, docu
                       </label>
                       <select
                         name="type"
-                        onChange={handleChange}
-                        value={docDetail.type || ""}
+                        // onChange={handleChange}
+                        // value={docDetail.type || ""}
                         className="shadow  border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
                         <option>-- Select a Document Type --</option>
@@ -297,13 +297,13 @@ const EditServicesDocument = ({ service_id, service_title, brgy, officials, docu
                       </label>
                       <select
                         name="punong_brgy"
-                        onChange={handleChange}
-                        value={docDetail.punong_brgy || ""}
+                        // onChange={handleChange}
+                        // value={docDetail.punong_brgy || ""}
                         className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
                         <option>-- Select an Official --</option>
                         {/* Map filtered officials with position "Barangay Chairman" to options */}
-                        {officials
+                        {/* {officials
                           .filter(
                             (official) =>
                               official.position === "Barangay Chairman"
@@ -316,7 +316,7 @@ const EditServicesDocument = ({ service_id, service_title, brgy, officials, docu
                               {official.lastName}, {official.firstName}{" "}
                               {official.middleName}
                             </option>
-                          ))}
+                          ))} */}
                       </select>
                     </div>
 
@@ -329,13 +329,13 @@ const EditServicesDocument = ({ service_id, service_title, brgy, officials, docu
                       </label>
                       <select
                         name="witnessed_by"
-                        onChange={handleChange}
-                        value={docDetail.witnessed_by || ""}
+                        // onChange={handleChange}
+                        // value={docDetail.witnessed_by || ""}
                         className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
                         <option>-- Select an Official --</option>
                         {/* Map filtered officials with position "Barangay Chairman" to options */}
-                        {officials
+                        {/* {officials
                           .filter(
                             (official) =>
                               official.position === "Secretary"
@@ -348,7 +348,7 @@ const EditServicesDocument = ({ service_id, service_title, brgy, officials, docu
                               {official.lastName}, {official.firstName}{" "}
                               {official.middleName}
                             </option>
-                          ))}
+                          ))} */}
                       </select>
                     </div>
 
@@ -364,8 +364,8 @@ const EditServicesDocument = ({ service_id, service_title, brgy, officials, docu
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="email"
                         type="text"
-                        value={docDetail.email || ""}
-                        onChange={handleChange}
+                        // value={docDetail.email || ""}
+                        // onChange={handleChange}
                         placeholder="E-mail"
                       />
                     </div>
@@ -382,8 +382,8 @@ const EditServicesDocument = ({ service_id, service_title, brgy, officials, docu
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="address"
                         type="text"
-                        value={docDetail.address || ""}
-                        onChange={handleChange}
+                        // value={docDetail.address || ""}
+                        // onChange={handleChange}
                         placeholder="Address"
                       />
                     </div>
@@ -400,8 +400,8 @@ const EditServicesDocument = ({ service_id, service_title, brgy, officials, docu
                         className="shadow appearance-none border w-full py-2 px-3 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         name="tel"
                         type="number"
-                        value={docDetail.tel || ""}
-                        onChange={handleChange}
+                        // value={docDetail.tel || ""}
+                        // onChange={handleChange}
                         placeholder="Telephone Number"
                       />
                     </div>
@@ -415,14 +415,14 @@ const EditServicesDocument = ({ service_id, service_title, brgy, officials, docu
                   <legend className=" ml-2 px-2 text-lg font-bold">
                     CUSTOMIZE FIELDS
                   </legend>
-                  <EditSectionDocument
+                  {/* <EditSectionDocument
                     brgy={brgy}
                     service_id={service_id}
                     document={document}
                     setDocument={setDocument}
                     docDetail={docDetail}
                     setDocDetail={setDocDetail}
-                  />
+                  /> */}
                 </fieldset>
               </div>
             </div>
@@ -433,7 +433,7 @@ const EditServicesDocument = ({ service_id, service_title, brgy, officials, docu
                 <button
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                  onClick={handleSubmit}
+                  // onClick={handleSubmit}
                 >
                   UPDATE
                 </button>
@@ -441,7 +441,7 @@ const EditServicesDocument = ({ service_id, service_title, brgy, officials, docu
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                   data-hs-overlay="#hs-edit-serviceDocument-modal"
-                  onClick={handleResetDocDetail}
+                  // onClick={handleResetDocDetail}
                 >
                   CLOSE
                 </button>

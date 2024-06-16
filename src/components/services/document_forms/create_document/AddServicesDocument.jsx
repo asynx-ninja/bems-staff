@@ -45,90 +45,90 @@ const AddServicesDocument = ({ service_id, service_title, brgy, officials, socke
     tel: "",
   });
 
-  const handleResetModal = () => {
-    setDocument({
-      form_id: "",
-      service_id: "",
-      doc_title: "",
-      details: "",
-      type: "",
-      punong_brgy: "",
-      witnessed_by: "",
-      inputs: [""],
-      email: "",
-      address: "",
-      tel: "",
-    });
-    setSection([]);
-  };
+  // const handleResetModal = () => {
+  //   setDocument({
+  //     form_id: "",
+  //     service_id: "",
+  //     doc_title: "",
+  //     details: "",
+  //     type: "",
+  //     punong_brgy: "",
+  //     witnessed_by: "",
+  //     inputs: [""],
+  //     email: "",
+  //     address: "",
+  //     tel: "",
+  //   });
+  //   setSection([]);
+  // };
 
-  const handleSubmit = async (e) => {
-    try {
-      // setSubmitClicked(true);
-      // setError(null); // Reset error state
+  // const handleSubmit = async (e) => {
+  //   try {
+  //     // setSubmitClicked(true);
+  //     // setError(null); // Reset error state
 
-      const response = await axios.post(
-        `${API_LINK}/document/?brgy=${brgy}&form_id=${document.form_id}&checked=${checked}`,
-        {
-          service_id: service_id,
-          doc_title: document.doc_title,
-          details: document.details,
-          type: document.type,
-          punong_brgy: document.punong_brgy,
-          witnessed_by: document.witnessed_by,
-          inputs: document.inputs,
-          email: document.email,
-          address: document.address,
-          tel: document.tel,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.status === 200) {
-        const getIP = async () => {
-          const response = await fetch(
-            "https://api64.ipify.org?format=json"
-          );
-          const data = await response.json();
-          return data.ip;
-        };
+  //     const response = await axios.post(
+  //       `${API_LINK}/document/?brgy=${brgy}&form_id=${document.form_id}&checked=${checked}`,
+  //       {
+  //         service_id: service_id,
+  //         doc_title: document.doc_title,
+  //         details: document.details,
+  //         type: document.type,
+  //         punong_brgy: document.punong_brgy,
+  //         witnessed_by: document.witnessed_by,
+  //         inputs: document.inputs,
+  //         email: document.email,
+  //         address: document.address,
+  //         tel: document.tel,
+  //       },
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+  //     if (response.status === 200) {
+  //       const getIP = async () => {
+  //         const response = await fetch(
+  //           "https://api64.ipify.org?format=json"
+  //         );
+  //         const data = await response.json();
+  //         return data.ip;
+  //       };
 
-        const ip = await getIP(); // Retrieve IP address
+  //       const ip = await getIP(); // Retrieve IP address
 
-        const logsData = {
-          action: "Created",
-          details: `A new document form`,
-          ip: ip,
-        };
+  //       const logsData = {
+  //         action: "Created",
+  //         details: `A new document form`,
+  //         ip: ip,
+  //       };
 
-        const logsResult = await axios.post(
-          `${API_LINK}/act_logs/add_logs/?id=${id}`,
-          logsData
-        );
-        if (logsResult.status === 200) {
-          socket.emit("send-create-service-form", response.data);
-          setSubmitClicked(false);
-          setCreationStatus("success");
-          setTimeout(() => {
-            setCreationStatus(null);
-            handleResetModal();
-            HSOverlay.close(
-              modal.current
-            );
-          }, 3000);
-          setUpdate(true);
-        }
-      }
-    } catch (err) {
-      console.log(err.message);
-      setSubmitClicked(false);
-      setCreationStatus("error");
-      setError(err.message);
-    }
-  };
+  //       const logsResult = await axios.post(
+  //         `${API_LINK}/act_logs/add_logs/?id=${id}`,
+  //         logsData
+  //       );
+  //       if (logsResult.status === 200) {
+  //         socket.emit("send-create-service-form", response.data);
+  //         setSubmitClicked(false);
+  //         setCreationStatus("success");
+  //         setTimeout(() => {
+  //           setCreationStatus(null);
+  //           handleResetModal();
+  //           HSOverlay.close(
+  //             modal.current
+  //           );
+  //         }, 3000);
+  //         setUpdate(true);
+  //       }
+  //     }
+  //   } catch (err) {
+  //     console.log(err.message);
+  //     setSubmitClicked(false);
+  //     setCreationStatus("error");
+  //     setError(err.message);
+  //   }
+  // };
 
   return (
     <div>
@@ -164,7 +164,7 @@ const AddServicesDocument = ({ service_id, service_title, brgy, officials, socke
                     <input
                       type="checkbox"
                       name="isOpen"
-                      onChange={(e) => setChecked(e.target.checked)}
+                      // onChange={(e) => setChecked(e.target.checked)}
                       checked={checked}
                       className="sr-only peer"
                     />
@@ -190,7 +190,7 @@ const AddServicesDocument = ({ service_id, service_title, brgy, officials, socke
                         name="doc_title"
                         type="text"
                         value={document.doc_title}
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         placeholder="Document Name"
                       />
                     </div>
@@ -207,7 +207,7 @@ const AddServicesDocument = ({ service_id, service_title, brgy, officials, socke
                         rows={7}
                         name="details"
                         value={document.details}
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         className="shadow appearance-none border w-full p-2.5 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                         placeholder="Enter service details..."
                       />
@@ -222,7 +222,7 @@ const AddServicesDocument = ({ service_id, service_title, brgy, officials, socke
                       </label>
                       <select
                         name="type"
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         value={document.type}
                         className="shadow  border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
@@ -258,7 +258,7 @@ const AddServicesDocument = ({ service_id, service_title, brgy, officials, socke
                       </label>
                       <select
                         name="punong_brgy"
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         value={document.punong_brgy}
                         className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
@@ -290,7 +290,7 @@ const AddServicesDocument = ({ service_id, service_title, brgy, officials, socke
                       </label>
                       <select
                         name="witnessed_by"
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         value={document.witnessed_by}
                         className="shadow border w-full py-2 px-4 text-sm text-black rounded-lg focus:border-green-500 focus:ring-green-500 focus:outline-none focus:shadow-outline"
                       >
@@ -325,7 +325,7 @@ const AddServicesDocument = ({ service_id, service_title, brgy, officials, socke
                         name="email"
                         type="text"
                         value={document.email}
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         placeholder="E-mail"
                       />
                     </div>
@@ -343,7 +343,7 @@ const AddServicesDocument = ({ service_id, service_title, brgy, officials, socke
                         name="address"
                         type="text"
                         value={document.address}
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         placeholder="Address"
                       />
                     </div>
@@ -361,7 +361,7 @@ const AddServicesDocument = ({ service_id, service_title, brgy, officials, socke
                         name="tel"
                         type="number"
                         value={document.tel}
-                        onChange={handleChange}
+                        // onChange={handleChange}
                         placeholder="Telephone Number"
                       />
                     </div>
@@ -376,12 +376,12 @@ const AddServicesDocument = ({ service_id, service_title, brgy, officials, socke
                     CUSTOMIZE FIELDS
                   </legend>
                   <AddSectionDocument
-                    section={section}
-                    setSection={setSection}
-                    brgy={brgy}
-                    service_id={service_id}
-                    document={document}
-                    setDocument={setDocument}
+                    // section={section}
+                    // setSection={setSection}
+                    // brgy={brgy}
+                    // service_id={service_id}
+                    // document={document}
+                    // setDocument={setDocument}
                   />
                 </fieldset>
               </div>
@@ -393,7 +393,7 @@ const AddServicesDocument = ({ service_id, service_title, brgy, officials, socke
                 <button
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-teal-900 text-white shadow-sm"
-                  onClick={handleSubmit}
+                  // onClick={handleSubmit}
                 >
                   CREATE
                 </button>
@@ -401,7 +401,7 @@ const AddServicesDocument = ({ service_id, service_title, brgy, officials, socke
                   type="button"
                   className="h-[2.5rem] w-full py-1 px-6 gap-2 rounded-md borde text-sm font-base bg-pink-800 text-white shadow-sm"
                   data-hs-overlay="#hs-create-serviceDocument-modal"
-                  onClick={handleResetModal}
+                  // onClick={handleResetModal}
                 >
                   CLOSE
                 </button>

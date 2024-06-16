@@ -7,6 +7,7 @@ import { AiOutlineEye } from "react-icons/ai";
 import ReactPaginate from "react-paginate";
 import ViewRegistrationModal from "./ViewRegistrationModal";
 import GetBrgy from "../GETBrgy/getbrgy";
+
 const SubPendingApplication = () => {
   const [applications, setApplications] = useState([]);
   const [application, setApplication] = useState({ response: [{ file: [] }] });
@@ -18,17 +19,18 @@ const SubPendingApplication = () => {
   const [pageCount, setPageCount] = useState(0);
   const [statusFilter, setStatusFilter] = useState("all");
   const information = GetBrgy(brgy);
+
   useEffect(() => {
     const fetch = async () => {
       try {
         const response = await axios.get(
-          `${API_LINK}/application/?brgy=${brgy}&archived=false&status=Pending&page=${currentPage}`
+          `${API_LINK}/application/?brgy=${brgy}&archived=false&status=For Review&page=${currentPage}`
         );
 
         if (response.status === 200) {
-          setApplications(response.data.result);
-          setPageCount(response.data.pageCount);
-          setFilteredApplications(response.data.result);
+          // setApplications(response.data.result);
+          // setPageCount(response.data.pageCount);
+          // setFilteredApplications(response.data.result);
         } else setApplications([]);
       } catch (err) {
         console.log(err);
