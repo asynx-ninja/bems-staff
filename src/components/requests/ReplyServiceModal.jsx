@@ -52,277 +52,276 @@ function ReplyServiceModal({
   const [pageCount, setPageCount] = useState(0);
   const [specificEvent, setSpecificEvent] = useState(null);
 
-  // useEffect(() => {
-  //   var container = document.getElementById("scrolltobottom");
-  //   container.scrollTop = container.scrollHeight;
-  // });
+  useEffect(() => {
+    var container = document.getElementById("scrolltobottom");
+    container.scrollTop = container.scrollHeight;
+  });
 
-  // useEffect(() => {
-  //   setFiles(request.length === 0 ? [] : request.file);
-  // }, [request]);
+  useEffect(() => {
+    setFiles(request.length === 0 ? [] : request.file);
+  }, [request]);
 
-  // const handleResetModal = () => {
-  //   setCreateFiles([]);
-  //   setNewMessage({
-  //     message: "",
-  //     isRepliable: true,
-  //   });
-  //   setStatusChanger(false);
-  // };
+  const handleResetModal = () => {
+    setCreateFiles([]);
+    setNewMessage({
+      message: "",
+      isRepliable: true,
+    });
+    setStatusChanger(false);
+  };
 
-  // useEffect(() => {
-  //   const fetch = async () => {
-  //     try {
-  //       const res = await axios.get(`${API_LINK}/users/specific/${id}`);
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const res = await axios.get(`${API_LINK}/users/specific/${id}`);
 
-  //       if (res.status === 200) {
-  //         setUserData(res.data[0]);
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetch();
-  // }, [id]);
+        if (res.status === 200) {
+          setUserData(res.data[0]);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetch();
+  }, [id]);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       if (!request.service_id) {
-  //         // If there is no event_id in the application, do not fetch events
-  //         return;
-  //       }
-  //       const serviceResponse = await axios.get(
-  //         `${API_LINK}/services/?brgy=${brgy}&service_id=${request.service_id}&archived=false`
-  //       );
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (!request.service_id) {
+          // If there is no event_id in the application, do not fetch events
+          return;
+        }
+        const serviceResponse = await axios.get(
+          `${API_LINK}/services/?brgy=${brgy}&service_id=${request.service_id}&archived=false`
+        );
 
-  //       if (serviceResponse.status === 200) {
-  //         setService(serviceResponse.data.result[0]);
-  //       } else {
-  //         // setEventWithCounts([]);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //       console.error("Error response data:", error.response?.data);
-  //       console.error("Error response status:", error.response?.status);
-  //     }
-  //   };
+        if (serviceResponse.status === 200) {
+          setService(serviceResponse.data.result[0]);
+        } else {
+          // setEventWithCounts([]);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        console.error("Error response data:", error.response?.data);
+        console.error("Error response status:", error.response?.status);
+      }
+    };
 
-  //   fetchData();
-  // }, [currentPage, brgy, request.service_id]);
+    fetchData();
+  }, [currentPage, brgy, request.service_id]);
 
-  // useEffect(() => {
-  //   if (request && request.response.length !== 0) {
-  //     const lastResponse = request.response[request.response.length - 1];
+  useEffect(() => {
+    if (request && request.response.length !== 0) {
+      const lastResponse = request.response[request.response.length - 1];
 
-  //     if (lastResponse.file && lastResponse.file.length > 0) {
-  //       setViewFiles(lastResponse.file);
-  //     } else {
-  //       setViewFiles([]);
-  //     }
-  //   } else {
-  //     setViewFiles([]);
-  //   }
-  // }, [request]);
+      if (lastResponse.file && lastResponse.file.length > 0) {
+        setViewFiles(lastResponse.file);
+      } else {
+        setViewFiles([]);
+      }
+    } else {
+      setViewFiles([]);
+    }
+  }, [request]);
 
-  // // Initialize with the last index expanded
-  // useEffect(() => {
-  //   const lastIndex = request.response ? request.response.length - 1 : 0;
-  //   setExpandedIndexes([lastIndex]);
-  // }, [request.response]);
+  // Initialize with the last index expanded
+  useEffect(() => {
+    const lastIndex = request.response ? request.response.length - 1 : 0;
+    setExpandedIndexes([lastIndex]);
+  }, [request.response]);
 
-  // const fileInputRef = useRef();
+  const fileInputRef = useRef();
 
-  // const handleToggleClick = (index) => {
-  //   if (expandedIndexes.includes(index)) {
-  //     // Collapse the clicked div
-  //     setExpandedIndexes((prev) => prev.filter((i) => i !== index));
-  //   } else {
-  //     // Expand the clicked div
-  //     setExpandedIndexes((prev) => [...prev, index]);
-  //   }
-  // };
+  const handleToggleClick = (index) => {
+    if (expandedIndexes.includes(index)) {
+      // Collapse the clicked div
+      setExpandedIndexes((prev) => prev.filter((i) => i !== index));
+    } else {
+      // Expand the clicked div
+      setExpandedIndexes((prev) => [...prev, index]);
+    }
+  };
 
-  // useEffect(() => {
-  //   if (request && request.response && request.response.length > 0) {
-  //     // Sort the responses based on date in ascending order
-  //     request.response.sort(
-  //       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  //     );
+  useEffect(() => {
+    if (request && request.response && request.response.length > 0) {
+      // Sort the responses based on date in ascending order
+      request.response.sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
 
-  //     // Initialize with the last index expanded
-  //     const lastIndex = request.response.length - 1;
-  //     setExpandedIndexes([lastIndex]);
-  //   }
-  // }, [request]);
+      // Initialize with the last index expanded
+      const lastIndex = request.response.length - 1;
+      setExpandedIndexes([lastIndex]);
+    }
+  }, [request]);
 
-  // const handleChange = (e) => {
-  //   const inputValue = e.target.value;
+  const handleChange = (e) => {
+    const inputValue = e.target.value;
 
-  //   if (e.target.name === "isRepliable") {
-  //     // If isRepliable checkbox is changed, update isRepliable accordingly
-  //     setNewMessage((prev) => ({
-  //       ...prev,
-  //       [e.target.name]: e.target.checked,
-  //     }));
-  //   } else if (
-  //     statusChanger &&
-  //     (!newMessage.message || newMessage.message.trim() === "")
-  //   ) {
-  //     // If statusChanger is true and message is not set, update message with status
-  //     setNewMessage((prev) => ({
-  //       ...prev,
-  //       message: `The status of your service request is ${inputValue}`,
-  //       [e.target.name]: inputValue,
-  //     }));
-  //   } else {
-  //     // Otherwise, update the input value normally
-  //     setNewMessage((prev) => ({
-  //       ...prev,
-  //       [e.target.name]: inputValue,
-  //     }));
-  //   }
-  // };
+    if (e.target.name === "isRepliable") {
+      // If isRepliable checkbox is changed, update isRepliable accordingly
+      setNewMessage((prev) => ({
+        ...prev,
+        [e.target.name]: e.target.checked,
+      }));
+    } else if (
+      statusChanger &&
+      (!newMessage.message || newMessage.message.trim() === "")
+    ) {
+      // If statusChanger is true and message is not set, update message with status
+      setNewMessage((prev) => ({
+        ...prev,
+        message: `The status of your service request is ${inputValue}`,
+        [e.target.name]: inputValue,
+      }));
+    } else {
+      // Otherwise, update the input value normally
+      setNewMessage((prev) => ({
+        ...prev,
+        [e.target.name]: inputValue,
+      }));
+    }
+  };
 
-  // const DateFormat = (date) => {
-  //   if (!date) return "";
+  const DateFormat = (date) => {
+    if (!date) return "";
 
-  //   const options = {
-  //     year: "numeric",
-  //     month: "short",
-  //     day: "numeric",
-  //     hour: "numeric",
-  //     minute: "numeric",
-  //     hour12: true,
-  //   };
-  //   return new Intl.DateTimeFormat("en-US", options).format(new Date(date));
-  // };
+    const options = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    };
+    return new Intl.DateTimeFormat("en-US", options).format(new Date(date));
+  };
 
-  // const handleFileChange = (e) => {
-  //   e.preventDefault();
+  const handleFileChange = (e) => {
+    e.preventDefault();
 
-  //   setCreateFiles([...createFiles, ...e.target.files]);
-  // };
+    setCreateFiles([...createFiles, ...e.target.files]);
+  };
 
-  // const handleAdd = (e) => {
-  //   e.preventDefault();
+  const handleAdd = (e) => {
+    e.preventDefault();
 
-  //   fileInputRef.current.click();
-  // };
+    fileInputRef.current.click();
+  };
 
-  // const handleOnReply = () => {
-  //   setReply(!reply);
-  // };
+  const handleOnReply = () => {
+    setReply(!reply);
+  };
 
-  // const handleOnUpload = () => {
-  //   setUpload(!upload);
-  // };
+  const handleOnUpload = () => {
+    setUpload(!upload);
+  };
 
-  // const handleOnStatusChanger = () => {
-  //   setStatusChanger(!statusChanger);
-  // };
+  const handleOnStatusChanger = () => {
+    setStatusChanger(!statusChanger);
+  };
 
-  // const getType = (type) => {
-  //   switch (type) {
-  //     case "MUNISIPYO":
-  //       return "Municipality";
-  //     default:
-  //       return "Barangay";
-  //   }
-  // };
+  const getType = (type) => {
+    switch (type) {
+      case "MUNISIPYO":
+        return "Municipality";
+      default:
+        return "Barangay";
+    }
+  };
 
-  // const handleOnSend = async (e) => {
-  //   try {
-  //     e.preventDefault();
-  //     setOnSend(true);
-  //     setErrMsg(false);
-  //     setError(null); // Reset error state
+  const handleOnSend = async (e) => {
+    try {
+      e.preventDefault();
+      setOnSend(true);
+      setErrMsg(false);
+      setError(null); // Reset error state
 
-  //     if (newMessage.message.trim() === "" && createFiles.length === 0) {
-  //       setErrMsg(true);
-  //       setOnSend(false);
-  //       return;
-  //     }
+      if (newMessage.message.trim() === "" && createFiles.length === 0) {
+        setErrMsg(true);
+        setOnSend(false);
+        return;
+      }
 
-  //     const obj = {
-  //       sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
-  //       message: newMessage.message,
-  //       status: request.status,
-  //       isRepliable: newMessage.isRepliable,
-  //       folder_id: request.folder_id,
-  //       date: new Date(), // Add the current date and time
-  //     };
+      const obj = {
+        sender: `${userData.firstName} ${userData.lastName} (${userData.type})`,
+        message: newMessage.message,
+        status: request.status,
+        isRepliable: newMessage.isRepliable,
+        folder_id: request.folder_id,
+        date: new Date(), // Add the current date and time
+      };
 
-  //     var formData = new FormData();
-  //     formData.append("response", JSON.stringify(obj));
+      var formData = new FormData();
+      formData.append("response", JSON.stringify(obj));
 
-  //     const res_folder = await axios.get(
-  //       `${API_LINK}/folder/specific/?brgy=${brgy}`
-  //     );
+      const res_folder = await axios.get(
+        `${API_LINK}/folder/specific/?brgy=${brgy}`
+      );
 
-  //     if (res_folder.status === 200) {
-  //       for (let i = 0; i < createFiles.length; i++) {
-  //         formData.append("files", createFiles[i]);
-  //       }
+      if (res_folder.status === 200) {
+        for (let i = 0; i < createFiles.length; i++) {
+          formData.append("files", createFiles[i]);
+        }
 
-  //       const response = await axios.patch(
-  //         `${API_LINK}/requests/?req_id=${request._id}&?request_folder_id=${res_folder.data[0].request}`,
-  //         formData
-  //       );
+        const response = await axios.patch(
+          `${API_LINK}/requests/?req_id=${request._id}&?request_folder_id=${res_folder.data[0].request}`,
+          formData
+        );
 
-  //       if (response.status === 200) {
-  //         setCreateFiles([]);
-  //         setNewMessage({ message: "" });
-  //         setReplyingStatus(null);
-  //         setReply(false);
-  //         setStatusChanger(false);
+        if (response.status === 200) {
+          setCreateFiles([]);
+          setNewMessage({ message: "" });
+          setReplyingStatus(null);
+          setReply(false);
+          setStatusChanger(false);
 
-  //         const notify = {
-  //           category: "One",
-  //           compose: {
-  //             subject: `REQUEST - ${request.service_name}`,
-  //             message: `A barangay staff has updated/replied your request for the barangay service of ${request.service_name
-  //               }.\n\n
+          const notify = {
+            category: "One",
+            compose: {
+              subject: `REQUEST - ${request.service_name}`,
+              message: `A barangay staff has updated/replied your request for the barangay service of ${request.service_name
+                }.\n\n
         
-  //             Request Details:\n
-  //             - Name: ${request.form && request.form[0]
-  //                 ? request.form[0].lastName.value
-  //                 : ""
-  //               }, ${request.form && request.form[0]
-  //                 ? request.form[0].firstName.value
-  //                 : ""
-  //               } ${request.form && request.form[0]
-  //                 ? request.form[0].middleName.value
-  //                 : ""
-  //               }
-  //             - Service Applied: ${request.service_name}\n
-  //             - Request ID: ${request.req_id}\n
-  //             - Date Created: ${moment(request.createdAt).format(
-  //                 "MMM. DD, YYYY h:mm a"
-  //               )}\n
-  //             - Status: ${response.data.status}\n
-  //             - Staff Handled: ${userData.lastName}, ${userData.firstName} ${userData.middleName
-  //               }\n\n
-  //             Please update this service request as you've seen this notification!\n\n
-  //             Thank you!!,`,
-  //             go_to: "Requests",
-  //           },
-  //           target: {
-  //             user_id: request.form[0].user_id.value,
-  //             area: request.brgy,
-  //           },
-  //           type: "Resident",
-  //           banner: service.collections.banner,
-  //           logo: service.collections.logo,
-  //         };
+              Request Details:\n
+              - Name: ${request.form && request.form[0]
+                  ? request.form[0].lastName.value
+                  : ""
+                }, ${request.form && request.form[0]
+                  ? request.form[0].firstName.value
+                  : ""
+                } ${request.form && request.form[0]
+                  ? request.form[0].middleName.value
+                  : ""
+                }
+              - Service Applied: ${request.service_name}\n
+              - Request ID: ${request.req_id}\n
+              - Date Created: ${moment(request.createdAt).format(
+                  "MMM. DD, YYYY h:mm a"
+                )}\n
+              - Status: ${response.data.status}\n
+              - Staff Handled: ${userData.lastName}, ${userData.firstName} ${userData.middleName
+                }\n\n
+              Please update this service request as you've seen this notification!\n\n
+              Thank you!!,`,
+              go_to: "Requests",
+            },
+            target: {
+              user_id: request.form[0].user_id.value,
+              area: request.brgy,
+            },
+            type: "Resident",
+            banner: service.collections.banner,
+            logo: service.collections.logo,
+          };
 
-  //         const result = await axios.post(`${API_LINK}/notification/`, notify, {
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //         });
+          const result = await axios.post(`${API_LINK}/notification/`, notify, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
 
-<<<<<<< HEAD
           if (result.status === 200) {
             const getIP = async () => {
               const response = await fetch(
@@ -335,54 +334,37 @@ function ReplyServiceModal({
             const ip = await getIP(); // Retrieve IP address
             const logsData = {
               action: "Updated",
-              details: "An status service request",
+              details: `Updated the status of a service request with the (ID: ${request._id})`,
               ip: ip,
             };
-=======
-  //         if (result.status === 200) {
-  //           const getIP = async () => {
-  //             const response = await fetch(
-  //               "https://api64.ipify.org?format=json"
-  //             );
-  //             const data = await response.json();
-  //             return data.ip;
-  //           };
-  //           ;
-  //           const ip = await getIP(); // Retrieve IP address
-  //           const logsData = {
-  //             action: "Updated",
-  //             details: `Updated the status of a service request with the (ID: ${request._id})`,
-  //             ip: ip,
-  //           };
->>>>>>> 27997958fc4eb79a23d8d00b47bd296b0fdcfb79
 
-  //           const logsResult = await axios.post(
-  //             `${API_LINK}/act_logs/add_logs/?id=${id}`,
-  //             logsData
-  //           );
-  //           if (logsResult.status === 200) {
-  //             socket.emit("send-reply-service-req", response.data);
-  //             socket.emit("send-resident-notif", result.data);
-  //             setOnSend(false);
-  //           }
-  //         }
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     setSubmitClicked(false);
-  //     setReplyingStatus(null);
-  //     setError("An error occurred while replying to the service request.");
-  //   }
-  // };
+            const logsResult = await axios.post(
+              `${API_LINK}/act_logs/add_logs/?id=${id}`,
+              logsData
+            );
+            if (logsResult.status === 200) {
+              socket.emit("send-reply-service-req", response.data);
+              socket.emit("send-resident-notif", result.data);
+              setOnSend(false);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      setSubmitClicked(false);
+      setReplyingStatus(null);
+      setError("An error occurred while replying to the service request.");
+    }
+  };
 
-  // const handleOnViewTime = (item) => {
-  //   console.log(item);
-  //   setViewTime({
-  //     state: !viewTime.state,
-  //     timeKey: item,
-  //   });
-  // };
+  const handleOnViewTime = (item) => {
+    console.log(item);
+    setViewTime({
+      state: !viewTime.state,
+      timeKey: item,
+    });
+  };
 
   return (
     <div>
