@@ -50,65 +50,65 @@ function ManageOfficialModal({ selectedOfficial, setSelectedOfficial, brgy, sock
   };
 
   const handleSaveChanges = async (e) => {
-    // e.preventDefault();
-    // setSubmitClicked(true);
-    // setError(null); // Reset error state
+    e.preventDefault();
+    setSubmitClicked(true);
+    setError(null); // Reset error state
 
-    // try {
-    //   const formData = new FormData();
-    //   if (pfp) formData.append("file", pfp);
-    //   formData.append("official", JSON.stringify(selectedOfficial));
+    try {
+      const formData = new FormData();
+      if (pfp) formData.append("file", pfp);
+      formData.append("official", JSON.stringify(selectedOfficial));
 
-    //   const res_folder = await axios.get(
-    //     `${API_LINK}/folder/specific/?brgy=${brgy}`
-    //   );
+      const res_folder = await axios.get(
+        `${API_LINK}/folder/specific/?brgy=${brgy}`
+      );
 
 
 
-    //   if (res_folder.status === 200) {
-    //     const result = await axios.patch(
-    //       `${API_LINK}/brgyofficial/?brgy=${brgy}&doc_id=${selectedOfficial._id}&folder_id=${res_folder.data[0].official}`,
-    //       formData
-    //     );
+      if (res_folder.status === 200) {
+        const result = await axios.patch(
+          `${API_LINK}/brgyofficial/?brgy=${brgy}&doc_id=${selectedOfficial._id}&folder_id=${res_folder.data[0].official}`,
+          formData
+        );
 
-    //     if (result.status === 200) {
-    //       const getIP = async () => {
-    //         const response = await fetch("https://api64.ipify.org?format=json");
-    //         const data = await response.json();
-    //         return data.ip;
-    //       };
+        if (result.status === 200) {
+          const getIP = async () => {
+            const response = await fetch("https://api64.ipify.org?format=json");
+            const data = await response.json();
+            return data.ip;
+          };
 
-    //       const ip = await getIP(); // Retrieve IP address
+          const ip = await getIP(); // Retrieve IP address
 
-    //       const logsData = {
-    //         action: "Updated",
-    //         details: `Updated the information for the barangay official named "${selectedOfficial.firstName} ${selectedOfficial.lastName}"`,
-    //         ip: ip,
-    //       };
+          const logsData = {
+            action: "Updated",
+            details: `Updated the information for the barangay official named "${selectedOfficial.firstName} ${selectedOfficial.lastName}"`,
+            ip: ip,
+          };
 
-    //       const logsResult = await axios.post(
-    //         `${API_LINK}/act_logs/add_logs/?id=${id}`,
-    //         logsData
-    //       );
-    //       if (logsResult.status === 200) {
-    //         socket.emit("send-update-official", result.data);
-    //         setTimeout(() => {
-    //           setSubmitClicked(false);
-    //           setUpdatingStatus("success");
-    //           setTimeout(() => {
-    //             setUpdatingStatus(null);
-    //             HSOverlay.close(document.getElementById("hs-edit-official-modal"));
-    //           }, 3000);
-    //         }, 1000);
-    //       }
-    //     }
-    //   }
-    // } catch (error) {
-    //   console.error(error);
-    //   setSubmitClicked(false);
-    //   setUpdatingStatus("error");
-    //   setError("An error occurred while creating the announcement.");
-    // }
+          const logsResult = await axios.post(
+            `${API_LINK}/act_logs/add_logs/?id=${id}`,
+            logsData
+          );
+          if (logsResult.status === 200) {
+            socket.emit("send-update-official", result.data);
+            setTimeout(() => {
+              setSubmitClicked(false);
+              setUpdatingStatus("success");
+              setTimeout(() => {
+                setUpdatingStatus(null);
+                HSOverlay.close(document.getElementById("hs-edit-official-modal"));
+              }, 3000);
+            }, 1000);
+          }
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      setSubmitClicked(false);
+      setUpdatingStatus("error");
+      setError("An error occurred while creating the announcement.");
+    }
   };
 
   return (
